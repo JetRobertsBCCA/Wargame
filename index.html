@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>War Crier Universe Wiki</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>War Crier Universe</h1>
+        <nav>
+            <a href="#" onclick="showPage('home')">Home</a>
+            <a href="#" onclick="showPage('factions')">Factions</a>
+            <a href="#" onclick="showPage('commanders')">Commanders</a>
+            <a href="#" onclick="showPage('units')">Units</a>
+            <a href="#" onclick="showPage('fragments')">Fragments</a>
+            <a href="#" onclick="showPage('gameplay')">Gameplay</a>
+            <a href="#" onclick="showPage('sample-gameplay')">Sample Battle</a>
+            <a href="#" onclick="showPage('army-builder')">Army Builder</a>
+            <a href="#" onclick="showPage('campaign-tracker')">Campaign Tracker</a>
+        </nav>
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="Search...">
+            <button onclick="search()">Search</button>
+        </div>
+    </header>
+
+    <main id="content">
+        <!-- Content will be loaded here -->
+    </main>
+
+    <footer>
+        <p>&copy; 2026 War Crier Universe. All rights reserved.</p>
+    </footer>
+
+    <script src="data/data.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
