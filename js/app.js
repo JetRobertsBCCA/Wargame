@@ -4,34 +4,34 @@
 
 // Global State
 let currentArmy = {
-    commander: null,
-    evolution: null,
-    units: [],
-    fragments: [],
-    pointsLimit: 200
+  commander: null,
+  evolution: null,
+  units: [],
+  fragments: [],
+  pointsLimit: 200,
 };
 
 let campaignState = {
-    commander: null,
-    level: 1,
-    xp: 0,
-    skillChoices: [],
-    evolution: null,
-    battles: [],
-    fragments: [],
-    persistentUnits: []
+  commander: null,
+  level: 1,
+  xp: 0,
+  skillChoices: [],
+  evolution: null,
+  battles: [],
+  fragments: [],
+  persistentUnits: [],
 };
 
 // Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    showPage('home');
+document.addEventListener("DOMContentLoaded", () => {
+  showPage("home");
 });
 
 // ==========================================
 // Embedded Page Templates
 // ==========================================
 const pageTemplates = {
-'home': `<div id="home-page" class="page active">
+  home: `<div id="home-page" class="page active">
     <h2>Welcome to the War Crier Universe</h2>
     <p class="intro-text">This is the central hub for all information related to the War Crier Universe wargame. Explore the factions, commanders, units, and the mysterious fragments that shape the battlefield.</p>
     <div class="dashboard-grid">
@@ -140,17 +140,17 @@ const pageTemplates = {
     </div>
 </div>`,
 
-'factions': `<div id="factions-page" class="page active"><h2>Factions</h2><div id="faction-list"></div></div>`,
+  factions: `<div id="factions-page" class="page active"><h2>Factions</h2><div id="faction-list"></div></div>`,
 
-'commanders': `<div id="commanders-page" class="page active"><h2>Commanders</h2><div id="commander-list"></div></div>`,
+  commanders: `<div id="commanders-page" class="page active"><h2>Commanders</h2><div id="commander-list"></div></div>`,
 
-'units': `<div id="units-page" class="page active"><h2>Units</h2><div id="unit-list"></div></div>`,
+  units: `<div id="units-page" class="page active"><h2>Units</h2><div id="unit-list"></div></div>`,
 
-'fragments': `<div id="fragments-page" class="page active"><h2>Fragments</h2><div id="fragment-list"></div></div>`,
+  fragments: `<div id="fragments-page" class="page active"><h2>Fragments</h2><div id="fragment-list"></div></div>`,
 
-'gameplay': `<div id="gameplay-page" class="page active">
+  gameplay: `<div id="gameplay-page" class="page active">
     <h2>📜 Core Rules — War Crier Universe</h2>
-    <p style="color: #aaa;">Version ${gameData.rules ? gameData.rules.version : '1.0'} &nbsp;|&nbsp; Dice + Deck Building &nbsp;|&nbsp; Measurement in Inches</p>
+    <p style="color: #aaa;">Version ${gameData.rules ? gameData.rules.version : "1.0"} &nbsp;|&nbsp; Dice + Deck Building &nbsp;|&nbsp; Measurement in Inches</p>
     
     <div id="rules-nav" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
         <button class="filter-btn active" onclick="showRulesSection('all', this)">All Sections</button>
@@ -165,7 +165,7 @@ const pageTemplates = {
     <div id="rules-content"></div>
 </div>`,
 
-'sample-gameplay': `<div id="sample-gameplay-page" class="page active">
+  "sample-gameplay": `<div id="sample-gameplay-page" class="page active">
     <h2>Sample Gameplay: Skirmish at the Clockwork Nexus</h2>
     <div class="card">
         <h3>Scenario Overview</h3>
@@ -217,7 +217,7 @@ const pageTemplates = {
     </div>
 </div>`,
 
-'army-builder': `<div id="army-builder-page" class="page active">
+  "army-builder": `<div id="army-builder-page" class="page active">
     <h2>Army Builder</h2>
     <p>Build your army list, select your commander, and calculate points. Fragment effects are shown based on your commander's evolution path.</p>
     <div class="army-builder-container">
@@ -237,7 +237,7 @@ const pageTemplates = {
     </div>
 </div>`,
 
-'campaign-tracker': `<div id="campaign-tracker-page" class="page active">
+  "campaign-tracker": `<div id="campaign-tracker-page" class="page active">
     <h2>Campaign Tracker</h2>
     <p>Track your commander's progression, XP, unit persistence, and fragment interactions across multiple battles.</p>
     <div class="campaign-header"><div><select id="campaign-commander-select" class="commander-select" onchange="updateCampaignCommander()"><option value="">-- Select Your Commander --</option></select></div><div class="campaign-actions"><button class="btn" onclick="saveCampaign()">💾 Save Campaign</button><button class="btn btn-secondary" onclick="loadCampaign()">📂 Load Campaign</button><button class="btn btn-secondary" onclick="newCampaign()">🆕 New Campaign</button></div></div>
@@ -251,7 +251,7 @@ const pageTemplates = {
     <div class="card"><h3>Battle Log</h3><div style="margin-bottom: 1rem;"><button class="btn" onclick="recordBattle('victory')">🏆 Record Victory</button><button class="btn btn-secondary" onclick="recordBattle('defeat')">💀 Record Defeat</button><button class="btn btn-secondary" onclick="recordBattle('draw')">🤝 Record Draw</button></div><div id="battle-log" class="battle-log"><p style="color: #888; text-align: center;">No battles recorded yet. Start your campaign!</p></div></div>
     <div class="card"><h3>Unit Persistence Tracker</h3><p style="color: #888; font-size: 0.9rem;">Track damage, buffs, and mutations that persist across battles.</p><div id="persistent-units"><table style="width: 100%; border-collapse: collapse;"><thead><tr style="border-bottom: 2px solid #0f3460;"><th style="text-align: left; padding: 0.5rem;">Unit Name</th><th style="text-align: center; padding: 0.5rem;">Status</th><th style="text-align: center; padding: 0.5rem;">Buffs</th><th style="text-align: center; padding: 0.5rem;">Mutations</th><th style="text-align: center; padding: 0.5rem;">Actions</th></tr></thead><tbody id="unit-tracker-body"><tr><td colspan="5" style="text-align: center; padding: 1rem; color: #888;">Add units to track their campaign progression</td></tr></tbody></table></div><div style="margin-top: 1rem;"><button class="btn btn-secondary" onclick="addPersistentUnit()">+ Add Unit to Tracker</button></div></div>
     <div id="levelup-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;"><div class="card" style="max-width: 600px; margin: 2rem;"><h3>🎉 Level Up!</h3><p>Your commander has reached a new level! Choose your skill upgrade:</p><div id="levelup-choices" class="evolution-grid"></div></div></div>
-</div>`
+</div>`,
 };
 
 // ==========================================
@@ -259,53 +259,58 @@ const pageTemplates = {
 // ==========================================
 
 function showPage(pageId) {
-    const html = pageTemplates[pageId];
-    if (!html) {
-        document.getElementById('content').innerHTML = '<div class="card"><h2>Page not found</h2><p>The requested page does not exist.</p></div>';
-        return;
-    }
-    document.getElementById('content').innerHTML = html;
+  const html = pageTemplates[pageId];
+  if (!html) {
+    document.getElementById("content").innerHTML =
+      '<div class="card"><h2>Page not found</h2><p>The requested page does not exist.</p></div>';
+    return;
+  }
+  document.getElementById("content").innerHTML = html;
 
-    // Ensure the page div is visible (CSS hides .page without .active)
-    const pageDiv = document.getElementById('content').querySelector('.page');
-    if (pageDiv) pageDiv.classList.add('active');
+  // Ensure the page div is visible (CSS hides .page without .active)
+  const pageDiv = document.getElementById("content").querySelector(".page");
+  if (pageDiv) pageDiv.classList.add("active");
 
-    // Update home page counts dynamically
-    if (pageId === 'home') {
-        const fc = document.getElementById('faction-count');
-        const cc = document.getElementById('commander-count');
-        const uc = document.getElementById('unit-count');
-        const frc = document.getElementById('fragment-count');
-        if (fc) fc.textContent = gameData.factions.length + ' Faction' + (gameData.factions.length !== 1 ? 's' : '');
-        if (cc) cc.textContent = gameData.commanders.length + ' Commanders';
-        if (uc) uc.textContent = gameData.units.length + ' Units';
-        if (frc) frc.textContent = gameData.fragments.length + ' Fragments';
-    }
+  // Update home page counts dynamically
+  if (pageId === "home") {
+    const fc = document.getElementById("faction-count");
+    const cc = document.getElementById("commander-count");
+    const uc = document.getElementById("unit-count");
+    const frc = document.getElementById("fragment-count");
+    if (fc)
+      fc.textContent =
+        gameData.factions.length +
+        " Faction" +
+        (gameData.factions.length !== 1 ? "s" : "");
+    if (cc) cc.textContent = gameData.commanders.length + " Commanders";
+    if (uc) uc.textContent = gameData.units.length + " Units";
+    if (frc) frc.textContent = gameData.fragments.length + " Fragments";
+  }
 
-    // Initialize page-specific content
-    switch(pageId) {
-        case 'factions':
-            loadFactions();
-            break;
-        case 'commanders':
-            loadCommanders();
-            break;
-        case 'units':
-            loadUnits();
-            break;
-        case 'fragments':
-            loadFragments();
-            break;
-        case 'army-builder':
-            initArmyBuilder();
-            break;
-        case 'campaign-tracker':
-            initCampaignTracker();
-            break;
-        case 'gameplay':
-            loadRulesPage();
-            break;
-    }
+  // Initialize page-specific content
+  switch (pageId) {
+    case "factions":
+      loadFactions();
+      break;
+    case "commanders":
+      loadCommanders();
+      break;
+    case "units":
+      loadUnits();
+      break;
+    case "fragments":
+      loadFragments();
+      break;
+    case "army-builder":
+      initArmyBuilder();
+      break;
+    case "campaign-tracker":
+      initCampaignTracker();
+      break;
+    case "gameplay":
+      loadRulesPage();
+      break;
+  }
 }
 
 // ==========================================
@@ -313,25 +318,30 @@ function showPage(pageId) {
 // ==========================================
 
 function loadRulesPage() {
-    showRulesSection('all', null);
+  showRulesSection("all", null);
 }
 
 function showRulesSection(section, btn) {
-    if (btn) {
-        document.querySelectorAll('#rules-nav .filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-    const el = document.getElementById('rules-content');
-    if (!el) return;
-    const r = gameData.rules;
-    if (!r) { el.innerHTML = '<div class="card"><p>No rules data found.</p></div>'; return; }
-    
-    let html = '';
-    const showAll = section === 'all';
-    
-    // STAT REFERENCE
-    if (showAll || section === 'stats') {
-        html += `<div class="card">
+  if (btn) {
+    document
+      .querySelectorAll("#rules-nav .filter-btn")
+      .forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+  }
+  const el = document.getElementById("rules-content");
+  if (!el) return;
+  const r = gameData.rules;
+  if (!r) {
+    el.innerHTML = '<div class="card"><p>No rules data found.</p></div>';
+    return;
+  }
+
+  let html = "";
+  const showAll = section === "all";
+
+  // STAT REFERENCE
+  if (showAll || section === "stats") {
+    html += `<div class="card">
             <h3>📊 Unit Stat Reference</h3>
             <table style="width:100%; border-collapse: collapse; margin: 1rem 0;">
                 <tr style="border-bottom: 2px solid #e94560;">
@@ -339,33 +349,41 @@ function showRulesSection(section, btn) {
                     <th style="text-align:left; padding: 8px; color: #e94560;">Meaning</th>
                     <th style="text-align:left; padding: 8px; color: #e94560;">How It Works</th>
                 </tr>
-                ${Object.entries(r.stat_definitions).map(([key, val]) => `
+                ${Object.entries(r.stat_definitions)
+                  .map(
+                    ([key, val]) => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <td style="padding: 8px; font-weight: bold; color: #e94560;">${key.toUpperCase()}</td>
                     <td style="padding: 8px;">${val.name || key}</td>
                     <td style="padding: 8px; color: #ccc;">${val.description}</td>
-                </tr>`).join('')}
+                </tr>`,
+                  )
+                  .join("")}
             </table>
         </div>`;
-    }
-    
-    // ARMY BUILDING
-    if (showAll || section === 'army') {
-        const ab = r.army_building;
-        html += `<div class="card">
+  }
+
+  // ARMY BUILDING
+  if (showAll || section === "army") {
+    const ab = r.army_building;
+    html += `<div class="card">
             <h3>🏗️ Army Building</h3>
             <h4>Battle Sizes</h4>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0;">
-                ${Object.entries(ab.battle_sizes).map(([key, val]) => `
+                ${Object.entries(ab.battle_sizes)
+                  .map(
+                    ([key, val]) => `
                 <div style="background: rgba(233,69,96,0.08); border: 1px solid rgba(233,69,96,0.2); border-radius: 8px; padding: 1rem; text-align: center;">
                     <div style="font-size: 0.8rem; color: #aaa; text-transform: uppercase;">${key}</div>
                     <div style="font-size: 1.8rem; font-weight: bold; color: #e94560;">${val.points} pts</div>
                     <div style="font-size: 0.85rem; color: #ccc;">${val.min_units}–${val.max_units} units</div>
                     <div style="font-size: 0.85rem; color: #ccc;">Max ${val.max_war_machines} War Machines</div>
-                </div>`).join('')}
+                </div>`,
+                  )
+                  .join("")}
             </div>
             <h4>Composition Rules</h4>
-            <ul>${ab.composition_rules.map(rule => `<li>${rule}</li>`).join('')}</ul>
+            <ul>${ab.composition_rules.map((rule) => `<li>${rule}</li>`).join("")}</ul>
             <h4>Deck Building</h4>
             <ul>
                 <li><strong>Pool Size:</strong> ~${ab.deck_rules.pool_size} cards available per commander</li>
@@ -375,33 +393,41 @@ function showRulesSection(section, btn) {
                 <li>${ab.deck_rules.discard_rule}</li>
             </ul>
         </div>`;
-    }
-    
-    // TURN STRUCTURE
-    if (showAll || section === 'turn') {
-        html += `<div class="card">
+  }
+
+  // TURN STRUCTURE
+  if (showAll || section === "turn") {
+    html += `<div class="card">
             <h3>🔄 Turn Structure</h3>
             <div style="display: flex; flex-direction: column; gap: 1rem; margin: 1rem 0;">
-                ${r.turn_structure.phases.map((phase, i) => `
+                ${r.turn_structure.phases
+                  .map(
+                    (phase, i) => `
                 <div style="background: rgba(233,69,96,0.05); border-left: 4px solid #e94560; padding: 1rem; border-radius: 0 8px 8px 0;">
-                    <h4 style="margin: 0 0 0.5rem 0; color: #e94560;">Phase ${i+1}: ${phase.name}</h4>
+                    <h4 style="margin: 0 0 0.5rem 0; color: #e94560;">Phase ${i + 1}: ${phase.name}</h4>
                     <p style="margin: 0 0 0.5rem 0; color: #ccc;">${phase.description}</p>
-                    <ul style="margin: 0;">${phase.actions.map(a => `<li>${a}</li>`).join('')}</ul>
-                </div>`).join('')}
+                    <ul style="margin: 0;">${phase.actions.map((a) => `<li>${a}</li>`).join("")}</ul>
+                </div>`,
+                  )
+                  .join("")}
             </div>
         </div>`;
-    }
-    
-    // COMBAT RESOLUTION
-    if (showAll || section === 'combat') {
-        const cr = r.combat_resolution;
-        html += `<div class="card">
+  }
+
+  // COMBAT RESOLUTION
+  if (showAll || section === "combat") {
+    const cr = r.combat_resolution;
+    html += `<div class="card">
             <h3>⚔️ Combat Resolution</h3>
             <ol style="padding-left: 1.5rem;">
-                ${cr.steps.map(step => `
+                ${cr.steps
+                  .map(
+                    (step) => `
                 <li style="margin-bottom: 1rem;">
                     <strong style="color: #e94560;">${step.name}:</strong> ${step.description}
-                </li>`).join('')}
+                </li>`,
+                  )
+                  .join("")}
             </ol>
             <h4>Combat Modifiers</h4>
             <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
@@ -409,41 +435,49 @@ function showRulesSection(section, btn) {
                     <th style="text-align:left; padding: 6px; color: #e94560;">Modifier</th>
                     <th style="text-align:left; padding: 6px; color: #e94560;">Effect</th>
                 </tr>
-                ${cr.modifiers.map(m => `
+                ${cr.modifiers
+                  .map(
+                    (m) => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <td style="padding: 6px; font-weight: bold;">${m.name}</td>
                     <td style="padding: 6px; color: #ccc;">${m.effect}</td>
-                </tr>`).join('')}
+                </tr>`,
+                  )
+                  .join("")}
             </table>
         </div>`;
-    }
-    
-    // CARDS & DECKS
-    if (showAll || section === 'cards') {
-        const cards = r.card_rules;
-        html += `<div class="card">
+  }
+
+  // CARDS & DECKS
+  if (showAll || section === "cards") {
+    const cards = r.card_rules;
+    html += `<div class="card">
             <h3>🃏 Commander Cards & Deck Building</h3>
             <p><strong>Only commanders can play cards.</strong> Cards are the commander's strategic influence over the battlefield — representing orders, inventions, rituals, and tactical genius.</p>
             <h4>Card Types</h4>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0;">
-                ${cards.card_types.map(ct => `
+                ${cards.card_types
+                  .map(
+                    (ct) => `
                 <div style="background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2); border-radius: 8px; padding: 1rem;">
                     <h4 style="margin: 0 0 0.5rem 0; color: #a78bfa;">${ct.type}</h4>
                     <p style="margin: 0; color: #ccc; font-size: 0.9rem;">${ct.description}</p>
-                </div>`).join('')}
+                </div>`,
+                  )
+                  .join("")}
             </div>
             <h4>Timing Rules</h4>
-            <ul>${cards.timing.map(t => `<li>${t}</li>`).join('')}</ul>
+            <ul>${cards.timing.map((t) => `<li>${t}</li>`).join("")}</ul>
             <h4>Command Points (CP)</h4>
             <p>Each turn, your commander generates CP equal to their <strong>Command</strong> stat. Spend CP to play cards. Unspent CP does NOT carry over.</p>
         </div>`;
-    }
-    
-    // FACTION MECHANICS
-    if (showAll || section === 'factionmech') {
-        const fm = r.faction_mechanics;
-        // Iron Dominion
-        html += `<div class="card">
+  }
+
+  // FACTION MECHANICS
+  if (showAll || section === "factionmech") {
+    const fm = r.faction_mechanics;
+    // Iron Dominion
+    html += `<div class="card">
             <h3>⚙️ Iron Dominion — Grid Cohesion & Fragments</h3>
             <p>${fm.iron_dominion.grid_cohesion.description}</p>
             <h4>Grid Tiers</h4>
@@ -453,20 +487,24 @@ function showRulesSection(section, btn) {
                     <th style="text-align:left; padding: 6px; color: #e94560;">Units Needed</th>
                     <th style="text-align:left; padding: 6px; color: #e94560;">Bonus</th>
                 </tr>
-                ${fm.iron_dominion.grid_cohesion.tiers.map(t => `
+                ${fm.iron_dominion.grid_cohesion.tiers
+                  .map(
+                    (t) => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <td style="padding: 6px; font-weight: bold;">${t.name}</td>
                     <td style="padding: 6px;">${t.units_within_3_inches}+ within 3"</td>
                     <td style="padding: 6px; color: #ccc;">${t.bonus}</td>
-                </tr>`).join('')}
+                </tr>`,
+                  )
+                  .join("")}
             </table>
             <h4>Fragment Charges</h4>
             <p>${fm.iron_dominion.fragment_charges.description}</p>
-            <ul>${fm.iron_dominion.fragment_charges.instability.map(i => `<li>${i}</li>`).join('')}</ul>
+            <ul>${fm.iron_dominion.fragment_charges.instability.map((i) => `<li>${i}</li>`).join("")}</ul>
         </div>`;
-        
-        // Veilbound Shogunate
-        html += `<div class="card">
+
+    // Veilbound Shogunate
+    html += `<div class="card">
             <h3>🌙 Veilbound Shogunate — Ritual Flow & Stance System</h3>
             <p>${fm.veilbound_shogunate.ritual_flow.description}</p>
             <h4>Flow Thresholds</h4>
@@ -476,50 +514,66 @@ function showRulesSection(section, btn) {
                     <th style="text-align:left; padding: 6px; color: #a78bfa;">Flow Required</th>
                     <th style="text-align:left; padding: 6px; color: #a78bfa;">Effect</th>
                 </tr>
-                ${fm.veilbound_shogunate.ritual_flow.thresholds.map(t => `
+                ${fm.veilbound_shogunate.ritual_flow.thresholds
+                  .map(
+                    (t) => `
                 <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
                     <td style="padding: 6px; font-weight: bold;">${t.name}</td>
                     <td style="padding: 6px;">${t.flow_required}+</td>
                     <td style="padding: 6px; color: #ccc;">${t.effect}</td>
-                </tr>`).join('')}
+                </tr>`,
+                  )
+                  .join("")}
             </table>
             <h4>Stance System</h4>
             <p>${fm.veilbound_shogunate.stance_system.description}</p>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0;">
-                ${fm.veilbound_shogunate.stance_system.stances.map(s => `
+                ${fm.veilbound_shogunate.stance_system.stances
+                  .map(
+                    (s) => `
                 <div style="background: rgba(167,139,250,0.08); border: 1px solid rgba(167,139,250,0.2); border-radius: 8px; padding: 1rem;">
                     <h4 style="margin: 0 0 0.5rem 0; color: #a78bfa;">${s.name}</h4>
                     <p style="margin: 0; color: #ccc; font-size: 0.9rem;">${s.effect}</p>
-                </div>`).join('')}
+                </div>`,
+                  )
+                  .join("")}
             </div>
         </div>`;
-    }
-    
-    // VICTORY CONDITIONS
-    if (showAll || section === 'victory') {
-        html += `<div class="card">
+  }
+
+  // VICTORY CONDITIONS
+  if (showAll || section === "victory") {
+    html += `<div class="card">
             <h3>🏆 Victory Conditions</h3>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin: 1rem 0;">
-                ${r.victory_conditions.modes.map(m => `
+                ${r.victory_conditions.modes
+                  .map(
+                    (m) => `
                 <div style="background: rgba(233,69,96,0.05); border: 1px solid rgba(233,69,96,0.15); border-radius: 8px; padding: 1rem;">
                     <h4 style="margin: 0 0 0.5rem 0; color: #e94560;">${m.name}</h4>
                     <p style="margin: 0; color: #ccc; font-size: 0.9rem;">${m.description}</p>
-                </div>`).join('')}
+                </div>`,
+                  )
+                  .join("")}
             </div>
         </div>`;
-        
-        html += `<div class="card">
+
+    html += `<div class="card">
             <h3>🏔️ Terrain Types</h3>
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 1rem 0;">
-                ${r.terrain_rules.types.map(t => `
+                ${r.terrain_rules.types
+                  .map(
+                    (t) => `
                 <div style="padding: 0.75rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
                     <strong style="color: #e94560;">${t.name}:</strong> <span style="color: #ccc;">${t.effect}</span>
-                </div>`).join('')}
+                </div>`,
+                  )
+                  .join("")}
             </div>
         </div>`;
-    }
-    
-    el.innerHTML = html;
+  }
+
+  el.innerHTML = html;
 }
 
 // ==========================================
@@ -527,41 +581,44 @@ function showRulesSection(section, btn) {
 // ==========================================
 
 function search() {
-    const query = document.getElementById('searchInput').value.toLowerCase();
-    const allContent = [
-        ...gameData.factions,
-        ...gameData.commanders,
-        ...gameData.units,
-        ...gameData.fragments
-    ];
+  const query = document.getElementById("searchInput").value.toLowerCase();
+  const allContent = [
+    ...gameData.factions,
+    ...gameData.commanders,
+    ...gameData.units,
+    ...gameData.fragments,
+  ];
 
-    const results = allContent.filter(item => 
-        item.name.toLowerCase().includes(query) ||
-        (item.theme && item.theme.toLowerCase().includes(query)) ||
-        (item.description && item.description.toLowerCase().includes(query)) ||
-        (item.playstyle && item.playstyle.toLowerCase().includes(query)) ||
-        (item.role && item.role.toLowerCase().includes(query))
-    );
+  const results = allContent.filter(
+    (item) =>
+      item.name.toLowerCase().includes(query) ||
+      (item.theme && item.theme.toLowerCase().includes(query)) ||
+      (item.description && item.description.toLowerCase().includes(query)) ||
+      (item.playstyle && item.playstyle.toLowerCase().includes(query)) ||
+      (item.role && item.role.toLowerCase().includes(query)),
+  );
 
-    const contentEl = document.getElementById('content');
-    contentEl.innerHTML = '<h2>Search Results</h2>';
-    
-    if (results.length > 0) {
-        results.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'card';
-            let content = `<h3>${item.name}</h3>`;
-            if(item.type) content += `<p><strong>Type:</strong> ${item.type}</p>`;
-            if(item.theme) content += `<p><strong>Theme:</strong> ${item.theme}</p>`;
-            if(item.playstyle) content += `<p><strong>Playstyle:</strong> ${item.playstyle}</p>`;
-            if(item.description) content += `<p>${item.description}</p>`;
-            if(item.effects) content += `<p><strong>Effects:</strong> ${item.effects}</p>`;
-            card.innerHTML = content;
-            contentEl.appendChild(card);
-        });
-    } else {
-        contentEl.innerHTML += '<p>No results found.</p>';
-    }
+  const contentEl = document.getElementById("content");
+  contentEl.innerHTML = "<h2>Search Results</h2>";
+
+  if (results.length > 0) {
+    results.forEach((item) => {
+      const card = document.createElement("div");
+      card.className = "card";
+      let content = `<h3>${item.name}</h3>`;
+      if (item.type) content += `<p><strong>Type:</strong> ${item.type}</p>`;
+      if (item.theme) content += `<p><strong>Theme:</strong> ${item.theme}</p>`;
+      if (item.playstyle)
+        content += `<p><strong>Playstyle:</strong> ${item.playstyle}</p>`;
+      if (item.description) content += `<p>${item.description}</p>`;
+      if (item.effects)
+        content += `<p><strong>Effects:</strong> ${item.effects}</p>`;
+      card.innerHTML = content;
+      contentEl.appendChild(card);
+    });
+  } else {
+    contentEl.innerHTML += "<p>No results found.</p>";
+  }
 }
 
 // ==========================================
@@ -569,37 +626,44 @@ function search() {
 // ==========================================
 
 function loadFactions() {
-    const contentEl = document.getElementById('faction-list');
-    if (!contentEl) return;
+  const contentEl = document.getElementById("faction-list");
+  if (!contentEl) return;
 
-    const factionIcons = {
-        'iron-dominion': '⚙️',
-        'veilbound-shogunate': '⛩️'
+  const factionIcons = {
+    "iron-dominion": "⚙️",
+    "veilbound-shogunate": "⛩️",
+  };
+  const factionColors = {
+    "iron-dominion": "#e94560",
+    "veilbound-shogunate": "#8b5cf6",
+  };
+
+  contentEl.innerHTML =
+    '<div class="faction-overview-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;"></div>';
+  const grid = contentEl.querySelector(".faction-overview-grid");
+
+  gameData.factions.forEach((faction) => {
+    const commanders = getCommandersByFaction(faction.id);
+    const units = getUnitsByFaction(faction.id);
+    const warMachines = units.filter((u) => u.type === "War Machine");
+    const standardUnits = units.filter((u) => u.type !== "War Machine");
+    const icon = factionIcons[faction.id] || "⚔️";
+    const color = factionColors[faction.id] || "#e94560";
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.style.cssText = `border-top: 4px solid ${color}; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;`;
+    card.onmouseenter = () => {
+      card.style.transform = "translateY(-4px)";
+      card.style.boxShadow = "0 8px 24px rgba(0,0,0,0.4)";
     };
-    const factionColors = {
-        'iron-dominion': '#e94560',
-        'veilbound-shogunate': '#8b5cf6'
+    card.onmouseleave = () => {
+      card.style.transform = "";
+      card.style.boxShadow = "";
     };
+    card.onclick = () => showFactionDetail(faction.id);
 
-    contentEl.innerHTML = '<div class="faction-overview-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;"></div>';
-    const grid = contentEl.querySelector('.faction-overview-grid');
-
-    gameData.factions.forEach(faction => {
-        const commanders = getCommandersByFaction(faction.id);
-        const units = getUnitsByFaction(faction.id);
-        const warMachines = units.filter(u => u.type === 'War Machine');
-        const standardUnits = units.filter(u => u.type !== 'War Machine');
-        const icon = factionIcons[faction.id] || '⚔️';
-        const color = factionColors[faction.id] || '#e94560';
-
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.style.cssText = `border-top: 4px solid ${color}; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;`;
-        card.onmouseenter = () => { card.style.transform = 'translateY(-4px)'; card.style.boxShadow = '0 8px 24px rgba(0,0,0,0.4)'; };
-        card.onmouseleave = () => { card.style.transform = ''; card.style.boxShadow = ''; };
-        card.onclick = () => showFactionDetail(faction.id);
-
-        card.innerHTML = `
+    card.innerHTML = `
             <div style="text-align: center; margin-bottom: 1rem;">
                 <div style="font-size: 3rem;">${icon}</div>
                 <h3 style="color: ${color}; margin: 0.5rem 0;">${faction.name}</h3>
@@ -628,8 +692,8 @@ function loadFactions() {
                 <span class="btn" style="display: inline-block; font-size: 0.9rem;">Explore ${faction.name} →</span>
             </div>
         `;
-        grid.appendChild(card);
-    });
+    grid.appendChild(card);
+  });
 }
 
 // ==========================================
@@ -637,20 +701,27 @@ function loadFactions() {
 // ==========================================
 
 function showFactionDetail(factionId) {
-    const faction = getFactionById(factionId);
-    if (!faction) return;
+  const faction = getFactionById(factionId);
+  if (!faction) return;
 
-    const factionCommanders = getCommandersByFaction(faction.id);
-    const factionUnits = getUnitsByFaction(faction.id).filter(u => u.type !== 'War Machine');
-    const factionWarMachines = getUnitsByFaction(faction.id).filter(u => u.type === 'War Machine');
+  const factionCommanders = getCommandersByFaction(faction.id);
+  const factionUnits = getUnitsByFaction(faction.id).filter(
+    (u) => u.type !== "War Machine",
+  );
+  const factionWarMachines = getUnitsByFaction(faction.id).filter(
+    (u) => u.type === "War Machine",
+  );
 
-    const factionIcons = { 'iron-dominion': '⚙️', 'veilbound-shogunate': '⛩️' };
-    const factionColors = { 'iron-dominion': '#e94560', 'veilbound-shogunate': '#8b5cf6' };
-    const icon = factionIcons[faction.id] || '⚔️';
-    const color = factionColors[faction.id] || '#e94560';
+  const factionIcons = { "iron-dominion": "⚙️", "veilbound-shogunate": "⛩️" };
+  const factionColors = {
+    "iron-dominion": "#e94560",
+    "veilbound-shogunate": "#8b5cf6",
+  };
+  const icon = factionIcons[faction.id] || "⚔️";
+  const color = factionColors[faction.id] || "#e94560";
 
-    const contentEl = document.getElementById('content');
-    contentEl.innerHTML = `
+  const contentEl = document.getElementById("content");
+  contentEl.innerHTML = `
         <div style="margin-bottom: 1rem;">
             <button class="btn btn-secondary" onclick="showPage('factions')" style="font-size: 0.85rem;">← All Factions</button>
         </div>
@@ -664,7 +735,7 @@ function showFactionDetail(factionId) {
                 </div>
             </div>
             <p>${faction.flavor_text}</p>
-            ${faction.motif_description ? `<p style="font-style: italic; opacity: 0.85;">${faction.motif_description}</p>` : ''}
+            ${faction.motif_description ? `<p style="font-style: italic; opacity: 0.85;">${faction.motif_description}</p>` : ""}
             <p><strong>Core Philosophy:</strong> ${faction.core_philosophy}</p>
         </div>
 
@@ -690,51 +761,79 @@ function showFactionDetail(factionId) {
 
         <!-- Faction Bonuses & Playstyle -->
         <div class="card">
-            ${faction.faction_bonuses ? `
+            ${
+              faction.faction_bonuses
+                ? `
             <h3 style="color: ${color};">Faction Bonuses</h3>
             <ul>
-                ${faction.faction_bonuses.map(b => `<li>${b}</li>`).join('')}
+                ${faction.faction_bonuses.map((b) => `<li>${b}</li>`).join("")}
             </ul>
-            ` : ''}
-            ${faction.playstyle_notes ? `<p><strong>Playstyle Notes:</strong> ${faction.playstyle_notes}</p>` : ''}
+            `
+                : ""
+            }
+            ${faction.playstyle_notes ? `<p><strong>Playstyle Notes:</strong> ${faction.playstyle_notes}</p>` : ""}
         </div>
 
         <!-- Worldview & Philosophy -->
-        ${faction.worldview || faction.eldritch_relationship || faction.political_structure ? `
+        ${
+          faction.worldview ||
+          faction.eldritch_relationship ||
+          faction.political_structure
+            ? `
         <div class="card">
-            ${faction.worldview ? `
+            ${
+              faction.worldview
+                ? `
             <h3 style="color: ${color};">Worldview</h3>
             <ul>
-                ${faction.worldview.map(w => `<li>${w}</li>`).join('')}
+                ${faction.worldview.map((w) => `<li>${w}</li>`).join("")}
             </ul>
-            ` : ''}
-            ${faction.eldritch_relationship ? `
+            `
+                : ""
+            }
+            ${
+              faction.eldritch_relationship
+                ? `
             <h4>Relationship to Eldritch Forces</h4>
             <p>${faction.eldritch_relationship}</p>
-            ` : ''}
-            ${faction.political_structure ? `
+            `
+                : ""
+            }
+            ${
+              faction.political_structure
+                ? `
             <h4>Political Structure</h4>
             <p>${faction.political_structure}</p>
-            ` : ''}
+            `
+                : ""
+            }
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Three Veils -->
-        ${faction.three_veils ? `
+        ${
+          faction.three_veils
+            ? `
         <div class="card" style="border-left: 3px solid #8b5cf6;">
             <h3 style="color: #a78bfa;">⛩️ The Three Veils Doctrine</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.three_veils.overview}</p>
-            ${faction.three_veils.veils.map((v, i) => `
+            ${faction.three_veils.veils
+              .map(
+                (v, i) => `
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
-                <h5 style="color: #c4b5fd;">${['1️⃣','2️⃣','3️⃣'][i]} ${v.name}</h5>
+                <h5 style="color: #c4b5fd;">${["1️⃣", "2️⃣", "3️⃣"][i]} ${v.name}</h5>
                 <p><strong>Concept:</strong> <em>${v.concept}</em></p>
                 <p><strong>Implications for Soldiers:</strong></p>
-                <ul>${v.implications.map(im => `<li>${im}</li>`).join('')}</ul>
+                <ul>${v.implications.map((im) => `<li>${im}</li>`).join("")}</ul>
                 <p><strong>Battlefield Mechanics:</strong></p>
-                <ul>${v.mechanics.map(m => `<li>${m}</li>`).join('')}</ul>
+                <ul>${v.mechanics.map((m) => `<li>${m}</li>`).join("")}</ul>
                 <p><strong>Visual Symbol:</strong> ${v.symbol}</p>
             </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
             <div style="margin-top: 1rem;">
                 <h5 style="color: #c4b5fd;">Doctrine in Practice</h5>
                 <ul>
@@ -744,27 +843,35 @@ function showFactionDetail(factionId) {
                 </ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.three_veils.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.three_veils.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Iron Doctrine -->
-        ${faction.iron_doctrine ? `
+        ${
+          faction.iron_doctrine
+            ? `
         <div class="card" style="border-left: 3px solid #e94560;">
             <h3 style="color: #e94560;">⚙️ The Iron Doctrine</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.iron_doctrine.overview}</p>
-            ${faction.iron_doctrine.pillars.map((p, i) => `
+            ${faction.iron_doctrine.pillars
+              .map(
+                (p, i) => `
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
-                <h5 style="color: #f87171;">${['1️⃣','2️⃣','3️⃣'][i]} ${p.name}</h5>
+                <h5 style="color: #f87171;">${["1️⃣", "2️⃣", "3️⃣"][i]} ${p.name}</h5>
                 <p><strong>Concept:</strong> <em>${p.concept}</em></p>
                 <p><strong>Implications:</strong></p>
-                <ul>${p.implications.map(im => `<li>${im}</li>`).join('')}</ul>
+                <ul>${p.implications.map((im) => `<li>${im}</li>`).join("")}</ul>
                 <p><strong>Battlefield Mechanics:</strong></p>
-                <ul>${p.mechanics.map(m => `<li>${m}</li>`).join('')}</ul>
+                <ul>${p.mechanics.map((m) => `<li>${m}</li>`).join("")}</ul>
                 <p><strong>Symbol:</strong> ${p.symbol}</p>
             </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
             <div style="margin-top: 1rem;">
                 <h5 style="color: #f87171;">Doctrine in Practice</h5>
                 <ul>
@@ -774,26 +881,34 @@ function showFactionDetail(factionId) {
                 </ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.iron_doctrine.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.iron_doctrine.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Hierarchy -->
-        ${faction.hierarchy ? `
+        ${
+          faction.hierarchy
+            ? `
         <div class="card" style="border-left: 3px solid #dc2626;">
             <h3 style="color: #f87171;">🏯 Faction Hierarchy & Titles</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.hierarchy.overview}</p>
-            ${faction.hierarchy.ranks.map(r => `
+            ${faction.hierarchy.ranks
+              .map(
+                (r) => `
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #fca5a5;">${r.title}</h5>
                 <p><strong>Role:</strong> ${r.role}</p>
                 <p><strong>Responsibilities:</strong></p>
-                <ul>${r.responsibilities.map(x => `<li>${x}</li>`).join('')}</ul>
+                <ul>${r.responsibilities.map((x) => `<li>${x}</li>`).join("")}</ul>
                 <p><strong>Characteristics:</strong></p>
-                <ul>${r.characteristics.map(x => `<li>${x}</li>`).join('')}</ul>
+                <ul>${r.characteristics.map((x) => `<li>${x}</li>`).join("")}</ul>
             </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
             <div style="margin-top: 1.25rem;">
                 <h5 style="color: #fca5a5;">Titles & Honorifics</h5>
                 <table style="width: 100%; border-collapse: collapse; margin-top: 0.5rem; font-size: 0.9rem;">
@@ -803,312 +918,394 @@ function showFactionDetail(factionId) {
                         <th style="text-align: left; padding: 0.4rem;">Notes</th>
                     </tr></thead>
                     <tbody>
-                        ${faction.hierarchy.titles_table.map(t => `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                        ${faction.hierarchy.titles_table
+                          .map(
+                            (
+                              t,
+                            ) => `<tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                             <td style="padding: 0.4rem; font-weight: bold;">${t.title}</td>
                             <td style="padding: 0.4rem;">${t.significance}</td>
                             <td style="padding: 0.4rem; font-style: italic;">${t.notes}</td>
-                        </tr>`).join('')}
+                        </tr>`,
+                          )
+                          .join("")}
                     </tbody>
                 </table>
             </div>
             <div style="margin-top: 1rem;">
                 <h5 style="color: #fca5a5;">Hierarchy Notes</h5>
-                <ul>${faction.hierarchy.hierarchy_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.hierarchy.hierarchy_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.hierarchy.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.hierarchy.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Shrouded Shogun -->
-        ${faction.shrouded_shogun ? `
+        ${
+          faction.shrouded_shogun
+            ? `
         <div class="card" style="border-left: 3px solid #e2e8f0;">
             <h3 style="color: #e2e8f0;">\u2694\ufe0f ${faction.shrouded_shogun.title}</h3>
             <p><strong>Role:</strong> ${faction.shrouded_shogun.role} &mdash; <em>${faction.shrouded_shogun.faction_rank}</em></p>
-            <p><strong>Known As:</strong> ${faction.shrouded_shogun.aliases.map(a => `<em>&ldquo;${a}&rdquo;</em>`).join(', ')}</p>
+            <p><strong>Known As:</strong> ${faction.shrouded_shogun.aliases.map((a) => `<em>&ldquo;${a}&rdquo;</em>`).join(", ")}</p>
             <p style="font-style: italic; opacity: 0.85; margin-top: 0.5rem;">${faction.shrouded_shogun.summary}</p>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Appearance</h5>
-                <ul>${faction.shrouded_shogun.appearance.map(a => `<li>${a}</li>`).join('')}</ul>
+                <ul>${faction.shrouded_shogun.appearance.map((a) => `<li>${a}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Personality & Command Style</h5>
-                <ul>${faction.shrouded_shogun.personality.map(p => `<li><strong>${p.trait}:</strong> ${p.description}</li>`).join('')}</ul>
+                <ul>${faction.shrouded_shogun.personality.map((p) => `<li><strong>${p.trait}:</strong> ${p.description}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Abilities & Powers</h5>
-                ${faction.shrouded_shogun.abilities.map(ab => `
+                ${faction.shrouded_shogun.abilities
+                  .map(
+                    (ab) => `
                 <div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 4px;">
                     <strong style="color: #f1f5f9;">${ab.name}</strong>
                     <p style="margin: 0.25rem 0 0 0; opacity: 0.9;">${ab.description}</p>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Role in the Faction</h5>
-                <ul>${faction.shrouded_shogun.faction_role.map(r => `<li><strong>${r.area}:</strong> ${r.detail}</li>`).join('')}</ul>
+                <ul>${faction.shrouded_shogun.faction_role.map((r) => `<li><strong>${r.area}:</strong> ${r.detail}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Lore Notes</h5>
-                <ul>${faction.shrouded_shogun.lore_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.shrouded_shogun.lore_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.shrouded_shogun.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.shrouded_shogun.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Arch-Fabricator -->
-        ${faction.arch_fabricator ? `
+        ${
+          faction.arch_fabricator
+            ? `
         <div class="card" style="border-left: 3px solid #e2e8f0;">
             <h3 style="color: #e2e8f0;">⚙️ ${faction.arch_fabricator.title}</h3>
             <p><strong>Role:</strong> ${faction.arch_fabricator.role} &mdash; <em>${faction.arch_fabricator.faction_rank}</em></p>
-            <p><strong>Known As:</strong> ${faction.arch_fabricator.aliases.map(a => `<em>&ldquo;${a}&rdquo;</em>`).join(', ')}</p>
+            <p><strong>Known As:</strong> ${faction.arch_fabricator.aliases.map((a) => `<em>&ldquo;${a}&rdquo;</em>`).join(", ")}</p>
             <p style="font-style: italic; opacity: 0.85; margin-top: 0.5rem;">${faction.arch_fabricator.summary}</p>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Appearance</h5>
-                <ul>${faction.arch_fabricator.appearance.map(a => `<li>${a}</li>`).join('')}</ul>
+                <ul>${faction.arch_fabricator.appearance.map((a) => `<li>${a}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Personality & Command Style</h5>
-                <ul>${faction.arch_fabricator.personality.map(p => `<li><strong>${p.trait}:</strong> ${p.description}</li>`).join('')}</ul>
+                <ul>${faction.arch_fabricator.personality.map((p) => `<li><strong>${p.trait}:</strong> ${p.description}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Abilities & Powers</h5>
-                ${faction.arch_fabricator.abilities.map(ab => `
+                ${faction.arch_fabricator.abilities
+                  .map(
+                    (ab) => `
                 <div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 4px;">
                     <strong style="color: #f1f5f9;">${ab.name}</strong>
                     <p style="margin: 0.25rem 0 0 0; opacity: 0.9;">${ab.description}</p>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Role in the Faction</h5>
-                <ul>${faction.arch_fabricator.faction_role.map(r => `<li><strong>${r.area}:</strong> ${r.detail}</li>`).join('')}</ul>
+                <ul>${faction.arch_fabricator.faction_role.map((r) => `<li><strong>${r.area}:</strong> ${r.detail}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #cbd5e1;">Lore Notes</h5>
-                <ul>${faction.arch_fabricator.lore_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.arch_fabricator.lore_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.arch_fabricator.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.arch_fabricator.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Transformation Stages -->
-        ${faction.transformation_stages ? `
+        ${
+          faction.transformation_stages
+            ? `
         <div class="card" style="border-left: 3px solid #10b981;">
             <h3 style="color: #6ee7b7;">\ud83d\udd04 Transformation Stages</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.transformation_stages.overview}</p>
-            ${faction.transformation_stages.stages.map(s => `
+            ${faction.transformation_stages.stages
+              .map(
+                (s) => `
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #a7f3d0;">Stage ${s.stage_number} \u2014 ${s.name}</h5>
                 <p style="opacity: 0.9;">${s.overview}</p>
                 <p><strong>Physical Characteristics:</strong></p>
-                <ul>${s.physical.map(p => `<li>${p}</li>`).join('')}</ul>
+                <ul>${s.physical.map((p) => `<li>${p}</li>`).join("")}</ul>
                 <p><strong>Abilities & Mechanics:</strong></p>
-                <ul>${s.abilities.map(a => `<li>${a}</li>`).join('')}</ul>
+                <ul>${s.abilities.map((a) => `<li>${a}</li>`).join("")}</ul>
                 <p><strong>Behavior & Tactics:</strong></p>
-                <ul>${s.behavior.map(b => `<li>${b}</li>`).join('')}</ul>
+                <ul>${s.behavior.map((b) => `<li>${b}</li>`).join("")}</ul>
             </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #a7f3d0;">Progression Notes</h5>
-                <ul>${faction.transformation_stages.progression_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.transformation_stages.progression_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.transformation_stages.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.transformation_stages.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Augmentation Tiers -->
-        ${faction.augmentation_tiers ? `
+        ${
+          faction.augmentation_tiers
+            ? `
         <div class="card" style="border-left: 3px solid #10b981;">
             <h3 style="color: #6ee7b7;">🔧 Augmentation Tiers</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.augmentation_tiers.overview}</p>
-            ${faction.augmentation_tiers.stages.map(s => `
+            ${faction.augmentation_tiers.stages
+              .map(
+                (s) => `
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #a7f3d0;">Tier ${s.stage_number} — ${s.name}</h5>
                 <p style="opacity: 0.9;">${s.overview}</p>
                 <p><strong>Physical Characteristics:</strong></p>
-                <ul>${s.physical.map(p => `<li>${p}</li>`).join('')}</ul>
+                <ul>${s.physical.map((p) => `<li>${p}</li>`).join("")}</ul>
                 <p><strong>Abilities & Mechanics:</strong></p>
-                <ul>${s.abilities.map(a => `<li>${a}</li>`).join('')}</ul>
+                <ul>${s.abilities.map((a) => `<li>${a}</li>`).join("")}</ul>
                 <p><strong>Behavior & Tactics:</strong></p>
-                <ul>${s.behavior.map(b => `<li>${b}</li>`).join('')}</ul>
+                <ul>${s.behavior.map((b) => `<li>${b}</li>`).join("")}</ul>
             </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #a7f3d0;">Progression Notes</h5>
-                <ul>${faction.augmentation_tiers.progression_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.augmentation_tiers.progression_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.augmentation_tiers.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.augmentation_tiers.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Military Doctrine -->
-        ${faction.military_doctrine ? `
+        ${
+          faction.military_doctrine
+            ? `
         <div class="card" style="border-left: 3px solid #f59e0b;">
             <h3 style="color: #fbbf24;">\u2694\ufe0f Military Doctrine & Battlefield Behavior</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.military_doctrine.overview}</p>
             <div style="margin-top: 1rem;">
                 <h4 style="color: #fcd34d;">Core Principles</h4>
-                ${faction.military_doctrine.core_principles.map(p => `
+                ${faction.military_doctrine.core_principles
+                  .map(
+                    (p) => `
                 <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                     <strong style="color: #fde68a;">${p.name}</strong>
-                    <ul>${p.details.map(d => `<li>${d}</li>`).join('')}</ul>
+                    <ul>${p.details.map((d) => `<li>${d}</li>`).join("")}</ul>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
             <div style="margin-top: 1.25rem;">
                 <h4 style="color: #fcd34d;">Battlefield Behavior</h4>
-                ${faction.military_doctrine.battlefield_behavior.map(b => `
+                ${faction.military_doctrine.battlefield_behavior
+                  .map(
+                    (b) => `
                 <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                     <strong style="color: #fde68a;">${b.name}</strong>
-                    <ul>${b.details.map(d => `<li>${d}</li>`).join('')}</ul>
+                    <ul>${b.details.map((d) => `<li>${d}</li>`).join("")}</ul>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #fcd34d;">Strategic Notes</h5>
-                <ul>${faction.military_doctrine.strategic_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.military_doctrine.strategic_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.military_doctrine.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.military_doctrine.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- War Machines Lore -->
-        ${faction.war_machines_lore ? `
+        ${
+          faction.war_machines_lore
+            ? `
         <div class="card" style="border-left: 3px solid #3b82f6;">
             <h3 style="color: #93c5fd;">\ud83c\udfef War Machines / Titans</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.war_machines_lore.overview}</p>
             <div style="margin-top: 1rem;">
                 <h4 style="color: #bfdbfe;">General Characteristics</h4>
-                <ul>${faction.war_machines_lore.general_characteristics.map(c => `<li><strong>${c.trait}:</strong> ${c.detail}</li>`).join('')}</ul>
+                <ul>${faction.war_machines_lore.general_characteristics.map((c) => `<li><strong>${c.trait}:</strong> ${c.detail}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem;">
                 <h4 style="color: #bfdbfe;">Tactical Role</h4>
-                <ul>${faction.war_machines_lore.tactical_role.map(r => `<li>${r}</li>`).join('')}</ul>
+                <ul>${faction.war_machines_lore.tactical_role.map((r) => `<li>${r}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.war_machines_lore.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.war_machines_lore.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Signature Weapons -->
-        ${faction.signature_weapons ? `
+        ${
+          faction.signature_weapons
+            ? `
         <div class="card" style="border-left: 3px solid #ec4899;">
             <h3 style="color: #f9a8d4;">\ud83d\udde1\ufe0f Signature Weapons</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.signature_weapons.overview}</p>
             <div style="margin-top: 1rem;">
                 <h4 style="color: #fbcfe8;">Core Weapon Traits</h4>
-                <ul>${faction.signature_weapons.core_traits.map(c => `<li><strong>${c.trait}:</strong> ${c.detail}</li>`).join('')}</ul>
+                <ul>${faction.signature_weapons.core_traits.map((c) => `<li><strong>${c.trait}:</strong> ${c.detail}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem;">
                 <h4 style="color: #fbcfe8;">Notable Weapons</h4>
-                ${faction.signature_weapons.weapons.map(w => `
+                ${faction.signature_weapons.weapons
+                  .map(
+                    (w) => `
                 <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                     <strong style="color: #fda4af;">${w.name}</strong> <span style="opacity: 0.7; font-size: 0.85rem;">\u2014 ${w.type}</span>
                     <p style="margin: 0.3rem 0 0 0;"><strong>Wielder:</strong> ${w.wielder}</p>
                     <p style="margin: 0.2rem 0 0 0;"><strong>Properties:</strong> ${w.properties}</p>
                     <p style="margin: 0.2rem 0 0 0; font-style: italic; opacity: 0.8;"><strong>Lore:</strong> ${w.lore}</p>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #fbcfe8;">Tactical Notes</h5>
-                <ul>${faction.signature_weapons.tactical_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.signature_weapons.tactical_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.signature_weapons.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.signature_weapons.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Cosmic Entity -->
-        ${faction.cosmic_entity ? `
+        ${
+          faction.cosmic_entity
+            ? `
         <div class="card" style="border-left: 3px solid #6366f1;">
             <h3 style="color: #a5b4fc;">\ud83c\udf0c The Cosmic Entity They Serve</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.cosmic_entity.overview}</p>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #c7d2fe;">Names & Titles</h5>
                 <p><strong>Primary Name:</strong> <em>${faction.cosmic_entity.primary_name}</em></p>
-                <p><strong>Ritual Aliases:</strong> ${faction.cosmic_entity.aliases.map(a => `<em>&ldquo;${a}&rdquo;</em>`).join(', ')}</p>
+                <p><strong>Ritual Aliases:</strong> ${faction.cosmic_entity.aliases.map((a) => `<em>&ldquo;${a}&rdquo;</em>`).join(", ")}</p>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #c7d2fe;">Nature & Essence</h5>
-                <ul>${faction.cosmic_entity.nature.map(n => `<li><strong>${n.trait}:</strong> ${n.detail}</li>`).join('')}</ul>
+                <ul>${faction.cosmic_entity.nature.map((n) => `<li><strong>${n.trait}:</strong> ${n.detail}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem;">
                 <h5 style="color: #c7d2fe;">Relationship with the Shogunate</h5>
-                ${faction.cosmic_entity.relationship.map(r => `
+                ${faction.cosmic_entity.relationship
+                  .map(
+                    (r) => `
                 <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                     <strong style="color: #e0e7ff;">${r.aspect}</strong>
-                    <ul>${r.details.map(d => `<li>${d}</li>`).join('')}</ul>
+                    <ul>${r.details.map((d) => `<li>${d}</li>`).join("")}</ul>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #c7d2fe;">Lore Notes</h5>
-                <ul>${faction.cosmic_entity.lore_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.cosmic_entity.lore_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #c7d2fe;">Influence on Faction Philosophy</h5>
-                <ul>${faction.cosmic_entity.influence_on_philosophy.map(p => `<li>${p}</li>`).join('')}</ul>
+                <ul>${faction.cosmic_entity.influence_on_philosophy.map((p) => `<li>${p}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.cosmic_entity.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.cosmic_entity.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Fragment Source -->
-        ${faction.fragment_source ? `
+        ${
+          faction.fragment_source
+            ? `
         <div class="card" style="border-left: 3px solid #6366f1;">
             <h3 style="color: #a5b4fc;">⚡ The Source of Fragment Power</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.fragment_source.overview}</p>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #c7d2fe;">Names & Titles</h5>
                 <p><strong>Primary Name:</strong> <em>${faction.fragment_source.primary_name}</em></p>
-                <p><strong>Aliases:</strong> ${faction.fragment_source.aliases.map(a => `<em>&ldquo;${a}&rdquo;</em>`).join(', ')}</p>
+                <p><strong>Aliases:</strong> ${faction.fragment_source.aliases.map((a) => `<em>&ldquo;${a}&rdquo;</em>`).join(", ")}</p>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #c7d2fe;">Nature & Essence</h5>
-                <ul>${faction.fragment_source.nature.map(n => `<li><strong>${n.trait}:</strong> ${n.detail}</li>`).join('')}</ul>
+                <ul>${faction.fragment_source.nature.map((n) => `<li><strong>${n.trait}:</strong> ${n.detail}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem;">
                 <h5 style="color: #c7d2fe;">Relationship with the Dominion</h5>
-                ${faction.fragment_source.relationship.map(r => `
+                ${faction.fragment_source.relationship
+                  .map(
+                    (r) => `
                 <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                     <strong style="color: #e0e7ff;">${r.aspect}</strong>
-                    <ul>${r.details.map(d => `<li>${d}</li>`).join('')}</ul>
+                    <ul>${r.details.map((d) => `<li>${d}</li>`).join("")}</ul>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #c7d2fe;">Lore Notes</h5>
-                <ul>${faction.fragment_source.lore_notes.map(n => `<li>${n}</li>`).join('')}</ul>
+                <ul>${faction.fragment_source.lore_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #c7d2fe;">Influence on Faction Philosophy</h5>
-                <ul>${faction.fragment_source.influence_on_philosophy.map(p => `<li>${p}</li>`).join('')}</ul>
+                <ul>${faction.fragment_source.influence_on_philosophy.map((p) => `<li>${p}</li>`).join("")}</ul>
             </div>
             <div style="margin-top: 0.75rem;">
-                ${faction.fragment_source.keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.fragment_source.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Historical Background -->
-        ${faction.historical_background ? `
+        ${
+          faction.historical_background
+            ? `
         <div class="card" style="border-left: 3px solid #d4a574;">
             <h3 style="color: #d4a574;">&#9776; Historical Background</h3>
             <h4>Origins</h4>
@@ -1116,123 +1313,193 @@ function showFactionDetail(factionId) {
             <h4>Rise to Power</h4>
             <p>${faction.historical_background.rise_to_power}</p>
             <h4>Major Conflicts</h4>
-            ${faction.historical_background.major_conflicts.map(c => `
+            ${faction.historical_background.major_conflicts
+              .map(
+                (c) => `
                 <div style="background: rgba(212,165,116,0.08); padding: 0.5rem 0.75rem; border-radius: 6px; margin-bottom: 0.5rem;">
                     <strong style="color: #d4a574;">${c.name}</strong>
                     <p style="margin: 0.25rem 0 0 0;">${c.description}</p>
                 </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Culture & Philosophy -->
-        ${faction.culture_philosophy ? `
+        ${
+          faction.culture_philosophy
+            ? `
         <div class="card" style="border-left: 3px solid #e0c097;">
             <h3 style="color: #e0c097;">&#9775; Culture & Philosophy</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.culture_philosophy.overview}</p>
-            ${faction.culture_philosophy.three_veils_expanded ? `
+            ${
+              faction.culture_philosophy.three_veils_expanded
+                ? `
             <h4>The Three Veils (Expanded)</h4>
-            ${faction.culture_philosophy.three_veils_expanded.map(v => `
+            ${faction.culture_philosophy.three_veils_expanded
+              .map(
+                (v) => `
                 <div style="background: rgba(224,192,151,0.08); padding: 0.5rem 0.75rem; border-radius: 6px; margin-bottom: 0.5rem;">
                     <strong style="color: #e0c097;">${v.veil}</strong>
                     <p style="margin: 0.25rem 0 0 0;">${v.focus}</p>
                 </div>
-            `).join('')}
-            ` : ''}
-            ${faction.culture_philosophy.three_pillars_expanded ? `
+            `,
+              )
+              .join("")}
+            `
+                : ""
+            }
+            ${
+              faction.culture_philosophy.three_pillars_expanded
+                ? `
             <h4>The Three Pillars (Expanded)</h4>
-            ${faction.culture_philosophy.three_pillars_expanded.map(v => `
+            ${faction.culture_philosophy.three_pillars_expanded
+              .map(
+                (v) => `
                 <div style="background: rgba(224,192,151,0.08); padding: 0.5rem 0.75rem; border-radius: 6px; margin-bottom: 0.5rem;">
                     <strong style="color: #e0c097;">${v.pillar}</strong>
                     <p style="margin: 0.25rem 0 0 0;">${v.focus}</p>
                 </div>
-            `).join('')}
-            ` : ''}
-            ${faction.culture_philosophy.ritual_practices ? `
+            `,
+              )
+              .join("")}
+            `
+                : ""
+            }
+            ${
+              faction.culture_philosophy.ritual_practices
+                ? `
             <h4>Ritual Practices</h4>
-            <ul>${faction.culture_philosophy.ritual_practices.map(r => `<li>${r}</li>`).join('')}</ul>
-            ` : ''}
-            ${faction.culture_philosophy.cultural_practices ? `
+            <ul>${faction.culture_philosophy.ritual_practices.map((r) => `<li>${r}</li>`).join("")}</ul>
+            `
+                : ""
+            }
+            ${
+              faction.culture_philosophy.cultural_practices
+                ? `
             <h4>Cultural Practices</h4>
-            <ul>${faction.culture_philosophy.cultural_practices.map(r => `<li>${r}</li>`).join('')}</ul>
-            ` : ''}
+            <ul>${faction.culture_philosophy.cultural_practices.map((r) => `<li>${r}</li>`).join("")}</ul>
+            `
+                : ""
+            }
             <h4>Symbols</h4>
-            <ul>${faction.culture_philosophy.symbols.map(s => `<li>${s}</li>`).join('')}</ul>
+            <ul>${faction.culture_philosophy.symbols.map((s) => `<li>${s}</li>`).join("")}</ul>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Military Traditions -->
-        ${faction.military_traditions ? `
+        ${
+          faction.military_traditions
+            ? `
         <div class="card" style="border-left: 3px solid #c49b6e;">
             <h3 style="color: #c49b6e;">&#9876; Military Doctrine & Traditions</h3>
             <h4>Battlefield Philosophy</h4>
-            <ul>${faction.military_traditions.battlefield_philosophy.map(p => `<li>${p}</li>`).join('')}</ul>
-            ${faction.military_traditions.ritual_warfare ? `
+            <ul>${faction.military_traditions.battlefield_philosophy.map((p) => `<li>${p}</li>`).join("")}</ul>
+            ${
+              faction.military_traditions.ritual_warfare
+                ? `
             <h4>Ritual Warfare</h4>
-            <ul>${faction.military_traditions.ritual_warfare.map(r => `<li>${r}</li>`).join('')}</ul>
-            ` : ''}
-            ${faction.military_traditions.forge_rites ? `
+            <ul>${faction.military_traditions.ritual_warfare.map((r) => `<li>${r}</li>`).join("")}</ul>
+            `
+                : ""
+            }
+            ${
+              faction.military_traditions.forge_rites
+                ? `
             <h4>Forge Rites</h4>
-            <ul>${faction.military_traditions.forge_rites.map(r => `<li>${r}</li>`).join('')}</ul>
-            ` : ''}
+            <ul>${faction.military_traditions.forge_rites.map((r) => `<li>${r}</li>`).join("")}</ul>
+            `
+                : ""
+            }
             <h4>Unit Naming Conventions</h4>
-            <ul>${faction.military_traditions.unit_naming_conventions.map(n => `<li>${n}</li>`).join('')}</ul>
+            <ul>${faction.military_traditions.unit_naming_conventions.map((n) => `<li>${n}</li>`).join("")}</ul>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Geography & Strongholds -->
-        ${faction.geography_strongholds ? `
+        ${
+          faction.geography_strongholds
+            ? `
         <div class="card" style="border-left: 3px solid #7ab89e;">
             <h3 style="color: #7ab89e;">&#9968; Geography & Strongholds</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.geography_strongholds.overview}</p>
             <h4>Sacred Sites</h4>
-            ${faction.geography_strongholds.sacred_sites.map(s => `
+            ${faction.geography_strongholds.sacred_sites
+              .map(
+                (s) => `
                 <div style="background: rgba(122,184,158,0.08); padding: 0.5rem 0.75rem; border-radius: 6px; margin-bottom: 0.5rem;">
                     <strong style="color: #7ab89e;">${s.name}</strong>
                     <p style="margin: 0.25rem 0 0 0;">${s.description}</p>
                 </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
             <h4>Battlefield Features</h4>
-            <ul>${faction.geography_strongholds.battlefield_features.map(f => `<li>${f}</li>`).join('')}</ul>
+            <ul>${faction.geography_strongholds.battlefield_features.map((f) => `<li>${f}</li>`).join("")}</ul>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Unique Phenomena -->
-        ${faction.unique_phenomena ? `
+        ${
+          faction.unique_phenomena
+            ? `
         <div class="card" style="border-left: 3px solid #b07acc;">
             <h3 style="color: #b07acc;">&#10052; Unique Phenomena</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.unique_phenomena.overview}</p>
-            ${faction.unique_phenomena.phenomena.map(p => `
+            ${faction.unique_phenomena.phenomena
+              .map(
+                (p) => `
                 <div style="background: rgba(176,122,204,0.08); padding: 0.5rem 0.75rem; border-radius: 6px; margin-bottom: 0.75rem;">
                     <strong style="color: #b07acc; font-size: 1.05em;">${p.name}</strong>
                     <p style="margin: 0.25rem 0 0.25rem 0;">${p.description}</p>
                     <p style="margin: 0; font-size: 0.9em; color: #b07acc;"><strong>Gameplay Effect:</strong> ${p.gameplay_effect}</p>
                 </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Faction Keywords -->
-        ${faction.faction_keywords ? `
+        ${
+          faction.faction_keywords
+            ? `
         <div class="card">
             <h3 style="color: ${color};">Faction Keywords</h3>
             <div style="margin-top: 0.5rem;">
-                ${faction.faction_keywords.map(k => `<span class="tag">${k}</span>`).join(' ')}
+                ${faction.faction_keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
-        ` : ''}
+        `
+            : ""
+        }
 
         <!-- Commanders Roster -->
         <div class="card">
             <h3 style="color: ${color};">👑 Commanders (${factionCommanders.length})</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
-                ${factionCommanders.map(c => `
+                ${factionCommanders
+                  .map(
+                    (c) => `
                 <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-left: 3px solid ${color}; border-radius: 4px; cursor: pointer;" onclick="showCommander('${c.name}')">
                     <strong style="color: #e8e8e8;">${c.name}</strong>
-                    ${c.title ? `<span style="opacity: 0.6; font-size: 0.85rem;"> — ${c.title}</span>` : ''}
+                    ${c.title ? `<span style="opacity: 0.6; font-size: 0.85rem;"> — ${c.title}</span>` : ""}
                     <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; opacity: 0.7;">${c.theme}</p>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
         </div>
 
@@ -1240,12 +1507,16 @@ function showFactionDetail(factionId) {
         <div class="card">
             <h3 style="color: ${color};">🛡️ Standard Units (${factionUnits.length})</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.5rem; margin-top: 1rem;">
-                ${factionUnits.map(u => `
+                ${factionUnits
+                  .map(
+                    (u) => `
                 <div style="padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="showUnit('${u.name}')">
                     <span>${getUnitTypeIcon(u.type)} ${u.name}</span>
                     <span style="color: #e94560; font-weight: bold; font-size: 0.85rem;">${u.points_cost} pts</span>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
         </div>
 
@@ -1253,12 +1524,16 @@ function showFactionDetail(factionId) {
         <div class="card">
             <h3 style="color: ${color};">🤖 War Machines (${factionWarMachines.length})</h3>
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.5rem; margin-top: 1rem;">
-                ${factionWarMachines.map(u => `
+                ${factionWarMachines
+                  .map(
+                    (u) => `
                 <div style="padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="showUnit('${u.name}')">
                     <span>🤖 ${u.name}</span>
                     <span style="color: #e94560; font-weight: bold; font-size: 0.85rem;">${u.points_cost} pts</span>
                 </div>
-                `).join('')}
+                `,
+                  )
+                  .join("")}
             </div>
         </div>
 
@@ -1273,22 +1548,24 @@ function showFactionDetail(factionId) {
 // ==========================================
 
 function loadCommanders() {
-    const contentEl = document.getElementById('commander-list');
-    if (!contentEl) return;
-    
-    gameData.commanders.forEach(commander => {
-        const faction = getFactionById(commander.faction);
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        // Generate tags
-        const tags = commander.tags ? commander.tags.map(t => 
-            `<span class="tag tag-${t.split('-')[0]}">${t}</span>`
-        ).join(' ') : '';
-        
-        card.innerHTML = `
-            <h3><a href="#" onclick="showCommander('${commander.name}')">${commander.name}</a> ${commander.title ? '- ' + commander.title : ''}</h3>
-            <p><strong>Faction:</strong> ${faction ? faction.name : 'Unknown'}</p>
+  const contentEl = document.getElementById("commander-list");
+  if (!contentEl) return;
+
+  gameData.commanders.forEach((commander) => {
+    const faction = getFactionById(commander.faction);
+    const card = document.createElement("div");
+    card.className = "card";
+
+    // Generate tags
+    const tags = commander.tags
+      ? commander.tags
+          .map((t) => `<span class="tag tag-${t.split("-")[0]}">${t}</span>`)
+          .join(" ")
+      : "";
+
+    card.innerHTML = `
+            <h3><a href="#" onclick="showCommander('${commander.name}')">${commander.name}</a> ${commander.title ? "- " + commander.title : ""}</h3>
+            <p><strong>Faction:</strong> ${faction ? faction.name : "Unknown"}</p>
             <p><strong>Theme:</strong> ${commander.theme}</p>
             <p><strong>Playstyle:</strong> ${commander.playstyle}</p>
             <div class="stats-grid">
@@ -1298,33 +1575,47 @@ function loadCommanders() {
                 <div class="stat-item"><span class="stat-value">${commander.base_stats.Agility}</span><span class="stat-label">Agility</span></div>
                 <div class="stat-item"><span class="stat-value">${commander.base_stats.Health}</span><span class="stat-label">Health</span></div>
             </div>
-            ${tags ? `<div style="margin-top: 1rem;">${tags}</div>` : ''}
+            ${tags ? `<div style="margin-top: 1rem;">${tags}</div>` : ""}
         `;
-        contentEl.appendChild(card);
-    });
+    contentEl.appendChild(card);
+  });
 }
 
 function showCommander(name) {
-    const commander = gameData.commanders.find(c => c.name === name);
-    if (!commander) return;
-    
-    const faction = getFactionById(commander.faction);
-    const contentEl = document.getElementById('content');
-    
-    // Generate skill tree HTML
-    let skillTreeHTML = '';
-    let hasDetailedTree = false;
-    if (commander.skill_tree && typeof commander.skill_tree === 'object') {
-        // Branching format (levels array with option_a / option_b per level)
-        if (commander.skill_tree.format === 'branching' && commander.skill_tree.levels) {
-            hasDetailedTree = true;
-            const lvlColors = ['#4caf50','#4caf50','#4caf50','#ff9800','#ff9800','#ff9800','#e91e63','#e91e63','#e91e63'];
-            commander.skill_tree.levels.forEach((lvl, idx) => {
-                const c = lvlColors[idx] || '#e91e63';
-                const typeBadge = (t) => t === 'Passive'
-                    ? 'rgba(76,175,80,0.15); color: #4caf50'
-                    : 'rgba(33,150,243,0.15); color: #2196f3';
-                skillTreeHTML += `
+  const commander = gameData.commanders.find((c) => c.name === name);
+  if (!commander) return;
+
+  const faction = getFactionById(commander.faction);
+  const contentEl = document.getElementById("content");
+
+  // Generate skill tree HTML
+  let skillTreeHTML = "";
+  let hasDetailedTree = false;
+  if (commander.skill_tree && typeof commander.skill_tree === "object") {
+    // Branching format (levels array with option_a / option_b per level)
+    if (
+      commander.skill_tree.format === "branching" &&
+      commander.skill_tree.levels
+    ) {
+      hasDetailedTree = true;
+      const lvlColors = [
+        "#4caf50",
+        "#4caf50",
+        "#4caf50",
+        "#ff9800",
+        "#ff9800",
+        "#ff9800",
+        "#e91e63",
+        "#e91e63",
+        "#e91e63",
+      ];
+      commander.skill_tree.levels.forEach((lvl, idx) => {
+        const c = lvlColors[idx] || "#e91e63";
+        const typeBadge = (t) =>
+          t === "Passive"
+            ? "rgba(76,175,80,0.15); color: #4caf50"
+            : "rgba(33,150,243,0.15); color: #2196f3";
+        skillTreeHTML += `
                     <div style="margin-bottom: 1rem;">
                         <div style="font-weight: bold; color: ${c}; margin-bottom: 0.4rem; font-size: 0.95em;">Level ${lvl.level}</div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
@@ -1347,110 +1638,138 @@ function showCommander(name) {
                         </div>
                     </div>
                 `;
-            });
-            // Evolution tier
-            if (commander.skill_tree.evolution) {
-                const evo = commander.skill_tree.evolution;
-                skillTreeHTML += `
+      });
+      // Evolution tier
+      if (commander.skill_tree.evolution) {
+        const evo = commander.skill_tree.evolution;
+        skillTreeHTML += `
                     <div style="margin-top: 1.5rem;">
                         <h4 style="color: #b07acc; border-bottom: 2px solid #b07acc; padding-bottom: 0.3rem;">&#9812; ${evo.label}</h4>
                         <div class="evolution-grid">
-                            ${evo.knowledge ? `
+                            ${
+                              evo.knowledge
+                                ? `
                             <div class="evolution-card evolution-knowledge">
                                 <h5>&#128309; Knowledge — ${evo.knowledge.name}</h5>
-                                ${evo.knowledge.abilities.map(a => `
+                                ${evo.knowledge.abilities
+                                  .map(
+                                    (a) => `
                                     <div style="margin-bottom: 0.5rem; padding: 0.4rem 0.6rem; background: rgba(33,150,243,0.06); border-radius: 4px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
                                             <strong>${a.name}</strong>
-                                            <span style="font-size: 0.75em; padding: 0.1rem 0.4rem; border-radius: 3px; background: ${a.type === 'Passive' ? 'rgba(76,175,80,0.15); color: #4caf50' : 'rgba(33,150,243,0.15); color: #2196f3'};">${a.type}</span>
+                                            <span style="font-size: 0.75em; padding: 0.1rem 0.4rem; border-radius: 3px; background: ${a.type === "Passive" ? "rgba(76,175,80,0.15); color: #4caf50" : "rgba(33,150,243,0.15); color: #2196f3"};">${a.type}</span>
                                         </div>
                                         <p style="margin: 0.2rem 0; font-size: 0.9em;">${a.description}</p>
                                         <p style="margin: 0; font-size: 0.8em; color: #aaa;"><strong>Effect:</strong> ${a.effect}</p>
                                     </div>
-                                `).join('')}
-                            </div>` : ''}
-                            ${evo.chaos ? `
+                                `,
+                                  )
+                                  .join("")}
+                            </div>`
+                                : ""
+                            }
+                            ${
+                              evo.chaos
+                                ? `
                             <div class="evolution-card evolution-chaos">
                                 <h5>&#128308; Chaos — ${evo.chaos.name}</h5>
-                                ${evo.chaos.abilities.map(a => `
+                                ${evo.chaos.abilities
+                                  .map(
+                                    (a) => `
                                     <div style="margin-bottom: 0.5rem; padding: 0.4rem 0.6rem; background: rgba(244,67,54,0.06); border-radius: 4px;">
                                         <div style="display: flex; justify-content: space-between; align-items: center;">
                                             <strong>${a.name}</strong>
-                                            <span style="font-size: 0.75em; padding: 0.1rem 0.4rem; border-radius: 3px; background: ${a.type === 'Passive' ? 'rgba(76,175,80,0.15); color: #4caf50' : 'rgba(33,150,243,0.15); color: #2196f3'};">${a.type}</span>
+                                            <span style="font-size: 0.75em; padding: 0.1rem 0.4rem; border-radius: 3px; background: ${a.type === "Passive" ? "rgba(76,175,80,0.15); color: #4caf50" : "rgba(33,150,243,0.15); color: #2196f3"};">${a.type}</span>
                                         </div>
                                         <p style="margin: 0.2rem 0; font-size: 0.9em;">${a.description}</p>
                                         <p style="margin: 0; font-size: 0.8em; color: #aaa;"><strong>Effect:</strong> ${a.effect}</p>
                                     </div>
-                                `).join('')}
-                            </div>` : ''}
+                                `,
+                                  )
+                                  .join("")}
+                            </div>`
+                                : ""
+                            }
                         </div>
                     </div>
                 `;
-            }
-        } else {
-            // Old format (level_2 through level_10 keys)
-            for (let level = 2; level <= 10; level++) {
-                const levelKey = `level_${level}`;
-                if (commander.skill_tree[levelKey]) {
-                    const skills = commander.skill_tree[levelKey];
-                    skillTreeHTML += `
+      }
+    } else {
+      // Old format (level_2 through level_10 keys)
+      for (let level = 2; level <= 10; level++) {
+        const levelKey = `level_${level}`;
+        if (commander.skill_tree[levelKey]) {
+          const skills = commander.skill_tree[levelKey];
+          skillTreeHTML += `
                         <div class="skill-level">
                             <div class="skill-level-num">${level}</div>
-                            <div class="skill-option skill-knowledge">${skills.knowledge || '-'}</div>
-                            <div class="skill-option skill-chaos">${skills.chaos || '-'}</div>
-                            <div class="skill-option skill-tactical">${skills.tactical || '-'}</div>
+                            <div class="skill-option skill-knowledge">${skills.knowledge || "-"}</div>
+                            <div class="skill-option skill-chaos">${skills.chaos || "-"}</div>
+                            <div class="skill-option skill-tactical">${skills.tactical || "-"}</div>
                         </div>
                     `;
-                }
-            }
         }
+      }
     }
-    
-    // Generate evolution paths HTML
-    let evolutionHTML = '';
-    if (commander.evolution_paths) {
-        evolutionHTML = `
+  }
+
+  // Generate evolution paths HTML
+  let evolutionHTML = "";
+  if (commander.evolution_paths) {
+    evolutionHTML = `
             <div class="evolution-grid">
-                ${commander.evolution_paths.knowledge ? `
+                ${
+                  commander.evolution_paths.knowledge
+                    ? `
                 <div class="evolution-card evolution-knowledge">
                     <h5>🔵 ${commander.evolution_paths.knowledge.name}</h5>
                     <p>${commander.evolution_paths.knowledge.description}</p>
-                    <p><strong>Abilities:</strong> ${commander.evolution_paths.knowledge.abilities.join(', ')}</p>
+                    <p><strong>Abilities:</strong> ${commander.evolution_paths.knowledge.abilities.join(", ")}</p>
                     <p><strong>Fragment Interaction:</strong> ${commander.evolution_paths.knowledge.fragment_interaction}</p>
                     <p><strong>Unit Synergy:</strong> ${commander.evolution_paths.knowledge.unit_synergy}</p>
-                </div>` : ''}
-                ${commander.evolution_paths.chaos ? `
+                </div>`
+                    : ""
+                }
+                ${
+                  commander.evolution_paths.chaos
+                    ? `
                 <div class="evolution-card evolution-chaos">
                     <h5>🔴 ${commander.evolution_paths.chaos.name}</h5>
                     <p>${commander.evolution_paths.chaos.description}</p>
-                    <p><strong>Abilities:</strong> ${commander.evolution_paths.chaos.abilities.join(', ')}</p>
+                    <p><strong>Abilities:</strong> ${commander.evolution_paths.chaos.abilities.join(", ")}</p>
                     <p><strong>Fragment Interaction:</strong> ${commander.evolution_paths.chaos.fragment_interaction}</p>
                     <p><strong>Unit Synergy:</strong> ${commander.evolution_paths.chaos.unit_synergy}</p>
-                </div>` : ''}
-                ${commander.evolution_paths.hybrid ? `
+                </div>`
+                    : ""
+                }
+                ${
+                  commander.evolution_paths.hybrid
+                    ? `
                 <div class="evolution-card evolution-hybrid">
                     <h5>🟣 ${commander.evolution_paths.hybrid.name}</h5>
                     <p>${commander.evolution_paths.hybrid.description}</p>
-                    <p><strong>Abilities:</strong> ${commander.evolution_paths.hybrid.abilities.join(', ')}</p>
+                    <p><strong>Abilities:</strong> ${commander.evolution_paths.hybrid.abilities.join(", ")}</p>
                     <p><strong>Fragment Interaction:</strong> ${commander.evolution_paths.hybrid.fragment_interaction}</p>
                     <p><strong>Unit Synergy:</strong> ${commander.evolution_paths.hybrid.unit_synergy}</p>
-                </div>` : ''}
+                </div>`
+                    : ""
+                }
             </div>
         `;
-    }
-    
-    // Generate starting deck HTML
-    // Generate starting deck HTML with card effects
-    let deckHTML = '';
-    const cardLib = gameData.card_library || {};
-    
-    function renderCardItem(cardName, typeFallback) {
-        const info = cardLib[cardName];
-        const cp = info ? info.cp : '?';
-        const timing = info ? info.timing : '';
-        const effect = info ? info.effect : '';
-        const type = info ? info.type : typeFallback;
-        return `<div class="card-item card-${type}" style="cursor: pointer; position: relative;" onclick="this.querySelector('.card-effect-detail').style.display = this.querySelector('.card-effect-detail').style.display === 'block' ? 'none' : 'block'">
+  }
+
+  // Generate starting deck HTML
+  // Generate starting deck HTML with card effects
+  let deckHTML = "";
+  const cardLib = gameData.card_library || {};
+
+  function renderCardItem(cardName, typeFallback) {
+    const info = cardLib[cardName];
+    const cp = info ? info.cp : "?";
+    const timing = info ? info.timing : "";
+    const effect = info ? info.effect : "";
+    const type = info ? info.type : typeFallback;
+    return `<div class="card-item card-${type}" style="cursor: pointer; position: relative;" onclick="this.querySelector('.card-effect-detail').style.display = this.querySelector('.card-effect-detail').style.display === 'block' ? 'none' : 'block'">
             <div style="display: flex; justify-content: space-between; align-items: center;">
                 <strong>${cardName}</strong>
                 <span style="background: rgba(233,69,96,0.3); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: bold; color: #e94560;" title="CP Cost">${cp}</span>
@@ -1460,47 +1779,50 @@ function showCommander(name) {
                 <div style="color: #ccc;">${effect}</div>
             </div>
         </div>`;
+  }
+
+  if (commander.level_1_deck && typeof commander.level_1_deck === "object") {
+    deckHTML =
+      '<p style="color: #aaa; font-size: 0.85rem;"><em>Click any card to reveal its effect.</em></p><div class="deck-grid">';
+    if (commander.level_1_deck.command) {
+      commander.level_1_deck.command.forEach((card) => {
+        deckHTML += renderCardItem(card, "command");
+      });
     }
-    
-    if (commander.level_1_deck && typeof commander.level_1_deck === 'object') {
-        deckHTML = '<p style="color: #aaa; font-size: 0.85rem;"><em>Click any card to reveal its effect.</em></p><div class="deck-grid">';
-        if (commander.level_1_deck.command) {
-            commander.level_1_deck.command.forEach(card => {
-                deckHTML += renderCardItem(card, 'command');
-            });
-        }
-        if (commander.level_1_deck.tech) {
-            commander.level_1_deck.tech.forEach(card => {
-                deckHTML += renderCardItem(card, 'tech');
-            });
-        }
-        if (commander.level_1_deck.fragment) {
-            commander.level_1_deck.fragment.forEach(card => {
-                deckHTML += renderCardItem(card, 'fragment');
-            });
-        }
-        if (commander.level_1_deck.tactical) {
-            commander.level_1_deck.tactical.forEach(card => {
-                deckHTML += renderCardItem(card, 'tactical');
-            });
-        }
-        deckHTML += '</div>';
+    if (commander.level_1_deck.tech) {
+      commander.level_1_deck.tech.forEach((card) => {
+        deckHTML += renderCardItem(card, "tech");
+      });
     }
-    
-    // Generate tags
-    const tags = commander.tags ? commander.tags.map(t => 
-        `<span class="tag tag-${t.split('-')[0]}">${t}</span>`
-    ).join(' ') : '';
-    
-    contentEl.innerHTML = `
+    if (commander.level_1_deck.fragment) {
+      commander.level_1_deck.fragment.forEach((card) => {
+        deckHTML += renderCardItem(card, "fragment");
+      });
+    }
+    if (commander.level_1_deck.tactical) {
+      commander.level_1_deck.tactical.forEach((card) => {
+        deckHTML += renderCardItem(card, "tactical");
+      });
+    }
+    deckHTML += "</div>";
+  }
+
+  // Generate tags
+  const tags = commander.tags
+    ? commander.tags
+        .map((t) => `<span class="tag tag-${t.split("-")[0]}">${t}</span>`)
+        .join(" ")
+    : "";
+
+  contentEl.innerHTML = `
         <div class="card">
-            <h2>${commander.name} ${commander.title ? '- ' + commander.title : ''}</h2>
-            <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${commander.faction}')">${faction ? faction.name : 'Unknown'}</a></p>
+            <h2>${commander.name} ${commander.title ? "- " + commander.title : ""}</h2>
+            <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${commander.faction}')">${faction ? faction.name : "Unknown"}</a></p>
             <p><strong>Theme:</strong> ${commander.theme}</p>
-            ${commander.personality ? `<p><strong>Personality:</strong> ${commander.personality}</p>` : ''}
+            ${commander.personality ? `<p><strong>Personality:</strong> ${commander.personality}</p>` : ""}
             <p><strong>Playstyle:</strong> ${commander.playstyle}</p>
-            <p>${commander.flavor_text || ''}</p>
-            ${tags ? `<div style="margin: 1rem 0;">${tags}</div>` : ''}
+            <p>${commander.flavor_text || ""}</p>
+            ${tags ? `<div style="margin: 1rem 0;">${tags}</div>` : ""}
             
             <h3>Base Stats</h3>
             <div class="stats-grid">
@@ -1511,16 +1833,24 @@ function showCommander(name) {
                 <div class="stat-item"><span class="stat-value">${commander.base_stats.Health}</span><span class="stat-label">Health</span></div>
             </div>
             
-            ${deckHTML ? `
+            ${
+              deckHTML
+                ? `
             <h3>Level 1 Starting Deck</h3>
             <p style="font-size: 0.85rem; color: #888;"><span style="color: #2196f3;">●</span> Command &nbsp; <span style="color: #ff9800;">●</span> Tech &nbsp; <span style="color: #e91e63;">●</span> Fragment &nbsp; <span style="color: #4caf50;">●</span> Tactical</p>
             ${deckHTML}
-            ` : ''}
+            `
+                : ""
+            }
             
-            ${skillTreeHTML ? (hasDetailedTree ? `
+            ${
+              skillTreeHTML
+                ? hasDetailedTree
+                  ? `
             <h3>Skill Tree</h3>
             ${skillTreeHTML}
-            ` : `
+            `
+                  : `
             <h3>Skill Tree (Levels 2-10)</h3>
             <p style="font-size: 0.85rem; color: #888;">Choose one skill per level. Your choices determine your Level 10 Evolution.</p>
             <div class="skill-tree">
@@ -1532,27 +1862,41 @@ function showCommander(name) {
                 </div>
                 ${skillTreeHTML}
             </div>
-            `) : ''}
+            `
+                : ""
+            }
             
-            ${!hasDetailedTree ? `
+            ${
+              !hasDetailedTree
+                ? `
             <h3>Level 10 Evolution Paths</h3>
             ${evolutionHTML}
-            ` : ''}
+            `
+                : ""
+            }
             
-            ${commander.signature_units && commander.signature_units.length > 0 ? `
+            ${
+              commander.signature_units && commander.signature_units.length > 0
+                ? `
             <h3>Signature Units</h3>
             <ul>
-                ${commander.signature_units.map(u => `<li><a href="#" onclick="showUnit('${u}')">${u}</a></li>`).join('')}
+                ${commander.signature_units.map((u) => `<li><a href="#" onclick="showUnit('${u}')">${u}</a></li>`).join("")}
             </ul>
-            ` : ''}
+            `
+                : ""
+            }
             
-            ${commander.strategic_notes ? `
+            ${
+              commander.strategic_notes
+                ? `
             <h3>Strategic Notes & Tips</h3>
             <p>${commander.strategic_notes}</p>
-            ` : ''}
+            `
+                : ""
+            }
             
             <div style="margin-top: 2rem; display: flex; gap: 0.75rem;">
-                <button class="btn btn-secondary" onclick="showFactionDetail('${commander.faction}')">← ${faction ? faction.name : 'Faction'}</button>
+                <button class="btn btn-secondary" onclick="showFactionDetail('${commander.faction}')">← ${faction ? faction.name : "Faction"}</button>
                 <button class="btn" onclick="showPage('commanders')">← All Commanders</button>
             </div>
         </div>
@@ -1564,13 +1908,13 @@ function showCommander(name) {
 // ==========================================
 
 function loadUnits() {
-    const contentEl = document.getElementById('unit-list');
-    if (!contentEl) return;
-    
-    // Add filter controls
-    const filterDiv = document.createElement('div');
-    filterDiv.className = 'filter-controls';
-    filterDiv.innerHTML = `
+  const contentEl = document.getElementById("unit-list");
+  if (!contentEl) return;
+
+  // Add filter controls
+  const filterDiv = document.createElement("div");
+  filterDiv.className = "filter-controls";
+  filterDiv.innerHTML = `
         <button class="filter-btn active" onclick="filterUnitsList('all', this)">All</button>
         <button class="filter-btn" onclick="filterUnitsList('Infantry', this)">Infantry</button>
         <button class="filter-btn" onclick="filterUnitsList('Cavalry', this)">Cavalry</button>
@@ -1580,133 +1924,157 @@ function loadUnits() {
         <button class="filter-btn" onclick="filterUnitsList('Scout', this)">Scout</button>
         <button class="filter-btn" onclick="filterUnitsList('War Machine', this)">War Machines</button>
     `;
-    contentEl.before(filterDiv);
-    
-    renderUnitsList('all');
+  contentEl.before(filterDiv);
+
+  renderUnitsList("all");
 }
 
 function filterUnitsList(type, btn) {
-    // Update active button
-    document.querySelectorAll('.filter-controls .filter-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    renderUnitsList(type);
+  // Update active button
+  document
+    .querySelectorAll(".filter-controls .filter-btn")
+    .forEach((b) => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  renderUnitsList(type);
 }
 
 function renderUnitsList(filterType) {
-    const contentEl = document.getElementById('unit-list');
-    if (!contentEl) return;
-    
-    contentEl.innerHTML = '';
-    
-    const filteredUnits = filterType === 'all' 
-        ? gameData.units 
-        : gameData.units.filter(u => u.type === filterType);
-    
-    filteredUnits.forEach(unit => {
-        const faction = getFactionById(unit.faction);
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        const typeClass = `type-${unit.type.toLowerCase().replace(' ', '')}`;
-        const s = unit.stats || {};
-        const hasStats = s.ATK !== undefined;
-        
-        card.innerHTML = `
+  const contentEl = document.getElementById("unit-list");
+  if (!contentEl) return;
+
+  contentEl.innerHTML = "";
+
+  const filteredUnits =
+    filterType === "all"
+      ? gameData.units
+      : gameData.units.filter((u) => u.type === filterType);
+
+  filteredUnits.forEach((unit) => {
+    const faction = getFactionById(unit.faction);
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const typeClass = `type-${unit.type.toLowerCase().replace(" ", "")}`;
+    const s = unit.stats || {};
+    const hasStats = s.ATK !== undefined;
+
+    card.innerHTML = `
             <h3>
                 <span class="unit-type-icon ${typeClass}">${getUnitTypeIcon(unit.type)}</span>
                 <a href="#" onclick="showUnit('${unit.name}')">${unit.name}</a>
             </h3>
-            <p><strong>Faction:</strong> ${faction ? faction.name : 'Unknown'}</p>
-            <p><strong>Type:</strong> ${unit.type} | <strong>Points:</strong> <span style="color: #e94560; font-weight: bold;">${unit.points_cost}</span>${unit.ritual_flow ? ` | <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ''}</p>
-            ${hasStats ? `<div style="display: flex; gap: 0.3rem; margin: 0.5rem 0; flex-wrap: wrap;">
+            <p><strong>Faction:</strong> ${faction ? faction.name : "Unknown"}</p>
+            <p><strong>Type:</strong> ${unit.type} | <strong>Points:</strong> <span style="color: #e94560; font-weight: bold;">${unit.points_cost}</span>${unit.ritual_flow ? ` | <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ""}</p>
+            ${
+              hasStats
+                ? `<div style="display: flex; gap: 0.3rem; margin: 0.5rem 0; flex-wrap: wrap;">
                 <span class="stat-pip" title="Attack Dice" style="background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.3); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem;">⚔️${s.ATK}</span>
                 <span class="stat-pip" title="Defense" style="background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.3); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem;">🛡️${s.DEF}+</span>
                 <span class="stat-pip" title="Hit Points" style="background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.3); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem;">❤️${s.HP}</span>
                 <span class="stat-pip" title="Movement" style="background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.3); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem;">🏃${s.MOV}"</span>
-                <span class="stat-pip" title="Range" style="background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.3); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem;">🎯${s.RNG === 1 ? 'Melee' : s.RNG + '"'}</span>
+                <span class="stat-pip" title="Range" style="background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.3); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem;">🎯${s.RNG === 1 ? "Melee" : s.RNG + '"'}</span>
                 <span class="stat-pip" title="Morale" style="background: rgba(233,69,96,0.15); border: 1px solid rgba(233,69,96,0.3); border-radius: 4px; padding: 2px 6px; font-size: 0.75rem;">🧠${s.MOR}</span>
-            </div>` : ''}
+            </div>`
+                : ""
+            }
             <p><strong>Role:</strong> ${unit.role}</p>
-            ${unit.special && unit.special.length > 0 ? `<p style="font-size: 0.8rem; color: #a78bfa;"><strong>Special:</strong> ${unit.special.map(s => s.split('(')[0].trim()).join(', ')}</p>` : ''}
+            ${unit.special && unit.special.length > 0 ? `<p style="font-size: 0.8rem; color: #a78bfa;"><strong>Special:</strong> ${unit.special.map((s) => s.split("(")[0].trim()).join(", ")}</p>` : ""}
         `;
-        contentEl.appendChild(card);
-    });
+    contentEl.appendChild(card);
+  });
 }
 
 function getUnitTypeIcon(type) {
-    const icons = {
-        'Infantry': '⚔️',
-        'Cavalry': '🐎',
-        'Support': '🔧',
-        'Specialist': '⭐',
-        'Artillery': '💣',
-        'Scout': '👁️',
-        'War Machine': '🤖'
-    };
-    return icons[type] || '•';
+  const icons = {
+    Infantry: "⚔️",
+    Cavalry: "🐎",
+    Support: "🔧",
+    Specialist: "⭐",
+    Artillery: "💣",
+    Scout: "👁️",
+    "War Machine": "🤖",
+  };
+  return icons[type] || "•";
 }
 
 function showUnit(name) {
-    const unit = gameData.units.find(u => u.name === name);
-    if (!unit) return;
-    
-    const faction = getFactionById(unit.faction);
-    const contentEl = document.getElementById('content');
-    
-    // Find commanders with this as signature unit
-    const signatureCommanders = gameData.commanders.filter(c => 
-        c.signature_units && c.signature_units.includes(unit.name)
-    );
-    
-    const typeClass = `type-${unit.type.toLowerCase().replace(' ', '')}`;
-    
-    // Build stat block
-    const stats = unit.stats || {};
-    const statLabels = [
-        {key: 'ATK', label: 'ATK', icon: '⚔️', desc: 'Attack dice rolled'},
-        {key: 'DEF', label: 'DEF', icon: '🛡️', desc: 'Target number to hit (roll ≥)'},
-        {key: 'HP', label: 'HP', icon: '❤️', desc: 'Hit points'},
-        {key: 'MOV', label: 'MOV', icon: '🏃', desc: 'Movement (inches)'},
-        {key: 'RNG', label: 'RNG', icon: '🎯', desc: 'Range (inches, 1=melee)'},
-        {key: 'MOR', label: 'MOR', icon: '🧠', desc: 'Morale (2d6 roll-under)'}
-    ];
-    const statBlockHTML = stats.ATK !== undefined ? `
+  const unit = gameData.units.find((u) => u.name === name);
+  if (!unit) return;
+
+  const faction = getFactionById(unit.faction);
+  const contentEl = document.getElementById("content");
+
+  // Find commanders with this as signature unit
+  const signatureCommanders = gameData.commanders.filter(
+    (c) => c.signature_units && c.signature_units.includes(unit.name),
+  );
+
+  const typeClass = `type-${unit.type.toLowerCase().replace(" ", "")}`;
+
+  // Build stat block
+  const stats = unit.stats || {};
+  const statLabels = [
+    { key: "ATK", label: "ATK", icon: "⚔️", desc: "Attack dice rolled" },
+    {
+      key: "DEF",
+      label: "DEF",
+      icon: "🛡️",
+      desc: "Target number to hit (roll ≥)",
+    },
+    { key: "HP", label: "HP", icon: "❤️", desc: "Hit points" },
+    { key: "MOV", label: "MOV", icon: "🏃", desc: "Movement (inches)" },
+    { key: "RNG", label: "RNG", icon: "🎯", desc: "Range (inches, 1=melee)" },
+    { key: "MOR", label: "MOR", icon: "🧠", desc: "Morale (2d6 roll-under)" },
+  ];
+  const statBlockHTML =
+    stats.ATK !== undefined
+      ? `
         <div class="stat-block" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 0.5rem; margin: 1.5rem 0; text-align: center;">
-            ${statLabels.map(s => `
+            ${statLabels
+              .map(
+                (s) => `
                 <div style="background: rgba(233,69,96,0.1); border: 1px solid rgba(233,69,96,0.3); border-radius: 8px; padding: 0.75rem 0.25rem;" title="${s.desc}">
                     <div style="font-size: 0.7rem; color: #aaa; text-transform: uppercase; letter-spacing: 1px;">${s.icon} ${s.label}</div>
                     <div style="font-size: 1.8rem; font-weight: bold; color: #e94560;">${stats[s.key]}</div>
                 </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
         </div>
-    ` : '';
-    
-    // Build special abilities
-    const specialHTML = unit.special && unit.special.length > 0 ? `
+    `
+      : "";
+
+  // Build special abilities
+  const specialHTML =
+    unit.special && unit.special.length > 0
+      ? `
         <div style="margin: 1rem 0; padding: 1rem; background: rgba(167,139,250,0.08); border-left: 3px solid #a78bfa; border-radius: 4px;">
             <h3 style="margin-top: 0; color: #a78bfa;">⚡ Special Abilities</h3>
             <ul style="list-style: none; padding: 0; margin: 0;">
-                ${unit.special.map(s => {
+                ${unit.special
+                  .map((s) => {
                     const parts = s.match(/^([^(]+)(\(.+\))?$/);
                     const name = parts ? parts[1].trim() : s;
-                    const desc = parts && parts[2] ? parts[2] : '';
+                    const desc = parts && parts[2] ? parts[2] : "";
                     return `<li style="margin-bottom: 0.5rem; padding: 0.4rem 0; border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <strong style="color: #e94560;">${name}</strong> ${desc ? `<span style="color: #ccc;">${desc}</span>` : ''}
+                        <strong style="color: #e94560;">${name}</strong> ${desc ? `<span style="color: #ccc;">${desc}</span>` : ""}
                     </li>`;
-                }).join('')}
+                  })
+                  .join("")}
             </ul>
         </div>
-    ` : '';
+    `
+      : "";
 
-    contentEl.innerHTML = `
+  contentEl.innerHTML = `
         <div class="card">
             <h2>
                 <span class="unit-type-icon ${typeClass}" style="font-size: 2rem;">${getUnitTypeIcon(unit.type)}</span>
                 ${unit.name}
             </h2>
-            <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${unit.faction}')">${faction ? faction.name : 'Unknown'}</a></p>
+            <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${unit.faction}')">${faction ? faction.name : "Unknown"}</a></p>
             <p><strong>Type:</strong> ${unit.type} &nbsp;|&nbsp; <strong>Points:</strong> <span style="color: #e94560; font-size: 1.3rem; font-weight: bold;">${unit.points_cost}</span>
-            ${unit.ritual_flow ? ` &nbsp;|&nbsp; <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ''}</p>
+            ${unit.ritual_flow ? ` &nbsp;|&nbsp; <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ""}</p>
             
             ${statBlockHTML}
             
@@ -1717,15 +2085,19 @@ function showUnit(name) {
             <p><strong>Fragment Interactions:</strong> ${unit.fragment_interactions}</p>
             <p><em>${unit.flavor_text}</em></p>
             
-            ${signatureCommanders.length > 0 ? `
+            ${
+              signatureCommanders.length > 0
+                ? `
             <h3>Signature Unit For</h3>
             <ul>
-                ${signatureCommanders.map(c => `<li><a href="#" onclick="showCommander('${c.name}')">${c.name}</a></li>`).join('')}
+                ${signatureCommanders.map((c) => `<li><a href="#" onclick="showCommander('${c.name}')">${c.name}</a></li>`).join("")}
             </ul>
-            ` : ''}
+            `
+                : ""
+            }
             
             <div style="margin-top: 2rem; display: flex; gap: 0.75rem;">
-                <button class="btn btn-secondary" onclick="showFactionDetail('${unit.faction}')">← ${faction ? faction.name : 'Faction'}</button>
+                <button class="btn btn-secondary" onclick="showFactionDetail('${unit.faction}')">← ${faction ? faction.name : "Faction"}</button>
                 <button class="btn" onclick="showPage('units')">← All Units</button>
             </div>
         </div>
@@ -1737,30 +2109,31 @@ function showUnit(name) {
 // ==========================================
 
 function loadFragments() {
-    const contentEl = document.getElementById('fragment-list');
-    if (!contentEl) return;
-    
-    gameData.fragments.forEach(fragment => {
-        const faction = getFactionById(fragment.faction);
-        const card = document.createElement('div');
-        card.className = 'card';
-        
-        const riskColor = {
-            'Low': '#4caf50',
-            'Medium': '#ff9800',
-            'High': '#f44336',
-            'Very High': '#9c27b0'
-        }[fragment.risk_instability] || '#888';
-        
-        card.innerHTML = `
+  const contentEl = document.getElementById("fragment-list");
+  if (!contentEl) return;
+
+  gameData.fragments.forEach((fragment) => {
+    const faction = getFactionById(fragment.faction);
+    const card = document.createElement("div");
+    card.className = "card";
+
+    const riskColor =
+      {
+        Low: "#4caf50",
+        Medium: "#ff9800",
+        High: "#f44336",
+        "Very High": "#9c27b0",
+      }[fragment.risk_instability] || "#888";
+
+    card.innerHTML = `
             <h3>💎 ${fragment.name}</h3>
-            <p><strong>Faction:</strong> ${faction ? faction.name : 'Universal'}</p>
+            <p><strong>Faction:</strong> ${faction ? faction.name : "Universal"}</p>
             <p><strong>Effects:</strong> ${fragment.effects}</p>
             <p><strong>Risk/Instability:</strong> <span style="color: ${riskColor}; font-weight: bold;">${fragment.risk_instability}</span></p>
             <p><strong>Evolution Synergy:</strong> ${fragment.interaction_evolution}</p>
         `;
-        contentEl.appendChild(card);
-    });
+    contentEl.appendChild(card);
+  });
 }
 
 // ==========================================
@@ -1768,82 +2141,85 @@ function loadFragments() {
 // ==========================================
 
 function initArmyBuilder() {
-    // Populate commander select
-    const commanderSelect = document.getElementById('commander-select');
-    if (commanderSelect) {
-        gameData.commanders.forEach(c => {
-            const option = document.createElement('option');
-            option.value = c.name;
-            option.textContent = `${c.name}${c.title ? ' - ' + c.title : ''}`;
-            commanderSelect.appendChild(option);
-        });
-    }
-    
-    // Load units
-    loadUnitSelector('all');
-    
-    // Load fragments
-    loadFragmentSelector();
-    
-    // Update display
-    updateArmyDisplay();
+  // Populate commander select
+  const commanderSelect = document.getElementById("commander-select");
+  if (commanderSelect) {
+    gameData.commanders.forEach((c) => {
+      const option = document.createElement("option");
+      option.value = c.name;
+      option.textContent = `${c.name}${c.title ? " - " + c.title : ""}`;
+      commanderSelect.appendChild(option);
+    });
+  }
+
+  // Load units
+  loadUnitSelector("all");
+
+  // Load fragments
+  loadFragmentSelector();
+
+  // Update display
+  updateArmyDisplay();
 }
 
 function loadUnitSelector(filterType) {
-    const container = document.getElementById('unit-selector');
-    if (!container) return;
-    
-    container.innerHTML = '';
-    
-    const filteredUnits = filterType === 'all' 
-        ? gameData.units 
-        : gameData.units.filter(u => u.type === filterType);
-    
-    filteredUnits.forEach(unit => {
-        const div = document.createElement('div');
-        div.className = 'unit-option';
-        div.onclick = () => addUnitToArmy(unit.name);
-        div.innerHTML = `
+  const container = document.getElementById("unit-selector");
+  if (!container) return;
+
+  container.innerHTML = "";
+
+  const filteredUnits =
+    filterType === "all"
+      ? gameData.units
+      : gameData.units.filter((u) => u.type === filterType);
+
+  filteredUnits.forEach((unit) => {
+    const div = document.createElement("div");
+    div.className = "unit-option";
+    div.onclick = () => addUnitToArmy(unit.name);
+    div.innerHTML = `
             <span class="unit-name">${unit.name}</span>
             <span class="unit-cost">${unit.points_cost} pts</span>
         `;
-        container.appendChild(div);
-    });
+    container.appendChild(div);
+  });
 }
 
 function loadFragmentSelector() {
-    const container = document.getElementById('fragment-selector');
-    if (!container) return;
-    
-    container.innerHTML = '<div class="unit-selector">';
-    
-    gameData.fragments.forEach(fragment => {
-        const isSelected = currentArmy.fragments.includes(fragment.name);
-        container.innerHTML += `
-            <div class="unit-option ${isSelected ? 'selected' : ''}" onclick="toggleFragment('${fragment.name}')">
+  const container = document.getElementById("fragment-selector");
+  if (!container) return;
+
+  container.innerHTML = '<div class="unit-selector">';
+
+  gameData.fragments.forEach((fragment) => {
+    const isSelected = currentArmy.fragments.includes(fragment.name);
+    container.innerHTML += `
+            <div class="unit-option ${isSelected ? "selected" : ""}" onclick="toggleFragment('${fragment.name}')">
                 <span class="unit-name">💎 ${fragment.name}</span>
                 <span class="unit-cost">${fragment.risk_instability}</span>
             </div>
         `;
-    });
-    
-    container.innerHTML += '</div>';
+  });
+
+  container.innerHTML += "</div>";
 }
 
 function filterUnits(type) {
-    document.querySelectorAll('#army-builder-page .filter-controls .filter-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    loadUnitSelector(type);
+  document
+    .querySelectorAll("#army-builder-page .filter-controls .filter-btn")
+    .forEach((b) => b.classList.remove("active"));
+  event.target.classList.add("active");
+  loadUnitSelector(type);
 }
 
 function updateSelectedCommander() {
-    const select = document.getElementById('commander-select');
-    const commander = gameData.commanders.find(c => c.name === select.value);
-    currentArmy.commander = commander;
-    
-    const preview = document.getElementById('commander-preview');
-    if (preview && commander) {
-        preview.innerHTML = `
+  const select = document.getElementById("commander-select");
+  const commander = gameData.commanders.find((c) => c.name === select.value);
+  currentArmy.commander = commander;
+
+  const preview = document.getElementById("commander-preview");
+  if (preview && commander) {
+    preview.innerHTML = `
             <div style="margin-top: 1rem; padding: 1rem; background: #0f3460; border-radius: 8px;">
                 <strong>${commander.name}</strong> - ${commander.theme}
                 <div class="stats-grid" style="margin-top: 0.5rem;">
@@ -1853,119 +2229,137 @@ function updateSelectedCommander() {
                 </div>
             </div>
         `;
-    }
-    
-    updateArmyDisplay();
+  }
+
+  updateArmyDisplay();
 }
 
 function selectEvolution(path) {
-    currentArmy.evolution = path;
-    document.querySelectorAll('#evolution-select .filter-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    const preview = document.getElementById('evolution-preview');
-    if (preview && currentArmy.commander && currentArmy.commander.evolution_paths) {
-        const evo = currentArmy.commander.evolution_paths[path];
-        if (evo) {
-            preview.innerHTML = `
+  currentArmy.evolution = path;
+  document
+    .querySelectorAll("#evolution-select .filter-btn")
+    .forEach((b) => b.classList.remove("active"));
+  event.target.classList.add("active");
+
+  const preview = document.getElementById("evolution-preview");
+  if (
+    preview &&
+    currentArmy.commander &&
+    currentArmy.commander.evolution_paths
+  ) {
+    const evo = currentArmy.commander.evolution_paths[path];
+    if (evo) {
+      preview.innerHTML = `
                 <div style="margin-top: 1rem; padding: 1rem; background: #0f3460; border-radius: 8px;">
                     <strong>${evo.name}</strong>
                     <p style="font-size: 0.9rem; margin: 0.5rem 0;">${evo.description}</p>
                 </div>
             `;
-        }
     }
-    
-    updateFragmentEffects();
+  }
+
+  updateFragmentEffects();
 }
 
 function setPointsLimit(limit) {
-    currentArmy.pointsLimit = limit;
-    document.getElementById('points-limit').textContent = limit;
-    
-    document.querySelectorAll('#army-builder-page .card:nth-child(3) .filter-btn').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    updateArmyDisplay();
+  currentArmy.pointsLimit = limit;
+  document.getElementById("points-limit").textContent = limit;
+
+  document
+    .querySelectorAll("#army-builder-page .card:nth-child(3) .filter-btn")
+    .forEach((b) => b.classList.remove("active"));
+  event.target.classList.add("active");
+
+  updateArmyDisplay();
 }
 
 function addUnitToArmy(unitName) {
-    const existingIndex = currentArmy.units.findIndex(u => u.name === unitName);
-    if (existingIndex >= 0) {
-        currentArmy.units[existingIndex].quantity++;
-    } else {
-        const unit = gameData.units.find(u => u.name === unitName);
-        currentArmy.units.push({ ...unit, quantity: 1 });
-    }
-    updateArmyDisplay();
+  const existingIndex = currentArmy.units.findIndex((u) => u.name === unitName);
+  if (existingIndex >= 0) {
+    currentArmy.units[existingIndex].quantity++;
+  } else {
+    const unit = gameData.units.find((u) => u.name === unitName);
+    currentArmy.units.push({ ...unit, quantity: 1 });
+  }
+  updateArmyDisplay();
 }
 
 function removeUnitFromArmy(unitName) {
-    const existingIndex = currentArmy.units.findIndex(u => u.name === unitName);
-    if (existingIndex >= 0) {
-        if (currentArmy.units[existingIndex].quantity > 1) {
-            currentArmy.units[existingIndex].quantity--;
-        } else {
-            currentArmy.units.splice(existingIndex, 1);
-        }
+  const existingIndex = currentArmy.units.findIndex((u) => u.name === unitName);
+  if (existingIndex >= 0) {
+    if (currentArmy.units[existingIndex].quantity > 1) {
+      currentArmy.units[existingIndex].quantity--;
+    } else {
+      currentArmy.units.splice(existingIndex, 1);
     }
-    updateArmyDisplay();
+  }
+  updateArmyDisplay();
 }
 
 function toggleFragment(fragmentName) {
-    const index = currentArmy.fragments.indexOf(fragmentName);
-    if (index >= 0) {
-        currentArmy.fragments.splice(index, 1);
-    } else {
-        currentArmy.fragments.push(fragmentName);
-    }
-    loadFragmentSelector();
-    updateFragmentEffects();
+  const index = currentArmy.fragments.indexOf(fragmentName);
+  if (index >= 0) {
+    currentArmy.fragments.splice(index, 1);
+  } else {
+    currentArmy.fragments.push(fragmentName);
+  }
+  loadFragmentSelector();
+  updateFragmentEffects();
 }
 
 function updateArmyDisplay() {
-    // Calculate points
-    const pointsUsed = currentArmy.units.reduce((sum, u) => sum + (u.points_cost * u.quantity), 0);
-    
-    // Update points display
-    document.getElementById('points-used').textContent = pointsUsed;
-    const percentage = Math.min((pointsUsed / currentArmy.pointsLimit) * 100, 100);
-    document.getElementById('points-bar-fill').style.width = percentage + '%';
-    
-    const statusEl = document.getElementById('points-status');
-    if (pointsUsed > currentArmy.pointsLimit) {
-        statusEl.textContent = 'Over limit!';
-        statusEl.style.color = '#f44336';
-    } else if (pointsUsed === currentArmy.pointsLimit) {
-        statusEl.textContent = 'Perfect!';
-        statusEl.style.color = '#4caf50';
-    } else {
-        statusEl.textContent = `${currentArmy.pointsLimit - pointsUsed} points remaining`;
-        statusEl.style.color = '#4fc3f7';
-    }
-    
-    // Update commander display
-    const cmdDisplay = document.getElementById('army-commander-display');
-    if (cmdDisplay) {
-        if (currentArmy.commander) {
-            cmdDisplay.innerHTML = `
+  // Calculate points
+  const pointsUsed = currentArmy.units.reduce(
+    (sum, u) => sum + u.points_cost * u.quantity,
+    0,
+  );
+
+  // Update points display
+  document.getElementById("points-used").textContent = pointsUsed;
+  const percentage = Math.min(
+    (pointsUsed / currentArmy.pointsLimit) * 100,
+    100,
+  );
+  document.getElementById("points-bar-fill").style.width = percentage + "%";
+
+  const statusEl = document.getElementById("points-status");
+  if (pointsUsed > currentArmy.pointsLimit) {
+    statusEl.textContent = "Over limit!";
+    statusEl.style.color = "#f44336";
+  } else if (pointsUsed === currentArmy.pointsLimit) {
+    statusEl.textContent = "Perfect!";
+    statusEl.style.color = "#4caf50";
+  } else {
+    statusEl.textContent = `${currentArmy.pointsLimit - pointsUsed} points remaining`;
+    statusEl.style.color = "#4fc3f7";
+  }
+
+  // Update commander display
+  const cmdDisplay = document.getElementById("army-commander-display");
+  if (cmdDisplay) {
+    if (currentArmy.commander) {
+      cmdDisplay.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span><strong>${currentArmy.commander.name}</strong></span>
-                    ${currentArmy.evolution ? `<span class="tag tag-${currentArmy.evolution}">${currentArmy.evolution}</span>` : ''}
+                    ${currentArmy.evolution ? `<span class="tag tag-${currentArmy.evolution}">${currentArmy.evolution}</span>` : ""}
                 </div>
             `;
-        } else {
-            cmdDisplay.innerHTML = '<p style="color: #888;">No commander selected</p>';
-        }
+    } else {
+      cmdDisplay.innerHTML =
+        '<p style="color: #888;">No commander selected</p>';
     }
-    
-    // Update army list
-    const armyList = document.getElementById('army-list');
-    if (armyList) {
-        if (currentArmy.units.length === 0) {
-            armyList.innerHTML = '<p style="color: #888; text-align: center;">Add units to your army</p>';
-        } else {
-            armyList.innerHTML = currentArmy.units.map(unit => `
+  }
+
+  // Update army list
+  const armyList = document.getElementById("army-list");
+  if (armyList) {
+    if (currentArmy.units.length === 0) {
+      armyList.innerHTML =
+        '<p style="color: #888; text-align: center;">Add units to your army</p>';
+    } else {
+      armyList.innerHTML = currentArmy.units
+        .map(
+          (unit) => `
                 <div class="army-item">
                     <div class="army-item-info">
                         <span class="army-item-qty">${unit.quantity}</span>
@@ -1977,80 +2371,86 @@ function updateArmyDisplay() {
                         <button class="qty-btn" onclick="addUnitToArmy('${unit.name}')">+</button>
                     </div>
                 </div>
-            `).join('');
-        }
+            `,
+        )
+        .join("");
     }
+  }
 }
 
 function updateFragmentEffects() {
-    const container = document.getElementById('active-fragment-effects');
-    if (!container) return;
-    
-    if (currentArmy.fragments.length === 0) {
-        container.innerHTML = '<p style="color: #888; font-size: 0.9rem;">Select fragments to see their effects.</p>';
-        return;
-    }
-    
-    container.innerHTML = currentArmy.fragments.map(fragName => {
-        const fragment = gameData.fragments.find(f => f.name === fragName);
-        if (!fragment) return '';
-        
-        return `
+  const container = document.getElementById("active-fragment-effects");
+  if (!container) return;
+
+  if (currentArmy.fragments.length === 0) {
+    container.innerHTML =
+      '<p style="color: #888; font-size: 0.9rem;">Select fragments to see their effects.</p>';
+    return;
+  }
+
+  container.innerHTML = currentArmy.fragments
+    .map((fragName) => {
+      const fragment = gameData.fragments.find((f) => f.name === fragName);
+      if (!fragment) return "";
+
+      return `
             <div style="margin-bottom: 0.75rem; padding: 0.5rem; background: #0f3460; border-radius: 6px;">
                 <strong>💎 ${fragment.name}</strong>
                 <p style="font-size: 0.85rem; margin: 0.25rem 0;">${fragment.effects}</p>
-                ${currentArmy.evolution ? `<p style="font-size: 0.8rem; color: #4fc3f7;">${fragment.interaction_evolution}</p>` : ''}
+                ${currentArmy.evolution ? `<p style="font-size: 0.8rem; color: #4fc3f7;">${fragment.interaction_evolution}</p>` : ""}
             </div>
         `;
-    }).join('');
+    })
+    .join("");
 }
 
 function saveArmy() {
-    const armyData = JSON.stringify(currentArmy);
-    localStorage.setItem('savedArmy', armyData);
-    alert('Army saved successfully!');
+  const armyData = JSON.stringify(currentArmy);
+  localStorage.setItem("savedArmy", armyData);
+  alert("Army saved successfully!");
 }
 
 function loadArmy() {
-    const saved = localStorage.getItem('savedArmy');
-    if (saved) {
-        currentArmy = JSON.parse(saved);
-        
-        // Update UI
-        const select = document.getElementById('commander-select');
-        if (select && currentArmy.commander) {
-            select.value = currentArmy.commander.name;
-            updateSelectedCommander();
-        }
-        
-        document.getElementById('points-limit').textContent = currentArmy.pointsLimit;
-        loadFragmentSelector();
-        updateArmyDisplay();
-        updateFragmentEffects();
-        
-        alert('Army loaded successfully!');
-    } else {
-        alert('No saved army found.');
+  const saved = localStorage.getItem("savedArmy");
+  if (saved) {
+    currentArmy = JSON.parse(saved);
+
+    // Update UI
+    const select = document.getElementById("commander-select");
+    if (select && currentArmy.commander) {
+      select.value = currentArmy.commander.name;
+      updateSelectedCommander();
     }
+
+    document.getElementById("points-limit").textContent =
+      currentArmy.pointsLimit;
+    loadFragmentSelector();
+    updateArmyDisplay();
+    updateFragmentEffects();
+
+    alert("Army loaded successfully!");
+  } else {
+    alert("No saved army found.");
+  }
 }
 
 function clearArmy() {
-    if (confirm('Are you sure you want to clear your army?')) {
-        currentArmy = {
-            commander: null,
-            evolution: null,
-            units: [],
-            fragments: [],
-            pointsLimit: 200
-        };
-        
-        document.getElementById('commander-select').value = '';
-        document.getElementById('commander-preview').innerHTML = '';
-        document.getElementById('evolution-preview').innerHTML = '';
-        loadFragmentSelector();
-        updateArmyDisplay();
-        updateFragmentEffects();
-    }
+  if (confirm("Are you sure you want to clear your army?")) {
+    currentArmy = {
+      commander: null,
+      evolution: null,
+      units: [],
+      fragments: [],
+      pointsLimit: 200,
+    };
+
+    document.getElementById("commander-select").value = "";
+    document.getElementById("commander-preview").innerHTML = "";
+    document.getElementById("evolution-preview").innerHTML = "";
+    loadFragmentSelector();
+    updateArmyDisplay();
+    updateFragmentEffects();
+  }
 }
 
 // ==========================================
@@ -2058,89 +2458,95 @@ function clearArmy() {
 // ==========================================
 
 function initCampaignTracker() {
-    // Populate commander select
-    const commanderSelect = document.getElementById('campaign-commander-select');
-    if (commanderSelect) {
-        gameData.commanders.forEach(c => {
-            const option = document.createElement('option');
-            option.value = c.name;
-            option.textContent = `${c.name}${c.title ? ' - ' + c.title : ''}`;
-            commanderSelect.appendChild(option);
-        });
+  // Populate commander select
+  const commanderSelect = document.getElementById("campaign-commander-select");
+  if (commanderSelect) {
+    gameData.commanders.forEach((c) => {
+      const option = document.createElement("option");
+      option.value = c.name;
+      option.textContent = `${c.name}${c.title ? " - " + c.title : ""}`;
+      commanderSelect.appendChild(option);
+    });
+  }
+
+  // Load saved campaign if exists
+  const saved = localStorage.getItem("campaignState");
+  if (saved) {
+    campaignState = JSON.parse(saved);
+    if (commanderSelect && campaignState.commander) {
+      commanderSelect.value = campaignState.commander.name;
     }
-    
-    // Load saved campaign if exists
-    const saved = localStorage.getItem('campaignState');
-    if (saved) {
-        campaignState = JSON.parse(saved);
-        if (commanderSelect && campaignState.commander) {
-            commanderSelect.value = campaignState.commander.name;
-        }
-        updateCampaignUI();
-    }
+    updateCampaignUI();
+  }
 }
 
 function updateCampaignCommander() {
-    const select = document.getElementById('campaign-commander-select');
-    const commander = gameData.commanders.find(c => c.name === select.value);
-    campaignState.commander = commander;
-    campaignState.level = 1;
-    campaignState.xp = 0;
-    campaignState.skillChoices = [];
-    campaignState.evolution = null;
-    
-    updateCampaignUI();
+  const select = document.getElementById("campaign-commander-select");
+  const commander = gameData.commanders.find((c) => c.name === select.value);
+  campaignState.commander = commander;
+  campaignState.level = 1;
+  campaignState.xp = 0;
+  campaignState.skillChoices = [];
+  campaignState.evolution = null;
+
+  updateCampaignUI();
 }
 
 function updateCampaignUI() {
-    // Update commander info
-    const infoEl = document.getElementById('campaign-commander-info');
-    if (infoEl && campaignState.commander) {
-        infoEl.innerHTML = `
-            <p><strong>${campaignState.commander.name}</strong> - ${campaignState.commander.title || ''}</p>
+  // Update commander info
+  const infoEl = document.getElementById("campaign-commander-info");
+  if (infoEl && campaignState.commander) {
+    infoEl.innerHTML = `
+            <p><strong>${campaignState.commander.name}</strong> - ${campaignState.commander.title || ""}</p>
             <p style="font-size: 0.9rem; color: #888;">${campaignState.commander.theme}</p>
         `;
-    }
-    
-    // Update level and XP
-    document.getElementById('commander-level').textContent = campaignState.level;
-    const xpToLevel = campaignState.level * 100;
-    document.getElementById('xp-to-level').textContent = xpToLevel;
-    document.getElementById('current-xp').textContent = campaignState.xp;
-    document.getElementById('xp-bar-fill').style.width = (campaignState.xp / xpToLevel * 100) + '%';
-    
-    // Update battle stats
-    const victories = campaignState.battles.filter(b => b.result === 'victory').length;
-    const defeats = campaignState.battles.filter(b => b.result === 'defeat').length;
-    const draws = campaignState.battles.filter(b => b.result === 'draw').length;
-    const totalXP = campaignState.battles.reduce((sum, b) => sum + b.xp, 0);
-    
-    document.getElementById('battles-won').textContent = victories;
-    document.getElementById('battles-lost').textContent = defeats;
-    document.getElementById('battles-drawn').textContent = draws;
-    document.getElementById('total-xp-earned').textContent = totalXP;
-    
-    // Update skill tree display
-    updateSkillTreeDisplay();
-    
-    // Update battle log
-    updateBattleLog();
-    
-    // Update path tendency
-    updatePathTendency();
+  }
+
+  // Update level and XP
+  document.getElementById("commander-level").textContent = campaignState.level;
+  const xpToLevel = campaignState.level * 100;
+  document.getElementById("xp-to-level").textContent = xpToLevel;
+  document.getElementById("current-xp").textContent = campaignState.xp;
+  document.getElementById("xp-bar-fill").style.width =
+    (campaignState.xp / xpToLevel) * 100 + "%";
+
+  // Update battle stats
+  const victories = campaignState.battles.filter(
+    (b) => b.result === "victory",
+  ).length;
+  const defeats = campaignState.battles.filter(
+    (b) => b.result === "defeat",
+  ).length;
+  const draws = campaignState.battles.filter((b) => b.result === "draw").length;
+  const totalXP = campaignState.battles.reduce((sum, b) => sum + b.xp, 0);
+
+  document.getElementById("battles-won").textContent = victories;
+  document.getElementById("battles-lost").textContent = defeats;
+  document.getElementById("battles-drawn").textContent = draws;
+  document.getElementById("total-xp-earned").textContent = totalXP;
+
+  // Update skill tree display
+  updateSkillTreeDisplay();
+
+  // Update battle log
+  updateBattleLog();
+
+  // Update path tendency
+  updatePathTendency();
 }
 
 function updateSkillTreeDisplay() {
-    const container = document.getElementById('skill-tree-display');
-    if (!container || !campaignState.commander) {
-        container.innerHTML = '<p style="color: #888; text-align: center;">Select a commander to view their skill tree.</p>';
-        return;
-    }
-    
-    const tree = campaignState.commander.skill_tree;
-    if (!tree || typeof tree !== 'object') return;
-    
-    let html = `
+  const container = document.getElementById("skill-tree-display");
+  if (!container || !campaignState.commander) {
+    container.innerHTML =
+      '<p style="color: #888; text-align: center;">Select a commander to view their skill tree.</p>';
+    return;
+  }
+
+  const tree = campaignState.commander.skill_tree;
+  if (!tree || typeof tree !== "object") return;
+
+  let html = `
         <div class="skill-level" style="font-weight: bold; color: #888;">
             <div>LVL</div>
             <div style="text-align: center; color: #2196f3;">Knowledge</div>
@@ -2148,142 +2554,159 @@ function updateSkillTreeDisplay() {
             <div style="text-align: center; color: #4caf50;">Tactical</div>
         </div>
     `;
-    
-    for (let level = 2; level <= 10; level++) {
-        const levelKey = `level_${level}`;
-        if (tree[levelKey]) {
-            const skills = tree[levelKey];
-            const choice = campaignState.skillChoices.find(c => c.level === level);
-            const isUnlocked = level <= campaignState.level + 1;
-            
-            html += `
+
+  for (let level = 2; level <= 10; level++) {
+    const levelKey = `level_${level}`;
+    if (tree[levelKey]) {
+      const skills = tree[levelKey];
+      const choice = campaignState.skillChoices.find((c) => c.level === level);
+      const isUnlocked = level <= campaignState.level + 1;
+
+      html += `
                 <div class="skill-level">
-                    <div class="skill-level-num" style="${level <= campaignState.level ? '' : 'opacity: 0.5;'}">${level}</div>
-                    <div class="skill-option skill-knowledge" style="${choice?.path === 'knowledge' ? 'border: 2px solid #fff;' : ''} ${!isUnlocked ? 'opacity: 0.5;' : ''}" 
-                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'knowledge')"` : ''}>
-                        ${skills.knowledge || '-'}
-                        ${choice?.path === 'knowledge' ? ' ✓' : ''}
+                    <div class="skill-level-num" style="${level <= campaignState.level ? "" : "opacity: 0.5;"}">${level}</div>
+                    <div class="skill-option skill-knowledge" style="${choice?.path === "knowledge" ? "border: 2px solid #fff;" : ""} ${!isUnlocked ? "opacity: 0.5;" : ""}" 
+                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'knowledge')"` : ""}>
+                        ${skills.knowledge || "-"}
+                        ${choice?.path === "knowledge" ? " ✓" : ""}
                     </div>
-                    <div class="skill-option skill-chaos" style="${choice?.path === 'chaos' ? 'border: 2px solid #fff;' : ''} ${!isUnlocked ? 'opacity: 0.5;' : ''}"
-                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'chaos')"` : ''}>
-                        ${skills.chaos || '-'}
-                        ${choice?.path === 'chaos' ? ' ✓' : ''}
+                    <div class="skill-option skill-chaos" style="${choice?.path === "chaos" ? "border: 2px solid #fff;" : ""} ${!isUnlocked ? "opacity: 0.5;" : ""}"
+                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'chaos')"` : ""}>
+                        ${skills.chaos || "-"}
+                        ${choice?.path === "chaos" ? " ✓" : ""}
                     </div>
-                    <div class="skill-option skill-tactical" style="${choice?.path === 'tactical' ? 'border: 2px solid #fff;' : ''} ${!isUnlocked ? 'opacity: 0.5;' : ''}"
-                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'tactical')"` : ''}>
-                        ${skills.tactical || '-'}
-                        ${choice?.path === 'tactical' ? ' ✓' : ''}
+                    <div class="skill-option skill-tactical" style="${choice?.path === "tactical" ? "border: 2px solid #fff;" : ""} ${!isUnlocked ? "opacity: 0.5;" : ""}"
+                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'tactical')"` : ""}>
+                        ${skills.tactical || "-"}
+                        ${choice?.path === "tactical" ? " ✓" : ""}
                     </div>
                 </div>
             `;
-        }
     }
-    
-    container.innerHTML = html;
+  }
+
+  container.innerHTML = html;
 }
 
 function selectSkill(level, path) {
-    if (level > campaignState.level + 1) {
-        alert('You need to reach the previous level first!');
-        return;
-    }
-    
-    const existingChoice = campaignState.skillChoices.find(c => c.level === level);
-    if (existingChoice) {
-        alert('You have already chosen a skill for this level!');
-        return;
-    }
-    
-    campaignState.skillChoices.push({ level, path });
-    
-    // Check if level 10 and determine evolution
-    if (level === 10) {
-        determineEvolution();
-    }
-    
-    updateCampaignUI();
-    saveCampaign();
+  if (level > campaignState.level + 1) {
+    alert("You need to reach the previous level first!");
+    return;
+  }
+
+  const existingChoice = campaignState.skillChoices.find(
+    (c) => c.level === level,
+  );
+  if (existingChoice) {
+    alert("You have already chosen a skill for this level!");
+    return;
+  }
+
+  campaignState.skillChoices.push({ level, path });
+
+  // Check if level 10 and determine evolution
+  if (level === 10) {
+    determineEvolution();
+  }
+
+  updateCampaignUI();
+  saveCampaign();
 }
 
 function updatePathTendency() {
-    const pathCounts = { knowledge: 0, chaos: 0, tactical: 0 };
-    campaignState.skillChoices.forEach(c => {
-        pathCounts[c.path]++;
-    });
-    
-    const el = document.getElementById('path-tendency');
-    if (!el) return;
-    
-    const maxPath = Object.entries(pathCounts).reduce((a, b) => a[1] > b[1] ? a : b, ['none', 0]);
-    
-    if (maxPath[1] === 0) {
-        el.textContent = 'Undetermined';
-        el.style.color = '#888';
-    } else {
-        el.textContent = `Leaning ${maxPath[0].charAt(0).toUpperCase() + maxPath[0].slice(1)} (${maxPath[1]} choices)`;
-        el.style.color = maxPath[0] === 'knowledge' ? '#2196f3' : maxPath[0] === 'chaos' ? '#f44336' : '#4caf50';
-    }
+  const pathCounts = { knowledge: 0, chaos: 0, tactical: 0 };
+  campaignState.skillChoices.forEach((c) => {
+    pathCounts[c.path]++;
+  });
+
+  const el = document.getElementById("path-tendency");
+  if (!el) return;
+
+  const maxPath = Object.entries(pathCounts).reduce(
+    (a, b) => (a[1] > b[1] ? a : b),
+    ["none", 0],
+  );
+
+  if (maxPath[1] === 0) {
+    el.textContent = "Undetermined";
+    el.style.color = "#888";
+  } else {
+    el.textContent = `Leaning ${maxPath[0].charAt(0).toUpperCase() + maxPath[0].slice(1)} (${maxPath[1]} choices)`;
+    el.style.color =
+      maxPath[0] === "knowledge"
+        ? "#2196f3"
+        : maxPath[0] === "chaos"
+          ? "#f44336"
+          : "#4caf50";
+  }
 }
 
 function determineEvolution() {
-    const pathCounts = { knowledge: 0, chaos: 0, tactical: 0 };
-    campaignState.skillChoices.forEach(c => {
-        pathCounts[c.path]++;
-    });
-    
-    const sorted = Object.entries(pathCounts).sort((a, b) => b[1] - a[1]);
-    
-    if (sorted[0][1] > sorted[1][1]) {
-        campaignState.evolution = sorted[0][0];
-    } else {
-        campaignState.evolution = 'hybrid';
-    }
-    
-    alert(`Your commander has evolved into: ${campaignState.commander.evolution_paths[campaignState.evolution]?.name || campaignState.evolution}!`);
+  const pathCounts = { knowledge: 0, chaos: 0, tactical: 0 };
+  campaignState.skillChoices.forEach((c) => {
+    pathCounts[c.path]++;
+  });
+
+  const sorted = Object.entries(pathCounts).sort((a, b) => b[1] - a[1]);
+
+  if (sorted[0][1] > sorted[1][1]) {
+    campaignState.evolution = sorted[0][0];
+  } else {
+    campaignState.evolution = "hybrid";
+  }
+
+  alert(
+    `Your commander has evolved into: ${campaignState.commander.evolution_paths[campaignState.evolution]?.name || campaignState.evolution}!`,
+  );
 }
 
 function addXP(amount) {
-    campaignState.xp += amount;
-    const xpToLevel = campaignState.level * 100;
-    
-    while (campaignState.xp >= xpToLevel && campaignState.level < 10) {
-        campaignState.xp -= xpToLevel;
-        campaignState.level++;
-        alert(`Level Up! Your commander is now level ${campaignState.level}!`);
-    }
-    
-    if (campaignState.level >= 10) {
-        campaignState.level = 10;
-        campaignState.xp = 0;
-    }
-    
-    updateCampaignUI();
-    saveCampaign();
+  campaignState.xp += amount;
+  const xpToLevel = campaignState.level * 100;
+
+  while (campaignState.xp >= xpToLevel && campaignState.level < 10) {
+    campaignState.xp -= xpToLevel;
+    campaignState.level++;
+    alert(`Level Up! Your commander is now level ${campaignState.level}!`);
+  }
+
+  if (campaignState.level >= 10) {
+    campaignState.level = 10;
+    campaignState.xp = 0;
+  }
+
+  updateCampaignUI();
+  saveCampaign();
 }
 
 function recordBattle(result) {
-    const xpRewards = { victory: 100, defeat: 25, draw: 50 };
-    const xp = xpRewards[result];
-    
-    campaignState.battles.push({
-        date: new Date().toLocaleDateString(),
-        result,
-        xp
-    });
-    
-    addXP(xp);
+  const xpRewards = { victory: 100, defeat: 25, draw: 50 };
+  const xp = xpRewards[result];
+
+  campaignState.battles.push({
+    date: new Date().toLocaleDateString(),
+    result,
+    xp,
+  });
+
+  addXP(xp);
 }
 
 function updateBattleLog() {
-    const container = document.getElementById('battle-log');
-    if (!container) return;
-    
-    if (campaignState.battles.length === 0) {
-        container.innerHTML = '<p style="color: #888; text-align: center;">No battles recorded yet. Start your campaign!</p>';
-        return;
-    }
-    
-    container.innerHTML = campaignState.battles.slice().reverse().map(battle => `
+  const container = document.getElementById("battle-log");
+  if (!container) return;
+
+  if (campaignState.battles.length === 0) {
+    container.innerHTML =
+      '<p style="color: #888; text-align: center;">No battles recorded yet. Start your campaign!</p>';
+    return;
+  }
+
+  container.innerHTML = campaignState.battles
+    .slice()
+    .reverse()
+    .map(
+      (battle) => `
         <div class="battle-entry battle-${battle.result}">
             <div style="display: flex; justify-content: space-between;">
                 <span>${battle.result.charAt(0).toUpperCase() + battle.result.slice(1)}</span>
@@ -2291,70 +2714,84 @@ function updateBattleLog() {
             </div>
             <div style="color: #4fc3f7;">+${battle.xp} XP</div>
         </div>
-    `).join('');
+    `,
+    )
+    .join("");
 }
 
 function saveCampaign() {
-    localStorage.setItem('campaignState', JSON.stringify(campaignState));
+  localStorage.setItem("campaignState", JSON.stringify(campaignState));
 }
 
 function loadCampaign() {
-    const saved = localStorage.getItem('campaignState');
-    if (saved) {
-        campaignState = JSON.parse(saved);
-        const select = document.getElementById('campaign-commander-select');
-        if (select && campaignState.commander) {
-            select.value = campaignState.commander.name;
-        }
-        updateCampaignUI();
-        alert('Campaign loaded successfully!');
-    } else {
-        alert('No saved campaign found.');
+  const saved = localStorage.getItem("campaignState");
+  if (saved) {
+    campaignState = JSON.parse(saved);
+    const select = document.getElementById("campaign-commander-select");
+    if (select && campaignState.commander) {
+      select.value = campaignState.commander.name;
     }
+    updateCampaignUI();
+    alert("Campaign loaded successfully!");
+  } else {
+    alert("No saved campaign found.");
+  }
 }
 
 function newCampaign() {
-    if (confirm('Are you sure you want to start a new campaign? This will clear your current progress.')) {
-        campaignState = {
-            commander: null,
-            level: 1,
-            xp: 0,
-            skillChoices: [],
-            evolution: null,
-            battles: [],
-            fragments: [],
-            persistentUnits: []
-        };
-        
-        document.getElementById('campaign-commander-select').value = '';
-        localStorage.removeItem('campaignState');
-        updateCampaignUI();
-    }
+  if (
+    confirm(
+      "Are you sure you want to start a new campaign? This will clear your current progress.",
+    )
+  ) {
+    campaignState = {
+      commander: null,
+      level: 1,
+      xp: 0,
+      skillChoices: [],
+      evolution: null,
+      battles: [],
+      fragments: [],
+      persistentUnits: [],
+    };
+
+    document.getElementById("campaign-commander-select").value = "";
+    localStorage.removeItem("campaignState");
+    updateCampaignUI();
+  }
 }
 
 function openFragmentSelector() {
-    const fragment = prompt('Enter fragment name to add:');
-    if (fragment && gameData.fragments.find(f => f.name.toLowerCase() === fragment.toLowerCase())) {
-        campaignState.fragments.push(fragment);
-        updateCampaignUI();
-        saveCampaign();
-    } else if (fragment) {
-        alert('Fragment not found. Please enter a valid fragment name.');
-    }
+  const fragment = prompt("Enter fragment name to add:");
+  if (
+    fragment &&
+    gameData.fragments.find(
+      (f) => f.name.toLowerCase() === fragment.toLowerCase(),
+    )
+  ) {
+    campaignState.fragments.push(fragment);
+    updateCampaignUI();
+    saveCampaign();
+  } else if (fragment) {
+    alert("Fragment not found. Please enter a valid fragment name.");
+  }
 }
 
 function addPersistentUnit() {
-    const unitName = prompt('Enter unit name to track:');
-    if (unitName && gameData.units.find(u => u.name.toLowerCase() === unitName.toLowerCase())) {
-        campaignState.persistentUnits.push({
-            name: unitName,
-            status: 'healthy',
-            buffs: [],
-            mutations: []
-        });
-        updateCampaignUI();
-        saveCampaign();
-    } else if (unitName) {
-        alert('Unit not found. Please enter a valid unit name.');
-    }
+  const unitName = prompt("Enter unit name to track:");
+  if (
+    unitName &&
+    gameData.units.find((u) => u.name.toLowerCase() === unitName.toLowerCase())
+  ) {
+    campaignState.persistentUnits.push({
+      name: unitName,
+      status: "healthy",
+      buffs: [],
+      mutations: [],
+    });
+    updateCampaignUI();
+    saveCampaign();
+  } else if (unitName) {
+    alert("Unit not found. Please enter a valid unit name.");
+  }
 }
