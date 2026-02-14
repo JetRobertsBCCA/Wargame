@@ -942,17 +942,6 @@ function loadFactions() {
   const contentEl = document.getElementById("faction-list");
   if (!contentEl) return;
 
-  const factionIcons = {
-    "iron-dominion": "⚙️",
-    "veilbound-shogunate": "⛩️",
-    "nightfang-dominion": "🩸",
-  };
-  const factionColors = {
-    "iron-dominion": "#e94560",
-    "veilbound-shogunate": "#8b5cf6",
-    "nightfang-dominion": "#dc2626",
-  };
-
   contentEl.innerHTML =
     '<div class="faction-overview-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem;"></div>';
   const grid = contentEl.querySelector(".faction-overview-grid");
@@ -962,8 +951,8 @@ function loadFactions() {
     const units = getUnitsByFaction(faction.id);
     const warMachines = units.filter((u) => u.type === "War Machine");
     const standardUnits = units.filter((u) => u.type !== "War Machine");
-    const icon = factionIcons[faction.id] || "⚔️";
-    const color = factionColors[faction.id] || "#e94560";
+    const icon = faction.icon || "⚔️";
+    const color = faction.color || "#e94560";
 
     const card = document.createElement("div");
     card.className = "card";
@@ -1027,14 +1016,8 @@ function showFactionDetail(factionId) {
     (u) => u.type === "War Machine",
   );
 
-  const factionIcons = { "iron-dominion": "⚙️", "veilbound-shogunate": "⛩️", "nightfang-dominion": "🩸" };
-  const factionColors = {
-    "iron-dominion": "#e94560",
-    "veilbound-shogunate": "#8b5cf6",
-    "nightfang-dominion": "#dc2626",
-  };
-  const icon = factionIcons[faction.id] || "⚔️";
-  const color = factionColors[faction.id] || "#e94560";
+  const icon = faction.icon || "⚔️";
+  const color = faction.color || "#e94560";
 
   const contentEl = document.getElementById("content");
   contentEl.innerHTML = `
