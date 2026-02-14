@@ -4,6 +4,7 @@
 
 // Global State
 let currentArmy = {
+  faction: null,
   commander: null,
   evolution: null,
   units: [],
@@ -311,19 +312,20 @@ const pageTemplates = {
 
   "army-builder": `<div id="army-builder-page" class="page active">
     <h2>Army Builder</h2>
-    <p>Build your army list, select your commander, and calculate points. Fragment effects are shown based on your commander's evolution path.</p>
+    <p>Select your faction, choose your commander, and build your army list.</p>
     <div class="army-builder-container">
         <div class="army-panel">
-            <div class="card"><h3>1. Select Commander</h3><select id="commander-select" class="commander-select" onchange="updateSelectedCommander()"><option value="">-- Choose a Commander --</option></select><div id="commander-preview"></div></div>
-            <div class="card"><h3>2. Select Evolution Path</h3><div class="filter-controls" id="evolution-select"><button class="filter-btn" onclick="selectEvolution('knowledge')">Knowledge</button><button class="filter-btn" onclick="selectEvolution('chaos')">Chaos</button><button class="filter-btn" onclick="selectEvolution('hybrid')">Hybrid</button></div><div id="evolution-preview"></div></div>
-            <div class="card"><h3>3. Battle Size</h3><div class="filter-controls"><button class="filter-btn" onclick="setPointsLimit(100)">Skirmish (100)</button><button class="filter-btn active" onclick="setPointsLimit(200)">Medium (200)</button><button class="filter-btn" onclick="setPointsLimit(300)">Large (300)</button><button class="filter-btn" onclick="setPointsLimit(500)">Epic (500)</button></div></div>
-            <div class="card"><h3>4. Select Units</h3><div class="filter-controls"><button class="filter-btn active" onclick="filterUnits('all')">All</button><button class="filter-btn" onclick="filterUnits('Infantry')">Infantry</button><button class="filter-btn" onclick="filterUnits('Cavalry')">Cavalry</button><button class="filter-btn" onclick="filterUnits('Support')">Support</button><button class="filter-btn" onclick="filterUnits('Specialist')">Specialist</button><button class="filter-btn" onclick="filterUnits('Artillery')">Artillery</button><button class="filter-btn" onclick="filterUnits('Scout')">Scout</button><button class="filter-btn" onclick="filterUnits('War Machine')">War Machines</button></div><div id="unit-selector" class="unit-selector"></div></div>
-            <div class="card"><h3>5. Assign Fragments</h3><div id="fragment-selector"></div><div id="fragment-effects"></div></div>
+            <div class="card"><h3>1. Select Faction</h3><div id="faction-select" class="filter-controls"></div></div>
+            <div class="card"><h3>2. Select Commander</h3><select id="commander-select" class="commander-select" onchange="updateSelectedCommander()"><option value="">-- Choose a Faction First --</option></select><div id="commander-preview"></div></div>
+            <div class="card"><h3>3. Select Evolution Path</h3><div class="filter-controls" id="evolution-select"><button class="filter-btn" onclick="selectEvolution('knowledge')">Knowledge</button><button class="filter-btn" onclick="selectEvolution('chaos')">Chaos</button><button class="filter-btn" onclick="selectEvolution('hybrid')">Hybrid</button></div><div id="evolution-preview"></div></div>
+            <div class="card"><h3>4. Battle Size</h3><div class="filter-controls"><button class="filter-btn" onclick="setPointsLimit(100)">Skirmish (100)</button><button class="filter-btn active" onclick="setPointsLimit(200)">Medium (200)</button><button class="filter-btn" onclick="setPointsLimit(300)">Large (300)</button><button class="filter-btn" onclick="setPointsLimit(500)">Epic (500)</button></div></div>
+            <div class="card"><h3>5. Select Units</h3><div class="filter-controls"><button class="filter-btn active" onclick="filterUnits('all')">All</button><button class="filter-btn" onclick="filterUnits('Infantry')">Infantry</button><button class="filter-btn" onclick="filterUnits('Cavalry')">Cavalry</button><button class="filter-btn" onclick="filterUnits('Support')">Support</button><button class="filter-btn" onclick="filterUnits('Specialist')">Specialist</button><button class="filter-btn" onclick="filterUnits('Artillery')">Artillery</button><button class="filter-btn" onclick="filterUnits('Scout')">Scout</button><button class="filter-btn" onclick="filterUnits('War Machine')">War Machines</button></div><div id="unit-selector" class="unit-selector"></div></div>
+            <div class="card"><h3>6. Assign Fragments</h3><div id="fragment-selector"></div><div id="fragment-effects"></div></div>
         </div>
         <div>
             <div class="points-display"><div>Points Used</div><div class="points-total" id="points-used">0</div><div class="points-limit">/ <span id="points-limit">200</span></div><div class="points-bar"><div class="points-fill" id="points-bar-fill" style="width: 0%"></div></div><div id="points-status" style="color: #4caf50">Ready for battle!</div></div>
             <div class="army-panel" style="margin-top: 1rem;"><h4>Your Army</h4><div id="army-commander-display"></div><hr style="border-color: #0f3460;"><div id="army-list" class="army-list"><p style="color: #888; text-align: center;">Add units to your army</p></div></div>
-            <div class="army-panel" style="margin-top: 1rem;"><h4>Army Actions</h4><button class="btn" onclick="saveArmy()" style="width: 100%; margin-bottom: 0.5rem;">💾 Save Army</button><button class="btn btn-secondary" onclick="loadArmy()" style="width: 100%; margin-bottom: 0.5rem;">📂 Load Army</button><button class="btn btn-secondary" onclick="clearArmy()" style="width: 100%;">🗑️ Clear Army</button></div>
+            <div class="army-panel" style="margin-top: 1rem;"><h4>Army Actions</h4><button class="btn" onclick="saveArmy()" style="width: 100%; margin-bottom: 0.5rem;">Save Army</button><button class="btn btn-secondary" onclick="loadArmy()" style="width: 100%; margin-bottom: 0.5rem;">Load Army</button><button class="btn btn-secondary" onclick="clearArmy()" style="width: 100%;">Clear Army</button></div>
             <div class="army-panel" style="margin-top: 1rem;"><h4>Fragment Effects Summary</h4><div id="active-fragment-effects"><p style="color: #888; font-size: 0.9rem;">Select fragments to see their effects based on your evolution path.</p></div></div>
         </div>
     </div>
@@ -1533,37 +1535,32 @@ function showFactionDetail(factionId) {
             <p style="font-style: italic; opacity: 0.85;">${faction.military_doctrine.overview}</p>
             <div style="margin-top: 1rem;">
                 <h4 style="color: #fcd34d;">Core Principles</h4>
-                ${faction.military_doctrine.core_principles
-                  .map(
-                    (p) => `
+                ${(faction.military_doctrine.core_principles || []).map((p) => typeof p === 'string' ? `
+                <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;"><li>${p}</li></div>` : `
                 <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                     <strong style="color: #fde68a;">${p.name}</strong>
                     <ul>${p.details.map((d) => `<li>${d}</li>`).join("")}</ul>
-                </div>
-                `,
-                  )
-                  .join("")}
+                </div>`).join("")}
             </div>
+            ${(faction.military_doctrine.battlefield_behavior || faction.military_doctrine.battlefield_tactics) ? `
             <div style="margin-top: 1.25rem;">
-                <h4 style="color: #fcd34d;">Battlefield Behavior</h4>
-                ${faction.military_doctrine.battlefield_behavior
-                  .map(
-                    (b) => `
+                <h4 style="color: #fcd34d;">Battlefield Tactics</h4>
+                ${(faction.military_doctrine.battlefield_behavior || faction.military_doctrine.battlefield_tactics || []).map((b) => typeof b === 'string' ? `
+                <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;"><li>${b}</li></div>` : `
                 <div style="margin-top: 0.75rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                     <strong style="color: #fde68a;">${b.name}</strong>
                     <ul>${b.details.map((d) => `<li>${d}</li>`).join("")}</ul>
-                </div>
-                `,
-                  )
-                  .join("")}
-            </div>
+                </div>`).join("")}
+            </div>` : ''}
+            ${faction.military_doctrine.strategic_notes ? `
             <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
                 <h5 style="color: #fcd34d;">Strategic Notes</h5>
-                <ul>${faction.military_doctrine.strategic_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
-            </div>
+                <ul>${(Array.isArray(faction.military_doctrine.strategic_notes) ? faction.military_doctrine.strategic_notes : [faction.military_doctrine.strategic_notes]).map((n) => `<li>${n}</li>`).join("")}</ul>
+            </div>` : ''}
+            ${faction.military_doctrine.keywords ? `
             <div style="margin-top: 0.75rem;">
                 ${faction.military_doctrine.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
-            </div>
+            </div>` : ''}
         </div>
         `
             : ""
@@ -1576,17 +1573,19 @@ function showFactionDetail(factionId) {
         <div class="card" style="border-left: 3px solid #3b82f6;">
             <h3 style="color: #93c5fd;">\ud83c\udfef War Machines / Titans</h3>
             <p style="font-style: italic; opacity: 0.85;">${faction.war_machines_lore.overview}</p>
+            ${(faction.war_machines_lore.general_characteristics || faction.war_machines_lore.characteristics) ? `
             <div style="margin-top: 1rem;">
                 <h4 style="color: #bfdbfe;">General Characteristics</h4>
-                <ul>${faction.war_machines_lore.general_characteristics.map((c) => `<li><strong>${c.trait}:</strong> ${c.detail}</li>`).join("")}</ul>
-            </div>
+                <ul>${(faction.war_machines_lore.general_characteristics || faction.war_machines_lore.characteristics || []).map((c) => typeof c === 'string' ? `<li>${c}</li>` : `<li><strong>${c.trait}:</strong> ${c.detail}</li>`).join("")}</ul>
+            </div>` : ''}
             <div style="margin-top: 1rem;">
                 <h4 style="color: #bfdbfe;">Tactical Role</h4>
-                <ul>${faction.war_machines_lore.tactical_role.map((r) => `<li>${r}</li>`).join("")}</ul>
+                ${typeof faction.war_machines_lore.tactical_role === 'string' ? `<p>${faction.war_machines_lore.tactical_role}</p>` : `<ul>${(faction.war_machines_lore.tactical_role || []).map((r) => `<li>${r}</li>`).join("")}</ul>`}
             </div>
+            ${faction.war_machines_lore.keywords ? `
             <div style="margin-top: 0.75rem;">
                 ${faction.war_machines_lore.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
-            </div>
+            </div>` : ''}
         </div>
         `
             : ""
@@ -1788,6 +1787,14 @@ function showFactionDetail(factionId) {
                 : ""
             }
             ${
+              faction.culture_philosophy.pillar_expansion
+                ? `
+            <h4>Core Beliefs</h4>
+            <ul>${faction.culture_philosophy.pillar_expansion.map((p) => `<li>${p}</li>`).join("")}</ul>
+            `
+                : ""
+            }
+            ${
               faction.culture_philosophy.ritual_practices
                 ? `
             <h4>Ritual Practices</h4>
@@ -1796,10 +1803,10 @@ function showFactionDetail(factionId) {
                 : ""
             }
             ${
-              faction.culture_philosophy.cultural_practices
+              (faction.culture_philosophy.cultural_practices || faction.culture_philosophy.practices)
                 ? `
             <h4>Cultural Practices</h4>
-            <ul>${faction.culture_philosophy.cultural_practices.map((r) => `<li>${r}</li>`).join("")}</ul>
+            <ul>${(faction.culture_philosophy.cultural_practices || faction.culture_philosophy.practices).map((r) => `<li>${r}</li>`).join("")}</ul>
             `
                 : ""
             }
@@ -1817,12 +1824,12 @@ function showFactionDetail(factionId) {
         <div class="card" style="border-left: 3px solid #c49b6e;">
             <h3 style="color: #c49b6e;">&#9876; Military Doctrine & Traditions</h3>
             <h4>Battlefield Philosophy</h4>
-            <ul>${faction.military_traditions.battlefield_philosophy.map((p) => `<li>${p}</li>`).join("")}</ul>
+            ${typeof faction.military_traditions.battlefield_philosophy === 'string' ? `<p>${faction.military_traditions.battlefield_philosophy}</p>` : `<ul>${(faction.military_traditions.battlefield_philosophy || []).map((p) => `<li>${p}</li>`).join("")}</ul>`}
             ${
-              faction.military_traditions.ritual_warfare
+              (faction.military_traditions.ritual_warfare || faction.military_traditions.rites_of_warfare)
                 ? `
-            <h4>Ritual Warfare</h4>
-            <ul>${faction.military_traditions.ritual_warfare.map((r) => `<li>${r}</li>`).join("")}</ul>
+            <h4>Rites of Warfare</h4>
+            <ul>${(faction.military_traditions.ritual_warfare || faction.military_traditions.rites_of_warfare).map((r) => `<li>${r}</li>`).join("")}</ul>
             `
                 : ""
             }
@@ -1834,8 +1841,9 @@ function showFactionDetail(factionId) {
             `
                 : ""
             }
+            ${(faction.military_traditions.unit_naming_conventions || faction.military_traditions.naming_conventions) ? `
             <h4>Unit Naming Conventions</h4>
-            <ul>${faction.military_traditions.unit_naming_conventions.map((n) => `<li>${n}</li>`).join("")}</ul>
+            <ul>${(faction.military_traditions.unit_naming_conventions || faction.military_traditions.naming_conventions).map((n) => `<li>${n}</li>`).join("")}</ul>` : ''}
         </div>
         `
             : ""
@@ -1860,7 +1868,7 @@ function showFactionDetail(factionId) {
               )
               .join("")}
             <h4>Battlefield Features</h4>
-            <ul>${faction.geography_strongholds.battlefield_features.map((f) => `<li>${f}</li>`).join("")}</ul>
+            <ul>${faction.geography_strongholds.battlefield_features.map((f) => typeof f === 'string' ? `<li>${f}</li>` : `<li><strong>${f.name}:</strong> ${f.description}</li>`).join("")}</ul>
         </div>
         `
             : ""
@@ -2582,24 +2590,73 @@ function loadFragments() {
 // ==========================================
 
 function initArmyBuilder() {
-  // Populate commander select
+  // Populate faction selector
+  const factionContainer = document.getElementById("faction-select");
+  if (factionContainer) {
+    factionContainer.innerHTML = "";
+    gameData.factions.forEach((f) => {
+      const btn = document.createElement("button");
+      btn.className = "filter-btn";
+      btn.textContent = (f.icon || "") + " " + f.name;
+      btn.onclick = () => selectArmyFaction(f.id);
+      factionContainer.appendChild(btn);
+    });
+  }
+
+  // Leave commander select empty until faction is chosen
   const commanderSelect = document.getElementById("commander-select");
   if (commanderSelect) {
-    gameData.commanders.forEach((c) => {
+    commanderSelect.innerHTML = '<option value="">-- Choose a Faction First --</option>';
+  }
+
+  // Clear unit and fragment selectors
+  const unitContainer = document.getElementById("unit-selector");
+  if (unitContainer) unitContainer.innerHTML = '<p style="color: #555;">Select a faction and commander first.</p>';
+
+  const fragContainer = document.getElementById("fragment-selector");
+  if (fragContainer) fragContainer.innerHTML = '<p style="color: #555;">Select a faction first.</p>';
+
+  // Update display
+  updateArmyDisplay();
+}
+
+function selectArmyFaction(factionId) {
+  // Clear army when switching faction
+  currentArmy.faction = factionId;
+  currentArmy.commander = null;
+  currentArmy.evolution = null;
+  currentArmy.units = [];
+  currentArmy.fragments = [];
+
+  // Highlight selected faction button
+  document.querySelectorAll("#faction-select .filter-btn").forEach((b) => b.classList.remove("active"));
+  event.target.classList.add("active");
+
+  // Populate commander dropdown with only this faction's commanders
+  const commanderSelect = document.getElementById("commander-select");
+  if (commanderSelect) {
+    const factionCommanders = getCommandersByFaction(factionId);
+    commanderSelect.innerHTML = '<option value="">-- Choose a Commander --</option>';
+    factionCommanders.forEach((c) => {
       const option = document.createElement("option");
       option.value = c.name;
-      option.textContent = `${c.name}${c.title ? " - " + c.title : ""}`;
+      option.textContent = `${c.name}${c.title ? " — " + c.title : ""}${c.points_cost ? " (" + c.points_cost + " pts)" : ""}`;
       commanderSelect.appendChild(option);
     });
   }
 
-  // Load units
+  // Clear commander preview
+  const preview = document.getElementById("commander-preview");
+  if (preview) preview.innerHTML = "";
+
+  // Clear evolution preview
+  const evoPreview = document.getElementById("evolution-preview");
+  if (evoPreview) evoPreview.innerHTML = "";
+  document.querySelectorAll("#evolution-select .filter-btn").forEach((b) => b.classList.remove("active"));
+
+  // Load faction-specific units and fragments
   loadUnitSelector("all");
-
-  // Load fragments
   loadFragmentSelector();
-
-  // Update display
   updateArmyDisplay();
 }
 
@@ -2609,17 +2666,33 @@ function loadUnitSelector(filterType) {
 
   container.innerHTML = "";
 
+  if (!currentArmy.faction) {
+    container.innerHTML = '<p style="color: #555;">Select a faction first.</p>';
+    return;
+  }
+
+  // Get units for the selected faction only
+  const factionUnits = getUnitsByFaction(currentArmy.faction);
   const filteredUnits =
     filterType === "all"
-      ? gameData.units
-      : gameData.units.filter((u) => u.type === filterType);
+      ? factionUnits
+      : factionUnits.filter((u) => u.type === filterType);
+
+  // Get signature unit names from selected commander
+  const signatureUnits = (currentArmy.commander && currentArmy.commander.signature_units) || [];
+
+  if (filteredUnits.length === 0) {
+    container.innerHTML = '<p style="color: #555;">No units of this type for this faction.</p>';
+    return;
+  }
 
   filteredUnits.forEach((unit) => {
+    const isSignature = signatureUnits.includes(unit.name);
     const div = document.createElement("div");
-    div.className = "unit-option";
+    div.className = "unit-option" + (isSignature ? " signature-unit" : "");
     div.onclick = () => addUnitToArmy(unit.name);
     div.innerHTML = `
-            <span class="unit-name">${unit.name}</span>
+            <span class="unit-name">${isSignature ? "★ " : ""}${unit.name}</span>
             <span class="unit-cost">${unit.points_cost} pts</span>
         `;
     container.appendChild(div);
@@ -2630,13 +2703,20 @@ function loadFragmentSelector() {
   const container = document.getElementById("fragment-selector");
   if (!container) return;
 
+  if (!currentArmy.faction) {
+    container.innerHTML = '<p style="color: #555;">Select a faction first.</p>';
+    return;
+  }
+
+  const factionFragments = getFragmentsByFaction(currentArmy.faction);
+
   container.innerHTML = '<div class="unit-selector">';
 
-  gameData.fragments.forEach((fragment) => {
+  factionFragments.forEach((fragment) => {
     const isSelected = currentArmy.fragments.includes(fragment.name);
     container.innerHTML += `
-            <div class="unit-option ${isSelected ? "selected" : ""}" onclick="toggleFragment('${fragment.name}')">
-                <span class="unit-name">💎 ${fragment.name}</span>
+            <div class="unit-option ${isSelected ? "selected" : ""}" onclick="toggleFragment('${fragment.name.replace(/'/g, "\\'")}')">
+                <span class="unit-name">${fragment.name}</span>
                 <span class="unit-cost">${fragment.risk_instability}</span>
             </div>
         `;
@@ -2647,7 +2727,7 @@ function loadFragmentSelector() {
 
 function filterUnits(type) {
   document
-    .querySelectorAll("#army-builder-page .filter-controls .filter-btn")
+    .querySelectorAll("#army-builder-page .card:nth-child(5) .filter-controls .filter-btn")
     .forEach((b) => b.classList.remove("active"));
   event.target.classList.add("active");
   loadUnitSelector(type);
@@ -2660,19 +2740,31 @@ function updateSelectedCommander() {
 
   const preview = document.getElementById("commander-preview");
   if (preview && commander) {
+    const faction = getFactionById(commander.faction);
     preview.innerHTML = `
-            <div style="margin-top: 1rem; padding: 1rem; background: #0f3460; border-radius: 8px;">
+            <div style="margin-top: 1rem; padding: 1rem; background: var(--bg-inset, #050505); border: 1px solid var(--border, #1a3a1a);">
                 <strong>${commander.name}</strong> - ${commander.theme}
+                ${commander.signature_units ? `<div style="margin-top: 0.5rem; font-size: 0.8rem; color: var(--amber, #ffb000);">★ Signature Units: ${commander.signature_units.join(", ")}</div>` : ""}
                 <div class="stats-grid" style="margin-top: 0.5rem;">
                     <div class="stat-item"><span class="stat-value">${commander.base_stats.Command}</span><span class="stat-label">CMD</span></div>
                     <div class="stat-item"><span class="stat-value">${commander.base_stats.Knowledge}</span><span class="stat-label">KNW</span></div>
                     <div class="stat-item"><span class="stat-value">${commander.base_stats.Leadership}</span><span class="stat-label">LDR</span></div>
                 </div>
                 ${commander.battle_stats ? `
-                <div style="font-size: 0.7rem; color: #888; margin-top: 0.5rem;">Battlefield: ATK ${commander.battle_stats.ATK} | DEF ${commander.battle_stats.DEF} | HP ${commander.battle_stats.HP} | MOV ${commander.battle_stats.MOV}\" | RNG ${commander.battle_stats.RNG}\" | MOR ${commander.battle_stats.MOR}</div>` : ""}
+                <div style="font-size: 0.7rem; color: #555; margin-top: 0.5rem;">Battlefield: ATK ${commander.battle_stats.ATK} | DEF ${commander.battle_stats.DEF} | HP ${commander.battle_stats.HP} | MOV ${commander.battle_stats.MOV}" | RNG ${commander.battle_stats.RNG}" | MOR ${commander.battle_stats.MOR}</div>` : ""}
+                ${commander.points_cost ? `<div style="font-size: 0.85rem; margin-top: 0.5rem; color: var(--green, #33ff33);">${commander.points_cost} pts</div>` : ""}
             </div>
         `;
+  } else if (preview) {
+    preview.innerHTML = "";
   }
+
+  // Refresh unit selector to show/highlight signature units
+  loadUnitSelector("all");
+  // Reset unit type filter buttons
+  document.querySelectorAll("#army-builder-page .card:nth-child(5) .filter-controls .filter-btn").forEach((b, i) => {
+    b.classList.toggle("active", i === 0);
+  });
 
   updateArmyDisplay();
 }
@@ -2709,7 +2801,7 @@ function setPointsLimit(limit) {
   document.getElementById("points-limit").textContent = limit;
 
   document
-    .querySelectorAll("#army-builder-page .card:nth-child(3) .filter-btn")
+    .querySelectorAll("#army-builder-page .card:nth-child(4) .filter-btn")
     .forEach((b) => b.classList.remove("active"));
   event.target.classList.add("active");
 
@@ -2858,6 +2950,31 @@ function loadArmy() {
   if (saved) {
     currentArmy = JSON.parse(saved);
 
+    // Restore faction selection
+    if (currentArmy.faction) {
+      document.querySelectorAll("#faction-select .filter-btn").forEach((b) => {
+        const factionName = gameData.factions.find(f => f.id === currentArmy.faction);
+        if (factionName && b.textContent.includes(factionName.name)) {
+          b.classList.add("active");
+        } else {
+          b.classList.remove("active");
+        }
+      });
+
+      // Repopulate commander dropdown for faction
+      const commanderSelect = document.getElementById("commander-select");
+      if (commanderSelect) {
+        const factionCommanders = getCommandersByFaction(currentArmy.faction);
+        commanderSelect.innerHTML = '<option value="">-- Choose a Commander --</option>';
+        factionCommanders.forEach((c) => {
+          const option = document.createElement("option");
+          option.value = c.name;
+          option.textContent = `${c.name}${c.title ? " — " + c.title : ""}${c.points_cost ? " (" + c.points_cost + " pts)" : ""}`;
+          commanderSelect.appendChild(option);
+        });
+      }
+    }
+
     // Update UI
     const select = document.getElementById("commander-select");
     if (select && currentArmy.commander) {
@@ -2880,6 +2997,7 @@ function loadArmy() {
 function clearArmy() {
   if (confirm("Are you sure you want to clear your army?")) {
     currentArmy = {
+      faction: null,
       commander: null,
       evolution: null,
       units: [],
@@ -2887,9 +3005,18 @@ function clearArmy() {
       pointsLimit: 200,
     };
 
-    document.getElementById("commander-select").value = "";
+    // Reset faction buttons
+    document.querySelectorAll("#faction-select .filter-btn").forEach((b) => b.classList.remove("active"));
+
+    document.getElementById("commander-select").innerHTML = '<option value="">-- Choose a Faction First --</option>';
     document.getElementById("commander-preview").innerHTML = "";
     document.getElementById("evolution-preview").innerHTML = "";
+    document.querySelectorAll("#evolution-select .filter-btn").forEach((b) => b.classList.remove("active"));
+    document.getElementById("points-limit").textContent = "200";
+
+    const unitContainer = document.getElementById("unit-selector");
+    if (unitContainer) unitContainer.innerHTML = '<p style="color: #555;">Select a faction and commander first.</p>';
+
     loadFragmentSelector();
     updateArmyDisplay();
     updateFragmentEffects();
