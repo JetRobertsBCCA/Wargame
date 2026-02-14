@@ -87,17 +87,18 @@ const pageTemplates = {
     <div class="card updates-card">
         <h3>📢 Latest Updates</h3>
         <ul class="update-list">
+            <li><span class="update-date">Jun 2026</span> Nightfang Dominion — plague/corruption vampire tiger faction with 13 commanders, 60 units, 85 cards, 15 fragments</li>
             <li><span class="update-date">Feb 2026</span> Veilbound Shogunate faction with 13 commanders fully documented</li>
             <li><span class="update-date">Feb 2026</span> Iron Dominion faction fully documented with 11 commanders</li>
-            <li><span class="update-date">Feb 2026</span> 100+ units including war machines across both factions</li>
-            <li><span class="update-date">Feb 2026</span> Fragment catalog with 15 unique fragments</li>
+            <li><span class="update-date">Feb 2026</span> 160+ units including war machines across all three factions</li>
+            <li><span class="update-date">Feb 2026</span> Fragment catalog with 45 unique fragments</li>
             <li><span class="update-date">Feb 2026</span> Commander RPG progression with branching skill trees</li>
             <li><span class="update-date">Feb 2026</span> Interactive Army Builder & Campaign Tracker tools</li>
         </ul>
     </div>
     <div class="card">
         <h3>🌍 The War Crier Universe</h3>
-        <p>In a world where clockwork precision meets cosmic fragment energy, armies clash across steam-shrouded battlefields. The <strong>Iron Dominion</strong> fields human/clockwork hybrids wielding fragment-infused technology, while the <strong>Veilbound Shogunate</strong> channels eldritch cosmic rituals through masked samurai warriors.</p>
+        <p>In a world where clockwork precision meets cosmic fragment energy, armies clash across steam-shrouded battlefields. The <strong>Iron Dominion</strong> fields human/clockwork hybrids wielding fragment-infused technology, the <strong>Veilbound Shogunate</strong> channels eldritch cosmic rituals through masked samurai warriors, and the <strong>Nightfang Dominion</strong> unleashes plague-corrupted vampire tigers and thrall armies that spread the Scarlet Blight across every battlefield.</p>
         <p>Every commander faces a fundamental choice: embrace <strong>Knowledge</strong> for controlled, precise power, or surrender to <strong>Chaos</strong> for devastating but unpredictable effects.</p>
     </div>
     <div class="quick-ref-grid">
@@ -154,66 +155,157 @@ const pageTemplates = {
     
     <div id="rules-nav" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">
         <button class="filter-btn active" onclick="showRulesSection('all', this)">All Sections</button>
+        <button class="filter-btn" onclick="showRulesSection('pregame', this)">Pre-Game Setup</button>
         <button class="filter-btn" onclick="showRulesSection('army', this)">Army Building</button>
         <button class="filter-btn" onclick="showRulesSection('turn', this)">Turn Structure</button>
+        <button class="filter-btn" onclick="showRulesSection('movement', this)">Movement</button>
         <button class="filter-btn" onclick="showRulesSection('combat', this)">Combat</button>
+        <button class="filter-btn" onclick="showRulesSection('positioning', this)">LOS & Positioning</button>
+        <button class="filter-btn" onclick="showRulesSection('engagement', this)">Engagement & Duels</button>
+        <button class="filter-btn" onclick="showRulesSection('morale', this)">Morale</button>
         <button class="filter-btn" onclick="showRulesSection('cards', this)">Cards & Decks</button>
         <button class="filter-btn" onclick="showRulesSection('factionmech', this)">Faction Mechanics</button>
-        <button class="filter-btn" onclick="showRulesSection('victory', this)">Victory</button>
+        <button class="filter-btn" onclick="showRulesSection('victory', this)">Victory & Terrain</button>
+        <button class="filter-btn" onclick="showRulesSection('keywords', this)">Keywords</button>
+        <button class="filter-btn" onclick="showRulesSection('scenarios', this)">Scenarios</button>
         <button class="filter-btn" onclick="showRulesSection('stats', this)">Stat Reference</button>
     </div>
     <div id="rules-content"></div>
 </div>`,
 
   "sample-gameplay": `<div id="sample-gameplay-page" class="page active">
-    <h2>Sample Gameplay: Skirmish at the Clockwork Nexus</h2>
+    <h2>⚔️ Sample Battle: The Bridge of Iron and Spirits</h2>
+    <p style="color: #aaa;">A complete turn-by-turn walkthrough using real unit stats, card costs, and combat resolution.</p>
+    
     <div class="card">
-        <h3>Scenario Overview</h3>
-        <ul><li><strong>Battle Size:</strong> 150 points per player</li><li><strong>Player Commander:</strong> Lord Calculon (Knowledge Evolution)</li><li><strong>Opponent Commander:</strong> Lady Cogsworth (Chaos Evolution)</li></ul>
+        <h3>📋 Battle Setup</h3>
+        <ul>
+            <li><strong>Battle Size:</strong> Standard (200 pts per side)</li>
+            <li><strong>Victory Condition:</strong> Annihilation (destroy all enemy units or the enemy Commander)</li>
+            <li><strong>Table:</strong> 36" × 48"</li>
+            <li><strong>Terrain:</strong> Bridge at center (Open), forest on east flank (Light Cover), ruins on west (Heavy Cover), river (Difficult Terrain) running north-south</li>
+            <li><strong>Max Turns:</strong> 6</li>
+        </ul>
     </div>
+
     <div class="card">
-        <h3>Step 1 — Army Setup</h3>
-        <h4>Lord Calculon's Army (Iron Dominion, 150 points)</h4>
-        <p><strong>Commander:</strong> Lord Calculon (Level 10, Knowledge Evolution)</p>
-        <p><strong>Units:</strong></p>
-        <ul><li>10 Clockwork Infantry (20 pts)</li><li>5 Elite Vanguard (20 pts)</li><li>4 Gearwright Engineers (12 pts)</li><li>6 Steam Artillery Crew (30 pts)</li><li>5 Clockwork Cavalry (20 pts)</li></ul>
-        <p><strong>War Machines:</strong> 1 Clockwork Titan (12 pts), 1 Steam Colossus (10 pts)</p>
-        <p><strong>Fragments:</strong> Core Fragment, Overclock Node</p>
-        <hr>
-        <h4>Lady Cogsworth's Army (Iron Dominion, 150 points)</h4>
-        <p><strong>Commander:</strong> Lady Cogsworth (Level 10, Chaos Evolution)</p>
-        <p><strong>Units:</strong></p>
-        <ul><li>8 Clockwork Cavalry (32 pts)</li><li>6 Steam Recon Flyers (18 pts)</li><li>5 Aether Infused Soldiers (15 pts)</li><li>4 Experimental Constructs (16 pts)</li></ul>
-        <p><strong>War Machines:</strong> 1 Chrono Walker (14 pts), 1 Arcane Steam Golem (11 pts)</p>
-        <p><strong>Fragments:</strong> Fragment Swarm, Reality Shard</p>
+        <h3>🏗️ Army Lists</h3>
+        
+        <h4 style="color: #e94560;">⚙️ Iron Dominion — Commander Ironweld (24 pts)</h4>
+        <p style="color: #aaa;">ATK 6 | DEF 5 | HP 11 | MOV 4" | RNG 3" | MOR 10 — An aggressive frontline commander</p>
+        <table style="width:100%; border-collapse: collapse; margin: 0.5rem 0;">
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.15);"><th style="text-align:left; padding: 4px; color: #e94560;">Unit</th><th style="padding: 4px; color: #e94560;">Qty</th><th style="padding: 4px; color: #e94560;">Pts Each</th><th style="padding: 4px; color: #e94560;">Stats (ATK/DEF/HP/MOV/RNG)</th></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Clockwork Infantry</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">2</td><td style="padding: 4px; color: #ccc;">2/4/2/5"/1" — Grid Node, Fearless</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Elite Vanguard</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">4</td><td style="padding: 4px; color: #ccc;">4/4/2/5"/1" — Grid Node</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Aether Infused Soldiers</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">3</td><td style="padding: 4px; color: #ccc;">3/3/2/6"/1" — Grid Node, Fragment Infused</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Steam Artillery Crew</td><td style="text-align:center; padding: 4px;">2</td><td style="text-align:center; padding: 4px;">5</td><td style="padding: 4px; color: #ccc;">4/3/2/3"/24" — Grid Node, Blast 2"</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Gearwright Engineers</td><td style="text-align:center; padding: 4px;">2</td><td style="text-align:center; padding: 4px;">3</td><td style="padding: 4px; color: #ccc;">1/3/2/5"/1" — Repair, Grid Node</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Scouts / Recon</td><td style="text-align:center; padding: 4px;">2</td><td style="text-align:center; padding: 4px;">1</td><td style="padding: 4px; color: #ccc;">1/3/1/8"/8" — Scout, Spotter</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Clockwork Titan (War Machine)</td><td style="text-align:center; padding: 4px;">1</td><td style="text-align:center; padding: 4px;">14</td><td style="padding: 4px; color: #ccc;">6/5/8/4"/1" — Towering, Grid Anchor, Siege</td></tr>
+        </table>
+        <p style="color: #aaa; font-size: 0.85rem;"><strong>Subtotal:</strong> 24 + 6 + 12 + 9 + 10 + 6 + 2 + 14 = 83 pts</p>
+        <p style="color: #aaa; font-size: 0.85rem;">+ 3× Mechanized Infantry (9) + 3× Siege Infantry (12) + 3× Sharpshooters (6) + 3× Clockwork Infantry (6) + 2× Infantry Regiment (2) = 118 pts</p>
+        <p style="color: #e94560; font-weight: bold;">Grand Total: 201 pts | 30 models + Commander</p>
+        <p><strong>Fragments:</strong> Core Fragment (1 charge, +1 ATK to adjacent unit), Overclock Node (2 charges, enhance War Machine activation)</p>
+        <p><strong>Deck (15 cards):</strong> Coordinated Assault (3 CP), Strategic Advance (2 CP), Calculated Strike (1 CP), and 12 others from Ironweld's 20-card pool</p>
+
+        <hr style="border-color: rgba(255,255,255,0.1); margin: 1.5rem 0;">
+
+        <h4 style="color: #a78bfa;">🌙 Veilbound Shogunate — Ritual Captain Akikaze (19 pts)</h4>
+        <p style="color: #aaa;">ATK 5 | DEF 3 | HP 9 | MOV 5" | RNG 6" | MOR 10 — A ritual/Flow-focused commander</p>
+        <table style="width:100%; border-collapse: collapse; margin: 0.5rem 0;">
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.15);"><th style="text-align:left; padding: 4px; color: #a78bfa;">Unit</th><th style="padding: 4px; color: #a78bfa;">Qty</th><th style="padding: 4px; color: #a78bfa;">Pts Each</th><th style="padding: 4px; color: #a78bfa;">Stats (ATK/DEF/HP/MOV/RNG)</th></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Starblade Samurai</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">4</td><td style="padding: 4px; color: #ccc;">4/4/2/5"/1"</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Temple Defenders</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">3</td><td style="padding: 4px; color: #ccc;">2/5/3/4"/1"</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Shrine Wardens</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">2</td><td style="padding: 4px; color: #ccc;">2/4/2/5"/1"</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Dreampiercer Archers</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">4</td><td style="padding: 4px; color: #ccc;">3/3/2/5"/20"</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Star Serpent Lancers (Cavalry)</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">5</td><td style="padding: 4px; color: #ccc;">4/4/2/9"/1"</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Spirit Healer Monks</td><td style="text-align:center; padding: 4px;">2</td><td style="text-align:center; padding: 4px;">3</td><td style="padding: 4px; color: #ccc;">0/3/2/5"/1" — Heal</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Ink Dragon Scouts</td><td style="text-align:center; padding: 4px;">2</td><td style="text-align:center; padding: 4px;">4</td><td style="padding: 4px; color: #ccc;">2/3/2/9"/8" — Scout</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Veiled Ashigaru</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">1</td><td style="padding: 4px; color: #ccc;">2/3/1/5"/1"</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Moonlit Duelists</td><td style="text-align:center; padding: 4px;">3</td><td style="text-align:center; padding: 4px;">3</td><td style="padding: 4px; color: #ccc;">3/4/2/6"/1"</td></tr>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);"><td style="padding: 4px;">Shrine Dragon (War Machine)</td><td style="text-align:center; padding: 4px;">1</td><td style="text-align:center; padding: 4px;">14</td><td style="padding: 4px; color: #ccc;">7/4/10/8"/12" — Fly, Towering, Blast 3"</td></tr>
+        </table>
+        <p style="color: #a78bfa; font-weight: bold;">Total: 19 + 12 + 9 + 6 + 12 + 15 + 6 + 8 + 3 + 9 + 14 = 113 pts — plus 3× Inkblade Initiates (3), 3× Lotus Ascetics (12), 3× Mask Bearers (6) = 200 pts | 35 models + Commander</p>
+        <p><strong>Fragments:</strong> Spirit Thread (1 charge, +1 ATK to Spirit unit), Kitsune Charm (2 charges, force reroll)</p>
+        <p><strong>Stances:</strong> All infantry start in Balanced Stance. May switch to Revelation or Honor during Command Phase.</p>
     </div>
+
     <div class="card">
-        <h3>Step 2 — Tactical Layer Setup</h3>
-        <p><strong>Battlefield:</strong> Industrial Clockwork Nexus</p>
-        <p><strong>Terrain Hazards:</strong> Steam vents, conveyor belts, fragment shards</p>
-        <h4>Commander Cards Available</h4>
-        <ul><li><strong>Calculon:</strong> Coordinated Strike (precision attacks), Overclocked Engines (war machine efficiency)</li><li><strong>Cogsworth:</strong> Unstable Skirmisher (random AoE), Fragment Conduit (warped battlefield)</li></ul>
+        <h3>🎲 Pre-Game Sequence</h3>
+        <ol>
+            <li><strong>Agree on Parameters:</strong> Standard 200 pts, Annihilation, 6 terrain pieces</li>
+            <li><strong>Reveal Army Lists:</strong> Both players show lists simultaneously — open information</li>
+            <li><strong>Place Terrain:</strong> Players alternate placing 3 terrain each. Bridge center, forest east, ruins west, river north-south</li>
+            <li><strong>Roll for Initiative:</strong> Iron Dominion rolls 4, Veilbound rolls 6. Veilbound chooses to deploy second.</li>
+            <li><strong>Deploy:</strong> Iron Dominion deploys first (alternating units). Scouts deploy 6" ahead. Veilbound deploys second → takes Turn 1</li>
+            <li><strong>Draw Opening Hand:</strong> Both players shuffle their 15-card deck, draw 5 cards. Akikaze mulligans, shuffles, draws 5 new cards.</li>
+        </ol>
     </div>
+
     <div class="card">
-        <h3>Step 3 — Sample Turn Sequence</h3>
-        <h4>Turn 1</h4>
-        <ul><li>Calculon deploys Clockwork Infantry at central corridor; activates Core Fragment (stable +1 attack)</li><li>Lady Cogsworth moves Cavalry flanking; triggers Fragment Swarm, causing unpredictable AoE nearby</li></ul>
-        <h4>Turn 2</h4>
-        <ul><li>Calculon uses Overclock Node → Clockwork Titan attacks enemy rear; damage +2</li><li>Lady Cogsworth activates Reality Shard → terrain shift causes Calculon's Cavalry to lose movement this turn</li></ul>
-        <h4>Turn 3 — Tactical Zoom-In</h4>
-        <ul><li>Calculon's Elite Vanguard confronts Cogsworth's Experimental Constructs</li><li><strong>Fragment interaction:</strong> Knowledge Evolution → precise bonus → constructs take extra damage</li><li><strong>Cogsworth's Chaos Evolution:</strong> Experimental Constructs trigger random AoE → minor friendly collateral</li></ul>
-        <h4>Turn 4</h4>
-        <ul><li>Clockwork Titan smashes through enemy lines, AoE hit on 2 units</li><li>Chrono Walker warps activation order; Calculon's Engineers delayed</li></ul>
-        <h4>Turn 5</h4>
-        <ul><li>Calculon coordinates Cavalry + Vanguard using Coordinated Strike card → double attacks</li><li>Cogsworth uses Unstable Skirmisher → Fragment interaction boosts Cavalry speed</li></ul>
+        <h3>🔄 Turn 1 — Opening Moves</h3>
+        
+        <h4 style="color: #a78bfa;">Veilbound Shogunate (Active Player)</h4>
+        <p><strong>Command Phase:</strong> Akikaze generates 6 CP. Draws 2 cards (hand now 7). Declares Starblade Samurai switch to Revelation Stance (+1 ATK, −1 DEF). Adds Ritual Flow from surviving units to the Flow Pool.</p>
+        <p><strong>Movement Phase:</strong> Star Serpent Lancers move 9" up east flank (through forest = Light Cover). Starblade Samurai advance 5" toward the bridge. Ink Dragon Scouts (deployed 6" ahead via Scout) move 9" to spot for the Dreampiercer Archers.</p>
+        <p><strong>Combat Phase:</strong> Dreampiercer Archers (RNG 20") fire at the Clockwork Titan across the table. ATK 3 dice each, 3 archers fire. Roll: 9d6 → 1, 2, 3, 4, 4, 5, 5, 6, 6. Titan DEF is 5. Hits: 5, 5, 6, 6 = 4 hits. The two 6s are criticals (2 dmg each). Total damage: <strong>6 HP</strong> to the Titan (8 HP → 2 HP remaining!).</p>
+        <p><strong>End Phase:</strong> No morale checks needed (no VB units took damage). Flow Pool accumulates.</p>
+
+        <hr style="border-color: rgba(255,255,255,0.05); margin: 1rem 0;">
+
+        <h4 style="color: #e94560;">Iron Dominion (Active Player)</h4>
+        <p><strong>Command Phase:</strong> Ironweld generates 9 CP. Draws 2 cards (hand now 7). Grid Cohesion check: 3 Clockwork Infantry within 3" = Grid Active (+1 ATK). Ironweld plays <strong>Calculated Strike</strong> (1 CP) on the Steam Artillery — they may reroll misses this turn. (8 CP remaining)</p>
+        <p><strong>Movement Phase:</strong> Clockwork Titan limps forward 4" (badly damaged, needs repair). Gearwright Engineers move 5" to be adjacent. Scouts advance 8" toward the bridge. Elite Vanguard move 5" toward center.</p>
+        <p><strong>Combat Phase:</strong> Steam Artillery Crew (RNG 24") targets Starblade Samurai at the bridge. ATK 4 each, 2 artillery fire. Roll: 8d6 → 1, 1, 2, 3, 4, 5, 5, 6. Samurai in Revelation Stance: DEF is 4−1=3. Hits: 3, 4, 5, 5, 6 = 5 hits! The 6 is critical (+1 dmg). Total: <strong>6 damage</strong> to 3 Starblade Samurai (2 HP each = 6 HP pool). Two Samurai destroyed, third at 2 HP. Ironweld uses Calculated Strike to reroll misses (1, 1, 2) → 3, 4, 6 = 3 more hits → third Samurai destroyed!</p>
+        <p><strong>End Phase:</strong> Gearwright Engineers use Repair to restore 1 HP to the Clockwork Titan (2 → 3 HP). No morale checks (Clockwork Infantry are Fearless).</p>
     </div>
+
     <div class="card">
-        <h3>Step 4 — Outcome</h3>
-        <ul><li>Calculon's Knowledge evolution provided stable, predictable damage</li><li>Cogsworth's Chaos evolution introduced high-risk battlefield changes</li><li>Fragments directly influenced battle flow</li><li>Tactical zoom-ins added emergent RPG-style gameplay</li><li>Multi-day campaign: surviving units retain buffs/damage, XP awarded</li></ul>
+        <h3>🔄 Turn 2 — The Clash at the Bridge</h3>
+        
+        <h4 style="color: #a78bfa;">Veilbound Shogunate</h4>
+        <p><strong>Command Phase:</strong> Akikaze generates 6 CP. Draws 2 cards. Switches Temple Defenders to Honor Stance (+1 DEF, −1 ATK, cannot be flanked). Spends Spirit Thread fragment (1 charge) — grants +1 ATK to the Star Serpent Lancers.</p>
+        <p><strong>Movement Phase:</strong> Star Serpent Lancers <strong>Charge!</strong> They move 9" in a straight line toward Ironweld's Elite Vanguard, ending within 1" → Engaged. Charge grants +1 ATK die. Temple Defenders advance 4" to hold the bridge in Honor Stance.</p>
+        <p><strong>Combat Phase:</strong> Star Serpent Lancers (ATK 4 + 1 Charge + 1 Spirit Thread = <strong>6 dice</strong>) attack Elite Vanguard (DEF 4). Roll 6d6: 2, 3, 4, 5, 5, 6. Hits: 4, 5, 5, 6 = 4 hits (6 is critical = 2 dmg). Total: <strong>5 damage</strong>. Elite Vanguard has 2 HP → destroyed! Lancers Consolidate 2" toward the next Vanguard.</p>
+        <p><strong>End Phase:</strong> No morale issues. Flow Pool rises past Awakened threshold (+1 to all Ritual abilities).</p>
+
+        <hr style="border-color: rgba(255,255,255,0.05); margin: 1rem 0;">
+
+        <h4 style="color: #e94560;">Iron Dominion</h4>
+        <p><strong>Command Phase:</strong> Ironweld generates 9 CP. Draws 2 cards. Plays <strong>Coordinated Assault</strong> (3 CP) — all units within 6" of Ironweld attacking the same target get +1 ATK die. (6 CP remaining)</p>
+        <p><strong>Movement Phase:</strong> 2 remaining Elite Vanguard move toward the Lancers. Ironweld advances 4" into range (RNG 3"). Aether Infused Soldiers move 6" through ruins (Heavy Cover, +2 DEF vs ranged).</p>
+        <p><strong>Combat Phase:</strong> <em>Ranged:</em> Ironweld fires at Star Serpent Lancers. ATK 6 + 1 (Coordinated Assault) = 7 dice vs DEF 4. Roll 7d6: 1, 3, 4, 4, 5, 6, 6. Hits: 4, 4, 5, 6, 6 = 5 hits (two 6s = 2 extra dmg). Total: <strong>7 damage</strong>. Lancers have 2 HP each — 3 Lancers destroyed, 1 damage wasted (no spillover). <em>Melee:</em> Elite Vanguard engages remaining targets.</p>
+        <p><strong>End Phase:</strong> Grid Fortified bonus activates (3+ ID units including Support within 3" = +1 ATK and +1 DEF).</p>
     </div>
+
     <div class="card">
-        <h3>Step 5 — Lessons</h3>
-        <ul><li><strong>Commander evolution matters:</strong> Knowledge favors control; Chaos favors risk/reward</li><li><strong>Fragment choice is strategic:</strong> Combining fragments amplifies effects but increases risk</li><li><strong>Unit selection:</strong> Align units with commander's style for maximum synergy</li><li><strong>Tactical zoom-ins:</strong> Elite units and fragment events can turn the tide</li><li><strong>Point scaling:</strong> Use the army builder to adjust for different battle sizes</li></ul>
+        <h3>🔄 Turns 3–5 — Summary</h3>
+        <ul>
+            <li><strong>Turn 3:</strong> Akikaze activates Kitsune Charm fragment (2 charges) — forces Ironweld to reroll his next ATK and take the lower result. Shrine Dragon swoops in (Fly keyword), breathing fire at clustered ID infantry: ATK 7, Blast 3", devastating. Ironweld spends 3 CP on a defensive card to negate 2 hits. Morale check: Aether Infused Soldier rolls 2d6 = 9, exceeds MOR 7 → becomes Shaken.</li>
+            <li><strong>Turn 4:</strong> Shaken Aether Soldier attempts to Rally (wasn't damaged this turn): rolls 2d6 = 6, ≤ MOR 7 → Rally succeeds, Shaken removed. Ironweld issues a <strong>Challenge</strong> to Akikaze! Both commanders Engaged at the bridge. Ironweld ATK 6 vs DEF 3: rolls 6d6 → 3, 4, 4, 5, 6, 6 = 5 hits + 2 crits = <strong>7 damage</strong> to Akikaze (9 → 2 HP!). Akikaze ATK 5 vs DEF 5: rolls 5d6 → 2, 3, 5, 5, 6 = 3 hits + 1 crit = <strong>4 damage</strong> to Ironweld (11 → 7 HP).</li>
+            <li><strong>Turn 5:</strong> Akikaze, at 2 HP, falls back. Spirit Healer Monks use Heal to restore 1 HP (2 → 3 HP). Shrine Dragon targets wounded Clockwork Titan and finishes it (3 HP → 0, destroyed). Remaining ID infantry push forward with Grid Fortified bonuses. Veiled Ashigaru Rout after failing morale by 4+.</li>
+        </ul>
+    </div>
+
+    <div class="card">
+        <h3>🏆 Turn 6 — Final Resolution</h3>
+        <p>Iron Dominion holds the bridge with Grid Fortified infantry. The Veilbound still have the Shrine Dragon and Akikaze (3 HP), but have lost most infantry. Ironweld at 7 HP with 3 Grid-linked Clockwork Infantry is a fortress.</p>
+        <p><strong>Points Destroyed:</strong> Iron Dominion destroyed ~120 pts of Veilbound forces. Veilbound destroyed ~95 pts of Iron Dominion forces.</p>
+        <p><strong>Result:</strong> Neither commander is destroyed. By Annihilation tiebreaker: the player who destroyed the most total points wins. <strong>Iron Dominion wins!</strong></p>
+    </div>
+
+    <div class="card">
+        <h3>📝 Key Takeaways</h3>
+        <ul>
+            <li><strong>Dice Mechanic:</strong> Roll ATK dice, each ≥ target's DEF = 1 hit (1 damage). Natural 6 = Critical Hit (2 damage). Simple, fast, dramatic.</li>
+            <li><strong>Charging is powerful:</strong> Star Serpent Lancers with Charge (+1 ATK) + Spirit Thread (+1 ATK) deleted an Elite Vanguard in one attack. Plan charges carefully.</li>
+            <li><strong>Grid Cohesion rewards clustering:</strong> Iron Dominion gains +1 ATK/DEF when 3+ units stay within 3" — but they're vulnerable to Blast attacks.</li>
+            <li><strong>Stances create trade-offs:</strong> Revelation (+1 ATK, −1 DEF) made Samurai hit harder but die easier. Honor (+1 DEF, no flanking) makes Defenders nearly immovable.</li>
+            <li><strong>Commanders are your brain:</strong> Ironweld's 9 CP per turn funded powerful cards. Losing your commander triggers army-wide MOR −2 checks.</li>
+            <li><strong>Fragment timing matters:</strong> Spirit Thread at the right moment made a cavalry charge lethal. Kitsune Charm disrupted a critical attack roll.</li>
+            <li><strong>Morale cascades:</strong> Shaken units get −1 ATK and may Rout (MOR exceeded by 3+). Keep Commander Aura (+1 MOR within 6") near vulnerable units.</li>
+        </ul>
     </div>
 </div>`,
 
@@ -368,6 +460,10 @@ function showRulesSection(section, btn) {
     const ab = r.army_building;
     html += `<div class="card">
             <h3>🏗️ Army Building</h3>
+            ${ab.unit_definition ? `<div style="background: rgba(233,69,96,0.08); border: 1px solid rgba(233,69,96,0.2); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                <h4 style="margin: 0 0 0.5rem 0; color: #e94560;">📐 Unit Model</h4>
+                <p style="margin: 0; color: #ccc;">${ab.unit_definition}</p>
+            </div>` : ""}
             <h4>Battle Sizes</h4>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin: 1rem 0;">
                 ${Object.entries(ab.battle_sizes)
@@ -539,6 +635,61 @@ function showRulesSection(section, btn) {
                   .join("")}
             </div>
         </div>`;
+
+    // Nightfang Dominion
+    html += `<div class="card">
+            <h3>🩸 Nightfang Dominion — Corruption, Blood Tithe & Hunger Pool</h3>
+            <p>${fm.nightfang_dominion.corruption_system.description}</p>
+            <h4>Corruption Thresholds</h4>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <tr style="border-bottom: 2px solid #dc2626;">
+                    <th style="text-align:left; padding: 6px; color: #dc2626;">Stage</th>
+                    <th style="text-align:left; padding: 6px; color: #dc2626;">Tokens</th>
+                    <th style="text-align:left; padding: 6px; color: #dc2626;">Effect</th>
+                </tr>
+                ${fm.nightfang_dominion.corruption_system.thresholds
+                  .map(
+                    (t) => `
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 6px; font-weight: bold;">${t.name}</td>
+                    <td style="padding: 6px;">${t.tokens}+</td>
+                    <td style="padding: 6px; color: #ccc;">${t.effect}</td>
+                </tr>`,
+                  )
+                  .join("")}
+            </table>
+            <h4>Corruption Spread Rules</h4>
+            <ul>${fm.nightfang_dominion.corruption_system.spread_rules.map((r) => `<li>${r}</li>`).join("")}</ul>
+
+            <h4>Blood Tithe</h4>
+            <p>${fm.nightfang_dominion.blood_tithe.description}</p>
+            <ul>${fm.nightfang_dominion.blood_tithe.rules.map((r) => `<li>${r}</li>`).join("")}</ul>
+
+            <h4>Hunger Pool</h4>
+            <p>${fm.nightfang_dominion.hunger_pool.description}</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <tr style="border-bottom: 2px solid #dc2626;">
+                    <th style="text-align:left; padding: 6px; color: #dc2626;">Stage</th>
+                    <th style="text-align:left; padding: 6px; color: #dc2626;">Kills Needed</th>
+                    <th style="text-align:left; padding: 6px; color: #dc2626;">Effect</th>
+                </tr>
+                ${fm.nightfang_dominion.hunger_pool.thresholds
+                  .map(
+                    (t) => `
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 6px; font-weight: bold;">${t.name}</td>
+                    <td style="padding: 6px;">${t.kills}+</td>
+                    <td style="padding: 6px; color: #ccc;">${t.effect}</td>
+                </tr>`,
+                  )
+                  .join("")}
+            </table>
+            <ul>${fm.nightfang_dominion.hunger_pool.pool_rules.map((r) => `<li>${r}</li>`).join("")}</ul>
+
+            <h4>🌙 Nocturnal Predators</h4>
+            <p>${fm.nightfang_dominion.nocturnal_predators.description}</p>
+            <p style="font-style: italic; opacity: 0.85;">${fm.nightfang_dominion.nocturnal_predators.rule}</p>
+        </div>`;
   }
 
   // VICTORY CONDITIONS
@@ -556,10 +707,12 @@ function showRulesSection(section, btn) {
                   )
                   .join("")}
             </div>
+            ${r.victory_conditions.tiebreaker ? `<p style="margin-top: 0.5rem; color: #aaa;"><strong>Tiebreaker:</strong> ${r.victory_conditions.tiebreaker}</p>` : ""}
         </div>`;
 
     html += `<div class="card">
             <h3>🏔️ Terrain Types</h3>
+            ${r.terrain_rules.overview ? `<p style="color: #ccc; margin-bottom: 1rem;">${r.terrain_rules.overview}</p>` : ""}
             <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin: 1rem 0;">
                 ${r.terrain_rules.types
                   .map(
@@ -571,6 +724,166 @@ function showRulesSection(section, btn) {
                   .join("")}
             </div>
         </div>`;
+  }
+
+  // PRE-GAME SEQUENCE
+  if (showAll || section === "pregame") {
+    const pg = r.pre_game;
+    if (pg) {
+      html += `<div class="card">
+            <h3>🎯 Pre-Game Sequence</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${pg.overview}</p>
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; margin: 1rem 0;">
+                ${pg.steps
+                  .map(
+                    (s) => `
+                <div style="background: rgba(233,69,96,0.05); border-left: 4px solid #e94560; padding: 1rem; border-radius: 0 8px 8px 0;">
+                    <h4 style="margin: 0 0 0.5rem 0; color: #e94560;">Step ${s.step}: ${s.name}</h4>
+                    <p style="margin: 0; color: #ccc;">${s.description}</p>
+                </div>`,
+                  )
+                  .join("")}
+            </div>
+        </div>`;
+    }
+  }
+
+  // MOVEMENT
+  if (showAll || section === "movement") {
+    const mv = r.movement;
+    if (mv) {
+      html += `<div class="card">
+            <h3>🏃 Movement</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${mv.overview}</p>
+            <h4>Core Rules</h4>
+            <ul>${mv.core_rules.map((rule) => `<li>${rule}</li>`).join("")}</ul>
+            <h4>Difficult Terrain</h4>
+            <div style="background: rgba(233,69,96,0.05); border-left: 4px solid #ff9800; padding: 1rem; border-radius: 0 8px 8px 0; margin: 1rem 0;">
+                <p style="margin: 0 0 0.5rem 0;">${mv.difficult_terrain.description}</p>
+                <p style="margin: 0 0 0.5rem 0; color: #aaa;"><em>Examples: ${mv.difficult_terrain.examples}</em></p>
+                <p style="margin: 0; color: #ccc;">${mv.difficult_terrain.rule}</p>
+            </div>
+            <h4>Charging</h4>
+            <p style="color: #ccc; margin-bottom: 0.5rem;">${mv.charging.description}</p>
+            <ul>${mv.charging.rules.map((rule) => `<li>${rule}</li>`).join("")}</ul>
+            <h4>Special Movement</h4>
+            <ul>${mv.special_movement.map((rule) => `<li style="margin-bottom: 0.5rem;">${rule}</li>`).join("")}</ul>
+            <div style="background: rgba(233,69,96,0.05); border-left: 4px solid #e94560; padding: 1rem; border-radius: 0 8px 8px 0; margin: 1rem 0;">
+                <h4 style="margin: 0 0 0.5rem 0; color: #e94560;">⚙️ War Machine Movement</h4>
+                <p style="margin: 0; color: #ccc;">${mv.war_machine_movement}</p>
+            </div>
+        </div>`;
+    }
+  }
+
+  // LINE OF SIGHT & POSITIONING
+  if (showAll || section === "positioning") {
+    const los = r.line_of_sight;
+    const facing = r.facing;
+    if (los) {
+      html += `<div class="card">
+            <h3>👁️ Line of Sight</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${los.overview}</p>
+            <h4>Core Rules</h4>
+            <ul>${los.rules.map((rule) => `<li>${rule}</li>`).join("")}</ul>
+            <h4>Exceptions</h4>
+            <ul>${los.exceptions.map((e) => `<li>${e}</li>`).join("")}</ul>
+        </div>`;
+    }
+    if (facing) {
+      html += `<div class="card">
+            <h3>🧭 Facing & Flanking</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${facing.overview}</p>
+            <ul>${facing.rules.map((rule) => `<li>${rule}</li>`).join("")}</ul>
+        </div>`;
+    }
+  }
+
+  // ENGAGEMENT & CHALLENGES
+  if (showAll || section === "engagement") {
+    const eng = r.engagement;
+    const ch = r.challenges;
+    if (eng) {
+      html += `<div class="card">
+            <h3>⚔️ Engagement & Melee</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${eng.overview}</p>
+            <ul>${eng.rules.map((rule) => `<li>${rule}</li>`).join("")}</ul>
+        </div>`;
+    }
+    if (ch) {
+      html += `<div class="card">
+            <h3>🤺 Challenges (Duels)</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${ch.overview}</p>
+            <ol>${ch.rules.map((rule) => `<li style="margin-bottom: 0.5rem;">${rule}</li>`).join("")}</ol>
+        </div>`;
+    }
+  }
+
+  // MORALE
+  if (showAll || section === "morale") {
+    const mor = r.morale;
+    if (mor) {
+      html += `<div class="card">
+            <h3>💀 Morale</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${mor.overview}</p>
+            <ul>${mor.rules.map((rule) => `<li style="margin-bottom: 0.5rem;">${rule}</li>`).join("")}</ul>
+        </div>`;
+    }
+  }
+
+  // KEYWORDS GLOSSARY
+  if (showAll || section === "keywords") {
+    const kw = r.keywords;
+    if (kw) {
+      html += `<div class="card">
+            <h3>🔑 Keywords Glossary</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${kw.overview}</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                <tr style="border-bottom: 2px solid #e94560;">
+                    <th style="text-align:left; padding: 6px; color: #e94560; width: 160px;">Keyword</th>
+                    <th style="text-align:left; padding: 6px; color: #e94560;">Description</th>
+                </tr>
+                ${kw.entries
+                  .map(
+                    (k) => `
+                <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <td style="padding: 6px; font-weight: bold; color: #a78bfa;">${k.name}</td>
+                    <td style="padding: 6px; color: #ccc;">${k.description}</td>
+                </tr>`,
+                  )
+                  .join("")}
+            </table>
+        </div>`;
+    }
+  }
+
+  // SCENARIOS & MISSIONS
+  if (showAll || section === "scenarios") {
+    const sc = r.scenarios;
+    if (sc) {
+      html += `<div class="card">
+            <h3>🗺️ Scenarios & Missions</h3>
+            <p style="color: #ccc; margin-bottom: 1rem;">${sc.overview}</p>
+            <div style="display: flex; flex-direction: column; gap: 1rem; margin: 1rem 0;">
+                ${sc.missions
+                  .map(
+                    (m) => `
+                <div style="background: rgba(233,69,96,0.05); border: 1px solid rgba(233,69,96,0.15); border-radius: 8px; padding: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h4 style="margin: 0; color: #e94560;">${m.name}</h4>
+                        <div>
+                            <span style="background: rgba(167,139,250,0.15); color: #a78bfa; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; margin-right: 0.5rem;">${m.type}</span>
+                            <span style="background: rgba(233,69,96,0.15); color: #e94560; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem;">${m.recommended_size}</span>
+                        </div>
+                    </div>
+                    <p style="margin: 0 0 0.5rem 0; color: #ccc;">${m.description}</p>
+                    <p style="margin: 0; color: #aaa; font-size: 0.85rem;"><strong>Special Rules:</strong> ${m.special_rules}</p>
+                </div>`,
+                  )
+                  .join("")}
+            </div>
+        </div>`;
+    }
   }
 
   el.innerHTML = html;
@@ -632,10 +945,12 @@ function loadFactions() {
   const factionIcons = {
     "iron-dominion": "⚙️",
     "veilbound-shogunate": "⛩️",
+    "nightfang-dominion": "🩸",
   };
   const factionColors = {
     "iron-dominion": "#e94560",
     "veilbound-shogunate": "#8b5cf6",
+    "nightfang-dominion": "#dc2626",
   };
 
   contentEl.innerHTML =
@@ -712,10 +1027,11 @@ function showFactionDetail(factionId) {
     (u) => u.type === "War Machine",
   );
 
-  const factionIcons = { "iron-dominion": "⚙️", "veilbound-shogunate": "⛩️" };
+  const factionIcons = { "iron-dominion": "⚙️", "veilbound-shogunate": "⛩️", "nightfang-dominion": "🩸" };
   const factionColors = {
     "iron-dominion": "#e94560",
     "veilbound-shogunate": "#8b5cf6",
+    "nightfang-dominion": "#dc2626",
   };
   const icon = factionIcons[faction.id] || "⚔️";
   const color = factionColors[faction.id] || "#e94560";
@@ -1030,6 +1346,125 @@ function showFactionDetail(factionId) {
             </div>
             <div style="margin-top: 0.75rem;">
                 ${faction.arch_fabricator.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
+            </div>
+        </div>
+        `
+            : ""
+        }
+
+        <!-- Blood Creed (Nightfang) -->
+        ${
+          faction.blood_creed
+            ? `
+        <div class="card" style="border-left: 3px solid #dc2626;">
+            <h3 style="color: #f87171;">🩸 The Blood Creed</h3>
+            <p style="font-style: italic; opacity: 0.85;">${faction.blood_creed.overview}</p>
+            ${faction.blood_creed.tenets
+              .map(
+                (t, i) => `
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                <h5 style="color: #fca5a5;">${["1️⃣", "2️⃣", "3️⃣"][i]} ${t.name}</h5>
+                <p><strong>Concept:</strong> <em>${t.concept}</em></p>
+                <p><strong>Implications:</strong></p>
+                <ul>${t.implications.map((im) => `<li>${im}</li>`).join("")}</ul>
+                <p><strong>Battlefield Mechanics:</strong></p>
+                <ul>${t.mechanics.map((m) => `<li>${m}</li>`).join("")}</ul>
+                <p><strong>Symbol:</strong> ${t.symbol}</p>
+            </div>
+            `,
+              )
+              .join("")}
+            <div style="margin-top: 1rem;">
+                <h5 style="color: #fca5a5;">Creed in Practice</h5>
+                <ul>
+                    <li><strong>Training:</strong> ${faction.blood_creed.creed_in_practice.training}</li>
+                    <li><strong>Hierarchy Integration:</strong> ${faction.blood_creed.creed_in_practice.hierarchy_integration}</li>
+                    <li><strong>Combat Philosophy:</strong> ${faction.blood_creed.creed_in_practice.combat_philosophy}</li>
+                </ul>
+            </div>
+            <div style="margin-top: 0.75rem;">
+                ${faction.blood_creed.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
+            </div>
+        </div>
+        `
+            : ""
+        }
+
+        <!-- Blood Patriarch (Nightfang) -->
+        ${
+          faction.blood_patriarch
+            ? `
+        <div class="card" style="border-left: 3px solid #e2e8f0;">
+            <h3 style="color: #e2e8f0;">🩸 ${faction.blood_patriarch.title}</h3>
+            <p><strong>Role:</strong> ${faction.blood_patriarch.role} &mdash; <em>${faction.blood_patriarch.faction_rank}</em></p>
+            <p><strong>Known As:</strong> ${faction.blood_patriarch.aliases.map((a) => `<em>&ldquo;${a}&rdquo;</em>`).join(", ")}</p>
+            <p style="font-style: italic; opacity: 0.85; margin-top: 0.5rem;">${faction.blood_patriarch.summary}</p>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                <h5 style="color: #cbd5e1;">Appearance</h5>
+                <ul>${faction.blood_patriarch.appearance.map((a) => `<li>${a}</li>`).join("")}</ul>
+            </div>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                <h5 style="color: #cbd5e1;">Personality & Command Style</h5>
+                <ul>${faction.blood_patriarch.personality.map((p) => `<li><strong>${p.trait}:</strong> ${p.description}</li>`).join("")}</ul>
+            </div>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                <h5 style="color: #cbd5e1;">Abilities & Powers</h5>
+                ${faction.blood_patriarch.abilities
+                  .map(
+                    (ab) => `
+                <div style="margin-top: 0.5rem; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 4px;">
+                    <strong style="color: #f1f5f9;">${ab.name}</strong>
+                    <p style="margin: 0.25rem 0 0 0; opacity: 0.9;">${ab.description}</p>
+                </div>
+                `,
+                  )
+                  .join("")}
+            </div>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                <h5 style="color: #cbd5e1;">Role in the Faction</h5>
+                <ul>${faction.blood_patriarch.faction_role.map((r) => `<li><strong>${r.area}:</strong> ${r.detail}</li>`).join("")}</ul>
+            </div>
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                <h5 style="color: #cbd5e1;">Lore Notes</h5>
+                <ul>${faction.blood_patriarch.lore_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
+            </div>
+            <div style="margin-top: 0.75rem;">
+                ${faction.blood_patriarch.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
+            </div>
+        </div>
+        `
+            : ""
+        }
+
+        <!-- Corruption Stages (Nightfang) -->
+        ${
+          faction.corruption_stages
+            ? `
+        <div class="card" style="border-left: 3px solid #dc2626;">
+            <h3 style="color: #f87171;">🔄 Corruption Stages</h3>
+            <p style="font-style: italic; opacity: 0.85;">${faction.corruption_stages.overview}</p>
+            ${faction.corruption_stages.stages
+              .map(
+                (s) => `
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                <h5 style="color: #fca5a5;">Stage ${s.stage_number} — ${s.name}</h5>
+                <p style="opacity: 0.9;">${s.overview}</p>
+                <p><strong>Physical Characteristics:</strong></p>
+                <ul>${s.physical.map((p) => `<li>${p}</li>`).join("")}</ul>
+                <p><strong>Abilities & Mechanics:</strong></p>
+                <ul>${s.abilities.map((a) => `<li>${a}</li>`).join("")}</ul>
+                <p><strong>Behavior & Tactics:</strong></p>
+                <ul>${s.behavior.map((b) => `<li>${b}</li>`).join("")}</ul>
+            </div>
+            `,
+              )
+              .join("")}
+            <div style="margin-top: 1rem; padding: 0.75rem; background: rgba(0,0,0,0.2); border-radius: 6px;">
+                <h5 style="color: #fca5a5;">Progression Notes</h5>
+                <ul>${faction.corruption_stages.progression_notes.map((n) => `<li>${n}</li>`).join("")}</ul>
+            </div>
+            <div style="margin-top: 0.75rem;">
+                ${faction.corruption_stages.keywords.map((k) => `<span class="tag">${k}</span>`).join(" ")}
             </div>
         </div>
         `
@@ -1565,7 +2000,7 @@ function loadCommanders() {
 
     card.innerHTML = `
             <h3><a href="#" onclick="showCommander('${commander.name}')">${commander.name}</a> ${commander.title ? "- " + commander.title : ""}</h3>
-            <p><strong>Faction:</strong> ${faction ? faction.name : "Unknown"}</p>
+            <p><strong>Faction:</strong> ${faction ? faction.name : "Unknown"} ${commander.points_cost ? `&nbsp;|&nbsp; <strong style="color: #e94560;">${commander.points_cost} pts</strong>` : ""}</p>
             <p><strong>Theme:</strong> ${commander.theme}</p>
             <p><strong>Playstyle:</strong> ${commander.playstyle}</p>
             <div class="stats-grid">
@@ -1575,6 +2010,18 @@ function loadCommanders() {
                 <div class="stat-item"><span class="stat-value">${commander.base_stats.Agility}</span><span class="stat-label">Agility</span></div>
                 <div class="stat-item"><span class="stat-value">${commander.base_stats.Health}</span><span class="stat-label">Health</span></div>
             </div>
+            ${commander.battle_stats ? `
+            <div style="margin-top: 0.75rem;">
+                <div style="font-size: 0.75rem; color: #888; margin-bottom: 0.25rem;">⚔️ Battlefield Stats</div>
+                <div class="stats-grid">
+                    <div class="stat-item"><span class="stat-value">${commander.battle_stats.ATK}</span><span class="stat-label">ATK</span></div>
+                    <div class="stat-item"><span class="stat-value">${commander.battle_stats.DEF}</span><span class="stat-label">DEF</span></div>
+                    <div class="stat-item"><span class="stat-value">${commander.battle_stats.HP}</span><span class="stat-label">HP</span></div>
+                    <div class="stat-item"><span class="stat-value">${commander.battle_stats.MOV}\"</span><span class="stat-label">MOV</span></div>
+                    <div class="stat-item"><span class="stat-value">${commander.battle_stats.RNG}\"</span><span class="stat-label">RNG</span></div>
+                    <div class="stat-item"><span class="stat-value">${commander.battle_stats.MOR}</span><span class="stat-label">MOR</span></div>
+                </div>
+            </div>` : ""}
             ${tags ? `<div style="margin-top: 1rem;">${tags}</div>` : ""}
         `;
     contentEl.appendChild(card);
@@ -1817,7 +2264,7 @@ function showCommander(name) {
   contentEl.innerHTML = `
         <div class="card">
             <h2>${commander.name} ${commander.title ? "- " + commander.title : ""}</h2>
-            <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${commander.faction}')">${faction ? faction.name : "Unknown"}</a></p>
+            <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${commander.faction}')">${faction ? faction.name : "Unknown"}</a> ${commander.points_cost ? `&nbsp;|&nbsp; <strong style="color: #e94560;">${commander.points_cost} pts</strong>` : ""}</p>
             <p><strong>Theme:</strong> ${commander.theme}</p>
             ${commander.personality ? `<p><strong>Personality:</strong> ${commander.personality}</p>` : ""}
             <p><strong>Playstyle:</strong> ${commander.playstyle}</p>
@@ -1832,6 +2279,16 @@ function showCommander(name) {
                 <div class="stat-item"><span class="stat-value">${commander.base_stats.Agility}</span><span class="stat-label">Agility</span></div>
                 <div class="stat-item"><span class="stat-value">${commander.base_stats.Health}</span><span class="stat-label">Health</span></div>
             </div>
+            ${commander.battle_stats ? `
+            <h3>⚔️ Battlefield Stats</h3>
+            <div class="stats-grid">
+                <div class="stat-item"><span class="stat-value">${commander.battle_stats.ATK}</span><span class="stat-label">ATK</span></div>
+                <div class="stat-item"><span class="stat-value">${commander.battle_stats.DEF}</span><span class="stat-label">DEF</span></div>
+                <div class="stat-item"><span class="stat-value">${commander.battle_stats.HP}</span><span class="stat-label">HP</span></div>
+                <div class="stat-item"><span class="stat-value">${commander.battle_stats.MOV}\"</span><span class="stat-label">MOV</span></div>
+                <div class="stat-item"><span class="stat-value">${commander.battle_stats.RNG}\"</span><span class="stat-label">RNG</span></div>
+                <div class="stat-item"><span class="stat-value">${commander.battle_stats.MOR}</span><span class="stat-label">MOR</span></div>
+            </div>` : ""}
             
             ${
               deckHTML
@@ -1964,7 +2421,7 @@ function renderUnitsList(filterType) {
                 <a href="#" onclick="showUnit('${unit.name}')">${unit.name}</a>
             </h3>
             <p><strong>Faction:</strong> ${faction ? faction.name : "Unknown"}</p>
-            <p><strong>Type:</strong> ${unit.type} | <strong>Points:</strong> <span style="color: #e94560; font-weight: bold;">${unit.points_cost}</span>${unit.ritual_flow ? ` | <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ""}</p>
+            <p><strong>Type:</strong> ${unit.type} | <strong>Points:</strong> <span style="color: #e94560; font-weight: bold;">${unit.points_cost}</span>${unit.ritual_flow ? ` | <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ""}${unit.corruption_spread ? ` | <strong>Corruption Spread:</strong> <span style="color: #dc2626; font-weight: bold;">+${unit.corruption_spread}</span>` : ""}</p>
             ${
               hasStats
                 ? `<div style="display: flex; gap: 0.3rem; margin: 0.5rem 0; flex-wrap: wrap;">
@@ -2074,7 +2531,7 @@ function showUnit(name) {
             </h2>
             <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${unit.faction}')">${faction ? faction.name : "Unknown"}</a></p>
             <p><strong>Type:</strong> ${unit.type} &nbsp;|&nbsp; <strong>Points:</strong> <span style="color: #e94560; font-size: 1.3rem; font-weight: bold;">${unit.points_cost}</span>
-            ${unit.ritual_flow ? ` &nbsp;|&nbsp; <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ""}</p>
+            ${unit.ritual_flow ? ` &nbsp;|&nbsp; <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ""}${unit.corruption_spread ? ` &nbsp;|&nbsp; <strong>Corruption Spread:</strong> <span style="color: #dc2626; font-weight: bold;">+${unit.corruption_spread}</span>` : ""}</p>
             
             ${statBlockHTML}
             
@@ -2130,6 +2587,7 @@ function loadFragments() {
             <p><strong>Faction:</strong> ${faction ? faction.name : "Universal"}</p>
             <p><strong>Effects:</strong> ${fragment.effects}</p>
             <p><strong>Risk/Instability:</strong> <span style="color: ${riskColor}; font-weight: bold;">${fragment.risk_instability}</span></p>
+            ${fragment.activation_cost ? `<p><strong>Activation Cost:</strong> ${fragment.activation_cost} ${fragment.faction === "veilbound-shogunate" ? "Ritual Flow" : fragment.faction === "nightfang-dominion" ? "Blood Charge(s)" : "Fragment Charge(s)"}</p>` : ""}
             <p><strong>Evolution Synergy:</strong> ${fragment.interaction_evolution}</p>
         `;
     contentEl.appendChild(card);
@@ -2227,6 +2685,8 @@ function updateSelectedCommander() {
                     <div class="stat-item"><span class="stat-value">${commander.base_stats.Knowledge}</span><span class="stat-label">KNW</span></div>
                     <div class="stat-item"><span class="stat-value">${commander.base_stats.Leadership}</span><span class="stat-label">LDR</span></div>
                 </div>
+                ${commander.battle_stats ? `
+                <div style="font-size: 0.7rem; color: #888; margin-top: 0.5rem;">Battlefield: ATK ${commander.battle_stats.ATK} | DEF ${commander.battle_stats.DEF} | HP ${commander.battle_stats.HP} | MOV ${commander.battle_stats.MOV}\" | RNG ${commander.battle_stats.RNG}\" | MOR ${commander.battle_stats.MOR}</div>` : ""}
             </div>
         `;
   }
