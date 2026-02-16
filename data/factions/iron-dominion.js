@@ -2382,7 +2382,7 @@
     {
       name: "Clockwork Infantry",
       faction: "iron-dominion",
-      points_cost: 2,
+      points_cost: 3,
       role: "Durable core",
       fragment_interactions: "Fragment boosts attack slightly",
       flavor_text: "Soldiers with mechanized limbs; immune to morale effects",
@@ -2437,12 +2437,12 @@
     {
       name: "Scouts / Recon",
       faction: "iron-dominion",
-      points_cost: 1,
+      points_cost: 2,
       role: "Fast",
       fragment_interactions: "Trigger fragment events; weak in combat",
       flavor_text: "Quick, mobile units for exploration",
       type: "Scout",
-      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 8, RNG: 8, MOR: 5 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 8, RNG: 6, MOR: 5 },
       special: [
         'Scout (deploy up to 6" ahead of deployment zone)',
         "Spotter (+1 ATK die to friendly Artillery targeting spotted unit)",
@@ -2521,7 +2521,7 @@
     {
       name: "Steam-Powered Sharpshooters",
       faction: "iron-dominion",
-      points_cost: 2,
+      points_cost: 3,
       role: "Precision",
       fragment_interactions: "Fragment can increase critical chance",
       flavor_text: "Long-range rifles, overclockable with fragment energy",
@@ -2561,7 +2561,7 @@
     {
       name: "Steam Miners",
       faction: "iron-dominion",
-      points_cost: 1,
+      points_cost: 2,
       role: "Resource / Support",
       fragment_interactions: "Fragment absorption improves efficiency",
       flavor_text: "Extract battlefield materials; support units",
@@ -2643,7 +2643,7 @@
     {
       name: "Gear-Linked Infantry",
       faction: "iron-dominion",
-      points_cost: 2,
+      points_cost: 3,
       role: "Synergy",
       fragment_interactions: "Fragment increases coordination",
       flavor_text: "Units linked via mechanical network",
@@ -2906,7 +2906,7 @@
     {
       name: "Gear Infused Infantry",
       faction: "iron-dominion",
-      points_cost: 2,
+      points_cost: 3,
       role: "Balanced",
       fragment_interactions: "Minor fragment boosts",
       flavor_text: "Standard troops with minor mechanical augmentation",

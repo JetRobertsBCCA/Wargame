@@ -2230,7 +2230,7 @@
         DEF: 3,
         HP: 3,
         MOV: 5,
-        RNG: 18,
+        RNG: 14,
         MOR: 6
       },
       special: ["Corruption", "Corruption Spread (ranged hits also apply Corruption tokens)", "Volley (may fire over friendly units)"]
@@ -2249,7 +2249,7 @@
         DEF: 2,
         HP: 3,
         MOV: 5,
-        RNG: 8,
+        RNG: 6,
         MOR: 4
       },
       special: ["Corruption", "Thrall", "Expendable", "Corruption Spread", "Blast 1\" (hits all models within 1\" of target)"]
@@ -2724,7 +2724,7 @@
     {
       name: "Shadow Stalkers",
       faction: "nightfang-dominion",
-      points_cost: 1,
+      points_cost: 2,
       role: "Cheap expendable scouts",
       fragment_interactions: "Spotting for artillery; early corruption application",
       flavor_text: "Fast-moving thralls with enhanced senses. They are released ahead of the army like hunting hounds to flush out the prey.",
@@ -2748,7 +2748,7 @@
     {
       name: "Tiger Scout Pack",
       faction: "nightfang-dominion",
-      points_cost: 2,
+      points_cost: 3,
       role: "Fast beast scouts",
       fragment_interactions: "Pack Tactics; early Corruption Spread; flanking",
       flavor_text: "Small corrupted tigers released as a hunting pack. Fast, cunning, and able to take down isolated targets.",
@@ -2767,7 +2767,7 @@
     {
       name: "Corruption Scouts",
       faction: "nightfang-dominion",
-      points_cost: 2,
+      points_cost: 3,
       role: "Ranged scout with corruption",
       fragment_interactions: "Applies Corruption at range while scouting; spotter",
       flavor_text: "Blight Bow-armed scouts who infect targets from concealment. Their arrows carry corruption deep into enemy territory.",
@@ -2800,12 +2800,12 @@
         RNG: 1,
         MOR: 4
       },
-      special: ["Corruption", "Thrall", "Expendable", "Scout", "Sprint (may move an additional 4\" instead of attacking)"]
+      special: ["Corruption", "Thrall", "Expendable", "Scout"]
     },
     {
       name: "Nightveil Infiltrators",
       faction: "nightfang-dominion",
-      points_cost: 3,
+      points_cost: 4,
       role: "Elite stealth scouts",
       fragment_interactions: "Stealth + Corruption; ambush deployment",
       flavor_text: "Elite vampire scouts who can vanish into shadow and reappear behind enemy lines. Their first strike is always lethal.",
@@ -2831,7 +2831,7 @@
     {
       name: "Blight Hound Pack",
       faction: "nightfang-dominion",
-      points_cost: 2,
+      points_cost: 3,
       role: "Fast scout beast pack",
       fragment_interactions: "Hunt wounded targets; Hunger Pool feeding",
       flavor_text: "Corrupted war-dogs with elongated jaws and glowing crimson eyes. They can smell blood from a mile away.",

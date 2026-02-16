@@ -2815,7 +2815,7 @@
       flavor_text: "Aerial duelist cavalry that strikes from above",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 10, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 10, RNG: 1, MOR: 7 },
       special: [
         "Fly",
         "Dive Attack (+2 ATK dice on charge from Fly)",
@@ -2849,7 +2849,7 @@
         "Reality-phase cavalry that ignores conventional battlefield rules",
       type: "Cavalry",
       ritual_flow: 3,
-      stats: { ATK: 12, DEF: 3, HP: 9, MOV: 10, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 4, HP: 12, MOV: 10, RNG: 1, MOR: 8 },
       special: [
         "Phase (ignore Engagement and terrain)",
         "Dream Step (once per game: remove from table, redeploy anywhere on the battlefield next turn)",
@@ -2899,7 +2899,7 @@
       flavor_text: "Pack synergy cavalry with group attack bonuses",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 9, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         'Pack Tactics (+1 ATK die for each other Spirit Wolf Hunter unit within 3", max +3)',
         "Charge (+1 ATK die)",
@@ -2915,7 +2915,7 @@
       flavor_text: "Gliding harassment cavalry that bypasses terrain obstacles",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 10, RNG: 6, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 10, RNG: 6, MOR: 7 },
       special: [
         "Fly",
         "Suppression (enemy units this model flew over suffer -1 ATK this turn)",
@@ -2943,7 +2943,7 @@
     {
       name: "Flow Adepts",
       faction: "veilbound-shogunate",
-      points_cost: 4,
+      points_cost: 3,
       role: "Ritual amplification",
       fragment_interactions:
         "Ritual Flow +4; increase Ritual Flow for nearby units, enhance transformations",

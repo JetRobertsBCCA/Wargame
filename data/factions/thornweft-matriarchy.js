@@ -1226,6 +1226,177 @@
       signature_units: ["Cocoon Processors", "Harvest Spiders", "Resource Guard"],
       strategic_notes: "Rathis is the economy commander — she turns dead enemies into fuel for your army. The more you kill, the more you get. She's mid-range in combat stats, so she can hold her own but isn't a frontline fighter. Build aggressive armies that kill fast and use her harvesting to sustain the assault. Her Chaos path is terrifying — live harvesting drains enemies mid-fight.",
       tags: ["Economy", "Harvesting", "Resource", "Recycling"]
+    },
+
+    // COMMANDER 11 — Healer/Buffer Support
+    {
+      name: "Silk-Mender Yalith",
+      faction: "thornweft-matriarchy",
+      title: "The Living Suture",
+      flavor_text: "Yalith's hands never stop moving — silk threads pour from her fingertips, stitching torn flesh, binding shattered chitin, weaving protective cocoons around the wounded. She walks the battlefield like a surgeon walks an operating theater: calm, deliberate, already planning the next save.",
+      theme: "Restoration/support; silk-based healing and protective buffs",
+      personality: "Serene, clinical, quietly furious when allies die needlessly",
+      playstyle: "Healing, cleansing debuffs, buffing allied defenses. Yalith keeps your army alive through attrition wars. She has low personal combat stats but transforms every unit near her into a durable threat. Pair with tanky infantry and grind the opponent down.",
+      base_stats: { Command: 6, Knowledge: 10, Leadership: 8, Agility: 6, Health: 210 },
+      battle_stats: { ATK: 9, DEF: 5, HP: 24, MOV: 5, RNG: 4, MOR: 9 },
+      points_cost: 18,
+      level_1_deck: {
+        command: ["Mending Weave", "Silk Shield"],
+        tech: ["Restorative Silk", "Cleansing Thread"],
+        fragment: ["Life-Weave Resonance"],
+        tactical: ["Protective Formation"]
+      },
+      skill_tree: {
+        level_2: { knowledge: "Precision Mending (+1 HP healed)", chaos: "Frenzied Stitching (heal 2 targets, risk pulling thread from one)", tactical: "Triage Protocols" },
+        level_3: { knowledge: "Silk Cocoon Shield", chaos: "Parasitic Healing (drain enemy HP to heal ally)", tactical: "Field Hospital Formation" },
+        level_4: { knowledge: "Regenerative Web", chaos: "Blood-Silk Transfusion", tactical: "Strategic Restoration" },
+        level_5: { knowledge: "Master Surgeon", chaos: "Life-Steal Threads", tactical: "Coordinated Healing" },
+        level_6: { knowledge: "Purification Weave", chaos: "Corrupted Regeneration", tactical: "Mobile Aid Station" },
+        level_7: { knowledge: "Silk Armor Blessing", chaos: "Unstable Regeneration", tactical: "Defensive Weave Doctrine" },
+        level_8: { knowledge: "Perfect Restoration", chaos: "Resurrection Thread (risk: undead puppet)", tactical: "Sustained Operations" },
+        level_9: { knowledge: "Grand Mender", chaos: "Necro-Silk Mastery", tactical: "Total Theater Healing" },
+        level_10: { knowledge: "Eternal Suture", chaos: "Life-Death Weaver", tactical: "Supreme Restoration" }
+      },
+      evolution_paths: {
+        knowledge: {
+          name: "Grand Silk-Mender",
+          description: "Yalith's healing silk is perfected — every thread mends exactly what's needed, leaving units stronger than before the wound.",
+          abilities: ["Perfect Mending (heal 3 HP per turn to 2 units within 6\")", "Cleanse All (remove all debuffs from friendly units within 8\")", "Silk Fortification (+1 DEF to all friendly units within 6\" permanently when first healed)"],
+          fragment_interaction: "Healing fragments affect all units within 8\" instead of single target; +2 HP healed",
+          unit_synergy: "All friendly infantry within 8\" regenerate 1 HP per turn; healed units gain +1 MOR"
+        },
+        chaos: {
+          name: "Blood-Silk Revenant",
+          description: "Yalith has learned to steal life from enemies to fuel her healing — and to animate the dead with puppet-silk.",
+          abilities: ["Life Drain Thread (deal 3 damage to enemy within 8\", heal an ally for that amount)", "Silk Puppet (once per game, reanimate a destroyed friendly unit at half stats)", "Parasitic Cocoon (enemy within 6\" loses 1 HP/turn, allies gain it)"],
+          fragment_interaction: "Healing fragments also deal 2 damage to nearest enemy; revived units count as Fragment carriers",
+          unit_synergy: "Destroyed friendly units have 25% chance to stand back up at 3 HP; enemy kills within aura heal nearest ally for 2"
+        },
+        hybrid: {
+          name: "Battlefield Surgeon",
+          description: "Controlled life-transfer with selective revivification — Yalith saves who matters most.",
+          abilities: ["Adaptive Healing (heal 2 or drain 2, choose each turn)", "Triage Priority (choose one unit: it cannot be reduced below 1 HP this turn)", "Restorative Aura"],
+          fragment_interaction: "Choose: healing fragment heals 3 to allies, or drains 2 from enemy and heals ally for 2",
+          unit_synergy: "Healed units gain +1 ATK for 1 turn; destroyed units drop a healing cocoon (any ally can pick up for +3 HP)"
+        }
+      },
+      signature_units: ["Gossamer Guard", "Cocoon Wardens", "Thread-Seer Acolytes"],
+      strategic_notes: "Yalith is the answer to attrition matchups. She can't kill anything quickly, but she makes your army nearly impossible to grind down. Pair her with high-DEF infantry like Gossamer Guard and Anchor Guard — her healing turns their durability into inevitability. Weak against burst-damage alpha strikes that kill before she can heal. Her Chaos path adds offensive teeth but risks raising units that might not be fully loyal.",
+      tags: ["Healer", "Support", "Buffer", "Restoration", "Defensive"]
+    },
+
+    // COMMANDER 12 — Cavalry/Spider-Mount Commander
+    {
+      name: "Fang-Rider Kaelyx",
+      faction: "thornweft-matriarchy",
+      title: "The Silk Tempest",
+      flavor_text: "Kaelyx rides a Matriarch-stage spider named Skein — a creature so massive its legs leave furrows in stone. Together they lead the Thornweft's mounted host in charges that sound like a thunderstorm made of chitin and screaming silk.",
+      theme: "Mounted combat; spider-cavalry charges, flanking warfare",
+      personality: "Wild, laughing, addicted to speed and the thrill of the charge",
+      playstyle: "Aggressive cavalry commander. Kaelyx buffs all mounted/cavalry units with charge bonuses, speed, and flanking power. She hits hard and fast, dismantling enemy flanks before they can consolidate. Pair with Spiderling Scouts, Silk-Rider Lancers, and Matriarch Riders for a devastating mobile army.",
+      base_stats: { Command: 8, Knowledge: 6, Leadership: 7, Agility: 10, Health: 225 },
+      battle_stats: { ATK: 18, DEF: 4, HP: 27, MOV: 10, RNG: 2, MOR: 8 },
+      points_cost: 22,
+      level_1_deck: {
+        command: ["Thundering Charge", "Flanking Orders"],
+        tech: ["Spider-Bond Tactics", "Silk Saddle Reinforcement"],
+        fragment: ["Stampede Resonance"],
+        tactical: ["Cavalry Wedge"]
+      },
+      skill_tree: {
+        level_2: { knowledge: "Precise Charge Timing (+1 ATK on charge)", chaos: "Berserker Charge (double charge bonus, can't retreat)", tactical: "Flanking Discipline" },
+        level_3: { knowledge: "Spider-Bond Mastery", chaos: "Frenzy Gallop", tactical: "Pincer Formation" },
+        level_4: { knowledge: "Mounted Coordination", chaos: "Wild Stampede", tactical: "Cavalry Dominance" },
+        level_5: { knowledge: "Perfect Rider", chaos: "Unstoppable Charge", tactical: "Mobile Strike Force" },
+        level_6: { knowledge: "Wall-Climb Charge", chaos: "Rampage", tactical: "Encirclement Tactics" },
+        level_7: { knowledge: "Silk-Lasso Mastery", chaos: "Mounted Fury", tactical: "Deep Flanking" },
+        level_8: { knowledge: "Strategic Mobility", chaos: "Stampede Carnage", tactical: "Cavalry Supremacy" },
+        level_9: { knowledge: "Grand Rider", chaos: "Apocalyptic Charge", tactical: "Perfect Mobile Warfare" },
+        level_10: { knowledge: "Eternal Tempest", chaos: "Silk Storm Incarnate", tactical: "Supreme Cavalry Master" }
+      },
+      evolution_paths: {
+        knowledge: {
+          name: "Master Rider",
+          description: "Kaelyx and Skein move as one organism. Every charge is timed perfectly, every flank executed with surgical precision.",
+          abilities: ["Perfect Charge (+3 ATK on charge for all cavalry within 8\")", "Spider-Climb Assault (cavalry can charge through/over terrain)", "Coordinated Flank (cavalry attacking the same target as Kaelyx gain +2 ATK)"],
+          fragment_interaction: "Charge fragments buff entire cavalry wing; +2 MOV to all cavalry within 10\"",
+          unit_synergy: "All cavalry gain Wall-Climber; Silk-Rider Lancers gain +1 DEF; Spiderling Scouts gain +1 ATK"
+        },
+        chaos: {
+          name: "Stampede Incarnate",
+          description: "Kaelyx has become pure momentum — she cannot stop, will not stop, and anything in her path is trampled to paste.",
+          abilities: ["Unstoppable Stampede (charge does not end on contact — plow through enemy units dealing damage to each)", "Frenzy (cannot voluntarily stop moving; +4 ATK on charge)", "Trample (all units Kaelyx moves through take ATK/2 damage)"],
+          fragment_interaction: "Charge fragments trigger automatic charge on nearest enemy; trample damage applies corruption",
+          unit_synergy: "Cavalry gain +3 MOV but cannot hold objectives; all charges are mandatory (cannot choose not to charge if in range)"
+        },
+        hybrid: {
+          name: "Silk Tempest",
+          description: "Controlled aggression — Kaelyx charges devastatingly but can rein in when needed.",
+          abilities: ["Adaptive Charge (choose: controlled +2 ATK or wild +4 ATK with overshoot risk)", "Silk Lasso (after charge, drag one enemy model 4\" toward friendly lines)", "Mobile Rally (cavalry that charges this turn are immune to MOR checks)"],
+          fragment_interaction: "Choose: charge fragment gives +3 ATK to one unit, or +1 ATK to all cavalry within 8\"",
+          unit_synergy: "Cavalry gain +1 MOV and +1 ATK on charge; Phase-Silk Cavalry can charge after teleporting"
+        }
+      },
+      signature_units: ["Silk-Rider Lancers", "Matriarch Riders", "Spiderling Scouts"],
+      strategic_notes: "Kaelyx is the aggressor's choice. She turns the Thornweft cavalry wing from a flanking support element into the primary damage dealer. Her army wants to charge turn 2 and never stop. Weak against castle/turtle strategies with overlapping arcs of fire — she needs to reach the enemy quickly or her glass-cannon cavalry gets picked apart. Her Chaos path is terrifyingly powerful but removes tactical flexibility.",
+      tags: ["Cavalry", "Charge", "Flanking", "Mobility", "Aggressive"]
+    },
+
+    // COMMANDER 13 — Terrain Shaper / Living Web Commander
+    {
+      name: "Loom-Shaper Quileth",
+      faction: "thornweft-matriarchy",
+      title: "The Living Loom",
+      flavor_text: "Quileth doesn't fight battles — she reshapes them. Walls of hardened silk erupt from nothing. Bridges of gossamer span chasms. The ground itself becomes web, and the web becomes whatever Quileth needs it to be. By the end of a battle, the terrain belongs to her.",
+      theme: "Aggressive terrain manipulation; dynamic battlefield reshaping",
+      personality: "Patient, architectural, sees the battlefield as raw material to sculpt",
+      playstyle: "Terrain creation and manipulation. Quileth grows web terrain, raises silk walls, creates chokepoints, and weaponizes the environment itself. She turns open fields into Thornweft fortresses and enemy fortifications into web-choked killing grounds. Pair with Web-Spinner Sappers and Anchor Guard for total terrain domination.",
+      base_stats: { Command: 7, Knowledge: 10, Leadership: 8, Agility: 5, Health: 210 },
+      battle_stats: { ATK: 12, DEF: 4, HP: 24, MOV: 5, RNG: 8, MOR: 9 },
+      points_cost: 20,
+      level_1_deck: {
+        command: ["Raise Silk Wall", "Web Flood"],
+        tech: ["Terrain Engineering", "Web Architecture"],
+        fragment: ["Earth-Silk Resonance"],
+        tactical: ["Chokepoint Creation"]
+      },
+      skill_tree: {
+        level_2: { knowledge: "Precision Shaping (choose exact wall placement)", chaos: "Wild Growth (terrain erupts randomly in 8\" radius)", tactical: "Tactical Terrain" },
+        level_3: { knowledge: "Silk Fortification", chaos: "Living Web (web moves each turn)", tactical: "Chokepoint Mastery" },
+        level_4: { knowledge: "Web Bridge Construction", chaos: "Devouring Terrain", tactical: "Strategic Reshaping" },
+        level_5: { knowledge: "Master Architect", chaos: "Chaotic Overgrowth", tactical: "Battlefield Control" },
+        level_6: { knowledge: "Hardened Silk Walls", chaos: "Predatory Terrain", tactical: "Mobile Fortification" },
+        level_7: { knowledge: "Labyrinth Weaving", chaos: "Terrain Corruption", tactical: "Adaptive Architecture" },
+        level_8: { knowledge: "Perfect Terrain Control", chaos: "Living Battlefield", tactical: "Supreme Shaping" },
+        level_9: { knowledge: "Grand Architect", chaos: "Apocalyptic Overgrowth", tactical: "Total Terrain Dominance" },
+        level_10: { knowledge: "Eternal Loom", chaos: "World-Weaver", tactical: "Supreme Terrain Master" }
+      },
+      evolution_paths: {
+        knowledge: {
+          name: "Grand Architect",
+          description: "Quileth's terrain manipulation is absolute — she builds perfect fortifications, optimal chokepoints, and silk structures that last the entire battle.",
+          abilities: ["Raise Fortress (create a 6\" silk wall with DEF 6 and 18 HP — blocks movement and line of sight)", "Web Highway (create a 12\" silk road — friendly units on it gain +3 MOV)", "Chokepoint Mastery (enemies entering web terrain Quileth created lose 1 MOV and suffer -1 ATK)"],
+          fragment_interaction: "Terrain fragments create permanent structures; walls gain +6 HP; web zones last entire game",
+          unit_synergy: "Web-Spinner Sappers create double-size web zones; Anchor Guard gain +2 DEF in Quileth's terrain; all friendly units gain Web-Walk"
+        },
+        chaos: {
+          name: "Living Loom",
+          description: "Quileth's web has become alive — it grows, hunts, and devours. The battlefield itself turns predatory.",
+          abilities: ["Predatory Web (web terrain deals 2 damage to enemy units that start their turn in it)", "Animated Silk (once per turn, move one web zone 4\" in any direction)", "Devouring Wall (silk walls can attack adjacent enemy units with ATK 9)"],
+          fragment_interaction: "Terrain fragments spawn hostile web zones on enemy deployment; web zones spread 2\" per turn automatically",
+          unit_synergy: "Web terrain heals friendly units for 1 HP/turn but also has 10% chance to entangle them (-2 MOV for 1 turn)"
+        },
+        hybrid: {
+          name: "Tactical Shaper",
+          description: "Controlled terrain manipulation with selective weaponization — Quileth builds what's needed and arms it when necessary.",
+          abilities: ["Adaptive Terrain (choose: defensive wall or offensive web zone each turn)", "Silk Snare (web zone can be triggered to immobilize all units in it for 1 turn, friend or foe)", "Mobile Architecture (walls can be dissolved and rebuilt elsewhere)"],
+          fragment_interaction: "Choose: terrain fragment creates permanent fortification or temporary offensive web that deals damage",
+          unit_synergy: "Web-Spinner Sappers gain +1 web zone per turn; all friendly units in web terrain gain +1 DEF"
+        }
+      },
+      signature_units: ["Web-Spinner Sappers", "Anchor Guard", "Gossamer Guard"],
+      strategic_notes: "Quileth is the control commander — she reshapes the battlefield until it's unrecognizable. She excels in any game with objectives, as she can wall off enemy approaches and create highways for her own forces. She's slow and methodical; don't try to rush with her. Let her build for 2-3 turns, then watch the enemy try to navigate a labyrinth of silk while your troops move freely. Weak against flyers and teleporters who bypass terrain entirely. Her Chaos path creates a terrifying living battlefield but risks friendly entanglement.",
+      tags: ["Terrain", "Control", "Architecture", "Web", "Defensive"]
     }
   );
 
@@ -1291,9 +1462,9 @@
     { name: "Gossamer Titan", faction: "thornweft-matriarchy", points_cost: 15, role: "Reality weaver", fragment_interactions: "Fate manipulation", flavor_text: "A Queen-Spawn Spider of staggering proportions — its silk can rewrite geography", type: "War Machine", stats: { ATK: 27, DEF: 6, HP: 39, MOV: 4, RNG: 8, MOR: 10 }, special: ["Reality Weaving (reshape terrain within 12\")", "Fate Command (force 2 rerolls/turn)", "Wall-Climber", "Legendary"] },
     { name: "Venom Engine", faction: "thornweft-matriarchy", points_cost: 9, role: "Poison war machine", fragment_interactions: "Venom delivery", flavor_text: "A spider-construct that sprays concentrated venom across wide areas", type: "War Machine", stats: { ATK: 18, DEF: 5, HP: 24, MOV: 5, RNG: 12, MOR: 10 }, special: ["Venom Spray (12\" cone, 2 venom tokens to all hit)", "Poison Cloud Aura (3\")", "Web-Walk"] },
     { name: "Web-Fortress", faction: "thornweft-matriarchy", points_cost: 10, role: "Defensive structure", fragment_interactions: "Network hub", flavor_text: "A semi-permanent silk structure that serves as a fortified Web-Anchor hub", type: "War Machine", stats: { ATK: 12, DEF: 8, HP: 30, MOV: 0, RNG: 12, MOR: 10 }, special: ["Immobile", "Enhanced Web-Anchor (double teleport range)", "Garrison 5 infantry", "Self-Repairing (heal 1 HP/turn)"] },
-    { name: "Fate-Loom Engine", faction: "thornweft-matriarchy", points_cost: 11, role: "Command engine", fragment_interactions: "Fate amplification", flavor_text: "A massive silk-loom operated by Thread-Seers, weaving fate in real time", type: "War Machine", stats: { ATK: 9, DEF: 5, HP: 24, MOV: 3, RNG: 30, MOR: 10 }, special: ["Fate Weaving (force 3 enemy rerolls per turn)", "Thread Amplification (all friendly fate abilities +1)", "Fragile Core"] },
+    { name: "Fate-Loom Engine", faction: "thornweft-matriarchy", points_cost: 11, role: "Command engine", fragment_interactions: "Fate amplification", flavor_text: "A massive silk-loom operated by Thread-Seers, weaving fate in real time", type: "War Machine", stats: { ATK: 12, DEF: 5, HP: 27, MOV: 3, RNG: 30, MOR: 10 }, special: ["Fate Weaving (force 3 enemy rerolls per turn)", "Thread Amplification (all friendly fate abilities +1)", "Fragile Core"] },
     { name: "Crawler Siege Engine", faction: "thornweft-matriarchy", points_cost: 8, role: "Mobile siege", fragment_interactions: "Web delivery", flavor_text: "An armored spider-construct that scales walls and delivers web-bombs", type: "War Machine", stats: { ATK: 18, DEF: 5, HP: 21, MOV: 6, RNG: 8, MOR: 10 }, special: ["Wall-Climber", "Web-Bomb Launcher", "Siege (double damage vs structures)"] },
-    { name: "Skithari (Unique Queen-Spawn)", faction: "thornweft-matriarchy", points_cost: 25, role: "Named monster", fragment_interactions: "Legendary web synergy", flavor_text: "Loom-Mother Vethiss's spider partner — the most intelligent non-humanoid in the Matriarchy", type: "War Machine", stats: { ATK: 27, DEF: 7, HP: 45, MOV: 7, RNG: 8, MOR: 10 }, special: ["Wall-Climber", "Reality Weaving", "Silk Storm (24\" cone)", "Mobile Fortress Web-Anchor", "Legendary (Vethiss only)"] },
+    { name: "Skithari (Unique Queen-Spawn)", faction: "thornweft-matriarchy", points_cost: 25, role: "Named monster", fragment_interactions: "Legendary web synergy", flavor_text: "Loom-Mother Vethiss's spider partner — the most intelligent non-humanoid in the Matriarchy", type: "War Machine", stats: { ATK: 36, DEF: 8, HP: 60, MOV: 8, RNG: 10, MOR: 10 }, special: ["Wall-Climber", "Reality Weaving", "Silk Storm (24\" cone)", "Mobile Fortress Web-Anchor", "Legendary (Vethiss only)"] },
     { name: "Phase-Silk Wraith Spider", faction: "thornweft-matriarchy", points_cost: 9, role: "Phase construct", fragment_interactions: "Phase abilities", flavor_text: "A spider that exists between dimensions — semi-transparent and nearly impossible to hit", type: "War Machine", stats: { ATK: 18, DEF: 3, HP: 18, MOV: 10, RNG: 4, MOR: 10 }, special: ["Phase (50% miss chance)", "Teleport", "Wall-Climber", "Ethereal"] },
     { name: "Cocoon Harvester", faction: "thornweft-matriarchy", points_cost: 7, role: "Resource war machine", fragment_interactions: "Harvesting", flavor_text: "A massive spider-construct that wraps and processes enemies in industrial volumes", type: "War Machine", stats: { ATK: 15, DEF: 5, HP: 21, MOV: 5, RNG: 4, MOR: 10 }, special: ["Mass Cocoon (wrap 1d3 adjacent enemies per turn)", "Process (convert cocoons to 3 resource tokens)", "Fearless"] },
     { name: "Trap-Layer Construct", faction: "thornweft-matriarchy", points_cost: 6, role: "Terrain construct", fragment_interactions: "Trap deployment", flavor_text: "An automated spider-construct that scatters Gossamer Traps while patrolling", type: "War Machine", stats: { ATK: 9, DEF: 4, HP: 15, MOV: 6, RNG: 1, MOR: 10 }, special: ["Auto-Trap (lay 1 Gossamer Trap per turn for free)", "Wall-Climber", "Web-Walk"] }
