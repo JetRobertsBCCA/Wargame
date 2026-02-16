@@ -318,6 +318,7 @@ const pageTemplates = {
             <div class="card"><h3>1. Select Faction</h3><div id="faction-select" class="filter-controls"></div></div>
             <div class="card"><h3>2. Select Commander</h3><select id="commander-select" class="commander-select" onchange="updateSelectedCommander()"><option value="">-- Choose a Faction First --</option></select><div id="commander-preview"></div></div>
             <div class="card"><h3>3. Select Evolution Path</h3><div class="filter-controls" id="evolution-select"><button class="filter-btn" onclick="selectEvolution('knowledge')">Knowledge</button><button class="filter-btn" onclick="selectEvolution('chaos')">Chaos</button><button class="filter-btn" onclick="selectEvolution('hybrid')">Hybrid</button></div><div id="evolution-preview"></div></div>
+            <div class="card" id="army-skill-tree-card" style="display: none;"><h3>Commander Skill Tree</h3><p style="font-size: 0.85rem; color: #888;">Skills available to your selected commander during campaign play.</p><div id="army-skill-tree-display"></div><div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.75rem;"><h4 style="cursor: pointer; color: #a78bfa; margin: 0;" onclick="var el = document.getElementById('universal-tree-ref'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; this.textContent = el.style.display === 'none' ? '▶ Universal Campaign Skills Reference' : '▼ Universal Campaign Skills Reference';">▶ Universal Campaign Skills Reference</h4><div id="universal-tree-ref" style="display: none; margin-top: 0.5rem;"></div></div></div>
             <div class="card"><h3>4. Battle Size</h3><div class="filter-controls"><button class="filter-btn" onclick="setPointsLimit(100)">Skirmish (100)</button><button class="filter-btn active" onclick="setPointsLimit(200)">Medium (200)</button><button class="filter-btn" onclick="setPointsLimit(300)">Large (300)</button><button class="filter-btn" onclick="setPointsLimit(500)">Epic (500)</button></div></div>
             <div class="card"><h3>5. Select Units</h3><div class="filter-controls"><button class="filter-btn active" onclick="filterUnits('all')">All</button><button class="filter-btn" onclick="filterUnits('Infantry')">Infantry</button><button class="filter-btn" onclick="filterUnits('Cavalry')">Cavalry</button><button class="filter-btn" onclick="filterUnits('Support')">Support</button><button class="filter-btn" onclick="filterUnits('Specialist')">Specialist</button><button class="filter-btn" onclick="filterUnits('Artillery')">Artillery</button><button class="filter-btn" onclick="filterUnits('Scout')">Scout</button><button class="filter-btn" onclick="filterUnits('War Machine')">War Machines</button></div><div id="unit-selector" class="unit-selector"></div></div>
             <div class="card"><h3>6. Assign Fragments</h3><div id="fragment-selector"></div><div id="fragment-effects"></div></div>
@@ -2019,6 +2020,140 @@ function loadCommanders() {
   });
 }
 
+// ==========================================
+// Skill Tree Helpers
+// ==========================================
+
+function getUniversalSkillLookup() {
+  const lookup = {};
+  const tree = gameData.rules && gameData.rules.campaign && gameData.rules.campaign.skill_tree;
+  if (!tree || !tree.paths) return lookup;
+  Object.keys(tree.paths).forEach(path => {
+    tree.paths[path].skills.forEach((skill, idx) => {
+      lookup[skill.name.toLowerCase()] = { ...skill, path, tier: idx < 3 ? 1 : idx < 6 ? 2 : 3 };
+    });
+  });
+  return lookup;
+}
+
+function renderCommanderSkillTreeCard(commander) {
+  if (!commander || !commander.skill_tree || typeof commander.skill_tree !== 'object') {
+    return '<p style="color: #888;">No skill tree data available for this commander.</p>';
+  }
+
+  const tree = commander.skill_tree;
+
+  // Branching format (Veilbound etc.)
+  if (tree.format === 'branching' && tree.levels) {
+    const lvlColors = ['#4caf50','#4caf50','#4caf50','#ff9800','#ff9800','#ff9800','#e91e63','#e91e63','#e91e63'];
+    let html = '<p style="font-size: 0.85rem; color: #888;">Choose one option (A or B) per level. Click to expand details.</p>';
+    tree.levels.forEach((lvl, idx) => {
+      const c = lvlColors[idx] || '#e91e63';
+      const typeBadge = t => t === 'Passive' ? 'rgba(76,175,80,0.15); color: #4caf50' : 'rgba(33,150,243,0.15); color: #2196f3';
+      html += `
+        <div style="margin-bottom: 0.75rem;">
+          <div style="font-weight: bold; color: ${c}; margin-bottom: 0.3rem; font-size: 0.9em;">Level ${lvl.level}</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.4rem;">
+            <div style="background: rgba(255,255,255,0.03); border-left: 3px solid ${c}; padding: 0.4rem 0.6rem; border-radius: 4px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: #e8e8e8; font-size: 0.85em;">A: ${lvl.option_a.name}</strong>
+                <span style="font-size: 0.7em; padding: 0.1rem 0.3rem; border-radius: 3px; background: ${typeBadge(lvl.option_a.type)};">${lvl.option_a.type}</span>
+              </div>
+              <p style="margin: 0.2rem 0 0; font-size: 0.8em; color: #aaa;"><strong>Effect:</strong> ${lvl.option_a.effect}</p>
+            </div>
+            <div style="background: rgba(255,255,255,0.03); border-left: 3px solid ${c}; padding: 0.4rem 0.6rem; border-radius: 4px;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="color: #e8e8e8; font-size: 0.85em;">B: ${lvl.option_b.name}</strong>
+                <span style="font-size: 0.7em; padding: 0.1rem 0.3rem; border-radius: 3px; background: ${typeBadge(lvl.option_b.type)};">${lvl.option_b.type}</span>
+              </div>
+              <p style="margin: 0.2rem 0 0; font-size: 0.8em; color: #aaa;"><strong>Effect:</strong> ${lvl.option_b.effect}</p>
+            </div>
+          </div>
+        </div>`;
+    });
+    return html;
+  }
+
+  // Old format (level_2 through level_10)
+  let html = `
+    <p style="font-size: 0.85rem; color: #888;">Choose one skill per level. Your choices determine your Level 10 Evolution.</p>
+    <div style="display: grid; grid-template-columns: 50px 1fr 1fr 1fr; gap: 2px; font-size: 0.85rem;">
+      <div style="font-weight: bold; color: #888; padding: 0.4rem; text-align: center;">LVL</div>
+      <div style="font-weight: bold; color: #2196f3; padding: 0.4rem; text-align: center;">Knowledge</div>
+      <div style="font-weight: bold; color: #f44336; padding: 0.4rem; text-align: center;">Chaos</div>
+      <div style="font-weight: bold; color: #4caf50; padding: 0.4rem; text-align: center;">Tactical</div>`;
+
+  for (let level = 2; level <= 10; level++) {
+    const levelKey = `level_${level}`;
+    if (tree[levelKey]) {
+      const skills = tree[levelKey];
+      const tierColor = level <= 4 ? '#4caf50' : level <= 7 ? '#ff9800' : '#e91e63';
+      const renderSkillCell = (skillText, pathColor) => {
+        if (!skillText || skillText === '-') return `<div style="padding: 0.4rem; color: #555; text-align: center;">-</div>`;
+        // Parse name and effect from parenthetical format like "Breath Precision (+1 RNG)"
+        const match = skillText.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
+        const name = match ? match[1].trim() : skillText;
+        const effect = match && match[2] ? match[2].trim() : '';
+        return `<div style="padding: 0.4rem; background: rgba(255,255,255,0.02); border-left: 2px solid ${pathColor}; border-radius: 2px; cursor: default;" title="${effect || name}">
+          <div style="color: #e8e8e8; font-size: 0.82em;">${name}</div>
+          ${effect ? `<div style="color: #aaa; font-size: 0.72em; margin-top: 1px;">↳ ${effect}</div>` : ''}
+        </div>`;
+      };
+      html += `
+        <div style="color: ${tierColor}; font-weight: bold; padding: 0.4rem; text-align: center; display: flex; align-items: center; justify-content: center;">${level}</div>
+        ${renderSkillCell(skills.knowledge, '#2196f3')}
+        ${renderSkillCell(skills.chaos, '#f44336')}
+        ${renderSkillCell(skills.tactical, '#4caf50')}`;
+    }
+  }
+  html += '</div>';
+  return html;
+}
+
+function renderUniversalSkillTreeReference() {
+  const tree = gameData.rules && gameData.rules.campaign && gameData.rules.campaign.skill_tree;
+  if (!tree || !tree.paths) return '';
+
+  const pathColors = { knowledge: '#2196f3', chaos: '#f44336', tactical: '#4caf50' };
+  const pathIcons = { knowledge: '🔵', chaos: '🔴', tactical: '🟢' };
+  const tierLabels = ['Tier 1 (Lvl 2+)', 'Tier 2 (Lvl 5+)', 'Tier 3 (Lvl 8+)'];
+
+  let html = `
+    <p style="font-size: 0.85rem; color: #888; margin-bottom: 1rem;">${tree.overview || 'Universal campaign skills available to all commanders.'}</p>`;
+
+  Object.keys(tree.paths).forEach(path => {
+    const p = tree.paths[path];
+    html += `
+      <div style="margin-bottom: 1rem;">
+        <h4 style="color: ${pathColors[path]}; margin-bottom: 0.3rem; font-size: 0.95rem;">${pathIcons[path]} ${path.charAt(0).toUpperCase() + path.slice(1)} Path</h4>
+        <p style="font-size: 0.8rem; color: #999; margin: 0 0 0.5rem 0;">${p.theme}</p>`;
+    p.skills.forEach((skill, idx) => {
+      const tier = idx < 3 ? 0 : idx < 6 ? 1 : 2;
+      const tierColor = tier === 0 ? '#4caf50' : tier === 1 ? '#ff9800' : '#e91e63';
+      html += `
+        <div style="margin-bottom: 0.3rem; padding: 0.4rem 0.6rem; background: rgba(255,255,255,0.02); border-left: 3px solid ${tierColor}; border-radius: 3px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="color: #e8e8e8; font-size: 0.85em;">${skill.name}</strong>
+            <span style="font-size: 0.65em; color: ${tierColor}; opacity: 0.8;">${tierLabels[tier]}</span>
+          </div>
+          <p style="margin: 0.15rem 0 0 0; font-size: 0.8em; color: #aaa;">${skill.effect}</p>
+        </div>`;
+    });
+    html += '</div>';
+  });
+
+  if (tree.skill_selection_rules) {
+    html += '<div style="margin-top: 0.75rem; padding: 0.5rem; background: rgba(255,255,255,0.03); border-radius: 4px; font-size: 0.8rem;">';
+    html += '<strong style="color: #ccc;">Selection Rules:</strong><ul style="margin: 0.3rem 0 0 1rem; padding: 0; color: #aaa;">';
+    tree.skill_selection_rules.forEach(rule => {
+      html += `<li style="margin-bottom: 0.2rem;">${rule}</li>`;
+    });
+    html += '</ul></div>';
+  }
+
+  return html;
+}
+
 function showCommander(name) {
   const commander = gameData.commanders.find((c) => c.name === name);
   if (!commander) return;
@@ -2133,17 +2268,28 @@ function showCommander(name) {
                 `;
       }
     } else {
-      // Old format (level_2 through level_10 keys)
+      // Old format (level_2 through level_10 keys) — parse effects from parenthetical names
       for (let level = 2; level <= 10; level++) {
         const levelKey = `level_${level}`;
         if (commander.skill_tree[levelKey]) {
           const skills = commander.skill_tree[levelKey];
+          const tierColor = level <= 4 ? '#4caf50' : level <= 7 ? '#ff9800' : '#e91e63';
+          const renderCell = (text, pathColor) => {
+            if (!text || text === '-') return `<div class="skill-option" style="color: #555;">-</div>`;
+            const match = text.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
+            const name = match ? match[1].trim() : text;
+            const effect = match && match[2] ? match[2].trim() : '';
+            return `<div class="skill-option" style="border-left: 2px solid ${pathColor}; padding: 0.4rem 0.6rem;" title="${effect || name}">
+              <div style="color: #e8e8e8; font-size: 0.88em;">${name}</div>
+              ${effect ? `<div style="color: #aaa; font-size: 0.75em; margin-top: 2px;">↳ ${effect}</div>` : ''}
+            </div>`;
+          };
           skillTreeHTML += `
                         <div class="skill-level">
-                            <div class="skill-level-num">${level}</div>
-                            <div class="skill-option skill-knowledge">${skills.knowledge || "-"}</div>
-                            <div class="skill-option skill-chaos">${skills.chaos || "-"}</div>
-                            <div class="skill-option skill-tactical">${skills.tactical || "-"}</div>
+                            <div class="skill-level-num" style="color: ${tierColor};">${level}</div>
+                            ${renderCell(skills.knowledge, '#2196f3')}
+                            ${renderCell(skills.chaos, '#f44336')}
+                            ${renderCell(skills.tactical, '#4caf50')}
                         </div>
                     `;
         }
@@ -2739,7 +2885,7 @@ function loadFragmentSelector() {
 
 function filterUnits(type) {
   document
-    .querySelectorAll("#army-builder-page .card:nth-child(5) .filter-controls .filter-btn")
+    .querySelectorAll("#army-builder-page .card:nth-child(6) .filter-controls .filter-btn")
     .forEach((b) => b.classList.remove("active"));
   event.target.classList.add("active");
   loadUnitSelector(type);
@@ -2774,9 +2920,26 @@ function updateSelectedCommander() {
   // Refresh unit selector to show/highlight signature units
   loadUnitSelector("all");
   // Reset unit type filter buttons
-  document.querySelectorAll("#army-builder-page .card:nth-child(5) .filter-controls .filter-btn").forEach((b, i) => {
+  document.querySelectorAll("#army-builder-page .card:nth-child(6) .filter-controls .filter-btn").forEach((b, i) => {
     b.classList.toggle("active", i === 0);
   });
+
+  // Update skill tree display in army builder
+  const skillTreeCard = document.getElementById("army-skill-tree-card");
+  const skillTreeDisplay = document.getElementById("army-skill-tree-display");
+  const universalRef = document.getElementById("universal-tree-ref");
+  if (skillTreeCard && skillTreeDisplay) {
+    if (commander) {
+      skillTreeCard.style.display = "block";
+      skillTreeDisplay.innerHTML = renderCommanderSkillTreeCard(commander);
+      if (universalRef) {
+        universalRef.innerHTML = renderUniversalSkillTreeReference();
+      }
+    } else {
+      skillTreeCard.style.display = "none";
+      skillTreeDisplay.innerHTML = "";
+    }
+  }
 
   updateArmyDisplay();
 }
@@ -2813,7 +2976,7 @@ function setPointsLimit(limit) {
   document.getElementById("points-limit").textContent = limit;
 
   document
-    .querySelectorAll("#army-builder-page .card:nth-child(4) .filter-btn")
+    .querySelectorAll("#army-builder-page .card:nth-child(5) .filter-btn")
     .forEach((b) => b.classList.remove("active"));
   event.target.classList.add("active");
 
@@ -3119,53 +3282,104 @@ function updateCampaignUI() {
 
 function updateSkillTreeDisplay() {
   const container = document.getElementById("skill-tree-display");
-  if (!container || !campaignState.commander) {
+  if (!container) return;
+  if (!campaignState.commander) {
     container.innerHTML =
       '<p style="color: #888; text-align: center;">Select a commander to view their skill tree.</p>';
     return;
   }
 
   const tree = campaignState.commander.skill_tree;
-  if (!tree || typeof tree !== "object") return;
+  if (!tree || typeof tree !== "object") {
+    container.innerHTML = '<p style="color: #888; text-align: center;">No skill tree data for this commander.</p>';
+    return;
+  }
 
-  let html = `
-        <div class="skill-level" style="font-weight: bold; color: #888;">
-            <div>LVL</div>
-            <div style="text-align: center; color: #2196f3;">Knowledge</div>
-            <div style="text-align: center; color: #f44336;">Chaos</div>
-            <div style="text-align: center; color: #4caf50;">Tactical</div>
-        </div>
-    `;
+  let html = '';
 
-  for (let level = 2; level <= 10; level++) {
-    const levelKey = `level_${level}`;
-    if (tree[levelKey]) {
-      const skills = tree[levelKey];
-      const choice = campaignState.skillChoices.find((c) => c.level === level);
-      const isUnlocked = level <= campaignState.level + 1;
-
+  // Branching format (Veilbound etc.)
+  if (tree.format === 'branching' && tree.levels) {
+    html += '<p style="font-size: 0.85rem; color: #888; margin-bottom: 0.5rem;">Choose one option (A or B) per level. Click a skill to select it.</p>';
+    const lvlColors = ['#4caf50','#4caf50','#4caf50','#ff9800','#ff9800','#ff9800','#e91e63','#e91e63','#e91e63'];
+    tree.levels.forEach((lvl, idx) => {
+      const c = lvlColors[idx] || '#e91e63';
+      const choice = campaignState.skillChoices.find(ch => ch.level === lvl.level);
+      const isUnlocked = lvl.level <= campaignState.level + 1;
+      const typeBadge = t => t === 'Passive' ? 'rgba(76,175,80,0.15); color: #4caf50' : 'rgba(33,150,243,0.15); color: #2196f3';
+      const renderOption = (opt, optKey) => {
+        const isChosen = choice?.path === optKey;
+        const canSelect = isUnlocked && !choice;
+        return `<div style="background: rgba(255,255,255,0.03); border-left: 3px solid ${isChosen ? '#fff' : c}; padding: 0.5rem 0.7rem; border-radius: 4px; ${isChosen ? 'border: 2px solid #fff;' : ''} ${!isUnlocked ? 'opacity: 0.5;' : ''} ${canSelect ? 'cursor: pointer;' : ''}"
+              ${canSelect ? `onclick="selectSkill(${lvl.level}, '${optKey}')"` : ''}>
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong style="color: #e8e8e8; font-size: 0.85em;">${optKey === 'option_a' ? 'A' : 'B'}: ${opt.name} ${isChosen ? '✓' : ''}</strong>
+            <span style="font-size: 0.7em; padding: 0.1rem 0.3rem; border-radius: 3px; background: ${typeBadge(opt.type)};">${opt.type}</span>
+          </div>
+          <p style="margin: 0.2rem 0 0.1rem 0; font-size: 0.85em; opacity: 0.9;">${opt.description}</p>
+          <p style="margin: 0; font-size: 0.8em; color: #aaa;"><strong>Effect:</strong> ${opt.effect}</p>
+        </div>`;
+      };
       html += `
-                <div class="skill-level">
-                    <div class="skill-level-num" style="${level <= campaignState.level ? "" : "opacity: 0.5;"}">${level}</div>
-                    <div class="skill-option skill-knowledge" style="${choice?.path === "knowledge" ? "border: 2px solid #fff;" : ""} ${!isUnlocked ? "opacity: 0.5;" : ""}" 
-                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'knowledge')"` : ""}>
-                        ${skills.knowledge || "-"}
-                        ${choice?.path === "knowledge" ? " ✓" : ""}
-                    </div>
-                    <div class="skill-option skill-chaos" style="${choice?.path === "chaos" ? "border: 2px solid #fff;" : ""} ${!isUnlocked ? "opacity: 0.5;" : ""}"
-                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'chaos')"` : ""}>
-                        ${skills.chaos || "-"}
-                        ${choice?.path === "chaos" ? " ✓" : ""}
-                    </div>
-                    <div class="skill-option skill-tactical" style="${choice?.path === "tactical" ? "border: 2px solid #fff;" : ""} ${!isUnlocked ? "opacity: 0.5;" : ""}"
-                         ${isUnlocked && !choice ? `onclick="selectSkill(${level}, 'tactical')"` : ""}>
-                        ${skills.tactical || "-"}
-                        ${choice?.path === "tactical" ? " ✓" : ""}
-                    </div>
-                </div>
-            `;
+        <div style="margin-bottom: 0.75rem;">
+          <div style="font-weight: bold; color: ${c}; margin-bottom: 0.3rem; font-size: 0.9em;">Level ${lvl.level} ${lvl.level <= campaignState.level ? '' : '<span style="opacity: 0.5;">(locked)</span>'}</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+            ${renderOption(lvl.option_a, 'option_a')}
+            ${renderOption(lvl.option_b, 'option_b')}
+          </div>
+        </div>`;
+    });
+  } else {
+    // Old format (level_2 through level_10) — show effects parsed from parenthetical names
+    const parseSkillText = (text) => {
+      if (!text || text === '-') return { name: '-', effect: '' };
+      const match = text.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
+      return { name: match ? match[1].trim() : text, effect: match && match[2] ? match[2].trim() : '' };
+    };
+
+    html += `
+      <div class="skill-level" style="font-weight: bold; color: #888;">
+        <div>LVL</div>
+        <div style="text-align: center; color: #2196f3;">Knowledge</div>
+        <div style="text-align: center; color: #f44336;">Chaos</div>
+        <div style="text-align: center; color: #4caf50;">Tactical</div>
+      </div>`;
+
+    for (let level = 2; level <= 10; level++) {
+      const levelKey = `level_${level}`;
+      if (tree[levelKey]) {
+        const skills = tree[levelKey];
+        const choice = campaignState.skillChoices.find((c) => c.level === level);
+        const isUnlocked = level <= campaignState.level + 1;
+
+        const renderSkillOption = (skillText, pathKey, pathClass) => {
+          const parsed = parseSkillText(skillText);
+          const isChosen = choice?.path === pathKey;
+          const canSelect = isUnlocked && !choice;
+          return `<div class="skill-option ${pathClass}" style="${isChosen ? 'border: 2px solid #fff;' : ''} ${!isUnlocked ? 'opacity: 0.5;' : ''} ${canSelect ? 'cursor: pointer;' : ''} position: relative;"
+                       ${canSelect ? `onclick="selectSkill(${level}, '${pathKey}')"` : ''}
+                       title="${parsed.effect || parsed.name}">
+            <div style="font-size: 0.85em;">${parsed.name} ${isChosen ? '✓' : ''}</div>
+            ${parsed.effect ? `<div style="font-size: 0.7em; color: #aaa; margin-top: 2px;">↳ ${parsed.effect}</div>` : ''}
+          </div>`;
+        };
+
+        html += `
+          <div class="skill-level">
+            <div class="skill-level-num" style="${level <= campaignState.level ? '' : 'opacity: 0.5;'}">${level}</div>
+            ${renderSkillOption(skills.knowledge, 'knowledge', 'skill-knowledge')}
+            ${renderSkillOption(skills.chaos, 'chaos', 'skill-chaos')}
+            ${renderSkillOption(skills.tactical, 'tactical', 'skill-tactical')}
+          </div>`;
+      }
     }
   }
+
+  // Add universal skill tree reference toggle
+  html += `
+    <div style="margin-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 0.75rem;">
+      <h4 style="cursor: pointer; color: #a78bfa; margin: 0;" onclick="var el = document.getElementById('campaign-universal-ref'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; this.textContent = el.style.display === 'none' ? '▶ Universal Campaign Skills Reference' : '▼ Universal Campaign Skills Reference';">▶ Universal Campaign Skills Reference</h4>
+      <div id="campaign-universal-ref" style="display: none; margin-top: 0.5rem;">${renderUniversalSkillTreeReference()}</div>
+    </div>`;
 
   container.innerHTML = html;
 }
@@ -3197,12 +3411,20 @@ function selectSkill(level, path) {
 
 function updatePathTendency() {
   const pathCounts = { knowledge: 0, chaos: 0, tactical: 0 };
+  const isBranching = campaignState.commander?.skill_tree?.format === 'branching';
   campaignState.skillChoices.forEach((c) => {
-    pathCounts[c.path]++;
+    if (pathCounts[c.path] !== undefined) pathCounts[c.path]++;
   });
 
   const el = document.getElementById("path-tendency");
   if (!el) return;
+
+  if (isBranching) {
+    const totalChoices = campaignState.skillChoices.length;
+    el.textContent = totalChoices > 0 ? `${totalChoices} skill${totalChoices > 1 ? 's' : ''} chosen` : 'Undetermined';
+    el.style.color = totalChoices > 0 ? '#a78bfa' : '#888';
+    return;
+  }
 
   const maxPath = Object.entries(pathCounts).reduce(
     (a, b) => (a[1] > b[1] ? a : b),
@@ -3249,7 +3471,7 @@ function addXP(amount) {
   while (campaignState.xp >= xpToLevel && campaignState.level < 10) {
     campaignState.xp -= xpToLevel;
     campaignState.level++;
-    alert(`Level Up! Your commander is now level ${campaignState.level}!`);
+    showLevelUpModal(campaignState.level);
   }
 
   if (campaignState.level >= 10) {
@@ -3259,6 +3481,107 @@ function addXP(amount) {
 
   updateCampaignUI();
   saveCampaign();
+}
+
+function showLevelUpModal(level) {
+  const modal = document.getElementById("levelup-modal");
+  const choices = document.getElementById("levelup-choices");
+  if (!modal || !choices || !campaignState.commander) {
+    alert(`Level Up! Your commander is now level ${level}!`);
+    return;
+  }
+
+  const tree = campaignState.commander.skill_tree;
+  if (!tree || typeof tree !== 'object') {
+    alert(`Level Up! Your commander is now level ${level}!`);
+    return;
+  }
+
+  let html = `<p style="color: #4fc3f7; font-size: 1.1rem; text-align: center;">🎉 Level ${level} Reached!</p>`;
+
+  // Branching format
+  if (tree.format === 'branching' && tree.levels) {
+    const lvl = tree.levels.find(l => l.level === level);
+    if (lvl) {
+      const typeBadge = t => t === 'Passive' ? 'rgba(76,175,80,0.15); color: #4caf50' : 'rgba(33,150,243,0.15); color: #2196f3';
+      html += `<p style="color: #ccc; text-align: center;">Choose one skill upgrade for Level ${level}:</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+          <div style="background: rgba(255,255,255,0.05); border-left: 4px solid #4caf50; padding: 1rem; border-radius: 6px; cursor: pointer; transition: transform 0.1s;" 
+               onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"
+               onclick="selectSkill(${level}, 'option_a'); closeLevelUpModal();">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <strong style="color: #e8e8e8; font-size: 1rem;">A: ${lvl.option_a.name}</strong>
+              <span style="font-size: 0.75em; padding: 0.15rem 0.4rem; border-radius: 3px; background: ${typeBadge(lvl.option_a.type)};">${lvl.option_a.type}</span>
+            </div>
+            <p style="color: #ccc; margin: 0.3rem 0; font-size: 0.9em;">${lvl.option_a.description}</p>
+            <p style="color: #aaa; margin: 0.3rem 0 0 0; font-size: 0.85em;"><strong>Effect:</strong> ${lvl.option_a.effect}</p>
+          </div>
+          <div style="background: rgba(255,255,255,0.05); border-left: 4px solid #ff9800; padding: 1rem; border-radius: 6px; cursor: pointer; transition: transform 0.1s;"
+               onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"
+               onclick="selectSkill(${level}, 'option_b'); closeLevelUpModal();">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <strong style="color: #e8e8e8; font-size: 1rem;">B: ${lvl.option_b.name}</strong>
+              <span style="font-size: 0.75em; padding: 0.15rem 0.4rem; border-radius: 3px; background: ${typeBadge(lvl.option_b.type)};">${lvl.option_b.type}</span>
+            </div>
+            <p style="color: #ccc; margin: 0.3rem 0; font-size: 0.9em;">${lvl.option_b.description}</p>
+            <p style="color: #aaa; margin: 0.3rem 0 0 0; font-size: 0.85em;"><strong>Effect:</strong> ${lvl.option_b.effect}</p>
+          </div>
+        </div>`;
+    } else {
+      html += '<p style="color: #888;">No skill choices available for this level.</p>';
+      html += `<button class="btn" onclick="closeLevelUpModal()" style="width: 100%; margin-top: 1rem;">Continue</button>`;
+    }
+  } else {
+    // Old format — show three path options
+    const levelKey = `level_${level}`;
+    const skills = tree[levelKey];
+    if (skills) {
+      const parseSkill = (text) => {
+        if (!text || text === '-') return { name: '-', effect: '' };
+        const match = text.match(/^([^(]+?)(?:\s*\(([^)]+)\))?$/);
+        return { name: match ? match[1].trim() : text, effect: match && match[2] ? match[2].trim() : '' };
+      };
+      const k = parseSkill(skills.knowledge);
+      const c = parseSkill(skills.chaos);
+      const t = parseSkill(skills.tactical);
+
+      html += `<p style="color: #ccc; text-align: center;">Choose one skill path for Level ${level}:</p>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-top: 1rem;">
+          <div style="background: rgba(33,150,243,0.1); border-left: 4px solid #2196f3; padding: 1rem; border-radius: 6px; cursor: pointer; transition: transform 0.1s;"
+               onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"
+               onclick="selectSkill(${level}, 'knowledge'); closeLevelUpModal();">
+            <strong style="color: #2196f3; font-size: 0.9rem;">🔵 Knowledge</strong>
+            <div style="color: #e8e8e8; margin-top: 0.5rem; font-size: 0.95em;">${k.name}</div>
+            ${k.effect ? `<div style="color: #aaa; font-size: 0.8em; margin-top: 0.3rem;">↳ ${k.effect}</div>` : ''}
+          </div>
+          <div style="background: rgba(244,67,54,0.1); border-left: 4px solid #f44336; padding: 1rem; border-radius: 6px; cursor: pointer; transition: transform 0.1s;"
+               onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"
+               onclick="selectSkill(${level}, 'chaos'); closeLevelUpModal();">
+            <strong style="color: #f44336; font-size: 0.9rem;">🔴 Chaos</strong>
+            <div style="color: #e8e8e8; margin-top: 0.5rem; font-size: 0.95em;">${c.name}</div>
+            ${c.effect ? `<div style="color: #aaa; font-size: 0.8em; margin-top: 0.3rem;">↳ ${c.effect}</div>` : ''}
+          </div>
+          <div style="background: rgba(76,175,80,0.1); border-left: 4px solid #4caf50; padding: 1rem; border-radius: 6px; cursor: pointer; transition: transform 0.1s;"
+               onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'"
+               onclick="selectSkill(${level}, 'tactical'); closeLevelUpModal();">
+            <strong style="color: #4caf50; font-size: 0.9rem;">🟢 Tactical</strong>
+            <div style="color: #e8e8e8; margin-top: 0.5rem; font-size: 0.95em;">${t.name}</div>
+            ${t.effect ? `<div style="color: #aaa; font-size: 0.8em; margin-top: 0.3rem;">↳ ${t.effect}</div>` : ''}
+          </div>
+        </div>`;
+    } else {
+      html += '<p style="color: #888;">No skill choices available for this level.</p>';
+      html += `<button class="btn" onclick="closeLevelUpModal()" style="width: 100%; margin-top: 1rem;">Continue</button>`;
+    }
+  }
+
+  choices.innerHTML = html;
+  modal.style.display = 'flex';
+}
+
+function closeLevelUpModal() {
+  const modal = document.getElementById("levelup-modal");
+  if (modal) modal.style.display = 'none';
 }
 
 function recordBattle(result) {

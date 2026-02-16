@@ -1,131 +1,594 @@
 <div id="gameplay-page" class="page">
     <h2>Gameplay Mechanics</h2>
+    <p style="color: #aaa; margin-bottom: 1.5rem;">War Crier v0.9 — Complete rules reference. Bring this to the table.</p>
 
-    <div class="card">
-        <h3>1. Army Building</h3>
-        <h4>Points-Based System</h4>
-        <p>Each unit and war machine has a point cost. Players build armies within a chosen point limit:</p>
-        <ul>
-            <li><strong>Skirmish:</strong> 50–100 points</li>
-            <li><strong>Medium battle:</strong> 200–300 points</li>
-            <li><strong>Epic multi-day battle:</strong> 500+ points</li>
-        </ul>
-
-        <h4>Composition Rules</h4>
-        <ul>
-            <li>Minimum and maximum number of units can be optionally set by scenario</li>
-            <li>Signature units of commanders are optional but reinforce the commander's unique strategy</li>
-            <li>Units are faction-cohesive: human/clockwork, steampunk, fragment-infused</li>
-            <li>Fragments affect army-wide interactions depending on evolution path</li>
-        </ul>
-
-        <h4>Army Builder Tool</h4>
-        <p>Player selects:</p>
-        <ul>
-            <li>Commander</li>
-            <li>Units (from standard units)</li>
-            <li>War Machines</li>
-        </ul>
-        <p>Displays points used, points remaining, and faction cohesion. Shows fragment interactions based on commander evolution. Save / load army templates.</p>
+    <!-- Quick Reference Card -->
+    <div class="card" style="border-left: 4px solid #ff9800;">
+        <h3>⚡ Quick Reference</h3>
+        <div id="quick-ref-content"></div>
     </div>
 
+    <!-- Turn Structure -->
     <div class="card">
-        <h3>2. Commander RPG Progression</h3>
-        <h4>Leveling System</h4>
-        <p>XP gained from:</p>
-        <ul>
-            <li>Battle victories</li>
-            <li>Unit survival</li>
-            <li>Fragment activations</li>
-            <li>Objectives / mission completion</li>
-        </ul>
-
-        <h4>Level-Up Mechanics</h4>
-        <ul>
-            <li><strong>Levels 2–10:</strong> Player selects skills branching into Knowledge, Chaos, or Tactical paths</li>
-            <li><strong>Level 10 Evolution:</strong> Commander evolves into Knowledge / Chaos / Hybrid, unlocking:
-                <ul>
-                    <li>New cards / abilities</li>
-                    <li>Modified fragment interactions</li>
-                    <li>Enhanced unit synergies</li>
-                </ul>
-            </li>
-        </ul>
-
-        <h4>Commander Cards</h4>
-        <ul>
-            <li><strong>Command Cards:</strong> Coordinate multiple units, boost morale, trigger tactical maneuvers</li>
-            <li><strong>Tech Cards:</strong> Overclock war machines, repair, enhance unit stats</li>
-            <li><strong>Fragment Cards:</strong> Activate fragment effects, warp battlefield, mutate units</li>
-            <li><strong>Tactical Cards:</strong> Extra unit movement, precision strikes, temporary buffs</li>
-        </ul>
+        <h3>1. Turn Structure</h3>
+        <div id="turn-structure-content"></div>
     </div>
 
-    <div class="card">
-        <h3>3. Tactical Layer (Zoom-In Skirmishes)</h3>
-        <p>When elite units or special events trigger, players zoom into individual tactical encounters.</p>
-        <p>Units' stats determine outcomes: attack, defense, movement, special abilities.</p>
-
-        <h4>Commander Card Deployment</h4>
-        <ul>
-            <li><strong>Knowledge evolution:</strong> Controlled, precise effects</li>
-            <li><strong>Chaos evolution:</strong> Powerful, unpredictable effects</li>
-            <li><strong>Hybrid evolution:</strong> Moderate effects, occasional instability</li>
-        </ul>
-
-        <h4>Tactical Outcomes Feed Back Into Army Layer</h4>
-        <ul>
-            <li>Morale changes</li>
-            <li>Unit damage</li>
-            <li>Fragment instability</li>
-        </ul>
+    <!-- First Turn Restrictions -->
+    <div class="card" style="border-left: 4px solid #f44336;">
+        <h3>2. First Turn Restrictions</h3>
+        <div id="first-turn-content"></div>
     </div>
 
+    <!-- Combat Resolution -->
     <div class="card">
-        <h3>4. Fragment Mechanics</h3>
-        <ul>
-            <li><strong>Activation:</strong> Triggered by units or commander cards</li>
-            <li><strong>Scaling:</strong> Effects depend on commander evolution (Knowledge / Chaos / Hybrid)</li>
-            <li><strong>Interactions:</strong> Certain fragments synergize with specific units or war machines</li>
-        </ul>
-
-        <h4>Risk / Reward</h4>
-        <ul>
-            <li><strong>Knowledge:</strong> Controlled buffs/debuffs</li>
-            <li><strong>Chaos:</strong> Strong but unstable effects</li>
-            <li><strong>Hybrid:</strong> Moderate effects with occasional surprises</li>
-        </ul>
-
-        <h4>Field Effects</h4>
-        <p>Terrain warp, AoE damage, temporary buffs, or fragment-induced mutations.</p>
+        <h3>3. Combat Resolution</h3>
+        <div id="combat-content"></div>
     </div>
 
-    <div class="card">
-        <h3>5. Multi-Day Campaign Tracking</h3>
-        <ul>
-            <li>XP, level-ups, and fragment choices persist across battles</li>
-            <li>Unit persistence: damage, buffs, fragment mutations carry over</li>
-            <li>Evolution paths permanently alter commander abilities for campaign</li>
-        </ul>
-
-        <h4>Optional Campaign Rules</h4>
-        <ul>
-            <li>Save / load campaigns</li>
-            <li>Track outcomes for multiple players</li>
-            <li>Scaling for massive multi-day engagements</li>
-        </ul>
+    <!-- Reaction System -->
+    <div class="card" style="border-left: 4px solid #2196f3;">
+        <h3>4. Reaction System</h3>
+        <div id="reactions-content"></div>
     </div>
 
+    <!-- Faction Mechanics Overview -->
+    <div class="card" style="border-left: 4px solid #9c27b0;">
+        <h3>5. Faction Mechanics</h3>
+        <div id="faction-mechanics-content"></div>
+    </div>
+
+    <!-- Fragment System -->
+    <div class="card" style="border-left: 4px solid #9c27b0;">
+        <h3>6. Fragment System by Faction</h3>
+        <div id="fragment-system-content"></div>
+    </div>
+
+    <!-- Status Effects -->
+    <div class="card" style="border-left: 4px solid #ff5722;">
+        <h3>7. Status Effects Reference</h3>
+        <div id="status-effects-content"></div>
+    </div>
+
+    <!-- War Machine Rules -->
     <div class="card">
-        <h3>6. Wiki Features to Support Gameplay</h3>
-        <ul>
-            <li>Interactive army builder</li>
-            <li>Commander skill tree interface</li>
-            <li>Fragment effect tracker</li>
-            <li>Searchable / filterable database: Factions, units, commanders, war machines, fragment types</li>
-            <li>Cross-links between commanders, signature units, and fragments</li>
-            <li>Placeholders for unit art for player customization</li>
-            <li>Version control: easy to add new factions, units, commanders, or fragments</li>
-        </ul>
+        <h3>8. War Machine Rules</h3>
+        <div id="war-machine-content"></div>
+    </div>
+
+    <!-- Morale -->
+    <div class="card">
+        <h3>9. Morale</h3>
+        <div id="morale-content"></div>
+    </div>
+
+    <!-- Movement & Terrain -->
+    <div class="card">
+        <h3>10. Movement & Terrain</h3>
+        <div id="movement-content"></div>
+    </div>
+
+    <!-- Facing & Engagement -->
+    <div class="card">
+        <h3>11. Facing, Flanking & Engagement</h3>
+        <div id="facing-content"></div>
+    </div>
+
+    <!-- Challenges -->
+    <div class="card">
+        <h3>12. Challenges (Duels)</h3>
+        <div id="challenges-content"></div>
+    </div>
+
+    <!-- Victory Conditions -->
+    <div class="card">
+        <h3>13. Victory Conditions</h3>
+        <div id="victory-content"></div>
+    </div>
+
+    <!-- Scenarios -->
+    <div class="card">
+        <h3>14. Scenarios & Missions</h3>
+        <div id="scenarios-content"></div>
+    </div>
+
+    <!-- Campaign Rules -->
+    <div class="card" style="border-left: 4px solid #4caf50;">
+        <h3>15. Campaign Rules</h3>
+        <div id="campaign-content"></div>
+    </div>
+
+    <!-- Skill Trees -->
+    <div class="card" style="border-left: 4px solid #4caf50;">
+        <h3>16. Commander Skill Trees</h3>
+        <div id="skill-tree-content"></div>
+    </div>
+
+    <!-- Multiplayer -->
+    <div class="card" style="border-left: 4px solid #00bcd4;">
+        <h3>17. Multiplayer & Team Battles</h3>
+        <div id="multiplayer-content"></div>
+    </div>
+
+    <!-- Anti-Frustration & Balance -->
+    <div class="card" style="border-left: 4px solid #ff9800;">
+        <h3>18. Balance & Anti-Frustration Design</h3>
+        <div id="balance-content"></div>
+    </div>
+
+    <!-- Pre-Game Sequence -->
+    <div class="card">
+        <h3>19. Pre-Game Sequence</h3>
+        <div id="pregame-content"></div>
+    </div>
+
+    <!-- Keywords -->
+    <div class="card">
+        <h3>20. Keywords Glossary</h3>
+        <div id="keywords-content"></div>
+    </div>
+
+    <!-- New Faction Design Guide -->
+    <div class="card" style="border-left: 4px solid #607d8b;">
+        <h3>21. New Faction Design Guidelines</h3>
+        <div id="faction-design-content"></div>
     </div>
 </div>
+
+<script>
+// ============================
+// GAMEPLAY PAGE RENDERER
+// ============================
+(function() {
+    function renderList(items) {
+        if (!items || items.length === 0) return '';
+        return '<ul>' + items.map(i => '<li>' + i + '</li>').join('') + '</ul>';
+    }
+
+    function renderSection(title, content) {
+        return '<h4>' + title + '</h4>' + content;
+    }
+
+    // --- Quick Reference ---
+    const qr = gameData.rules.quick_reference;
+    if (qr) {
+        let html = '<h4>Turn Summary</h4>';
+        html += '<ol>' + qr.turn_summary.map(s => '<li>' + s + '</li>').join('') + '</ol>';
+
+        html += '<h4>Combat Cheat Sheet</h4>';
+        html += '<table style="width:100%; border-collapse: collapse;">';
+        for (const [k, v] of Object.entries(qr.combat_cheat_sheet)) {
+            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #e94560; font-weight: bold;">' + k.replace(/_/g,' ') + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + v + '</td></tr>';
+        }
+        html += '</table>';
+
+        html += '<h4>Morale Quick</h4>';
+        html += '<table style="width:100%; border-collapse: collapse;">';
+        for (const [k, v] of Object.entries(qr.morale_quick)) {
+            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #e94560; font-weight: bold;">' + k.replace(/_/g,' ') + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + v + '</td></tr>';
+        }
+        html += '</table>';
+
+        html += '<h4>Faction Resource Summary</h4>';
+        html += '<table style="width:100%; border-collapse: collapse;">';
+        for (const [k, v] of Object.entries(qr.faction_resource_summary)) {
+            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #e94560; font-weight: bold; white-space: nowrap;">' + k.replace(/_/g,' ') + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + v + '</td></tr>';
+        }
+        html += '</table>';
+
+        document.getElementById('quick-ref-content').innerHTML = html;
+    }
+
+    // --- Turn Structure ---
+    const ts = gameData.rules.turn_structure;
+    if (ts) {
+        let html = '<p>' + ts.overview + '</p>';
+        ts.phases.forEach(phase => {
+            html += '<h4>' + phase.name + '</h4>';
+            html += '<p><em>' + phase.description + '</em></p>';
+            html += renderList(phase.actions);
+        });
+        document.getElementById('turn-structure-content').innerHTML = html;
+    }
+
+    // --- First Turn Restrictions ---
+    const ftr = gameData.rules.balance_design;
+    if (ftr && ftr.first_turn_restrictions) {
+        let html = '<p>' + ftr.first_turn_restrictions.description + '</p>';
+        html += renderList(ftr.first_turn_restrictions.rules);
+        document.getElementById('first-turn-content').innerHTML = html;
+    }
+
+    // --- Combat Resolution ---
+    const cr = gameData.rules.combat_resolution;
+    if (cr) {
+        let html = '<p>' + cr.overview + '</p>';
+        cr.steps.forEach(s => {
+            html += '<h4>Step ' + s.step + ': ' + s.name + '</h4>';
+            html += '<p>' + s.description + '</p>';
+        });
+        html += '<h4>Combat Modifiers</h4>';
+        html += '<table style="width:100%; border-collapse: collapse;">';
+        cr.modifiers.forEach(m => {
+            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + m.name + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #4caf50;">' + m.effect + '</td></tr>';
+        });
+        html += '</table>';
+        html += '<h4>Example</h4><p style="background: #1a1a2e; padding: 0.75rem; border-radius: 4px;">' + cr.example + '</p>';
+        document.getElementById('combat-content').innerHTML = html;
+    }
+
+    // --- Reactions ---
+    const rx = gameData.rules.reactions;
+    if (rx) {
+        let html = '<p>' + rx.overview + '</p>';
+        html += '<h4>Reaction Points (RP)</h4>';
+        html += '<p>' + rx.reaction_points.description + '</p>';
+        html += '<p><strong>Generation:</strong> ' + rx.reaction_points.generation + '</p>';
+        html += '<p><strong>If Commander dies:</strong> ' + rx.reaction_points.loss + '</p>';
+        html += '<h4>Reaction Actions</h4>';
+        rx.reaction_actions.forEach(ra => {
+            html += '<div style="background: #1a1a2e; padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">';
+            html += '<strong style="color: #e94560;">' + ra.name + '</strong> <span style="color: #ff9800;">(' + ra.cost + ')</span>';
+            html += '<br><em>Trigger:</em> ' + ra.trigger;
+            html += '<br><em>Effect:</em> ' + ra.effect;
+            html += '<br><em style="color: #888;">Restriction: ' + ra.restriction + '</em>';
+            html += '</div>';
+        });
+        html += '<h4>Timing Rules</h4>';
+        html += renderList(rx.timing_rules);
+        html += '<p style="color: #888; font-style: italic;">' + rx.design_note + '</p>';
+        document.getElementById('reactions-content').innerHTML = html;
+    }
+
+    // --- Faction Mechanics ---
+    const fm = gameData.rules.faction_mechanics;
+    if (fm) {
+        let html = '';
+        const factionNames = {
+            iron_dominion: { name: 'Iron Dominion', icon: '⚙️' },
+            veilbound_shogunate: { name: 'Veilbound Shogunate', icon: '⛩️' },
+            nightfang_dominion: { name: 'Nightfang Dominion', icon: '🦇' },
+            emberclaw_warpack: { name: 'Emberclaw Warpack', icon: '🐉' },
+            thornweft_matriarchy: { name: 'Thornweft Matriarchy', icon: '🕸️' }
+        };
+
+        for (const [fkey, fdata] of Object.entries(fm)) {
+            const info = factionNames[fkey] || { name: fkey, icon: '🏴' };
+            html += '<h4>' + info.icon + ' ' + info.name + '</h4>';
+            html += '<div style="padding-left: 1rem; border-left: 2px solid #333; margin-bottom: 1rem;">';
+            for (const [mechKey, mechData] of Object.entries(fdata)) {
+                if (typeof mechData === 'object' && mechData.description) {
+                    html += '<h5 style="color: #e94560; margin-top: 0.75rem;">' + mechKey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + '</h5>';
+                    html += '<p>' + mechData.description + '</p>';
+                    if (mechData.rule) html += '<p><strong>' + mechData.rule + '</strong></p>';
+                    if (mechData.rules && Array.isArray(mechData.rules)) html += renderList(mechData.rules);
+                    if (mechData.generation && Array.isArray(mechData.generation)) { html += '<strong>Generation:</strong>' + renderList(mechData.generation); }
+                    if (mechData.spending && Array.isArray(mechData.spending)) { html += '<strong>Spending:</strong>' + renderList(mechData.spending); }
+                    if (mechData.instability && Array.isArray(mechData.instability)) { html += '<strong>Instability:</strong>' + renderList(mechData.instability); }
+                    if (mechData.pool_rules && Array.isArray(mechData.pool_rules)) { html += '<strong>Pool Rules:</strong>' + renderList(mechData.pool_rules); }
+                    if (mechData.tiers) {
+                        html += '<table style="width:100%; border-collapse: collapse; margin: 0.5rem 0;">';
+                        mechData.tiers.forEach(t => {
+                            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #ff9800; font-weight: bold;">' + t.name + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + (t.bonus || t.effect || '') + '</td></tr>';
+                        });
+                        html += '</table>';
+                    }
+                    if (mechData.thresholds && Array.isArray(mechData.thresholds)) {
+                        html += '<table style="width:100%; border-collapse: collapse; margin: 0.5rem 0;">';
+                        mechData.thresholds.forEach(t => {
+                            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #ff9800; font-weight: bold;">' + t.name + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + t.effect + '</td></tr>';
+                        });
+                        html += '</table>';
+                    }
+                    if (mechData.stances && Array.isArray(mechData.stances)) {
+                        mechData.stances.forEach(st => {
+                            html += '<div style="background: #1a1a2e; padding: 0.5rem; border-radius: 4px; margin: 0.25rem 0;"><strong>' + st.name + '</strong>: ' + st.effect + '</div>';
+                        });
+                    }
+                    if (mechData.overheat) {
+                        html += '<h5 style="color: #f44336;">Overheat</h5>';
+                        html += '<p>' + mechData.overheat.description + '</p>';
+                        html += renderList(mechData.overheat.effects);
+                    }
+                    if (mechData.anchor_placement) { html += '<strong>Anchor Placement:</strong>' + renderList(mechData.anchor_placement); }
+                    if (mechData.web_teleport) { html += '<strong>Web Teleport:</strong>' + renderList(mechData.web_teleport); }
+                    if (mechData.network_bonuses) {
+                        html += '<strong>' + mechData.network_bonuses.description + '</strong>';
+                        html += '<table style="width:100%; border-collapse: collapse; margin: 0.5rem 0;">';
+                        mechData.network_bonuses.tiers.forEach(t => {
+                            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #ff9800; font-weight: bold;">' + t.name + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + t.bonus + '</td></tr>';
+                        });
+                        html += '</table>';
+                    }
+                }
+            }
+            html += '</div>';
+        }
+        document.getElementById('faction-mechanics-content').innerHTML = html;
+    }
+
+    // --- Fragment System ---
+    const fs = gameData.rules.fragment_system;
+    if (fs) {
+        let html = '<p>' + fs.overview + '</p>';
+        html += renderList(fs.universal_rules);
+        html += '<h4>How Each Faction Uses Fragments</h4>';
+        for (const [fkey, fdata] of Object.entries(fs.faction_methods)) {
+            if (fkey === 'design_note') {
+                html += '<p style="color: #888; font-style: italic; margin-top: 1rem;">' + fdata + '</p>';
+                continue;
+            }
+            html += '<div style="background: #1a1a2e; padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">';
+            html += '<strong style="color: #e94560;">' + fkey.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) + '</strong>';
+            html += '<br><strong>Resource:</strong> ' + fdata.resource;
+            html += '<br><strong>Generation:</strong> ' + fdata.generation;
+            html += '<br><strong>Activation:</strong> ' + fdata.activation;
+            html += '<br><strong>Instability:</strong> ' + fdata.instability;
+            html += '<br><em style="color: #888;">' + fdata.flavor + '</em>';
+            html += '</div>';
+        }
+        document.getElementById('fragment-system-content').innerHTML = html;
+    }
+
+    // --- Status Effects ---
+    const se = gameData.rules.status_effects;
+    if (se) {
+        let html = '<p>' + se.overview + '</p>';
+        se.effects.forEach(e => {
+            html += '<div style="background: #1a1a2e; padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">';
+            html += '<strong style="color: #e94560; font-size: 1.1em;">' + e.icon + ' ' + e.name + '</strong>';
+            html += '<br><strong>Effect:</strong> ' + e.effect;
+            html += '<br><strong>Applied by:</strong> ' + e.applied;
+            html += '<br><strong>Removed by:</strong> ' + e.removed;
+            html += '<br><strong>Stacking:</strong> ' + e.stacking;
+            html += '<br><em style="color: #888;">' + e.notes + '</em>';
+            html += '</div>';
+        });
+        document.getElementById('status-effects-content').innerHTML = html;
+    }
+
+    // --- War Machine Rules ---
+    const wm = gameData.rules.war_machines;
+    if (wm) {
+        let html = '<p>' + wm.overview + '</p>';
+        html += '<h4>Core Rules</h4>';
+        html += renderList(wm.core_rules);
+        html += '<h4>Malfunction</h4>';
+        html += '<p>' + wm.malfunction.description + '</p>';
+        html += '<p><strong>Trigger:</strong> ' + wm.malfunction.trigger + '</p>';
+        html += renderList(wm.malfunction.resolution);
+        html += '<h4>Destruction Effects</h4>';
+        html += '<p>' + wm.destruction_effects.description + '</p>';
+        html += renderList(wm.destruction_effects.rules);
+        html += '<h4>Transport</h4>';
+        html += '<p>' + wm.transport.description + '</p>';
+        html += renderList(wm.transport.rules);
+        document.getElementById('war-machine-content').innerHTML = html;
+    }
+
+    // --- Morale ---
+    const mor = gameData.rules.morale;
+    if (mor) {
+        let html = '<p>' + mor.overview + '</p>';
+        html += renderList(mor.rules);
+        document.getElementById('morale-content').innerHTML = html;
+    }
+
+    // --- Movement ---
+    const mv = gameData.rules.movement;
+    if (mv) {
+        let html = '<p>' + mv.overview + '</p>';
+        html += '<h4>Core Rules</h4>' + renderList(mv.core_rules);
+        html += '<h4>Difficult Terrain</h4><p>' + mv.difficult_terrain.description + '</p><p>' + mv.difficult_terrain.rule + '</p>';
+        html += '<h4>Charging</h4><p>' + mv.charging.description + '</p>' + renderList(mv.charging.rules);
+        html += '<h4>Special Movement</h4>' + renderList(mv.special_movement);
+        html += '<h4>War Machine Movement</h4><p>' + mv.war_machine_movement + '</p>';
+
+        // Terrain
+        const tr = gameData.rules.terrain_rules;
+        if (tr) {
+            html += '<h4>Terrain Types</h4><p>' + tr.overview + '</p>';
+            html += '<table style="width:100%; border-collapse: collapse;">';
+            tr.types.forEach(t => {
+                html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #ff9800; font-weight: bold; white-space: nowrap;">' + t.name + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + t.effect + '</td></tr>';
+            });
+            html += '</table>';
+        }
+        document.getElementById('movement-content').innerHTML = html;
+    }
+
+    // --- Facing & Engagement ---
+    const fc = gameData.rules.facing;
+    const en = gameData.rules.engagement;
+    if (fc || en) {
+        let html = '';
+        if (fc) { html += '<h4>Facing</h4><p>' + fc.overview + '</p>' + renderList(fc.rules); }
+        if (en) { html += '<h4>Engagement & Melee</h4><p>' + en.overview + '</p>' + renderList(en.rules); }
+        document.getElementById('facing-content').innerHTML = html;
+    }
+
+    // --- Challenges ---
+    const ch = gameData.rules.challenges;
+    if (ch) {
+        let html = '<p>' + ch.overview + '</p>';
+        html += renderList(ch.rules);
+        document.getElementById('challenges-content').innerHTML = html;
+    }
+
+    // --- Victory Conditions ---
+    const vc = gameData.rules.victory_conditions;
+    if (vc) {
+        let html = '<p>' + vc.overview + '</p>';
+        vc.modes.forEach(m => {
+            html += '<div style="background: #1a1a2e; padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">';
+            html += '<strong style="color: #e94560;">' + m.name + '</strong>';
+            html += '<br>' + m.description;
+            html += '</div>';
+        });
+        document.getElementById('victory-content').innerHTML = html;
+    }
+
+    // --- Scenarios ---
+    const sc = gameData.rules.scenarios;
+    if (sc) {
+        let html = '<p>' + sc.overview + '</p>';
+        sc.missions.forEach(m => {
+            html += '<div style="background: #1a1a2e; padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">';
+            html += '<strong style="color: #e94560;">' + m.name + '</strong> <span style="color: #888;">(' + m.type + ' — ' + m.recommended_size + ')</span>';
+            html += '<br>' + m.description;
+            html += '<br><em style="color: #ff9800;">Special: ' + m.special_rules + '</em>';
+            html += '</div>';
+        });
+        document.getElementById('scenarios-content').innerHTML = html;
+    }
+
+    // --- Campaign ---
+    const cp = gameData.rules.campaign;
+    if (cp) {
+        let html = '<p>' + cp.overview + '</p>';
+
+        html += '<h4>Campaign Setup</h4>' + renderList(cp.campaign_setup.steps);
+
+        html += '<h4>XP Table</h4><p>' + cp.xp_table.overview + '</p>';
+        html += '<table style="width:100%; border-collapse: collapse;">';
+        cp.xp_table.awards.forEach(a => {
+            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + a.action + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #4caf50; font-weight: bold; text-align: right;">' + a.xp + ' XP</td></tr>';
+        });
+        html += '</table>';
+        html += '<p style="color: #888; font-style: italic;">' + cp.xp_table.design_note + '</p>';
+
+        html += '<h4>Leveling</h4><p>' + cp.leveling.overview + '</p>';
+        html += '<table style="width:100%; border-collapse: collapse;">';
+        html += '<tr style="color: #e94560;"><th style="padding: 4px 8px; text-align:left;">Level</th><th style="padding: 4px 8px; text-align:left;">Total XP</th><th style="padding: 4px 8px; text-align:left;">Note</th></tr>';
+        cp.leveling.xp_requirements.forEach(l => {
+            html += '<tr><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; font-weight: bold;">' + l.level + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e;">' + l.total_xp + '</td><td style="padding: 4px 8px; border-bottom: 1px solid #1a1a2e; color: #888;">' + l.note + '</td></tr>';
+        });
+        html += '</table>';
+
+        html += '<h4>Between-Game Sequence</h4>';
+        cp.between_games.steps.forEach(s => {
+            html += '<div style="background: #1a1a2e; padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">';
+            html += '<strong style="color: #e94560;">Step ' + s.step + ': ' + s.name + '</strong>';
+            html += '<br>' + s.description;
+            html += '</div>';
+        });
+
+        html += '<h4>Commander Death in Campaigns</h4>';
+        html += '<p>' + cp.commander_death_campaign.overview + '</p>';
+        html += renderList(cp.commander_death_campaign.rules);
+
+        html += '<h4>Campaign Scoring</h4>';
+        html += '<p>' + cp.campaign_endings.description + '</p>';
+        html += renderList(cp.campaign_endings.scoring);
+
+        document.getElementById('campaign-content').innerHTML = html;
+    }
+
+    // --- Skill Trees ---
+    const st = gameData.rules.campaign && gameData.rules.campaign.skill_tree;
+    if (st) {
+        let html = '<p>' + st.overview + '</p>';
+
+        const pathColors = { knowledge: '#2196f3', chaos: '#f44336', tactical: '#ff9800' };
+        for (const [pathKey, pathData] of Object.entries(st.paths)) {
+            const color = pathColors[pathKey] || '#fff';
+            html += '<h4 style="color: ' + color + ';">' + pathKey.charAt(0).toUpperCase() + pathKey.slice(1) + ' Path</h4>';
+            html += '<p><em>' + pathData.theme + '</em></p>';
+            html += '<div style="display: grid; gap: 0.5rem;">';
+            pathData.skills.forEach((skill, i) => {
+                const tier = i < 3 ? 'Lvl 2+' : (i < 6 ? 'Lvl 5+' : 'Lvl 8+');
+                html += '<div style="background: #1a1a2e; padding: 0.5rem 0.75rem; border-radius: 4px; border-left: 3px solid ' + color + ';">';
+                html += '<strong>' + skill.name + '</strong> <span style="color: #888; font-size: 0.8em;">(' + tier + ')</span>';
+                html += '<br><span style="color: #ccc;">' + skill.effect + '</span>';
+                html += '</div>';
+            });
+            html += '</div>';
+        }
+
+        html += '<h4>Skill Selection Rules</h4>';
+        html += renderList(st.skill_selection_rules);
+
+        document.getElementById('skill-tree-content').innerHTML = html;
+    }
+
+    // --- Multiplayer ---
+    const mp = gameData.rules.multiplayer;
+    if (mp) {
+        let html = '<p>' + mp.overview + '</p>';
+
+        html += '<h4>Team Battles (2v2, 3v3)</h4>';
+        html += '<p>' + mp.team_battles.description + '</p>';
+        html += renderList(mp.team_battles.rules);
+
+        html += '<h4>Free-for-All (3-4 Players)</h4>';
+        html += '<p>' + mp.free_for_all.description + '</p>';
+        html += renderList(mp.free_for_all.rules);
+
+        html += '<h4>Alternating Activation Variant</h4>';
+        html += '<p>' + mp.alternating_activation_variant.description + '</p>';
+        html += renderList(mp.alternating_activation_variant.rules);
+
+        document.getElementById('multiplayer-content').innerHTML = html;
+    }
+
+    // --- Balance Design ---
+    const bd = gameData.rules.balance_design;
+    if (bd) {
+        let html = '<p>' + bd.overview + '</p>';
+
+        html += '<h4>Underdog Mechanics</h4>';
+        html += '<p>' + bd.underdog_mechanics.description + '</p>';
+        html += renderList(bd.underdog_mechanics.rules);
+
+        html += '<h4>Commander Death Safety Net</h4>';
+        html += '<p>' + bd.commander_death_safety.description + '</p>';
+        html += renderList(bd.commander_death_safety.rules);
+
+        html += '<h4>Rules Disputes</h4>';
+        html += '<p>' + bd.rules_disputes.description + '</p>';
+        html += renderList(bd.rules_disputes.rules);
+
+        html += '<h4>Anti-Stalling</h4>';
+        html += '<p>' + bd.anti_stalling.description + '</p>';
+        html += renderList(bd.anti_stalling.rules);
+
+        document.getElementById('balance-content').innerHTML = html;
+    }
+
+    // --- Pre-Game ---
+    const pg = gameData.rules.pre_game;
+    if (pg) {
+        let html = '<p>' + pg.overview + '</p>';
+        pg.steps.forEach(s => {
+            html += '<div style="background: #1a1a2e; padding: 0.75rem; border-radius: 4px; margin-bottom: 0.5rem;">';
+            html += '<strong style="color: #e94560;">Step ' + s.step + ': ' + s.name + '</strong>';
+            html += '<br>' + s.description;
+            html += '</div>';
+        });
+        document.getElementById('pregame-content').innerHTML = html;
+    }
+
+    // --- Keywords ---
+    const kw = gameData.rules.keywords;
+    if (kw) {
+        let html = '<p>' + kw.overview + '</p>';
+        html += '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 0.5rem;">';
+        kw.entries.forEach(k => {
+            html += '<div style="background: #1a1a2e; padding: 0.5rem; border-radius: 4px;">';
+            html += '<strong style="color: #e94560;">' + k.name + '</strong>';
+            html += '<br><span style="color: #ccc; font-size: 0.9em;">' + k.description + '</span>';
+            html += '</div>';
+        });
+        html += '</div>';
+        document.getElementById('keywords-content').innerHTML = html;
+    }
+
+    // --- Faction Design Guidelines ---
+    const fdg = gameData.rules.balance_design && gameData.rules.balance_design.new_faction_design_guidelines;
+    if (fdg) {
+        let html = '<p>' + fdg.description + '</p>';
+        html += renderList(fdg.principles);
+        document.getElementById('faction-design-content').innerHTML = html;
+    }
+})();
+</script>
