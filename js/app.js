@@ -2427,6 +2427,7 @@ function renderUnitsList(filterType) {
             }
             <p><strong>Role:</strong> ${unit.role}</p>
             ${unit.special && unit.special.length > 0 ? `<p style="font-size: 0.8rem; color: #a78bfa;"><strong>Special:</strong> ${unit.special.map((s) => s.split("(")[0].trim()).join(", ")}</p>` : ""}
+            ${unit.description ? `<p style="font-size: 0.8rem; color: #999; margin-top: 0.5rem; line-height: 1.4;">${unit.description.length > 200 ? unit.description.substring(0, 200) + '...' : unit.description}</p>` : ""}
         `;
     contentEl.appendChild(card);
   });
@@ -2532,6 +2533,12 @@ function showUnit(name) {
             
             <p><strong>Fragment Interactions:</strong> ${unit.fragment_interactions}</p>
             <p><em>${unit.flavor_text}</em></p>
+            ${unit.description ? `
+            <div style="margin: 1.5rem 0; padding: 1.25rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;">
+                <h3 style="margin-top: 0; margin-bottom: 0.5rem; color: #ccc; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px;">📖 Unit Description</h3>
+                <p style="color: #ddd; line-height: 1.7; margin: 0; font-size: 0.95rem;">${unit.description}</p>
+            </div>
+            ` : ''}
             
             ${
               signatureCommanders.length > 0
@@ -2691,10 +2698,15 @@ function loadUnitSelector(filterType) {
     const div = document.createElement("div");
     div.className = "unit-option" + (isSignature ? " signature-unit" : "");
     div.onclick = () => addUnitToArmy(unit.name);
+    const descPreview = unit.description ? unit.description.substring(0, 120) + (unit.description.length > 120 ? '...' : '') : '';
     div.innerHTML = `
-            <span class="unit-name">${isSignature ? "★ " : ""}${unit.name}</span>
-            <span class="unit-cost">${unit.points_cost} pts</span>
+            <div>
+                <span class="unit-name">${isSignature ? "★ " : ""}${unit.name}</span>
+                <span class="unit-cost">${unit.points_cost} pts</span>
+            </div>
+            ${descPreview ? `<div style="font-size: 0.7rem; color: #888; margin-top: 2px; line-height: 1.3;">${descPreview}</div>` : ''}
         `;
+    div.title = unit.description || unit.flavor_text || '';
     container.appendChild(div);
   });
 }

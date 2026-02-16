@@ -1885,7 +1885,7 @@
         },
         level_10: {
           knowledge: "Supreme Shapeshift: maintain bonuses from BOTH forms simultaneously — RNG 6\", ATK 9, MOV 10, all beast buffs active",
-          chaos: "Apex Predator Form: permanently become a massive tiger — ATK 10, DEF 5, HP 14, MOV 12, Corruption Aura 4\", Terrifying, Fearless, Blood Drain",
+          chaos: "Apex Predator Form: permanently become a massive tiger — ATK 8, DEF 4, HP 12, MOV 10, Corruption Aura 4\", Terrifying, Fearless, Blood Drain",
           tactical: "The Perfect Predator: Vex can shift forms after every action, gaining +2 to primary stat of each form (ATK in tiger, DEF in human)"
         }
       },
@@ -1905,7 +1905,7 @@
           name: "The Apex Beast",
           description: "Vex fully surrenders to the tiger within, becoming the most powerful individual combatant — a permanent massive tiger form.",
           abilities: [
-            "Permanent tiger form: ATK 10, DEF 5, HP 14, MOV 12",
+            "Permanent tiger form: ATK 8, DEF 4, HP 12, MOV 10",
             "Corruption Aura 4\"",
             "Blood Drain, Terrifying, Fearless"
           ],
@@ -1942,6 +1942,7 @@
       role: "Expendable screen",
       fragment_interactions: "Hunger Pool +1 on death; absorbs hits for elites",
       flavor_text: "Mindless infected humans driven forward by the Blight's hunger. They fight with crude weapons and bare hands.",
+      description: "Shambling husks of what were once farmers, merchants, and beggars, these mindless infected are hurled toward the enemy in waves. They feel no pain and follow no strategy—only the dim, insatiable compulsion the Blight has carved into what remains of their minds. Cheap to field and cheaper to lose, they exist to absorb arrows and tie down real threats.",
       type: "Infantry",
       corruption_spread: 0,
       stats: {
@@ -1965,6 +1966,7 @@
       role: "Tarpit screen",
       fragment_interactions: "Hunger Pool +1 on death; pins enemies in melee",
       flavor_text: "A seething mass of infected wretches that pin enemies in place through sheer weight of rotting flesh.",
+      description: "A seething, moaning tide of rotting flesh and grasping hands, the Plague Horde is less a military unit and more a natural disaster. They stumble forward in such crushing density that enemy formations simply cannot cut through them fast enough. Use them to pin dangerous foes in place while your true killers close in from the flanks.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -1984,6 +1986,7 @@
       role: "Improved line infantry",
       fragment_interactions: "Corruption Spread on hit; feeds Hunger Pool",
       flavor_text: "Former soldiers turned by the Blight. They retain enough muscle memory to wield weapons competently.",
+      description: "Once disciplined soldiers, these Blight-turned warriors retain enough muscle memory to swing a blade with purpose. The corruption threading through their veins spreads to anything they wound, seeding infection across enemy lines. They are the workhorse of any Nightfang advance—expendable enough to trade, dangerous enough to respect.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -2003,6 +2006,7 @@
       role: "Defensive thrall infantry",
       fragment_interactions: "Corruption Spread; holds objectives cheaply",
       flavor_text: "Town guards and militia who fell to the Blight. Their armor remains, rusted and stained with dried blood.",
+      description: "These town guards fell defending walls that could not hold against the Blight. Now they raise those same shields in service to the Dominion, their disciplined formations a grotesque echo of their former duty. Their shield wall anchors the line while the corruption leaking from their wounds poisons everything nearby.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -2022,6 +2026,7 @@
       role: "Core melee infantry",
       fragment_interactions: "Corruption Spread; +1 ATK near fragments",
       flavor_text: "Tiger-marked warriors wielding bone glaives. The backbone of Nightfang infantry — fast, aggressive, and infectious.",
+      description: "Marked with the sacred tiger sigils of the Dominion, these warriors wield barbed bone glaives that carve through ranks at punishing reach. Each strike spreads the Patriarch's corruption deeper into enemy flesh. They are the fangs of the formation—positioned behind the front line, striking over the heads of lesser thralls.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -2041,6 +2046,7 @@
       role: "Anti-cavalry infantry",
       fragment_interactions: "Corruption Spread; Hunger Pool generation",
       flavor_text: "Blight-forged spears gleam crimson as these warriors brace against charges. The corruption on their weapons weakens even armored targets.",
+      description: "Forged in the blood-furnaces beneath Nightfang fortresses, their Blight-iron spears are designed to punch through mounted charges. When cavalry thunder toward them, they brace with a discipline that belies the madness in their eyes. Each wound their spears inflict festers with corruption, punishing any rider foolish enough to close.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -2064,6 +2070,7 @@
       role: "Elite melee infantry",
       fragment_interactions: "Corruption Spread; Blood Tithe sacrifice for +1 ATK",
       flavor_text: "Stage 2 Blight-warriors with partial tiger transformation. Their clawed hands and predatory speed make them devastating in melee.",
+      description: "Stage 2 of the Blight transformation has reshaped these warriors into something between human and predator—clawed hands, elongated canines, and feline reflexes that let them fight in terrifying concert. They coordinate through pack instinct rather than shouted orders, flanking and encircling with animal precision. Every kill fuels the Blood Tithe, feeding the Dominion's war machine.",
       type: "Infantry",
       corruption_spread: 2,
       stats: {
@@ -2077,7 +2084,6 @@
       special: [
         "Corruption",
         "Corruption Spread",
-        "Blood Tithe (sacrifice 1 HP for +1 ATK die)",
         "Pack Tactics (+1 ATK when 2+ Nightfang units attack same target)"
       ]
     },
@@ -2088,6 +2094,7 @@
       role: "Aggressive assault infantry",
       fragment_interactions: "Corruption Spread; heals from kills via Blood Drain",
       flavor_text: "Frenzied warriors who charge headlong into enemy lines, draining blood from every wound they inflict.",
+      description: "These frenzied warriors have surrendered to the Blight's hunger, fighting in a red-eyed fury that makes them nearly impossible to stop. They drain the lifeblood from their victims mid-combat, each kill driving them deeper into their frenzy. Unleash them into enemy lines and watch them carve a crimson path—just don't expect them to retreat.",
       type: "Infantry",
       corruption_spread: 2,
       stats: {
@@ -2101,8 +2108,7 @@
       special: [
         "Corruption",
         "Corruption Spread",
-        "Blood Drain (restore 1 HP when this unit destroys an enemy model)",
-        "Frenzy (+1 ATK when below half HP)"
+        "Blood Drain (restore 1 HP when this unit destroys an enemy model)"
       ]
     },
     {
@@ -2112,6 +2118,7 @@
       role: "Heavy assault infantry",
       fragment_interactions: "Corruption Aura 2\"; Blood Tithe",
       flavor_text: "Heavily armored in Blight-forged plate, these warriors are walking corruption engines. Every step leaves infected ground.",
+      description: "Encased in armor fused to their corrupted flesh, these walking engines of pestilence radiate Blight in a visible miasma that wilts banners and corrodes steel. Everything within two inches of them begins to sicken and rot. They are slow, relentless, and nearly impossible to kill—an advancing wall of contagion that feeds the Blood Tithe with every grinding step.",
       type: "Infantry",
       corruption_spread: 2,
       stats: {
@@ -2136,6 +2143,7 @@
       role: "Glass cannon melee",
       fragment_interactions: "Blood Tithe; Hunger Pool fueling; Pack Tactics",
       flavor_text: "Fully transformed Stage 2 warriors in permanent tiger-rage. They cannot be reasoned with — only pointed at the enemy.",
+      description: "The Stage 2 transformation has consumed these warriors entirely, locking them in a permanent state of tiger-rage that obliterates all reason. They fight with the savage fury of apex predators, drunk on blood and incapable of disengaging once they taste combat. Point them at the enemy and step aside—they will not stop until everything before them is dead, including themselves.",
       type: "Infantry",
       corruption_spread: 2,
       stats: {
@@ -2150,8 +2158,7 @@
         "Corruption",
         "Corruption Spread",
         "Frenzy (+1 ATK when below half HP)",
-        "Fearless",
-        "Cannot Disengage (must always attack if Engaged)"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -2161,6 +2168,7 @@
       role: "Stealth melee infantry",
       fragment_interactions: "Corruption Spread; ambush bonus from cover",
       flavor_text: "Night-hunters who strike from shadows. Their Blight-darkened skin makes them nearly invisible in low light.",
+      description: "Born from shadow and trained in silence, these night-hunters materialize from darkness to strike where the enemy least expects. They carry the Blight's corruption on blackened blades that leave wounds the healers cannot find until it's too late. Deploy them behind enemy lines through ambush to shatter morale and sow chaos.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -2174,8 +2182,7 @@
       special: [
         "Corruption",
         "Corruption Spread",
-        "Stealth (cannot be targeted by ranged attacks while in cover)",
-        "Ambush (+1 ATK on the first attack after leaving cover)"
+        "Stealth (cannot be targeted by ranged attacks while in cover)"
       ]
     },
     {
@@ -2185,6 +2192,7 @@
       role: "Defensive elite infantry",
       fragment_interactions: "Corruption Aura 2\"; protects Plague Heralds and commanders",
       flavor_text: "The Patriarch's personal guard strain — bred for endurance and loyalty. They form impenetrable walls of corrupted flesh.",
+      description: "The Patriarch's own chosen, these warriors radiate such concentrated Blight that the air around them shimmers with corruption. They exist for one purpose: to stand between their lord and death. Their mere presence weakens nearby enemies while they absorb blows meant for their master with fanatical, unwavering devotion.",
       type: "Infantry",
       corruption_spread: 2,
       stats: {
@@ -2204,6 +2212,7 @@
       role: "Anti-elite infantry",
       fragment_interactions: "Extra Corruption on corrupted targets; Blood Tithe",
       flavor_text: "Specialist hunters who target already-corrupted enemies. Their scythe-claws harvest weakened prey with terrifying efficiency.",
+      description: "These grim executioners specialize in harvesting prey already weakened by the Dominion's corruption. Against enemies bearing three or more Corruption tokens, their curved blades strike with devastating, surgical precision. They are the closers—patient, methodical killers who let the Blight do the hard work before they move in to collect.",
       type: "Infantry",
       corruption_spread: 2,
       stats: {
@@ -2214,7 +2223,7 @@
         RNG: 1,
         MOR: 8
       },
-      special: ["Corruption", "Corruption Spread", "Reaper (+2 ATK dice against targets with 3+ Corruption tokens)", "Blood Tithe"]
+      special: ["Corruption", "Corruption Spread", "Reaper (+2 ATK dice against targets with 3+ Corruption tokens)"]
     },
     {
       name: "Infected Archers",
@@ -2223,6 +2232,7 @@
       role: "Ranged Corruption applicator",
       fragment_interactions: "Applies Corruption at range; feeds Hunger Pool",
       flavor_text: "Blight Bow wielders who rain corruption-tipped arrows upon the enemy. Each arrow carries a dose of the Quickening.",
+      description: "Their arrows are dipped in concentrated Blight-ichor, ensuring that even a glancing hit begins the slow process of corruption. Volleys of these tainted shafts darken the sky before embedding in shields, flesh, and earth alike, spreading infection across the battlefield at range. They soften formations long before the melee troops arrive.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -2242,6 +2252,7 @@
       role: "Cheap ranged support",
       fragment_interactions: "Corruption Spread at range; expendable",
       flavor_text: "Thralls whose Blight mutation causes them to projectile-vomit streams of infectious bile. Disgusting but effective.",
+      description: "These wretched thralls have been so thoroughly consumed by the Blight that their bodies produce torrents of infectious bile, which they vomit in arcing streams toward the enemy. The splashing blast radius ensures that even near-misses spread corruption. They are disgusting, expendable, and horrifyingly effective area-denial tools.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -2261,6 +2272,7 @@
       role: "Premium melee infantry",
       fragment_interactions: "Blood Tithe; Pack Tactics; Corruption Aura",
       flavor_text: "The finest non-commander warriors in the Dominion. Stage 2+ veterans with centuries of hunting experience.",
+      description: "The finest non-commander warriors in the Dominion, these killers have mastered both the pack tactics of the Blight-born and the blood-draining arts of the vampire lords. They fight with coordinated, predatory grace, each member of the unit covering another as they systematically drain the life from elite enemy formations. Fielding them is a statement of dominance.",
       type: "Infantry",
       corruption_spread: 3,
       stats: {
@@ -2271,7 +2283,7 @@
         RNG: 1,
         MOR: 9
       },
-      special: ["Corruption", "Corruption Spread", "Pack Tactics", "Blood Tithe", "Blood Drain"]
+      special: ["Corruption", "Corruption Spread", "Pack Tactics", "Blood Drain"]
     },
     {
       name: "Crimson Halberdiers",
@@ -2280,6 +2292,7 @@
       role: "Versatile line infantry",
       fragment_interactions: "Corruption Spread; Reach; solid all-rounder",
       flavor_text: "Disciplined Blight-warriors armed with Crimson Halberds — weapons that combine reach with devastating corruption delivery.",
+      description: "Unlike the frenzied berserkers that populate much of the Dominion's ranks, these warriors fight with cold, disciplined precision. Their Blight-forged halberds grant punishing reach, letting them strike over allied lines while spreading corruption with every measured swing. They bring order to the Nightfang's chaos—a steel backbone amid the howling.",
       type: "Infantry",
       corruption_spread: 1,
       stats: {
@@ -2299,6 +2312,7 @@
       role: "Heavy defensive infantry",
       fragment_interactions: "Corruption Aura; Blood Tithe; anchors battle line",
       flavor_text: "An ancient order of vampire warriors sworn to protect the Blood Creed. Their corrupted tower shields absorb punishment that would fell lesser beings.",
+      description: "Remnants of an ancient vampire warrior-order predating the Dominion itself, these templars fight wreathed in a miasma of corruption and protected by wards written in their own blood. They are drunk on centuries of accumulated power, radiating Blight with every step. Their Blood Ward absorbs damage meant to destroy them, making them nightmarishly resilient anchors for any battle line.",
       type: "Infantry",
       corruption_spread: 2,
       stats: {
@@ -2309,7 +2323,7 @@
         RNG: 1,
         MOR: 9
       },
-      special: ["Corruption", "Corruption Aura 2\"", "Shield Wall (+1 DEF when adjacent to another Bloodsworn Templar)", "Fearless"]
+      special: ["Corruption", "Corruption Aura 2\"", "Blood Ward (+1 DEF when adjacent to another Bloodsworn Templar; gain 1 Corruption token on self)", "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"]
     },
     {
       name: "Thrall Riders",
@@ -2318,6 +2332,7 @@
       role: "Cheap fast cavalry",
       fragment_interactions: "Corruption Spread on charge; flanking",
       flavor_text: "Thralls strapped onto corrupted beasts. Neither rider nor mount has much intelligence, but their speed and mass are useful for flanking.",
+      description: "Mindless thralls lashed atop corrupted beasts that charge with frothing, uncontrollable fury. There is no finesse here—only a stampede of diseased flesh and snapping jaws crashing into enemy ranks. They are cheap, fast, and utterly disposable cavalry meant to shatter formations through sheer, horrifying momentum.",
       type: "Cavalry",
       corruption_spread: 1,
       stats: {
@@ -2328,7 +2343,7 @@
         RNG: 1,
         MOR: 5
       },
-      special: ["Corruption", "Corruption Spread", "Charge (+1 ATK die when charging)"]
+      special: ["Corruption", "Corruption Spread", "Frenzy Charge (+1 ATK die; must charge nearest enemy if within range)"]
     },
     {
       name: "Tiger Chargers",
@@ -2337,6 +2352,7 @@
       role: "Shock cavalry",
       fragment_interactions: "Corruption Spread; Pack Tactics; devastating charge",
       flavor_text: "Vampire warriors riding massive corrupted tigers into battle. The thundering charge of Tiger Chargers can break any line.",
+      description: "Vampire warriors mounted on massive corrupted tigers thunder across the battlefield in coordinated pack formations that would make a cavalry general weep with envy. The ground shakes beneath their charge, and the terrifying sight of their approach has broken veteran regiments before contact is even made. They hit like a landslide of fang and fury.",
       type: "Cavalry",
       corruption_spread: 2,
       stats: {
@@ -2350,7 +2366,7 @@
       special: [
         "Corruption",
         "Corruption Spread",
-        "Charge (+1 ATK die when charging)",
+        "Frenzy Charge (+1 ATK die; must charge nearest enemy if within range)",
         "Pack Tactics",
         "Terrifying (enemy must pass MOR check when charged)"
       ]
@@ -2362,6 +2378,7 @@
       role: "Elite heavy cavalry",
       fragment_interactions: "Blood Drain; Corruption Aura; Pack Tactics",
       flavor_text: "The Blood Dukes' personal cavalry — elegantly armored vampire nobles on Blight-enhanced war-tigers with crystalline fangs.",
+      description: "The personal cavalry of the Blood Dukes, these riders are the aristocracy of the Dominion's mounted forces. They charge in perfect pack formation, draining the lifeblood from their victims through lance-tips connected to the riders by pulsing, vein-like tubes. Each kill sustains them, making prolonged engagements increasingly one-sided.",
       type: "Cavalry",
       corruption_spread: 2,
       stats: {
@@ -2372,7 +2389,7 @@
         RNG: 1,
         MOR: 9
       },
-      special: ["Corruption", "Corruption Spread", "Charge", "Blood Drain", "Pack Tactics"]
+      special: ["Corruption", "Corruption Spread", "Frenzy Charge (+1 ATK die; must charge nearest enemy if within range)", "Blood Drain"]
     },
     {
       name: "Plague Runners",
@@ -2381,6 +2398,7 @@
       role: "Fast corruption delivery",
       fragment_interactions: "Corruption Spread; area denial; fast Hunger generation",
       flavor_text: "Swift reptilian mounts carrying plague censers — they lap the battlefield spreading corruption mist in their wake.",
+      description: "Mounted on swift, reptilian creatures bred in the Blight-swamps, these riders swing plague censers that leave trails of lingering corruption in their wake. They sweep across the battlefield at blistering speed, poisoning the ground itself as they pass. Use them to cut off retreat routes and cordon areas with choking pestilence.",
       type: "Cavalry",
       corruption_spread: 2,
       stats: {
@@ -2404,6 +2422,7 @@
       role: "Super-heavy elite cavalry",
       fragment_interactions: "Blood Tithe; Corruption Aura; apex mounted unit",
       flavor_text: "Stage 3 warriors who have merged with their mounts into something between centaur and tiger — impossibly fast and utterly lethal.",
+      description: "Stage 3 of the Blight has fused rider and mount into a single, monstrous entity—a super-heavy nightmare of muscle, fang, and corruption that radiates Blight in waves. They charge with apocalyptic force, drunk on blood and nearly impossible to bring down. A single unit of Nightstalkers can turn a flank and break an army.",
       type: "Cavalry",
       corruption_spread: 3,
       stats: {
@@ -2414,7 +2433,7 @@
         RNG: 1,
         MOR: 9
       },
-      special: ["Corruption", "Corruption Aura 2\"", "Charge", "Pack Tactics", "Blood Tithe", "Fearless"]
+      special: ["Corruption", "Corruption Aura 2\"", "Frenzy Charge (+1 ATK die; must charge nearest enemy if within range)", "Pack Tactics", "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"]
     },
     {
       name: "Shadow Pounce Cavalry",
@@ -2423,6 +2442,7 @@
       role: "Ambush cavalry",
       fragment_interactions: "Stealth + Charge combo; surprise attacks",
       flavor_text: "Darkness-wreathed riders who cannot be seen until they strike. They pounce from concealment with devastating force.",
+      description: "Wreathed in supernatural darkness, these riders meld with shadows before erupting into reality with devastating ambush charges. They strike from impossible angles, their mounts leaping through pools of shadow to appear behind enemy lines. By the time the enemy turns to face them, the killing blow has already landed.",
       type: "Cavalry",
       corruption_spread: 2,
       stats: {
@@ -2433,7 +2453,7 @@
         RNG: 1,
         MOR: 7
       },
-      special: ["Corruption", "Corruption Spread", "Charge", "Stealth", "Ambush (+1 ATK on first attack from Stealth)"]
+      special: ["Corruption", "Corruption Spread", "Frenzy Charge (+1 ATK die; must charge nearest enemy if within range)", "Shadow Meld (invisible in darkness/terrain; attacking from meld applies 2 Corruption tokens)", "Lurker Strike (+2 ATK on first attack from Shadow Meld; apply 1 Corruption)"]
     },
     {
       name: "Blood Shamans",
@@ -2442,6 +2462,7 @@
       role: "Blood Tithe healer",
       fragment_interactions: "Blood Tithe healing; Hunger Pool acceleration",
       flavor_text: "Blight-priests who channel the power of consumed blood to heal wounded warriors. They chant in the language of the Scarlet Wellspring.",
+      description: "These twisted priests channel the Blood Tithe into restorative rituals, knitting together the wounds of Nightfang warriors with streams of stolen vitality. Their healing is not gentle—it is violent, burning, and smells of copper—but it keeps the Dominion's elite fighting long past when they should have fallen. Every death nearby fuels their terrible craft.",
       type: "Support",
       corruption_spread: 1,
       stats: {
@@ -2465,6 +2486,7 @@
       role: "Ranged corruption applicator",
       fragment_interactions: "Applies Corruption tokens at range; weakens enemies",
       flavor_text: "Plague censer-bearers who swing braziers of burning Blight-matter, sending clouds of corruption drifting across the battlefield.",
+      description: "Robed figures swinging heavy plague censers that belch clouds of concentrated Blight-spore, these non-combatants serve a single, vital purpose: to saturate the battlefield with corruption. They march behind the front lines, ensuring that every breath the enemy takes brings them closer to the Patriarch's embrace. Keep them alive and the corruption does your fighting for you.",
       type: "Support",
       corruption_spread: 2,
       stats: {
@@ -2488,6 +2510,7 @@
       role: "Corruption enhancement",
       fragment_interactions: "Boosts Corruption effects; fragment synergy",
       flavor_text: "Mad scientists of the Blight who brew concentrated corruption serums. They enhance the infection already ravaging enemy units.",
+      description: "Part alchemist, part plague-priest, these twisted scholars brew concentrated corruption serums that intensify the Blight's effect on already-infected enemies. They cannot fight, but their concoctions can turn a minor infection into a crippling plague in moments. Position them near your corruption-spreading units to accelerate the enemy's collapse.",
       type: "Support",
       corruption_spread: 1,
       stats: {
@@ -2511,6 +2534,7 @@
       role: "Thrall buffer",
       fragment_interactions: "Enhances Thrall units; cheap command support",
       flavor_text: "Low-ranking vampires who maintain the Blight-link to nearby thralls, giving them basic tactical direction instead of mindless swarming.",
+      description: "Low-ranking vampires who have been granted dominion over packs of mindless thralls, channeling just enough will into the shambling hordes to make them marginally more effective. Within their command radius, thralls fight with surprising coordination and ferocity. They are the whip-hands of the Dominion—cruel, efficient, and utterly essential to making cheap infantry dangerous.",
       type: "Support",
       corruption_spread: 1,
       stats: {
@@ -2534,6 +2558,7 @@
       role: "Hunger Pool accelerator",
       fragment_interactions: "Doubles Hunger Pool generation; ritual focus",
       flavor_text: "Gaunt, hollow-eyed priests who channel the collective hunger of the Nightfang. Their chanting accelerates the feeding frenzy.",
+      description: "These gaunt, hollow-eyed priests channel the collective hunger of the Blight itself, amplifying every kill made nearby into a surge of energy that floods the Hunger Pool. They cannot fight, but their presence transforms ordinary combat into a feast of resources. Station them where your killers work, and watch the Dominion's power reserves overflow.",
       type: "Support",
       corruption_spread: 1,
       stats: {
@@ -2557,6 +2582,7 @@
       role: "Resource gathering support",
       fragment_interactions: "Generates Blood Tithe resources; post-combat healing",
       flavor_text: "Thrall-servants who follow the army collecting blood from the fallen. This harvested blood fuels the Nightfang war machine.",
+      description: "Hunched, ghoulish figures that scuttle across the battlefield collecting blood from the fallen into crystalline vials, these expendable servants are the Dominion's accountants of death. Every corpse they harvest fuels the Blood Tithe that powers the faction's greater war machines. They are weak, fragile, and absolutely critical to the Nightfang economy of violence.",
       type: "Support",
       corruption_spread: 0,
       stats: {
@@ -2581,6 +2607,7 @@
       role: "Terrain manipulation support",
       fragment_interactions: "Creates Corruption Zones; area denial",
       flavor_text: "Powerful Blight-sorcerers who can seed corruption into the very ground, creating hazardous zones that weaken and infect all who enter.",
+      description: "These powerful corruption-mages drive their staffs into the earth and channel raw Blight into the ground, creating zones of permanent corruption that weaken and sicken everything that enters. They cannot fight, but the terrain they create reshapes the battlefield itself. Control the ground, and you control the war.",
       type: "Support",
       corruption_spread: 2,
       stats: {
@@ -2604,6 +2631,7 @@
       role: "Morale support",
       fragment_interactions: "Boosts MOR for nearby units; prevents Rout cascades",
       flavor_text: "Blood-singers whose eerie harmonics resonate through the Blight-link, strengthening the will of nearby Nightfang warriors.",
+      description: "Blood-singers whose eerie, harmonic wailing carries across the battlefield in waves that steel the resolve of Nightfang warriors and unnerve their enemies. Their Blood Song bolsters morale within six inches, while their rally cries can pull routing units back from the edge. They are the heartbeat of the Dominion's battle line—keep them singing.",
       type: "Support",
       corruption_spread: 1,
       stats: {
@@ -2628,6 +2656,7 @@
       role: "Long range corruption AoE",
       fragment_interactions: "Applies Corruption at extreme range; area denial",
       flavor_text: "A living catapult grown from corrupted bone that hurls balls of concentrated Blight at distant targets, blanketing areas in infectious mist.",
+      description: "A grotesque living catapult grown from corrupted bone and sinew, this immobile artillery piece hurls masses of concentrated Blight that detonate in festering explosions. The blast radius spreads corruption across wide areas, softening distant formations before the advance. It cannot move once planted, so choose its position with care.",
       type: "Artillery",
       corruption_spread: 1,
       stats: {
@@ -2652,6 +2681,7 @@
       role: "Medium range AoE",
       fragment_interactions: "Blast + Corruption; feeds Hunger Pool",
       flavor_text: "A crew operating a Blight-grown mortar that fires globules of pressurized infected blood in high arcs.",
+      description: "This Blight-grown mortar lobs arcing shells of clotted blood and corruption over terrain and friendly units alike, raining infection on enemies who thought themselves safe behind cover. Its indirect fire capability makes it invaluable for dislodging entrenched defenders. The corruption spread on impact ensures that even survivors carry the Patriarch's gift.",
       type: "Artillery",
       corruption_spread: 1,
       stats: {
@@ -2671,6 +2701,7 @@
       role: "Long range corruption beam",
       fragment_interactions: "Maximum corruption application at range; area denial",
       flavor_text: "A towering spire of crystallized Blight that channels corruption energy into devastating beams. It takes a full crew to aim and fire.",
+      description: "A towering crystallized spire of pure, solidified Blight, this immobile emplacement pulses with corruption that it projects across extreme range with terrifying accuracy. Its Predator Eyes targeting allows it to pick out high-value targets with precision, while its Corruption Spread ensures every hit degrades the enemy further. Build your defense around it.",
       type: "Artillery",
       corruption_spread: 2,
       stats: {
@@ -2681,7 +2712,7 @@
         RNG: 24,
         MOR: 7
       },
-      special: ["Corruption", "Corruption Spread", "Sharpshot (+1 ATK die against targets in the open)", "Immobile"]
+      special: ["Corruption", "Corruption Spread", "Predator Eyes (+1 ATK die vs targets in open; see in darkness)", "Immobile"]
     },
     {
       name: "Bile Cannon Crew",
@@ -2690,6 +2721,7 @@
       role: "Short range devastation",
       fragment_interactions: "Massive short-range AoE; corruption saturation",
       flavor_text: "A grotesque living cannon that vomits a torrent of acidic Blight-bile in a wide cone. Short-ranged but devastating.",
+      description: "A living cannon formed from a repurposed Blight-beast, this artillery piece vomits torrents of acidic bile in a devastating cone that dissolves armor, flesh, and morale in equal measure. The massive blast radius makes it devastating against tightly packed formations. The crew exists merely to aim the screaming thing and keep it fed.",
       type: "Artillery",
       corruption_spread: 2,
       stats: {
@@ -2709,6 +2741,7 @@
       role: "Anti-large precision",
       fragment_interactions: "Precision Corruption; targets War Machines and Commanders",
       flavor_text: "A precision weapon grown from a single massive bone, firing corruption-coated bolts that can punch through armor and infect the wound.",
+      description: "This precision bone-weapon fires massive Blight-hardened bolts designed to punch through monsters and large targets with surgical accuracy. Where the catapults and cannons deal in area destruction, the Plague Ballista is a scalpel—patient, precise, and absolutely lethal against the biggest threats on the battlefield.",
       type: "Artillery",
       corruption_spread: 1,
       stats: {
@@ -2719,7 +2752,7 @@
         RNG: 20,
         MOR: 7
       },
-      special: ["Corruption", "Corruption Spread", "Anti-Large (+2 ATK dice against War Machines and models with 5+ HP)", "Sharpshot"]
+      special: ["Corruption", "Corruption Spread", "Anti-Large (+2 ATK dice against War Machines and models with 5+ HP)", "Predator Eyes (crits on 5+; see in darkness)"]
     },
     {
       name: "Shadow Stalkers",
@@ -2728,6 +2761,7 @@
       role: "Cheap expendable scouts",
       fragment_interactions: "Spotting for artillery; early corruption application",
       flavor_text: "Fast-moving thralls with enhanced senses. They are released ahead of the army like hunting hounds to flush out the prey.",
+      description: "Fast-moving thralls whose Blight-mutation has granted them eerily enhanced senses, these scouts race ahead of the main force to locate prey through blood-scent alone. They spot targets for the Dominion's artillery and mark enemy positions before melting back into the shadows. Expendable but invaluable, they are the Dominion's eyes.",
       type: "Scout",
       corruption_spread: 0,
       stats: {
@@ -2741,7 +2775,7 @@
       special: [
         "Corruption",
         "Thrall",
-        "Scout (deploy up to 6\" ahead of deployment zone)",
+        "Blood Scent Scout (deploy 6\" ahead; wounded enemies within 12\" are revealed)",
         "Spotter (friendly artillery targeting enemies within 6\" of this unit gain +1 ATK)"
       ]
     },
@@ -2752,6 +2786,7 @@
       role: "Fast beast scouts",
       fragment_interactions: "Pack Tactics; early Corruption Spread; flanking",
       flavor_text: "Small corrupted tigers released as a hunting pack. Fast, cunning, and able to take down isolated targets.",
+      description: "Small corrupted tigers released in hunting packs, these predators range far ahead of the army, their blood-scent allowing them to track enemies across vast distances. They coordinate through pack instinct, surrounding and harrying targets until the main force arrives. Fast, deadly, and unnervingly intelligent for beasts.",
       type: "Scout",
       corruption_spread: 1,
       stats: {
@@ -2762,7 +2797,7 @@
         RNG: 1,
         MOR: 6
       },
-      special: ["Corruption", "Corruption Spread", "Scout", "Pack Tactics"]
+      special: ["Corruption", "Corruption Spread", "Blood Scent Scout (deploy 6\" ahead; wounded enemies within 12\" are revealed)", "Pack Tactics"]
     },
     {
       name: "Corruption Scouts",
@@ -2771,6 +2806,7 @@
       role: "Ranged scout with corruption",
       fragment_interactions: "Applies Corruption at range while scouting; spotter",
       flavor_text: "Blight Bow-armed scouts who infect targets from concealment. Their arrows carry corruption deep into enemy territory.",
+      description: "Armed with Blight Bows that fire corruption-laced shafts, these scouts combine ranged harassment with supernatural stealth. They meld with shadows to reposition unseen, scouting enemy movements while peppering formations with infected arrows. They are the Dominion's most versatile reconnaissance asset—equally comfortable scouting and killing.",
       type: "Scout",
       corruption_spread: 1,
       stats: {
@@ -2781,7 +2817,7 @@
         RNG: 8,
         MOR: 5
       },
-      special: ["Corruption", "Corruption Spread", "Scout", "Stealth"]
+      special: ["Corruption", "Corruption Spread", "Blood Scent Scout (deploy 6\" ahead; wounded enemies within 12\" are revealed)", "Shadow Meld (invisible in darkness/terrain; attacking from meld applies 2 Corruption tokens)"]
     },
     {
       name: "Blood Runners",
@@ -2790,6 +2826,7 @@
       role: "Ultra-fast disposable scouts",
       fragment_interactions: "Fastest unit in faction; objective grabbing",
       flavor_text: "Thralls mutated for pure speed — elongated limbs and stripped muscle. They run until they drop.",
+      description: "Mutated for pure speed at the cost of everything else, these ultra-fast thralls streak across the battlefield like diseased greyhounds. They are fragile and expendable, but their blood-scent scouting covers ground faster than any other unit in the Dominion. Use them to reveal the battlefield early, and don't mourn them when they fall.",
       type: "Scout",
       corruption_spread: 0,
       stats: {
@@ -2800,7 +2837,7 @@
         RNG: 1,
         MOR: 4
       },
-      special: ["Corruption", "Thrall", "Expendable", "Scout"]
+      special: ["Corruption", "Thrall", "Expendable", "Blood Scent Scout (deploy 6\" ahead; wounded enemies within 12\" are revealed)"]
     },
     {
       name: "Nightveil Infiltrators",
@@ -2809,6 +2846,7 @@
       role: "Elite stealth scouts",
       fragment_interactions: "Stealth + Corruption; ambush deployment",
       flavor_text: "Elite vampire scouts who can vanish into shadow and reappear behind enemy lines. Their first strike is always lethal.",
+      description: "The Dominion's most elite scouts, these vampire operatives can dissolve into mist, meld with shadows, and strike from ambush with lethal precision. Their blood-scent tracking is supernaturally acute, and their Lurker Strike ensures that the first blow lands with devastating force. By the time the enemy knows they're there, the mission is already complete.",
       type: "Scout",
       corruption_spread: 1,
       stats: {
@@ -2822,10 +2860,10 @@
       special: [
         "Corruption",
         "Corruption Spread",
-        "Scout",
-        "Stealth",
-        "Ambush (+1 ATK on first attack)",
-        "Phase (may move through enemy units and terrain)"
+        "Blood Scent Scout (deploy 6\" ahead; wounded enemies within 12\" are revealed)",
+        "Shadow Meld (invisible in darkness/terrain; attacking from meld applies 2 Corruption tokens)",
+        "Lurker Strike (+2 ATK on first attack from Shadow Meld; apply 1 Corruption)",
+        "Mist Form (become incorporeal; move through units and terrain; take no opportunity attacks)"
       ]
     },
     {
@@ -2835,6 +2873,7 @@
       role: "Fast scout beast pack",
       fragment_interactions: "Hunt wounded targets; Hunger Pool feeding",
       flavor_text: "Corrupted war-dogs with elongated jaws and glowing crimson eyes. They can smell blood from a mile away.",
+      description: "Corrupted war-dogs whose Blight-enhanced noses can smell wounded prey from across the battlefield, these savage beasts gain killing fury against injured targets. They lope ahead of the army in snarling packs, their blood-scent scouting revealing enemy positions while their fangs finish off anything too wounded to run. They are relentless pursuit predators.",
       type: "Scout",
       corruption_spread: 1,
       stats: {
@@ -2845,7 +2884,7 @@
         RNG: 1,
         MOR: 5
       },
-      special: ["Corruption", "Corruption Spread", "Scout", "Blood Scent (+1 ATK against targets below half HP)"]
+      special: ["Corruption", "Corruption Spread", "Blood Scent Scout (deploy 6\" ahead; wounded enemies within 12\" are revealed)", "Blood Scent (+1 ATK against targets below half HP)"]
     },
     {
       name: "Blood Champion",
@@ -2854,6 +2893,7 @@
       role: "Duelist / character hunter",
       fragment_interactions: "Blood Tithe; gains power from Challenge kills",
       flavor_text: "A Stage 3 warrior whose sole purpose is to hunt and destroy enemy commanders. They live for the Challenge.",
+      description: "A Stage 3 Blight-warrior of terrifying power, the Blood Champion exists to hunt enemy commanders. Their Blood Duel ability forces single combat, while their draining strikes siphon the life from their opponent with every blow. They bond to a friendly commander and fight as their sword-arm—a living weapon aimed at the enemy's throat.",
       type: "Specialist",
       corruption_spread: 2,
       stats: {
@@ -2867,7 +2907,7 @@
       special: [
         "Corruption",
         "Corruption Spread",
-        "Duelist (+1 ATK and +1 DEF in Challenges)",
+        "Blood Duel (+1 ATK and +1 DEF in Challenges; winner heals 2 HP from the kill)",
         "Blood Drain",
         "Commander Bond (gains +1 ATK when within 6\" of a friendly Commander)"
       ]
@@ -2879,6 +2919,7 @@
       role: "Beast buffer / leader beast",
       fragment_interactions: "Buffs nearby tiger/beast units; Pack Tactics center",
       flavor_text: "The dominant predator in any Nightfang beast pack. Its roar coordinates nearby tigers and war beasts with terrifying precision.",
+      description: "The dominant predator of the Nightfang war-packs, the Tiger Alpha commands lesser beasts through sheer, overwhelming presence. Its Alpha Roar bolsters nearby pack units while its terrifying aspect breaks enemy courage like glass. Where the Alpha stalks, the entire pack fights harder, faster, and with a coordinated savagery that borders on tactical genius.",
       type: "Specialist",
       corruption_spread: 2,
       stats: {
@@ -2904,6 +2945,7 @@
       role: "Versatile corruption specialist",
       fragment_interactions: "Can cure or intensify corruption; flexible support",
       flavor_text: "A twisted healer who wields the Blight as both weapon and medicine. To allies, they bring restoration. To enemies, only the Quickening.",
+      description: "A twisted healer who wields the Blight as both weapon and cure, the Plague Doctor can purge corruption from allies or inject it directly into enemies with a touch. This duality makes them invaluable—they keep your forces clean while accelerating the enemy's decline. Their needle-fingered hands are equally comfortable mending and destroying.",
       type: "Specialist",
       corruption_spread: 1,
       stats: {
@@ -2927,6 +2969,7 @@
       role: "Stealth assassination",
       fragment_interactions: "Commander hunter; Stealth + high ATK burst",
       flavor_text: "Shadow-wreathed killers who strike from nowhere, drain their target's blood, and vanish. They specialize in decapitating armies by killing leaders.",
+      description: "Shadow-wreathed killers who dissolve into mist and materialize behind enemy lines, these assassins exist for one purpose: to eliminate enemy commanders. Their Lurker Strike hits with ambush precision, and their assassination training grants devastating bonuses against command targets. They are the Patriarch's whispered death sentence made flesh.",
       type: "Specialist",
       corruption_spread: 1,
       stats: {
@@ -2939,19 +2982,20 @@
       },
       special: [
         "Corruption",
-        "Stealth",
-        "Ambush (+1 ATK on first attack from Stealth)",
+        "Shadow Meld (invisible in darkness/terrain; attacking from meld applies 2 Corruption tokens)",
+        "Lurker Strike (+2 ATK on first attack from Shadow Meld; apply 1 Corruption)",
         "Assassination (+2 ATK dice against Commanders)",
-        "Phase"
+        "Mist Form (incorporeal movement; pass through units and terrain)"
       ]
     },
     {
       name: "Hunger Wraith",
       faction: "nightfang-dominion",
-      points_cost: 6,
+      points_cost: 8,
       role: "Ethereal damage specialist",
       fragment_interactions: "Phase; Hunger Pool interaction; hard to kill",
       flavor_text: "A manifestation of pure Blight-hunger that has taken physical form. It passes through walls, armor, and flesh alike.",
+      description: "A howling manifestation of pure Blight-hunger given terrible, ethereal form, the Hunger Wraith drifts through solid matter and radiates corruption in waves that wither everything nearby. It cannot be struck by mundane weapons, and its blood-drunk frenzy makes it an indiscriminate engine of consumption. Unleashing one is easy—controlling it is another matter entirely.",
       type: "Specialist",
       corruption_spread: 2,
       stats: {
@@ -2965,9 +3009,9 @@
       special: [
         "Corruption",
         "Corruption Aura 2\"",
-        "Phase",
+        "Mist Form (incorporeal movement; pass through units and terrain)",
         "Ethereal (can only be damaged by attacks that score critical hits — natural 6)",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -2977,6 +3021,7 @@
       role: "Flexible form-shifter",
       fragment_interactions: "Switches between ranged/melee forms; versatile",
       flavor_text: "A warrior who can shift between human form (agile, ranged) and tiger form (brutal, melee) at will. Unpredictable and dangerous.",
+      description: "These rare Blight-blessed warriors can shift between human and tiger form at will, adapting their combat style to the moment's need. In human form they fight with cunning and precision; in tiger form they become savage whirlwinds of claw and fang. Their versatility makes them unpredictable assets that can fill whatever role the battle demands.",
       type: "Specialist",
       corruption_spread: 2,
       stats: {
@@ -3000,6 +3045,7 @@
       role: "Fragment specialist",
       fragment_interactions: "Enhances fragment effects; doubles activation charges",
       flavor_text: "A priest of the Crimson Wellspring who channels the deepest Blight powers through crystallized corruption fragments.",
+      description: "A priest of the Crimson Wellspring—the mythical source of all vampiric power—the Blood Hierophant channels Fragment energy through blood rituals that fuel the Dominion's supernatural abilities. They cannot fight, but their Fragment Attunement and Blood Tithe generation make them force multipliers of the highest order. Protect them at all costs.",
       type: "Specialist",
       corruption_spread: 1,
       stats: {
@@ -3024,6 +3070,7 @@
       role: "Massive melee war beast",
       fragment_interactions: "Corruption Aura 3\"; Blood Drain; Hunger Pool anchor",
       flavor_text: "A Stage 3 tiger of immense size — 20 feet at the shoulder, armored in plates of hardened Blight. It devours entire regiments.",
+      description: "A Stage 3 corrupted tiger standing twenty feet at the shoulder, this towering monstrosity radiates corruption in a massive aura while draining the lifeblood from anything unfortunate enough to be caught in its grip. The ground trembles beneath its paws, and veteran soldiers have been known to break and run at the mere sight of its approach. It is the Dominion's wrath made manifest.",
       type: "War Machine",
       corruption_spread: 3,
       stats: {
@@ -3034,7 +3081,7 @@
         RNG: 1,
         MOR: 10
       },
-      special: ["Corruption", "Corruption Aura 3\"", "Blood Drain", "Towering", "Terrifying", "Fearless"]
+      special: ["Corruption", "Corruption Aura 3\"", "Blood Drain", "Towering", "Terrifying", "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"]
     },
     {
       name: "Plague Titan",
@@ -3043,6 +3090,7 @@
       role: "Walking corruption engine",
       fragment_interactions: "Maximum Corruption Aura; plague saturation; siege breaker",
       flavor_text: "The largest creature in the Nightfang arsenal — a Blight-mutated colossus whose every footstep spreads corruption and whose roar liquefies morale.",
+      description: "The largest living creature in the Dominion's arsenal, this mountainous horror radiates corruption in a four-inch aura that can sicken entire battalions. It regenerates through the Blight itself, regrowing severed limbs in moments, and its siege capability lets it tear through fortifications like wet paper. Bringing one down requires an army's concentrated effort.",
       type: "War Machine",
       corruption_spread: 4,
       stats: {
@@ -3059,7 +3107,7 @@
         "Towering",
         "Siege (double damage to fortifications)",
         "Terrifying",
-        "Fearless",
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)",
         "Blight Regeneration (heal 1 HP at start of friendly turn)"
       ]
     },
@@ -3070,6 +3118,7 @@
       role: "Blood-powered war machine",
       fragment_interactions: "Blood Tithe multiplier; powered by sacrificed HP",
       flavor_text: "A pulsing heart-like construct of corrupted flesh and bone, fed by blood sacrificed from nearby units. The more it feeds, the more devastating its attacks.",
+      description: "A pulsing, heart-like construct of crystallized blood and Blight-tissue, the Blood Engine channels the Dominion's collected blood resources into devastating ranged blasts. It beats with a rhythmic, sickening thud that can be heard across the battlefield, and each pulse launches a concussive detonation of pressurized blood. It is as much a symbol of Nightfang power as it is a weapon.",
       type: "War Machine",
       corruption_spread: 2,
       stats: {
@@ -3084,7 +3133,7 @@
         "Corruption",
         "Blood-Powered (for each 1 HP sacrificed from friendly units within 3\", gain +2 ATK dice this turn, max +6)",
         "Blast 2\"",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -3094,6 +3143,7 @@
       role: "Mobile corruption factory",
       fragment_interactions: "Creates Corruption Zones; area denial on legs",
       flavor_text: "A walking factory of plague — it trails corruption in its wake and can projectile-infect entire areas of the battlefield.",
+      description: "A towering walking factory of corruption, this lumbering war machine leaves a trail of concentrated Blight in its wake that poisons the earth for generations. Everything it steps on, passes near, or breathes upon begins to corrupt. It doesn't need to fight—its mere passage across the battlefield transforms the terrain into a death zone.",
       type: "War Machine",
       corruption_spread: 3,
       stats: {
@@ -3109,7 +3159,7 @@
         "Corruption Trail (creates a 2\" Corruption Zone in every space it moves through)",
         "Corruption Spread",
         "Towering",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -3119,6 +3169,7 @@
       role: "Flying apex war beast",
       fragment_interactions: "Fly; Corruption Breath; apex predator of the sky",
       flavor_text: "A primordial dragon corrupted by the Blight over millennia. Its breath is concentrated Blight-fire and its shadow causes panic.",
+      description: "A primordial dragon corrupted by centuries of Blight exposure, this apex predator takes to the sky on vast, bat-like wings before unleashing torrents of corruption breath that melt armor and dissolve flesh. Its massive blast radius can devastate entire formations in a single pass. It is the Dominion's ultimate terror weapon—ancient, hateful, and nearly unstoppable.",
       type: "War Machine",
       corruption_spread: 4,
       stats: {
@@ -3131,12 +3182,12 @@
       },
       special: [
         "Corruption",
-        "Fly",
+        "Bat-Wing Flight (silent flight; land in enemy rear arcs without triggering reactions)",
         "Corruption Breath (ranged attack applies 2 Corruption tokens to all targets hit)",
         "Blast 3\"",
         "Towering",
         "Terrifying",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -3146,6 +3197,7 @@
       role: "Burrowing war beast",
       fragment_interactions: "Ambush from underground; terrain manipulation",
       flavor_text: "A massive corrupted worm that burrows beneath the battlefield and erupts among enemy formations, spewing bile and corruption.",
+      description: "This massive burrowing worm erupts from beneath the earth without warning, showering everything nearby in corrosive bile and spreading corruption through the shattered ground. Its tunneling ability lets it bypass defenses entirely, surfacing in the heart of enemy formations with terrifying, ground-shaking violence. Nothing is safe when the earth itself becomes the enemy.",
       type: "War Machine",
       corruption_spread: 2,
       stats: {
@@ -3161,7 +3213,7 @@
         "Burrow (may deploy anywhere on the battlefield at the start of Turn 2+, counts as charging)",
         "Corruption Spread",
         "Terrifying",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -3171,6 +3223,7 @@
       role: "Armored assault war machine",
       fragment_interactions: "Blood Drain on kill; Hunger Pool anchor; siege unit",
       flavor_text: "A massive armored beast bristling with bone-blades and draining tubes. It harvests blood from everything it tramples.",
+      description: "An armored Blight-beast fitted with dozens of draining tubes and collection apparatus, this juggernaut tramples through enemy lines while siphoning blood from everything it crushes. Its siege capability lets it smash through walls and fortifications, and the harvested blood flows directly into the Dominion's reserves. It is a mobile slaughterhouse on an industrial scale.",
       type: "War Machine",
       corruption_spread: 2,
       stats: {
@@ -3186,7 +3239,7 @@
         "Blood Drain",
         "Trample (when charging, deal 1 damage to every enemy model it moves over)",
         "Siege",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -3196,6 +3249,7 @@
       role: "Ancient apex predator",
       fragment_interactions: "Corruption Aura 3\"; Pack Tactics for all tigers within 6\"",
       flavor_text: "An ancient vampiric tiger, possibly older than the Dominion itself. Its roar commands every tiger on the battlefield.",
+      description: "An ancient vampiric tiger of immense size and terrifying intelligence, the Elder Tiger Horror has hunted battlefields for centuries. Its Supreme Alpha ability commands every pack unit on the field, coordinating them with a predator's instinct that surpasses mortal tactics. Where it prowls, the entire Nightfang army moves as one vast, perfect hunting pack.",
       type: "War Machine",
       corruption_spread: 3,
       stats: {
@@ -3212,7 +3266,7 @@
         "Supreme Alpha (all tiger/beast units within 6\" gain +1 ATK and +1 MOR)",
         "Pack Tactics",
         "Terrifying",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -3222,6 +3276,7 @@
       role: "Thrall spawner",
       fragment_interactions: "Generates free Thrall units; sustains attrition warfare",
       flavor_text: "A horrifying brood-beast that births new thralls directly onto the battlefield. It is both war machine and factory.",
+      description: "This bloated, horrifying creature births fully-formed thralls directly onto the battlefield, vomiting a new mindless soldier into existence every turn. She radiates corruption in a protective aura while her endless offspring swarm outward to overwhelm the enemy through sheer, inexhaustible numbers. Killing her is a priority—but reaching her through the tide of thralls is the real challenge.",
       type: "War Machine",
       corruption_spread: 2,
       stats: {
@@ -3234,9 +3289,9 @@
       },
       special: [
         "Corruption",
-        "Spawn Thralls (at the start of each friendly turn, place 1 free Thrall Conscripts unit within 3\" of this model)",
+        "Spawn Thralls (at the start of each friendly turn, place 1 free Thrall Conscripts unit within 3\" of this model; maximum 4 spawns per game)",
         "Corruption Aura 2\"",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
       ]
     },
     {
@@ -3246,6 +3301,7 @@
       role: "Supreme apex war beast",
       fragment_interactions: "Stealth war machine; Corruption Aura; devastating ambush",
       flavor_text: "The apex predator of the Nightfang — a shadow-cloaked leviathan that phases in and out of visibility. When it strikes, it is already too late.",
+      description: "The apex predator of the Nightfang Dominion, the Shadow Leviathan is a towering nightmare that melds with shadows, dissolves into mist, and strikes from ambush despite its colossal size. It defies reason—something that massive should not be able to simply vanish—and that impossibility is what makes it so terrifying. When it appears, the battle is already over.",
       type: "War Machine",
       corruption_spread: 4,
       stats: {
@@ -3259,12 +3315,43 @@
       special: [
         "Corruption",
         "Corruption Aura 3\"",
-        "Stealth",
-        "Phase",
+        "Shadow Meld (invisible in darkness/terrain; attacking from meld applies 2 Corruption tokens)",
+        "Mist Form (incorporeal movement; pass through units and terrain)",
         "Ambush (+2 ATK on first attack from Stealth)",
         "Towering",
         "Terrifying",
-        "Fearless"
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)"
+      ]
+    },
+
+    // LEGENDARY WAR MACHINE
+    {
+      name: "The Patriarch's Avatar",
+      faction: "nightfang-dominion",
+      points_cost: 25,
+      role: "Legendary apex horror",
+      fragment_interactions: "Corruption Aura; Hunger Pool apex; supreme corruption engine",
+      flavor_text: "A fragment of the Patriarch's own will given monstrous, corporeal form — a towering amalgamation of every corruption strain.",
+      description: "When the Patriarch commits his full attention to a battlefield, he projects a fragment of his ancient consciousness into a towering construct of fused flesh, bone, and crystallized Blight. The Avatar is not truly alive — it is a puppet of overwhelming malice, radiating corruption so intense that reality warps around it. Everything it touches withers. Everything near it corrupts. It cannot be reasoned with, demoralized, or stopped by anything less than an army's concentrated fury. Only one may walk the battlefield at a time.",
+      type: "War Machine",
+      corruption_spread: 5,
+      stats: {
+        ATK: 27,
+        DEF: 6,
+        HP: 54,
+        MOV: 5,
+        RNG: 1,
+        MOR: 10
+      },
+      special: [
+        "Corruption",
+        "Corruption Aura 4\" (enemies within 4\" gain 2 Corruption tokens at start of your turn)",
+        "Blood Harvest (heal 3 HP whenever any unit within 6\" is destroyed)",
+        "Apex Terror (all enemy units within 8\" suffer -2 MOR)",
+        "Massive",
+        "Fearless",
+        "Blood-Drunk (auto-pass Morale; cannot voluntarily retreat)",
+        "Legendary (one per army)"
       ]
     },
   ];
