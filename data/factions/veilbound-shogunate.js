@@ -832,9 +832,9 @@
         Knowledge: 10,
         Leadership: 10,
         Agility: 7,
-        Health: 150,
+        Health: 450,
       },
-      battle_stats: { ATK: 6, DEF: 5, HP: 15, MOV: 7, RNG: 6, MOR: 10 },
+      battle_stats: { ATK: 18, DEF: 5, HP: 45, MOV: 7, RNG: 6, MOR: 10 },
       points_cost: 29,
       skill_tree: {
         format: "branching",
@@ -1050,9 +1050,9 @@
         Knowledge: 7,
         Leadership: 9,
         Agility: 6,
-        Health: 120,
+        Health: 360,
       },
-      battle_stats: { ATK: 6, DEF: 5, HP: 12, MOV: 6, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 18, DEF: 5, HP: 36, MOV: 6, RNG: 3, MOR: 10 },
       points_cost: 26,
       level_1_deck: {
         command: ["Shadow Phalanx", "Formation Command"],
@@ -1160,9 +1160,9 @@
         Knowledge: 8,
         Leadership: 7,
         Agility: 10,
-        Health: 90,
+        Health: 270,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 9, MOV: 10, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 10, RNG: 6, MOR: 9 },
       points_cost: 22,
       level_1_deck: {
         command: ["Duel Challenge"],
@@ -1271,9 +1271,9 @@
         Knowledge: 7,
         Leadership: 9,
         Agility: 6,
-        Health: 110,
+        Health: 330,
       },
-      battle_stats: { ATK: 5, DEF: 5, HP: 11, MOV: 6, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 5, HP: 33, MOV: 6, RNG: 3, MOR: 10 },
       points_cost: 23,
       level_1_deck: {
         command: ["Starfall Strike", "Ascendant Guard"],
@@ -1382,9 +1382,9 @@
         Knowledge: 10,
         Leadership: 8,
         Agility: 5,
-        Health: 85,
+        Health: 255,
       },
-      battle_stats: { ATK: 5, DEF: 3, HP: 9, MOV: 5, RNG: 6, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 27, MOV: 5, RNG: 6, MOR: 10 },
       points_cost: 19,
       level_1_deck: {
         command: ["Ritual Surge"],
@@ -1497,9 +1497,9 @@
         Knowledge: 9,
         Leadership: 7,
         Agility: 6,
-        Health: 90,
+        Health: 270,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 9, MOV: 6, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 6, RNG: 6, MOR: 9 },
       points_cost: 20,
       level_1_deck: {
         command: ["Inkwave"],
@@ -1613,9 +1613,9 @@
         Knowledge: 6,
         Leadership: 8,
         Agility: 8,
-        Health: 105,
+        Health: 315,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 11, MOV: 8, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 33, MOV: 8, RNG: 3, MOR: 10 },
       points_cost: 22,
       level_1_deck: {
         command: ["Flame Crescent", "Momentum Surge"],
@@ -1723,9 +1723,9 @@
         Knowledge: 6,
         Leadership: 8,
         Agility: 9,
-        Health: 100,
+        Health: 300,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 10, MOV: 9, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 9, RNG: 3, MOR: 10 },
       points_cost: 22,
       level_1_deck: {
         command: ["Spirit Fang Charge", "Pack Command"],
@@ -1835,9 +1835,9 @@
         Knowledge: 8,
         Leadership: 7,
         Agility: 8,
-        Health: 85,
+        Health: 255,
       },
-      battle_stats: { ATK: 5, DEF: 3, HP: 9, MOV: 8, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 27, MOV: 8, RNG: 6, MOR: 9 },
       points_cost: 20,
       level_1_deck: {
         command: ["Celestial Bow"],
@@ -1941,9 +1941,9 @@
         Knowledge: 8,
         Leadership: 8,
         Agility: 6,
-        Health: 95,
+        Health: 285,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 10, MOV: 6, RNG: 6, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 6, RNG: 6, MOR: 10 },
       points_cost: 22,
       level_1_deck: {
         command: ["Lotus Bloom"],
@@ -2049,9 +2049,9 @@
         Knowledge: 7,
         Leadership: 7,
         Agility: 10,
-        Health: 80,
+        Health: 240,
       },
-      battle_stats: { ATK: 5, DEF: 3, HP: 8, MOV: 10, RNG: 3, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 24, MOV: 10, RNG: 3, MOR: 9 },
       points_cost: 19,
       level_1_deck: {
         command: ["Phantom Strike"],
@@ -2167,9 +2167,9 @@
         Knowledge: 8,
         Leadership: 7,
         Agility: 7,
-        Health: 90,
+        Health: 270,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 9, MOV: 7, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 7, RNG: 6, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Inkstep"],
@@ -2275,9 +2275,9 @@
         Knowledge: 9,
         Leadership: 7,
         Agility: 7,
-        Health: 85,
+        Health: 255,
       },
-      battle_stats: { ATK: 5, DEF: 3, HP: 9, MOV: 7, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 27, MOV: 7, RNG: 6, MOR: 9 },
       points_cost: 19,
       level_1_deck: {
         command: ["Starfall Volley"],
@@ -2388,7 +2388,7 @@
         "Reality-phase strikes; flame-based ritual attacks; Ritual Flow enhances AoE",
       flavor_text: "Serpentine cosmic dragon fused with shrine architecture",
       type: "War Machine",
-      stats: { ATK: 7, DEF: 4, HP: 10, MOV: 8, RNG: 12, MOR: 10 },
+      stats: { ATK: 21, DEF: 4, HP: 30, MOV: 8, RNG: 12, MOR: 10 },
       special: [
         'Dragon Breath (Blast: hits target + all within 2")',
         "Fly",
@@ -2407,7 +2407,7 @@
       flavor_text:
         "Colossal torii gate with phasing pillars, eyes of cosmic energy along crossbeams",
       type: "War Machine",
-      stats: { ATK: 4, DEF: 5, HP: 9, MOV: 4, RNG: 1, MOR: 10 },
+      stats: { ATK: 12, DEF: 5, HP: 27, MOV: 4, RNG: 1, MOR: 10 },
       special: [
         'Reality Warp (once per turn: teleport one friendly unit within 6" to any point within 6" of this model)',
         'Flow Beacon (friendly units within 3" generate +2 Ritual Flow)',
@@ -2424,7 +2424,7 @@
         "Defensive anchor; aura induces fear in enemies; Ritual Flow boosts counterattacks",
       flavor_text: "Giant lion-dog made of living starlight and ink",
       type: "War Machine",
-      stats: { ATK: 6, DEF: 5, HP: 10, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 18, DEF: 5, HP: 30, MOV: 5, RNG: 1, MOR: 10 },
       special: [
         'Terror Aura (enemies within 3" suffer -1 MOR)',
         "Guardian (counterattacks at full ATK when attacked in melee)",
@@ -2441,7 +2441,7 @@
         "Summons minor spirits; shields allies; creates terrain hazards",
       flavor_text: "Living temple with spirit-infused arms and shifting walls",
       type: "War Machine",
-      stats: { ATK: 4, DEF: 5, HP: 8, MOV: 4, RNG: 1, MOR: 10 },
+      stats: { ATK: 12, DEF: 5, HP: 24, MOV: 4, RNG: 1, MOR: 10 },
       special: [
         'Spirit Summon (once per turn: place a Spirit Token within 6" — acts as Light Cover and deals 1 damage to enemies who enter it)',
         'Shield Aura (friendly units within 3" gain +1 DEF)',
@@ -2458,7 +2458,7 @@
         "Multi-target phasing strikes; temporary battlefield terror effect",
       flavor_text: "Shadowed samurai of immense size, half flesh, half void",
       type: "War Machine",
-      stats: { ATK: 7, DEF: 4, HP: 8, MOV: 6, RNG: 1, MOR: 10 },
+      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 6, RNG: 1, MOR: 10 },
       special: [
         'Multi-Strike (may split ATK dice between up to 3 targets within 2")',
         "Phase (ignore Engagement — may move freely through enemy units)",
@@ -2476,7 +2476,7 @@
         "AoE ranged attacks; obscures enemy vision; temporarily disables units",
       flavor_text: "Dragon-shaped ink cloud solidified in starlight form",
       type: "War Machine",
-      stats: { ATK: 6, DEF: 4, HP: 9, MOV: 8, RNG: 16, MOR: 10 },
+      stats: { ATK: 18, DEF: 4, HP: 27, MOV: 8, RNG: 16, MOR: 10 },
       special: [
         'Ink Cloud (after attacking, target area becomes obscured: -2 ATK for enemies within 2" for 1 turn)',
         "Fly",
@@ -2495,7 +2495,7 @@
       flavor_text:
         "Gigantic manta-like creature with void-black wings spanning hundreds of feet",
       type: "War Machine",
-      stats: { ATK: 6, DEF: 4, HP: 10, MOV: 10, RNG: 6, MOR: 10 },
+      stats: { ATK: 18, DEF: 4, HP: 30, MOV: 10, RNG: 6, MOR: 10 },
       special: [
         "Fly",
         'Knockback Wave (after moving over enemy units, each must pass MOR check or be pushed 3" and take 1 damage)',
@@ -2514,7 +2514,7 @@
       flavor_text:
         "Towering lotus flower with living petals, pulsating with ritual energy",
       type: "War Machine",
-      stats: { ATK: 3, DEF: 5, HP: 8, MOV: 3, RNG: 1, MOR: 10 },
+      stats: { ATK: 9, DEF: 5, HP: 24, MOV: 3, RNG: 1, MOR: 10 },
       special: [
         'Bloom (spend 5 Ritual Flow: deal 3 damage to all enemy units within 4")',
         'Flow Beacon (friendly units within 3" generate +2 Ritual Flow)',
@@ -2533,7 +2533,7 @@
       flavor_text:
         "Gigantic Oni armored in celestial patterns, wielding oversized weapons",
       type: "War Machine",
-      stats: { ATK: 9, DEF: 4, HP: 12, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 27, DEF: 4, HP: 36, MOV: 5, RNG: 1, MOR: 10 },
       special: [
         "Devastating Charge (+3 ATK dice when charging)",
         'Terror Aura (enemies within 3" suffer -2 MOR)',
@@ -2551,7 +2551,7 @@
       flavor_text:
         "Walking throne with spectral figures orbiting; pilot merges partially into it",
       type: "War Machine",
-      stats: { ATK: 5, DEF: 5, HP: 12, MOV: 4, RNG: 8, MOR: 10 },
+      stats: { ATK: 15, DEF: 5, HP: 36, MOV: 4, RNG: 8, MOR: 10 },
       special: [
         'Reality Distortion (all enemy units within 6" suffer -1 ATK and -1 MOV)',
         'Flow Nexus (doubles Ritual Flow generated by all friendly units within 6")',
@@ -2570,7 +2570,7 @@
       flavor_text: "Defensive spear infantry; backbone of formations",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 2, DEF: 4, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Stance",
         'Objective Holders (+1 DEF when within 3" of an objective marker)',
@@ -2586,7 +2586,7 @@
         "Flexible infantry; basic frontline with mounted unit synergy",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 2, DEF: 3, HP: 1, MOV: 5, RNG: 1, MOR: 6 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 6 },
       special: [
         "Stance",
         "Cavalry Screen (+1 DEF when adjacent to a friendly Cavalry unit)",
@@ -2602,7 +2602,7 @@
       flavor_text: "Defensive aura units that suppress enemy morale",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         'Dread Aura (enemies within 3" suffer -1 MOR)',
@@ -2618,7 +2618,7 @@
       flavor_text: "Beginner duelists with 1v1 focus",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 2, DEF: 3, HP: 1, MOV: 6, RNG: 1, MOR: 6 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 6, RNG: 1, MOR: 6 },
       special: [
         "Stance",
         "Duelist (reroll 1 die when in 1v1 melee engagement)",
@@ -2634,7 +2634,7 @@
       flavor_text: "Support shrine unit that amplifies nearby allies",
       type: "Support",
       ritual_flow: 2,
-      stats: { ATK: 0, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 0, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         'Inspiring (+1 MOR to friendly units within 3")',
         'Flow Amplifier (friendly units within 3" generate +1 Ritual Flow)',
@@ -2650,7 +2650,7 @@
       flavor_text: "Shield-heavy counter units that anchor formations",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 2, DEF: 5, HP: 3, MOV: 4, RNG: 1, MOR: 8 },
+      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 4, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         'Shield Wall (friendly units within 2" gain +1 DEF vs ranged)',
@@ -2667,7 +2667,7 @@
       flavor_text: "High-value melee elite with devastating stance attacks",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 4, DEF: 4, HP: 2, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         "Revelation Mastery (in Revelation Stance: crits on 5+ instead of 6)",
@@ -2683,7 +2683,7 @@
       flavor_text: "Fear-inducing elite warriors that finish wounded foes",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 4, DEF: 3, HP: 2, MOV: 6, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         "Executioner (+2 ATK dice against targets below half HP)",
@@ -2700,7 +2700,7 @@
       flavor_text: "Expert duelists specializing in counterattacks",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 4, HP: 2, MOV: 6, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 6, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         "Riposte (when attacked in melee and survives, immediately make a free 2-die counter-attack)",
@@ -2717,7 +2717,7 @@
       flavor_text: "Adaptive fighters who shift between combat stances",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 4, HP: 2, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         "Adaptive (may switch stance as a free action at ANY point during the turn, not just Movement Phase)",
@@ -2733,7 +2733,7 @@
       flavor_text: "Teleporting assassins that bypass enemy lines",
       type: "Specialist",
       ritual_flow: 1,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 7, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Stealth",
         "Phase (ignore Engagement — move freely through enemies)",
@@ -2750,7 +2750,7 @@
       flavor_text: "Damage-activated elite; grow stronger as they take wounds",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 4, DEF: 4, HP: 4, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 12, DEF: 4, HP: 12, MOV: 5, RNG: 1, MOR: 9 },
       special: [
         "Stance",
         "Kintsugi Rage (+1 ATK die for each HP lost)",
@@ -2768,7 +2768,7 @@
       flavor_text: "Fast flanking spirit rider cavalry with charge synergy",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 4, DEF: 4, HP: 2, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         'Charge (+1 ATK die when charging 4"+)',
         "Momentum Chain (if this unit destroys an enemy on a charge, +2 ATK dice on next charge this game)",
@@ -2784,7 +2784,7 @@
       flavor_text: "Illusion cavalry that misdirects enemy attacks",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 4, HP: 2, MOV: 9, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 8 },
       special: [
         "Illusion (enemy ranged attacks against this unit suffer -1 ATK die)",
         'Misdirect (once per turn: when targeted, redirect the attack to a different friendly unit within 3")',
@@ -2799,7 +2799,7 @@
       flavor_text: "Heavy shock cavalry that breaks enemy lines with terror",
       type: "Cavalry",
       ritual_flow: 1,
-      stats: { ATK: 5, DEF: 4, HP: 3, MOV: 8, RNG: 1, MOR: 8 },
+      stats: { ATK: 15, DEF: 4, HP: 9, MOV: 8, RNG: 1, MOR: 8 },
       special: [
         "Charge (+2 ATK dice when charging)",
         'Terror Aura (enemies within 3" suffer -1 MOR)',
@@ -2815,7 +2815,7 @@
       flavor_text: "Aerial duelist cavalry that strikes from above",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 4, DEF: 3, HP: 2, MOV: 10, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 10, RNG: 1, MOR: 7 },
       special: [
         "Fly",
         "Dive Attack (+2 ATK dice on charge from Fly)",
@@ -2832,7 +2832,7 @@
       flavor_text: "Momentum specialists whose charges build cascading power",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 4, HP: 2, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         "Charge (+1 ATK die)",
         "Cascading Thunder (each successive combat this unit enters in the same game adds +1 ATK die permanently, max +3)",
@@ -2849,7 +2849,7 @@
         "Reality-phase cavalry that ignores conventional battlefield rules",
       type: "Cavalry",
       ritual_flow: 3,
-      stats: { ATK: 4, DEF: 3, HP: 3, MOV: 10, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 3, HP: 9, MOV: 10, RNG: 1, MOR: 8 },
       special: [
         "Phase (ignore Engagement and terrain)",
         "Dream Step (once per game: remove from table, redeploy anywhere on the battlefield next turn)",
@@ -2866,7 +2866,7 @@
       flavor_text: "Defensive flank cavalry with protective aura",
       type: "Cavalry",
       ritual_flow: 1,
-      stats: { ATK: 3, DEF: 4, HP: 3, MOV: 8, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 8, RNG: 1, MOR: 8 },
       special: [
         "Charge (+1 ATK die)",
         'Guardian Aura (friendly units within 3" gain +1 DEF)',
@@ -2883,7 +2883,7 @@
       flavor_text: "Fast-response reconnaissance with harassing strikes",
       type: "Scout",
       ritual_flow: 1,
-      stats: { ATK: 2, DEF: 3, HP: 2, MOV: 9, RNG: 8, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 9, RNG: 8, MOR: 7 },
       special: [
         'Scout (deploy 6" ahead)',
         'Hit-and-Run (may move 4" after attacking)',
@@ -2899,7 +2899,7 @@
       flavor_text: "Pack synergy cavalry with group attack bonuses",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         'Pack Tactics (+1 ATK die for each other Spirit Wolf Hunter unit within 3", max +3)',
         "Charge (+1 ATK die)",
@@ -2915,7 +2915,7 @@
       flavor_text: "Gliding harassment cavalry that bypasses terrain obstacles",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 10, RNG: 6, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 10, RNG: 6, MOR: 7 },
       special: [
         "Fly",
         "Suppression (enemy units this model flew over suffer -1 ATK this turn)",
@@ -2933,7 +2933,7 @@
       flavor_text: "Healing and bond restoration specialists",
       type: "Support",
       ritual_flow: 3,
-      stats: { ATK: 0, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 0, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         "Heal (restore 2 HP to adjacent friendly unit, once per turn)",
         "Non-combatant",
@@ -2951,7 +2951,7 @@
         "Ritual amplification units that supercharge Flow generation",
       type: "Support",
       ritual_flow: 4,
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         'Flow Amplifier (friendly units within 3" generate +1 Ritual Flow)',
         'Ritual Surge (spend 5 Flow: one friendly unit within 6" gains +2 ATK dice this turn)',
@@ -2967,7 +2967,7 @@
       flavor_text: "Trap and minor construct deployment specialists",
       type: "Support",
       ritual_flow: 2,
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         'Construct Spirit Wall (place Light Cover within 2")',
         'Spirit Trap (place trap token within 3": 1 damage + -1 MOV on trigger)',
@@ -2984,7 +2984,7 @@
         "Morale and visibility support that protects allies from fear",
       type: "Support",
       ritual_flow: 1,
-      stats: { ATK: 1, DEF: 3, HP: 1, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         'Lantern Light (friendly units within 4" ignore Terror Aura effects)',
         'Inspiring (+1 MOR to friendlies within 3")',
@@ -3001,7 +3001,7 @@
         "Battlefield debuff specialists applying sigil-based penalties",
       type: "Support",
       ritual_flow: 2,
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 12, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 12, MOR: 7 },
       special: [
         'Sigil of Binding (target enemy unit within 12": -2 MOV next turn)',
         'Sigil of Weakness (target enemy unit within 12": -1 ATK die next turn)',
@@ -3020,7 +3020,7 @@
         "Long-range perception-altering archers whose arrows phase through cover",
       type: "Artillery",
       ritual_flow: 1,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 5, RNG: 20, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 20, MOR: 7 },
       special: [
         "Phase Arrows (target does not benefit from Light Cover)",
         "Disorientation (targets hit suffer -1 MOV next turn)",
@@ -3036,7 +3036,7 @@
       flavor_text: "Heavy ranged unit firing void-infused bolts",
       type: "Artillery",
       ritual_flow: 1,
-      stats: { ATK: 4, DEF: 3, HP: 2, MOV: 4, RNG: 16, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 4, RNG: 16, MOR: 7 },
       special: [
         "Armor Piercing (target's DEF reduced by 1 for this attack)",
         "Heavy (cannot move and shoot same turn)",
@@ -3052,7 +3052,7 @@
       flavor_text: "Mobile harassment specialists with spirit-infused javelins",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 2, DEF: 3, HP: 2, MOV: 6, RNG: 10, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 6, RNG: 10, MOR: 7 },
       special: [
         "Stance",
         'Skirmish (may move 3" after making a ranged attack)',
@@ -3069,7 +3069,7 @@
       flavor_text: "Area harassment units hurling ritual-charged projectiles",
       type: "Artillery",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 5, RNG: 14, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 14, MOR: 7 },
       special: [
         'Blast (hits target + all within 1")',
         'Flow Infused (spend 2 Ritual Flow: Blast radius becomes 2")',
@@ -3086,7 +3086,7 @@
         "Elite snipers specializing in eliminating high-value targets",
       type: "Artillery",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 5, RNG: 22, MOR: 8 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 22, MOR: 8 },
       special: [
         "Sharpshot (crits on 5+)",
         "Sniper (may target Commanders and Specialists regardless)",
@@ -3105,7 +3105,7 @@
         "Central Flow management officers critical for army coordination",
       type: "Specialist",
       ritual_flow: 5,
-      stats: { ATK: 2, DEF: 4, HP: 3, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 6, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 9 },
       special: [
         'Flow Nexus (friendly units within 4" generate +2 Ritual Flow)',
         'Ritual Command (spend 4 Flow: one friendly unit within 6" may immediately take an extra action)',
@@ -3123,7 +3123,7 @@
         "Immovable area control construct that reshapes the battlefield",
       type: "Specialist",
       ritual_flow: 4,
-      stats: { ATK: 0, DEF: 6, HP: 6, MOV: 0, RNG: 1, MOR: 10 },
+      stats: { ATK: 0, DEF: 6, HP: 18, MOV: 0, RNG: 1, MOR: 10 },
       special: [
         "Immovable (cannot move; placed during deployment)",
         'Zone of Power (friendly units within 3" gain +1 ATK die and +1 DEF)',
@@ -3141,7 +3141,7 @@
       flavor_text: "Enemy disruption specialists wielding sigils of dread",
       type: "Specialist",
       ritual_flow: 3,
-      stats: { ATK: 2, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         'Sigil of Dread (enemies within 4" suffer -1 ATK die)',
         "Terror Aura",
@@ -3157,7 +3157,7 @@
       flavor_text: "Defensive barricade constructs that shield allied units",
       type: "Support",
       ritual_flow: 2,
-      stats: { ATK: 0, DEF: 5, HP: 5, MOV: 0, RNG: 1, MOR: 10 },
+      stats: { ATK: 0, DEF: 5, HP: 15, MOV: 0, RNG: 1, MOR: 10 },
       special: [
         "Immovable (placed during deployment)",
         'Phantom Shield (friendly units within 2" reduce all damage by 1, minimum 0)',
@@ -3175,7 +3175,7 @@
         "Crowd control units emanating terror that slows all nearby foes",
       type: "Specialist",
       ritual_flow: 3,
-      stats: { ATK: 3, DEF: 4, HP: 3, MOV: 4, RNG: 1, MOR: 9 },
+      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 4, RNG: 1, MOR: 9 },
       special: [
         'Terror Aura (enemies within 4" suffer -1 MOR — extended range)',
         'Slow Aura (enemies within 3" suffer -2 MOV)',
@@ -3192,7 +3192,7 @@
       flavor_text: "Stealthy reconnaissance skirmishers",
       type: "Scout",
       ritual_flow: 1,
-      stats: { ATK: 2, DEF: 3, HP: 1, MOV: 8, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 8, RNG: 1, MOR: 7 },
       special: [
         'Scout (deploy 6" ahead)',
         "Stealth",
@@ -3210,7 +3210,7 @@
       flavor_text: "Hit-and-run melee skirmishers who fade after striking",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 6, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
       special: [
         "Stance",
         'Hit-and-Run (may move 4" after attacking)',
@@ -3227,7 +3227,7 @@
       flavor_text: "Pack synergy skirmishers that grow deadlier in numbers",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 7, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Stance",
         'Pack Tactics (+1 ATK die for each other Spirit Wolf Pack within 3", max +2)',
@@ -3244,7 +3244,7 @@
       flavor_text: "Flanking skirmishers with area attack capability",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 7, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Stance",
         "Serpent Strike (melee hits target + 1 adjacent enemy)",
@@ -3261,7 +3261,7 @@
       flavor_text: "Elite skirmishers that teleport to strike priority targets",
       type: "Specialist",
       ritual_flow: 3,
-      stats: { ATK: 4, DEF: 3, HP: 2, MOV: 7, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         "Phase",
         'Teleport (spend 3 Flow: immediately redeploy within 8")',
@@ -3278,7 +3278,7 @@
       flavor_text: "The Shrouded Shogun's personal guard; unmatched in combat",
       type: "Specialist",
       ritual_flow: 5,
-      stats: { ATK: 5, DEF: 5, HP: 4, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 15, DEF: 5, HP: 12, MOV: 5, RNG: 1, MOR: 10 },
       special: [
         "Shogun Only (can only be taken if The Shrouded Shogun is your Commander)",
         "Bodyguard (redirect attacks from Shogun to this unit)",
@@ -3296,7 +3296,7 @@
       flavor_text: "Elite protectors bonded to their Masked Lord commander",
       type: "Specialist",
       ritual_flow: 4,
-      stats: { ATK: 4, DEF: 4, HP: 3, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 9 },
       special: [
         'Commander Bond (+1 ATK when within 6" of Commander)',
         "Bodyguard",
@@ -3314,7 +3314,7 @@
         "Synergy unit designed to amplify Hollow Lord transformation power",
       type: "Infantry",
       ritual_flow: 3,
-      stats: { ATK: 4, DEF: 4, HP: 4, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 12, DEF: 4, HP: 12, MOV: 5, RNG: 1, MOR: 9 },
       special: [
         "Stance",
         "Transformation Catalyst (if Flow Pool ≥30, this unit gains +2 ATK dice and +1 DEF)",
@@ -3332,7 +3332,7 @@
         "Cavalry bonus unit that amplifies spirit rider charge attacks",
       type: "Cavalry",
       ritual_flow: 3,
-      stats: { ATK: 3, DEF: 4, HP: 2, MOV: 9, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 8 },
       special: [
         "Charge (+1 ATK die)",
         'Cavalry Amplifier (all friendly Cavalry within 3" gain +1 ATK die on charges)',
@@ -3350,7 +3350,7 @@
         "Commander elite melee specialists with devastating dueling prowess",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 4, DEF: 4, HP: 3, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         'Commander Bond (+2 ATK dice when within 3" of friendly Commander)',

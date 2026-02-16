@@ -872,9 +872,9 @@
         Knowledge: 10,
         Leadership: 7,
         Agility: 5,
-        Health: 100,
+        Health: 300,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 10, MOV: 5, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 5, RNG: 6, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Strategic Advance", "Coordinated Assault"],
@@ -989,9 +989,9 @@
         Knowledge: 6,
         Leadership: 8,
         Agility: 9,
-        Health: 90,
+        Health: 270,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 9, MOV: 9, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 9, RNG: 3, MOR: 10 },
       points_cost: 21,
       level_1_deck: {
         command: ["Swift Advance", "Flanking Maneuver"],
@@ -1103,9 +1103,9 @@
         Knowledge: 10,
         Leadership: 6,
         Agility: 6,
-        Health: 85,
+        Health: 255,
       },
-      battle_stats: { ATK: 4, DEF: 3, HP: 9, MOV: 6, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 12, DEF: 3, HP: 27, MOV: 6, RNG: 6, MOR: 9 },
       points_cost: 17,
       level_1_deck: {
         command: ["Fragment Command"],
@@ -1221,9 +1221,9 @@
         Knowledge: 5,
         Leadership: 8,
         Agility: 4,
-        Health: 110,
+        Health: 330,
       },
-      battle_stats: { ATK: 6, DEF: 5, HP: 11, MOV: 4, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 18, DEF: 5, HP: 33, MOV: 4, RNG: 3, MOR: 10 },
       points_cost: 24,
       level_1_deck: {
         command: ["War Machine Command", "Heavy Assault Order"],
@@ -1341,9 +1341,9 @@
         Knowledge: 8,
         Leadership: 7,
         Agility: 8,
-        Health: 80,
+        Health: 240,
       },
-      battle_stats: { ATK: 5, DEF: 3, HP: 8, MOV: 8, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 24, MOV: 8, RNG: 6, MOR: 9 },
       points_cost: 19,
       level_1_deck: {
         command: ["Hidden Deployment", "Sabotage Order"],
@@ -1460,9 +1460,9 @@
         Knowledge: 8,
         Leadership: 7,
         Agility: 5,
-        Health: 95,
+        Health: 285,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 10, MOV: 5, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 5, RNG: 6, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Fortification Order", "Engineer Deployment"],
@@ -1582,9 +1582,9 @@
         Knowledge: 4,
         Leadership: 9,
         Agility: 6,
-        Health: 120,
+        Health: 360,
       },
-      battle_stats: { ATK: 6, DEF: 5, HP: 12, MOV: 6, RNG: 1, MOR: 10 },
+      battle_stats: { ATK: 18, DEF: 5, HP: 36, MOV: 6, RNG: 1, MOR: 10 },
       points_cost: 25,
       level_1_deck: {
         command: ["Charge Order", "Brutal Assault"],
@@ -1695,9 +1695,9 @@
         Knowledge: 9,
         Leadership: 7,
         Agility: 7,
-        Health: 85,
+        Health: 255,
       },
-      battle_stats: { ATK: 5, DEF: 3, HP: 9, MOV: 7, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 27, MOV: 7, RNG: 6, MOR: 9 },
       points_cost: 19,
       level_1_deck: {
         command: ["Aether Command"],
@@ -1812,9 +1812,9 @@
         Knowledge: 7,
         Leadership: 8,
         Agility: 4,
-        Health: 100,
+        Health: 300,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 10, MOV: 4, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 4, RNG: 3, MOR: 10 },
       points_cost: 20,
       level_1_deck: {
         command: ["Artillery Barrage Order", "Siege Command"],
@@ -1930,9 +1930,9 @@
         Knowledge: 6,
         Leadership: 9,
         Agility: 5,
-        Health: 130,
+        Health: 390,
       },
-      battle_stats: { ATK: 5, DEF: 5, HP: 13, MOV: 5, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 5, HP: 39, MOV: 5, RNG: 3, MOR: 10 },
       points_cost: 25,
       level_1_deck: {
         command: ["Defensive Formation", "Hold the Line"],
@@ -2043,9 +2043,9 @@
         Knowledge: 8,
         Leadership: 7,
         Agility: 7,
-        Health: 90,
+        Health: 270,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 9, MOV: 7, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 7, RNG: 6, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Rapid Deployment"],
@@ -2153,9 +2153,9 @@
         Knowledge: 7,
         Leadership: 8,
         Agility: 6,
-        Health: 100,
+        Health: 300,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 10, MOV: 6, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 6, RNG: 3, MOR: 10 },
       points_cost: 21,
       level_1_deck: {
         command: ["Machine Command", "Coordinated Machines"],
@@ -2261,9 +2261,9 @@
         Knowledge: 7,
         Leadership: 7,
         Agility: 7,
-        Health: 100,
+        Health: 300,
       },
-      battle_stats: { ATK: 5, DEF: 4, HP: 10, MOV: 7, RNG: 3, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 7, RNG: 3, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Adaptive Command", "Flexible Orders"],
@@ -2376,7 +2376,7 @@
       fragment_interactions: "Minor fragment buffs optional",
       flavor_text: "Standard human troops; disciplined formation",
       type: "Infantry",
-      stats: { ATK: 2, DEF: 3, HP: 1, MOV: 5, RNG: 1, MOR: 6 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 6 },
       special: ["Grid Node"],
     },
     {
@@ -2387,7 +2387,7 @@
       fragment_interactions: "Fragment boosts attack slightly",
       flavor_text: "Soldiers with mechanized limbs; immune to morale effects",
       type: "Infantry",
-      stats: { ATK: 2, DEF: 4, HP: 2, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 10 },
       special: ["Grid Node", "Fearless (auto-pass Morale)"],
     },
     {
@@ -2399,7 +2399,7 @@
         "Fragment implants enhance speed/attack; risk of instability",
       flavor_text: "Humans with glowing fragment augmentations",
       type: "Infantry",
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 6, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Fragment Infused (+1 ATK when Fragment Charge spent)",
@@ -2413,7 +2413,7 @@
       fragment_interactions: "Repair war machines; fragment manipulation",
       flavor_text: "Can build temporary traps or structures",
       type: "Support",
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Repair (restore 1 HP to adjacent friendly unit, End Phase)",
@@ -2428,7 +2428,7 @@
       fragment_interactions: "Fragment boosts tactical strike",
       flavor_text: "Small elite unit with high damage output",
       type: "Infantry",
-      stats: { ATK: 4, DEF: 4, HP: 2, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         "Grid Node",
         "Precision Strike (reroll 1 missed die per attack)",
@@ -2442,7 +2442,7 @@
       fragment_interactions: "Trigger fragment events; weak in combat",
       flavor_text: "Quick, mobile units for exploration",
       type: "Scout",
-      stats: { ATK: 1, DEF: 3, HP: 1, MOV: 8, RNG: 8, MOR: 5 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 8, RNG: 8, MOR: 5 },
       special: [
         'Scout (deploy up to 6" ahead of deployment zone)',
         "Spotter (+1 ATK die to friendly Artillery targeting spotted unit)",
@@ -2456,7 +2456,7 @@
       fragment_interactions: "Fragment increases AoE damage",
       flavor_text: "Operates long-range cannons powered by fragments",
       type: "Artillery",
-      stats: { ATK: 4, DEF: 3, HP: 2, MOV: 3, RNG: 24, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 3, RNG: 24, MOR: 7 },
       special: [
         "Grid Node",
         'Blast (hits target + all units within 1")',
@@ -2471,7 +2471,7 @@
       fragment_interactions: "Fragment may cause small area tremors",
       flavor_text: "Break walls and fortifications",
       type: "Infantry",
-      stats: { ATK: 3, DEF: 4, HP: 3, MOV: 4, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 4, RNG: 1, MOR: 8 },
       special: [
         "Grid Node",
         "Siege (double damage vs terrain and fortifications)",
@@ -2487,7 +2487,7 @@
       flavor_text:
         "Human + small mechanical suit; balanced durability & attack",
       type: "Infantry",
-      stats: { ATK: 3, DEF: 4, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: ["Grid Node"],
     },
     {
@@ -2498,7 +2498,7 @@
       fragment_interactions: "Fragment ability tied to commander",
       flavor_text: "Elite unit triggering tactical zoom-ins",
       type: "Specialist",
-      stats: { ATK: 3, DEF: 4, HP: 2, MOV: 6, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 6, RNG: 1, MOR: 8 },
       special: [
         'Commander Bond (+1 ATK when within 6" of your Commander)',
         "Duelist (may issue Challenge — 1v1 combat vs enemy Specialist/Commander)",
@@ -2512,7 +2512,7 @@
       fragment_interactions: "May warp battlefield",
       flavor_text: "Unstable fragment-driven mechanical constructs",
       type: "Infantry",
-      stats: { ATK: 4, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 12, DEF: 3, HP: 9, MOV: 5, RNG: 1, MOR: 10 },
       special: [
         "Fearless",
         'Unstable (at start of each turn, roll 1d6: on a 1, deal 1 damage to this unit and all within 2")',
@@ -2526,7 +2526,7 @@
       fragment_interactions: "Fragment can increase critical chance",
       flavor_text: "Long-range rifles, overclockable with fragment energy",
       type: "Infantry",
-      stats: { ATK: 2, DEF: 3, HP: 1, MOV: 5, RNG: 18, MOR: 6 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 5, RNG: 18, MOR: 6 },
       special: ["Grid Node", "Sharpshot (crits on 5+ instead of 6)"],
     },
     {
@@ -2537,7 +2537,7 @@
       fragment_interactions: "Fragment boosts construction speed",
       flavor_text: "Build barricades, traps, and battlefield improvements",
       type: "Support",
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Construct Barricade (place Light Cover within 2")',
@@ -2552,7 +2552,7 @@
       fragment_interactions: "Can manipulate enemy mechanical units",
       flavor_text: "Fragment boosts hacking success",
       type: "Specialist",
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 12, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 12, MOR: 7 },
       special: [
         'Hack (target enemy War Machine within 12": roll d6, on 4+ target cannot act next turn)',
         "Grid Node",
@@ -2566,7 +2566,7 @@
       fragment_interactions: "Fragment absorption improves efficiency",
       flavor_text: "Extract battlefield materials; support units",
       type: "Support",
-      stats: { ATK: 1, DEF: 3, HP: 1, MOV: 4, RNG: 1, MOR: 5 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 4, RNG: 1, MOR: 5 },
       special: [
         "Grid Node",
         "Salvage (generate 1 extra Fragment Charge if adjacent to destroyed unit)",
@@ -2581,7 +2581,7 @@
         "Amplify fragment effects nearby; risk of instability",
       flavor_text: "Engineers who harness fragments creatively",
       type: "Specialist",
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         'Fragment Amplifier (friendly units within 3" gain +1 to fragment activation rolls)',
         'Unstable Aura (if fragment backfires within 3", this unit takes 1 extra damage)',
@@ -2595,7 +2595,7 @@
       fragment_interactions: "Fragment increases explosion radius",
       flavor_text: "Throw explosive steam grenades",
       type: "Infantry",
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 5, RNG: 8, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 8, MOR: 7 },
       special: ["Grid Node", 'Blast (hits target + all units within 1")'],
     },
     {
@@ -2607,7 +2607,7 @@
         "Fragment grants temporary speed boost; risk misfire",
       flavor_text: "Mounted mechanical units",
       type: "Cavalry",
-      stats: { ATK: 3, DEF: 4, HP: 2, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Charge (+1 ATK die when charging 4"+)',
@@ -2622,7 +2622,7 @@
       fragment_interactions: "Fragment targeting enhancements",
       flavor_text: "Precision rifle units",
       type: "Infantry",
-      stats: { ATK: 3, DEF: 3, HP: 1, MOV: 5, RNG: 18, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 3, MOV: 5, RNG: 18, MOR: 7 },
       special: ["Grid Node", "Sharpshot (crits on 5+)"],
     },
     {
@@ -2633,7 +2633,7 @@
       fragment_interactions: "Fragment stabilizes units during healing",
       flavor_text: "Heal or repair units and constructs",
       type: "Support",
-      stats: { ATK: 1, DEF: 3, HP: 1, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Heal (restore 1 HP to adjacent friendly unit, once per turn)",
@@ -2648,7 +2648,7 @@
       fragment_interactions: "Fragment increases coordination",
       flavor_text: "Units linked via mechanical network",
       type: "Infantry",
-      stats: { ATK: 2, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Network (+1 ATK die when 2+ Gear-Linked Infantry within 3" of each other)',
@@ -2662,7 +2662,7 @@
       fragment_interactions: "Fragment may trigger unexpected explosions",
       flavor_text: "Plant traps or explosives on battlefield",
       type: "Support",
-      stats: { ATK: 2, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Plant Charge (place explosive token within 1": detonates for 2 damage to all within 2" when triggered by enemy movement or commander card)',
@@ -2676,7 +2676,7 @@
       fragment_interactions: "Fragment overload increases repair speed",
       flavor_text: "Rapid repair at risk of accidental hazards",
       type: "Support",
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Rapid Repair (restore 2 HP instead of 1 to adjacent War Machine, but roll d6: on 1, deal 1 damage to self)",
@@ -2690,7 +2690,7 @@
       fragment_interactions: "Fragment may expand blast radius",
       flavor_text: "Explosive devices powered by fragments",
       type: "Infantry",
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 5, RNG: 10, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 10, MOR: 7 },
       special: ["Grid Node", 'Blast (hits target + all units within 1")'],
     },
     {
@@ -2701,7 +2701,7 @@
       fragment_interactions: "Fragment may temporarily warp battlefield vision",
       flavor_text: "Mechanical flying units",
       type: "Scout",
-      stats: { ATK: 2, DEF: 3, HP: 2, MOV: 10, RNG: 8, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 10, RNG: 8, MOR: 7 },
       special: [
         "Fly (ignore terrain during movement)",
         "Spotter (+1 ATK die to friendly Artillery targeting spotted unit)",
@@ -2715,7 +2715,7 @@
       fragment_interactions: "Fragment may backfire",
       flavor_text: "Disable enemy units or traps",
       type: "Specialist",
-      stats: { ATK: 2, DEF: 3, HP: 2, MOV: 7, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         'Stealth (cannot be targeted by ranged attacks until this unit attacks or moves within 6" of an enemy)',
         "Sabotage (instead of attacking, disable 1 enemy trap or reduce enemy War Machine ATK by 1 for 1 turn)",
@@ -2729,7 +2729,7 @@
       fragment_interactions: "Fragment boosts attack, risk of self-damage",
       flavor_text: "Aggressive assault units",
       type: "Infantry",
-      stats: { ATK: 4, DEF: 3, HP: 2, MOV: 6, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Reckless (+1 ATK die but -1 DEF on the turn this unit charges)",
@@ -2743,7 +2743,7 @@
       fragment_interactions: "Fragment adds temporary armor",
       flavor_text: "Protect elite units or commanders",
       type: "Infantry",
-      stats: { ATK: 2, DEF: 5, HP: 3, MOV: 4, RNG: 1, MOR: 8 },
+      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 4, RNG: 1, MOR: 8 },
       special: [
         "Grid Node",
         "Bodyguard (if adjacent friendly Commander or Specialist is attacked, may redirect the attack to this unit instead)",
@@ -2757,7 +2757,7 @@
       fragment_interactions: "Mini clockwork swarm; high risk/reward",
       flavor_text: "Fragment-controlled swarms",
       type: "Infantry",
-      stats: { ATK: 5, DEF: 2, HP: 2, MOV: 6, RNG: 3, MOR: 10 },
+      stats: { ATK: 15, DEF: 2, HP: 6, MOV: 6, RNG: 3, MOR: 10 },
       special: [
         "Fearless",
         "Swarm (cannot be targeted by Blast; takes 1 damage from any source instead of normal damage)",
@@ -2772,7 +2772,7 @@
       fragment_interactions: "Fragment-powered cannon",
       flavor_text: "Portable fragment cannons; unstable but powerful",
       type: "Artillery",
-      stats: { ATK: 3, DEF: 3, HP: 2, MOV: 4, RNG: 16, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 4, RNG: 16, MOR: 7 },
       special: [
         "Grid Node",
         "Overcharge (spend 1 Fragment Charge: +2 ATK dice this attack, but on any roll of 1, deal 1 damage to self)",
@@ -2786,7 +2786,7 @@
       fragment_interactions: "Minor fragment interactions",
       flavor_text: "Repair and fortify units",
       type: "Support",
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Repair (restore 1 HP to adjacent friendly unit, End Phase)",
@@ -2800,7 +2800,7 @@
       fragment_interactions: "Fragment grants temporary AoE shield",
       flavor_text: "Slow, but area control",
       type: "Infantry",
-      stats: { ATK: 2, DEF: 5, HP: 3, MOV: 3, RNG: 1, MOR: 8 },
+      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 3, RNG: 1, MOR: 8 },
       special: [
         "Grid Node",
         'Shield Wall (friendly units within 2" gain +1 DEF vs ranged attacks)',
@@ -2815,7 +2815,7 @@
       fragment_interactions: "Fragment may add critical bonus",
       flavor_text: "Precision long-range attacks",
       type: "Infantry",
-      stats: { ATK: 2, DEF: 3, HP: 1, MOV: 5, RNG: 20, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 5, RNG: 20, MOR: 7 },
       special: [
         "Grid Node",
         "Sharpshot (crits on 5+)",
@@ -2830,7 +2830,7 @@
       fragment_interactions: "Fragment boosts mobility",
       flavor_text: "Traverse difficult terrain quickly",
       type: "Scout",
-      stats: { ATK: 2, DEF: 3, HP: 2, MOV: 8, RNG: 8, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 8, RNG: 8, MOR: 7 },
       special: [
         'Scout (deploy 6" ahead)',
         "All-Terrain (ignore difficult terrain penalties)",
@@ -2844,7 +2844,7 @@
       fragment_interactions: "Fragment amplifies shots",
       flavor_text: "Heavy cannons powered by fragments",
       type: "Artillery",
-      stats: { ATK: 5, DEF: 3, HP: 3, MOV: 3, RNG: 24, MOR: 7 },
+      stats: { ATK: 15, DEF: 3, HP: 9, MOV: 3, RNG: 24, MOR: 7 },
       special: [
         "Grid Node",
         'Blast (hits target + all within 1")',
@@ -2860,7 +2860,7 @@
       fragment_interactions: "Fragment energy increases melee damage",
       flavor_text: "Aggressive assault units",
       type: "Infantry",
-      stats: { ATK: 4, DEF: 3, HP: 2, MOV: 6, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
       special: ["Grid Node", 'Charge (+1 ATK die when charging 4"+)'],
     },
     {
@@ -2871,7 +2871,7 @@
       fragment_interactions: "Fragment boosts nearby morale",
       flavor_text: "Durable, disciplined frontline unit",
       type: "Infantry",
-      stats: { ATK: 3, DEF: 4, HP: 3, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 9 },
       special: ["Grid Node", 'Inspiring (+1 MOR to friendly units within 3")'],
     },
     {
@@ -2882,7 +2882,7 @@
       fragment_interactions: "Fragment can trigger traps",
       flavor_text: "Manipulate battlefield hazards",
       type: "Support",
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Trap Layer (place trap token within 3": 1 damage on trigger)',
@@ -2897,7 +2897,7 @@
       fragment_interactions: "Fragment improves salvage rate",
       flavor_text: "Recover destroyed units or machines",
       type: "Support",
-      stats: { ATK: 1, DEF: 3, HP: 1, MOV: 5, RNG: 1, MOR: 6 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 6 },
       special: [
         "Grid Node",
         "Salvage (when adjacent to destroyed friendly unit's position, recover 2 Fragment Charges)",
@@ -2911,7 +2911,7 @@
       fragment_interactions: "Minor fragment boosts",
       flavor_text: "Standard troops with minor mechanical augmentation",
       type: "Infantry",
-      stats: { ATK: 2, DEF: 4, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: ["Grid Node"],
     },
     {
@@ -2922,7 +2922,7 @@
       fragment_interactions: "Amplifies fragment energy",
       flavor_text: "Small group that enhances fragment effects",
       type: "Specialist",
-      stats: { ATK: 1, DEF: 3, HP: 2, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         'Fragment Amplifier (+1 to fragment activation rolls within 3")',
         "Fragment Battery (generate 2 Fragment Charges per turn instead of 1 when near a source)",
@@ -2937,7 +2937,7 @@
       fragment_interactions: "AoE melee; fragment boosts radius",
       flavor_text: "Massive humanoid construct, slow but devastating",
       type: "War Machine",
-      stats: { ATK: 7, DEF: 5, HP: 10, MOV: 4, RNG: 1, MOR: 10 },
+      stats: { ATK: 21, DEF: 5, HP: 30, MOV: 4, RNG: 1, MOR: 10 },
       special: [
         "Grid Anchor (counts as 2 units for Grid adjacency)",
         'Stomp (melee hits all enemy units within 2")',
@@ -2953,7 +2953,7 @@
       fragment_interactions: "Fragment enhances long-range damage",
       flavor_text: "Siege & artillery hybrid",
       type: "War Machine",
-      stats: { ATK: 6, DEF: 5, HP: 8, MOV: 3, RNG: 24, MOR: 10 },
+      stats: { ATK: 18, DEF: 5, HP: 24, MOV: 3, RNG: 24, MOR: 10 },
       special: [
         "Grid Anchor",
         'Blast (hits target + all within 2")',
@@ -2970,7 +2970,7 @@
         "Fires massive fragment blasts; unstable terrain effects",
       flavor_text: "Huge fragment-powered artillery unit",
       type: "War Machine",
-      stats: { ATK: 7, DEF: 4, HP: 8, MOV: 4, RNG: 20, MOR: 10 },
+      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 4, RNG: 20, MOR: 10 },
       special: [
         "Grid Anchor",
         'Blast (hits target + all within 2")',
@@ -2986,7 +2986,7 @@
       fragment_interactions: "Fragment boosts melee; risk of malfunction",
       flavor_text: "Multi-legged mechanical war machine",
       type: "War Machine",
-      stats: { ATK: 7, DEF: 4, HP: 8, MOV: 6, RNG: 1, MOR: 10 },
+      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 6, RNG: 1, MOR: 10 },
       special: [
         "Grid Anchor",
         "Charge (+2 ATK dice when charging)",
@@ -3004,7 +3004,7 @@
         "Fragment may warp battlefield; extremely high risk",
       flavor_text: "Half-mechanical, half-living construct",
       type: "War Machine",
-      stats: { ATK: 8, DEF: 5, HP: 12, MOV: 4, RNG: 3, MOR: 10 },
+      stats: { ATK: 24, DEF: 5, HP: 36, MOV: 4, RNG: 3, MOR: 10 },
       special: [
         "Grid Anchor",
         'Stomp (melee hits all within 2")',
@@ -3021,7 +3021,7 @@
       fragment_interactions: "Fragment grants temporary double activation",
       flavor_text: "Fast mechanical unit with explosive attacks",
       type: "War Machine",
-      stats: { ATK: 6, DEF: 4, HP: 7, MOV: 7, RNG: 1, MOR: 10 },
+      stats: { ATK: 18, DEF: 4, HP: 21, MOV: 7, RNG: 1, MOR: 10 },
       special: [
         "Grid Anchor",
         "Double Strike (may attack twice per Combat Phase)",
@@ -3037,7 +3037,7 @@
       fragment_interactions: "Fragment adds unpredictable AoE attacks",
       flavor_text: "Flying mechanical scout/assault unit",
       type: "War Machine",
-      stats: { ATK: 6, DEF: 4, HP: 8, MOV: 10, RNG: 8, MOR: 10 },
+      stats: { ATK: 18, DEF: 4, HP: 24, MOV: 10, RNG: 8, MOR: 10 },
       special: [
         "Grid Anchor",
         "Fly (ignore terrain)",
@@ -3053,7 +3053,7 @@
       fragment_interactions: "Fragment can collapse terrain",
       flavor_text: "Slow, massive damage output",
       type: "War Machine",
-      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 3, RNG: 18, MOR: 10 },
+      stats: { ATK: 18, DEF: 5, HP: 27, MOV: 3, RNG: 18, MOR: 10 },
       special: [
         "Grid Anchor",
         "Siege (double damage vs fortifications)",
@@ -3070,7 +3070,7 @@
       fragment_interactions: "Increases nearby unit effectiveness; unstable",
       flavor_text: "Fragment-powered giant construct",
       type: "War Machine",
-      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 4, RNG: 1, MOR: 10 },
+      stats: { ATK: 18, DEF: 5, HP: 27, MOV: 4, RNG: 1, MOR: 10 },
       special: [
         "Grid Anchor",
         'Fragment Aura (friendly units within 3" gain +1 ATK die)',
@@ -3086,7 +3086,7 @@
       fragment_interactions: "Fragment can reorder units; high instability",
       flavor_text: "Time-manipulation-themed war machine",
       type: "War Machine",
-      stats: { ATK: 5, DEF: 5, HP: 10, MOV: 5, RNG: 12, MOR: 10 },
+      stats: { ATK: 15, DEF: 5, HP: 30, MOV: 5, RNG: 12, MOR: 10 },
       special: [
         "Grid Anchor",
         "Time Warp (once per game: take an extra full turn immediately after this one)",

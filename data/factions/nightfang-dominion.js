@@ -469,12 +469,12 @@
         Knowledge: 8,
         Leadership: 10,
         Agility: 6,
-        Health: 140
+        Health: 420
       },
       battle_stats: {
-        ATK: 6,
+        ATK: 18,
         DEF: 4,
-        HP: 11,
+        HP: 33,
         MOV: 5,
         RNG: 3,
         MOR: 10
@@ -585,12 +585,12 @@
         Knowledge: 9,
         Leadership: 7,
         Agility: 7,
-        Health: 100
+        Health: 300
       },
       battle_stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 3,
-        HP: 9,
+        HP: 27,
         MOV: 5,
         RNG: 6,
         MOR: 9
@@ -701,12 +701,12 @@
         Knowledge: 5,
         Leadership: 9,
         Agility: 10,
-        Health: 150
+        Health: 450
       },
       battle_stats: {
-        ATK: 7,
+        ATK: 21,
         DEF: 5,
-        HP: 12,
+        HP: 36,
         MOV: 6,
         RNG: 1,
         MOR: 10
@@ -809,12 +809,12 @@
         Knowledge: 8,
         Leadership: 6,
         Agility: 5,
-        Health: 90
+        Health: 270
       },
       battle_stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 3,
-        HP: 8,
+        HP: 24,
         MOV: 5,
         RNG: 3,
         MOR: 8
@@ -921,12 +921,12 @@
         Knowledge: 10,
         Leadership: 8,
         Agility: 5,
-        Health: 110
+        Health: 330
       },
       battle_stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 4,
-        HP: 10,
+        HP: 30,
         MOV: 4,
         RNG: 6,
         MOR: 9
@@ -1037,12 +1037,12 @@
         Knowledge: 7,
         Leadership: 7,
         Agility: 10,
-        Health: 95
+        Health: 285
       },
       battle_stats: {
-        ATK: 6,
+        ATK: 18,
         DEF: 3,
-        HP: 8,
+        HP: 24,
         MOV: 7,
         RNG: 1,
         MOR: 9
@@ -1149,12 +1149,12 @@
         Knowledge: 10,
         Leadership: 8,
         Agility: 5,
-        Health: 110
+        Health: 330
       },
       battle_stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 4,
-        HP: 10,
+        HP: 30,
         MOV: 4,
         RNG: 8,
         MOR: 10
@@ -1261,12 +1261,12 @@
         Knowledge: 8,
         Leadership: 9,
         Agility: 5,
-        Health: 130
+        Health: 390
       },
       battle_stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 5,
-        HP: 11,
+        HP: 33,
         MOV: 4,
         RNG: 3,
         MOR: 10
@@ -1377,12 +1377,12 @@
         Knowledge: 8,
         Leadership: 9,
         Agility: 7,
-        Health: 105
+        Health: 315
       },
       battle_stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 4,
-        HP: 9,
+        HP: 27,
         MOV: 5,
         RNG: 6,
         MOR: 10
@@ -1489,12 +1489,12 @@
         Knowledge: 9,
         Leadership: 7,
         Agility: 8,
-        Health: 100
+        Health: 300
       },
       battle_stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 3,
-        HP: 9,
+        HP: 27,
         MOV: 6,
         RNG: 6,
         MOR: 8
@@ -1605,12 +1605,12 @@
         Knowledge: 7,
         Leadership: 9,
         Agility: 6,
-        Health: 115
+        Health: 345
       },
       battle_stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 4,
-        HP: 10,
+        HP: 30,
         MOV: 5,
         RNG: 3,
         MOR: 9
@@ -1713,12 +1713,12 @@
         Knowledge: 6,
         Leadership: 10,
         Agility: 3,
-        Health: 150
+        Health: 450
       },
       battle_stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 6,
-        HP: 13,
+        HP: 39,
         MOV: 3,
         RNG: 1,
         MOR: 10
@@ -1825,12 +1825,12 @@
         Knowledge: 6,
         Leadership: 8,
         Agility: 10,
-        Health: 110
+        Health: 330
       },
       battle_stats: {
-        ATK: 7,
+        ATK: 21,
         DEF: 3,
-        HP: 10,
+        HP: 30,
         MOV: 8,
         RNG: 1,
         MOR: 9
@@ -1945,9 +1945,9 @@
       type: "Infantry",
       corruption_spread: 0,
       stats: {
-        ATK: 1,
+        ATK: 3,
         DEF: 3,
-        HP: 1,
+        HP: 3,
         MOV: 5,
         RNG: 1,
         MOR: 4
@@ -1968,9 +1968,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 1,
+        ATK: 3,
         DEF: 2,
-        HP: 1,
+        HP: 3,
         MOV: 5,
         RNG: 1,
         MOR: 4
@@ -1987,9 +1987,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 5
@@ -2006,9 +2006,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 4,
-        HP: 1,
+        HP: 3,
         MOV: 4,
         RNG: 1,
         MOR: 5
@@ -2025,9 +2025,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2044,9 +2044,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 4,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2067,9 +2067,9 @@
       type: "Infantry",
       corruption_spread: 2,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 6,
         RNG: 1,
         MOR: 8
@@ -2091,9 +2091,9 @@
       type: "Infantry",
       corruption_spread: 2,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 6,
         RNG: 1,
         MOR: 7
@@ -2115,9 +2115,9 @@
       type: "Infantry",
       corruption_spread: 2,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 5,
-        HP: 3,
+        HP: 9,
         MOV: 4,
         RNG: 1,
         MOR: 8
@@ -2139,9 +2139,9 @@
       type: "Infantry",
       corruption_spread: 2,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 6,
         RNG: 1,
         MOR: 9
@@ -2164,9 +2164,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2188,9 +2188,9 @@
       type: "Infantry",
       corruption_spread: 2,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 5,
-        HP: 3,
+        HP: 9,
         MOV: 4,
         RNG: 1,
         MOR: 9
@@ -2207,9 +2207,9 @@
       type: "Infantry",
       corruption_spread: 2,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 8
@@ -2226,9 +2226,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 3,
-        HP: 1,
+        HP: 3,
         MOV: 5,
         RNG: 18,
         MOR: 6
@@ -2245,9 +2245,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 2,
-        HP: 1,
+        HP: 3,
         MOV: 5,
         RNG: 8,
         MOR: 4
@@ -2264,9 +2264,9 @@
       type: "Infantry",
       corruption_spread: 3,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 4,
-        HP: 3,
+        HP: 9,
         MOV: 6,
         RNG: 1,
         MOR: 9
@@ -2283,9 +2283,9 @@
       type: "Infantry",
       corruption_spread: 1,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 4,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2302,9 +2302,9 @@
       type: "Infantry",
       corruption_spread: 2,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 5,
-        HP: 3,
+        HP: 9,
         MOV: 4,
         RNG: 1,
         MOR: 9
@@ -2321,9 +2321,9 @@
       type: "Cavalry",
       corruption_spread: 1,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 8,
         RNG: 1,
         MOR: 5
@@ -2340,9 +2340,9 @@
       type: "Cavalry",
       corruption_spread: 2,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 4,
-        HP: 2,
+        HP: 6,
         MOV: 9,
         RNG: 1,
         MOR: 8
@@ -2365,9 +2365,9 @@
       type: "Cavalry",
       corruption_spread: 2,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 4,
-        HP: 3,
+        HP: 9,
         MOV: 9,
         RNG: 1,
         MOR: 9
@@ -2384,9 +2384,9 @@
       type: "Cavalry",
       corruption_spread: 2,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 10,
         RNG: 1,
         MOR: 6
@@ -2407,9 +2407,9 @@
       type: "Cavalry",
       corruption_spread: 3,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 4,
-        HP: 3,
+        HP: 9,
         MOV: 10,
         RNG: 1,
         MOR: 9
@@ -2426,9 +2426,9 @@
       type: "Cavalry",
       corruption_spread: 2,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 9,
         RNG: 1,
         MOR: 7
@@ -2445,9 +2445,9 @@
       type: "Support",
       corruption_spread: 1,
       stats: {
-        ATK: 1,
+        ATK: 3,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2470,7 +2470,7 @@
       stats: {
         ATK: 0,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 6,
         MOR: 6
@@ -2491,9 +2491,9 @@
       type: "Support",
       corruption_spread: 1,
       stats: {
-        ATK: 1,
+        ATK: 3,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2514,9 +2514,9 @@
       type: "Support",
       corruption_spread: 1,
       stats: {
-        ATK: 1,
+        ATK: 3,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2539,7 +2539,7 @@
       stats: {
         ATK: 0,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 4,
         RNG: 1,
         MOR: 8
@@ -2562,7 +2562,7 @@
       stats: {
         ATK: 0,
         DEF: 3,
-        HP: 1,
+        HP: 3,
         MOV: 5,
         RNG: 1,
         MOR: 5
@@ -2584,9 +2584,9 @@
       type: "Support",
       corruption_spread: 2,
       stats: {
-        ATK: 1,
+        ATK: 3,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 4,
         RNG: 1,
         MOR: 8
@@ -2609,7 +2609,7 @@
       stats: {
         ATK: 0,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 8
@@ -2631,9 +2631,9 @@
       type: "Artillery",
       corruption_spread: 1,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 3,
-        HP: 3,
+        HP: 9,
         MOV: 3,
         RNG: 24,
         MOR: 7
@@ -2655,9 +2655,9 @@
       type: "Artillery",
       corruption_spread: 1,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 4,
         RNG: 18,
         MOR: 7
@@ -2674,9 +2674,9 @@
       type: "Artillery",
       corruption_spread: 2,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 3,
-        HP: 3,
+        HP: 9,
         MOV: 3,
         RNG: 24,
         MOR: 7
@@ -2693,9 +2693,9 @@
       type: "Artillery",
       corruption_spread: 2,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 3,
         RNG: 10,
         MOR: 7
@@ -2712,9 +2712,9 @@
       type: "Artillery",
       corruption_spread: 1,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 4,
         RNG: 20,
         MOR: 7
@@ -2731,9 +2731,9 @@
       type: "Scout",
       corruption_spread: 0,
       stats: {
-        ATK: 1,
+        ATK: 3,
         DEF: 3,
-        HP: 1,
+        HP: 3,
         MOV: 8,
         RNG: 1,
         MOR: 4
@@ -2755,9 +2755,9 @@
       type: "Scout",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 3,
-        HP: 1,
+        HP: 3,
         MOV: 9,
         RNG: 1,
         MOR: 6
@@ -2774,9 +2774,9 @@
       type: "Scout",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 3,
-        HP: 1,
+        HP: 3,
         MOV: 8,
         RNG: 8,
         MOR: 5
@@ -2793,9 +2793,9 @@
       type: "Scout",
       corruption_spread: 0,
       stats: {
-        ATK: 1,
+        ATK: 3,
         DEF: 2,
-        HP: 1,
+        HP: 3,
         MOV: 10,
         RNG: 1,
         MOR: 4
@@ -2812,9 +2812,9 @@
       type: "Scout",
       corruption_spread: 1,
       stats: {
-        ATK: 3,
+        ATK: 9,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 8,
         RNG: 1,
         MOR: 7
@@ -2838,9 +2838,9 @@
       type: "Scout",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 3,
-        HP: 1,
+        HP: 3,
         MOV: 9,
         RNG: 1,
         MOR: 5
@@ -2857,9 +2857,9 @@
       type: "Specialist",
       corruption_spread: 2,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 4,
-        HP: 3,
+        HP: 9,
         MOV: 6,
         RNG: 1,
         MOR: 9
@@ -2882,9 +2882,9 @@
       type: "Specialist",
       corruption_spread: 2,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 4,
-        HP: 4,
+        HP: 12,
         MOV: 7,
         RNG: 1,
         MOR: 9
@@ -2907,9 +2907,9 @@
       type: "Specialist",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2930,9 +2930,9 @@
       type: "Specialist",
       corruption_spread: 1,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 7,
         RNG: 1,
         MOR: 7
@@ -2955,9 +2955,9 @@
       type: "Specialist",
       corruption_spread: 2,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 6,
-        HP: 3,
+        HP: 9,
         MOV: 6,
         RNG: 1,
         MOR: 10
@@ -2980,9 +2980,9 @@
       type: "Specialist",
       corruption_spread: 2,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 4,
-        HP: 3,
+        HP: 9,
         MOV: 6,
         RNG: 1,
         MOR: 8
@@ -3003,9 +3003,9 @@
       type: "Specialist",
       corruption_spread: 1,
       stats: {
-        ATK: 2,
+        ATK: 6,
         DEF: 3,
-        HP: 2,
+        HP: 6,
         MOV: 4,
         RNG: 6,
         MOR: 8
@@ -3027,9 +3027,9 @@
       type: "War Machine",
       corruption_spread: 3,
       stats: {
-        ATK: 7,
+        ATK: 21,
         DEF: 5,
-        HP: 10,
+        HP: 30,
         MOV: 6,
         RNG: 1,
         MOR: 10
@@ -3046,9 +3046,9 @@
       type: "War Machine",
       corruption_spread: 4,
       stats: {
-        ATK: 8,
+        ATK: 24,
         DEF: 5,
-        HP: 12,
+        HP: 36,
         MOV: 4,
         RNG: 1,
         MOR: 10
@@ -3073,9 +3073,9 @@
       type: "War Machine",
       corruption_spread: 2,
       stats: {
-        ATK: 6,
+        ATK: 18,
         DEF: 4,
-        HP: 8,
+        HP: 24,
         MOV: 4,
         RNG: 12,
         MOR: 10
@@ -3097,9 +3097,9 @@
       type: "War Machine",
       corruption_spread: 3,
       stats: {
-        ATK: 5,
+        ATK: 15,
         DEF: 5,
-        HP: 9,
+        HP: 27,
         MOV: 5,
         RNG: 8,
         MOR: 10
@@ -3122,9 +3122,9 @@
       type: "War Machine",
       corruption_spread: 4,
       stats: {
-        ATK: 8,
+        ATK: 24,
         DEF: 4,
-        HP: 11,
+        HP: 33,
         MOV: 10,
         RNG: 12,
         MOR: 10
@@ -3149,9 +3149,9 @@
       type: "War Machine",
       corruption_spread: 2,
       stats: {
-        ATK: 6,
+        ATK: 18,
         DEF: 4,
-        HP: 8,
+        HP: 24,
         MOV: 6,
         RNG: 1,
         MOR: 10
@@ -3174,9 +3174,9 @@
       type: "War Machine",
       corruption_spread: 2,
       stats: {
-        ATK: 6,
+        ATK: 18,
         DEF: 5,
-        HP: 9,
+        HP: 27,
         MOV: 5,
         RNG: 1,
         MOR: 10
@@ -3199,9 +3199,9 @@
       type: "War Machine",
       corruption_spread: 3,
       stats: {
-        ATK: 7,
+        ATK: 21,
         DEF: 4,
-        HP: 10,
+        HP: 30,
         MOV: 8,
         RNG: 1,
         MOR: 10
@@ -3225,9 +3225,9 @@
       type: "War Machine",
       corruption_spread: 2,
       stats: {
-        ATK: 4,
+        ATK: 12,
         DEF: 4,
-        HP: 9,
+        HP: 27,
         MOV: 3,
         RNG: 1,
         MOR: 10
@@ -3249,9 +3249,9 @@
       type: "War Machine",
       corruption_spread: 4,
       stats: {
-        ATK: 9,
+        ATK: 27,
         DEF: 4,
-        HP: 10,
+        HP: 30,
         MOV: 7,
         RNG: 1,
         MOR: 10
