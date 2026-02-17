@@ -35,6 +35,9 @@
 
 **Visual Identity:** Draconic majesty fused with tribal warrior culture — dragon scales, wings, flame breath, war paint, and fierce loyalty to the dragon hierarchy. Colors: fiery orange (#ff6b35), crimson, gold, and black char.
 
+### Faction Logo
+> Heraldic emblem design, symmetrical crest on a solid black background. A stylized drake claw pointed skyward — The Rising Talon — rendered in fiery orange (#ff6b35) and burnished gold, its three talons spread wide and wreathed in curling flame that transitions from deep crimson at the base through bright orange to gold at the tips. Nestled at the center of the claw's grip burns The Eternal Ember — a single teardrop-shaped flame of white-hot gold radiating concentric heat-distortion rings. The claw emerges from a circular border of interlocking tribal war-paint patterns in black char and crimson, evoking dragon scales in their repeating geometry. Beneath the claw, two mirrored drake claws and rider hands clasp together — The Twin Clasp — rendered as a smaller motif in gold outline. The overall silhouette is bold and aggressive, suggesting both draconic power and tribal unity. No text. Clean vector-style rendering with subtle metallic texture on the gold elements and ember-glow light emanating from the central flame. Fiery orange, crimson, gold, and black char palette. Highly detailed emblem, 4K.
+
 ---
 
 ## Emberclaw Commanders
@@ -254,6 +257,9 @@
 # Iron Dominion
 
 **Visual Identity:** Human/clockwork hybrid steampunk — industrial, mechanical, cold, and precise. Brass, steel, blue-white fragment energy, gear motifs, steam vents, and piston-driven limbs. Colors: steel grey, brass gold, crimson red (#e94560), and blue-white energy.
+
+### Faction Logo
+> Heraldic emblem design, symmetrical crest on a solid black background. The Gear-and-Flame — the Iron Dominion's official insignia — rendered as a large central cogwheel of polished steel grey with precisely machined teeth, its hub open to reveal a stylized blue-white flame representing fragment energy burning at the core. The flame is geometric and angular rather than organic, as if engineered — sharp crystalline facets of blue-white light radiating outward through the gear's spokes. Surrounding the central gear, a hexagonal lattice of smaller interlocking gears in brass gold extends outward, each gear meshing perfectly with its neighbors, representing the Pillar of the Grid. A single stylized lightning bolt in crimson red (#e94560) splits downward through the center of the design — the Pillar of the Spark — its jagged form cutting through the mechanical precision with raw energy. The entire emblem sits upon a shield-shaped backing of dark gunmetal with fine circuit-like etching along its border, filled with faint blue-white luminescent inlay. Wisps of steam curl from the gear teeth at the top. No text. Clean vector-style rendering with metallic textures on steel and brass, subtle energy glow from the blue-white flame. Steel grey, brass gold, crimson red, and blue-white palette. Highly detailed emblem, 4K.
 
 ---
 
@@ -477,6 +483,9 @@
 # Nightfang Dominion
 
 **Visual Identity:** Vampiric tiger empire — crimson and black armor adorned with tiger pelts and fang motifs. Corruption mist, blood magic, tattered thrall armies, and regal vampiric figures with tiger-like features (slit pupils, elongated canines, striped skin, clawed gauntlets). Colors: blood red (#dc2626), black, bone white, sickly purple corruption.
+
+### Faction Logo
+> Heraldic emblem design, symmetrical crest on a solid black background. The Apex Crown — a tiger skull viewed from the front, rendered in bone white with deep shadow in the eye sockets and nasal cavity. The skull's elongated upper fangs extend downward past the jawline, their tips dripping with stylized blood droplets in blood red (#dc2626) that trail into thin crimson rivulets. Crowning the skull is a circlet of sharpened black iron thorns — twisted, jagged spikes that arc upward and outward like a dark crown, some thorns tipped with tiny droplets of red. Within the skull's empty eye sockets burn twin points of solid crimson light, giving it a predatory sentient gaze. Below the skull, an open maw motif — The Consuming Jaw — is suggested by two curved fang-shapes flanking a dark void, representing the Dominion's insatiable hunger. The entire emblem is framed by a circular border of alternating orange-and-black tiger-stripe patterns rendered in a gothic heraldic style. Faint sickly purple corruption mist curls around the skull's edges, barely visible tendrils creeping outward. No text. Clean vector-style rendering with bone texture on the skull, wet gleam on the blood, and subtle purple corruption glow. Blood red, black, bone white, and sickly purple palette. Highly detailed emblem, 4K.
 
 ---
 
@@ -728,6 +737,9 @@
 
 **Visual Identity:** Eldritch samurai — traditional samurai armor fused with non-Euclidean geometry, cosmic patterns, and reality distortions. Masks as sacred symbols of identity erasure. Weapons that appear slightly out of phase with reality. Colors: deep purple (#8b5cf6), midnight blue, silver-white, and cosmic void-black with starfield patterns.
 
+### Faction Logo
+> Heraldic emblem design, symmetrical crest on a solid black background. A stylized torii gate rendered in deep purple (#8b5cf6) and silver-white, its pillars and crossbeams subtly warped with non-Euclidean geometry — straight lines that bend at impossible angles, edges that appear to exist in slightly different planes. Within the gate's opening, a cosmic void — pure black filled with tiny pinpoint stars, swirling nebula wisps in midnight blue and deep purple, and faint distant galaxies — as if the gate frames a window into the Shimmering Beyond. Floating before the void, a smooth featureless mask in polished obsidian-black, its oval surface reflecting the cosmic starfield within — the sacred symbol of identity erasure and the Three Veils. The mask has no features, only subtle shifting patterns of silver-white cosmic light playing across its surface. A single katana blade phases through the gate's left pillar — half solid polished silver-white steel, half translucent cosmic-blue ghost-metal — representing weapons existing in two dimensions simultaneously. The gate's base rests upon a platform of impossible geometry: tessellating shapes that seem to fold inward when observed closely. Tiny silver sigils — ink-like calligraphic marks — float around the gate's border, orbiting slowly. No text. Clean vector-style rendering with cosmic depth in the void, subtle reality distortion at the edges. Deep purple, midnight blue, silver-white, and cosmic void-black palette. Highly detailed emblem, 4K.
+
 ---
 
 ## Veilbound Commanders
@@ -967,6 +979,9 @@
 # Thornweft Matriarchy
 
 **Visual Identity:** Arachnid fate-weavers — spider-silk armor layered in geometric web-patterns, chitin masks with clusters of multi-lensed eyes, living web-banners that pulse with trapped light, and weapons trailing gossamer filaments. The army moves with unsettling coordination, as though directed by a vast intelligence pulling invisible threads. Colors: deep purple (#6b21a8), violet, bone-white chitin, and eerie bioluminescent green-blue in web-strands.
+
+### Faction Logo
+> Heraldic emblem design, symmetrical crest on a solid black background. The Infinite Loom — a vast geometric spider web rendered in bioluminescent green-blue threads that glow with eerie inner light, radiating outward from a central spindle in perfect mathematical spirals. The web's structure forms an intricate mandala pattern, each intersection node marked by a tiny luminous dewdrop of trapped violet light. At the web's center sits a stylized spider silhouette in bone-white chitin — eight angular legs extended to anchor the innermost web-strands, its abdomen patterned with deep purple (#6b21a8) and violet geometric markings. The spider's head features a cluster of eight multi-lensed eyes arranged in two rows, each eye a tiny point of green-blue bioluminescence. Emerging from the spider's spinnerets, a single unbroken thread — The Unbroken Thread — spirals outward and forms the web's outermost ring, representing the continuity of fate. Flanking the web on either side, two curved fang-shapes in bone-white chitin — The Silk Fang — crossed like heraldic swords behind the web, their tips trailing gossamer filaments. The entire emblem is framed by a circular border of interlocking chitin segments in deep purple, etched with tiny geometric web-patterns. Faint green-blue bioluminescent motes drift around the web's edges like captive fireflies. No text. Clean vector-style rendering with glowing web-threads, chitin texture, and eerie bioluminescent light. Deep purple, violet, bone-white, and green-blue palette. Highly detailed emblem, 4K.
 
 ---
 

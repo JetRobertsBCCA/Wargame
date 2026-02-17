@@ -2,6 +2,19 @@
 // Shardborne Universe Wiki - Factions Page
 // ==========================================
 
+function getFactionLogoPath(factionId) {
+  const folders = {
+    'emberclaw-warpack': 'Emberclaw',
+    'iron-dominion': 'IronDominion',
+    'nightfang-dominion': 'NightFang',
+    'veilbound-shogunate': 'veilboundShogunate',
+    'thornweft-matriarchy': 'Thornweft'
+  };
+  const folder = folders[factionId];
+  if (!folder) return null;
+  return `data/factions/Images/${folder}/FactionLogo.webp`;
+}
+
 function loadFactions() {
   const contentEl = document.getElementById("faction-list");
   if (!contentEl) return;
@@ -31,9 +44,15 @@ function loadFactions() {
     };
     card.onclick = () => showFactionDetail(faction.id);
 
+    const logoPath = getFactionLogoPath(faction.id);
+    const logoHtml = logoPath
+      ? `<img src="${logoPath}" alt="${faction.name} logo" class="faction-logo-card" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+         <div style="font-size: 3rem; display: none;">${icon}</div>`
+      : `<div style="font-size: 3rem;">${icon}</div>`;
+
     card.innerHTML = `
             <div style="text-align: center; margin-bottom: 1rem;">
-                <div style="font-size: 3rem;">${icon}</div>
+                ${logoHtml}
                 <h3 style="color: ${color}; margin: 0.5rem 0;">${faction.name}</h3>
             </div>
             <p style="font-style: italic; opacity: 0.85; font-size: 0.9rem;">${faction.theme}</p>
@@ -90,9 +109,14 @@ function showFactionDetail(factionId) {
         </div>
 
         <div class="card" style="border-top: 4px solid ${color};">
-            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
-                <span style="font-size: 3rem;">${icon}</span>
-                <div>
+            <div class="faction-detail-header">
+                ${(() => {
+                  const lp = getFactionLogoPath(faction.id);
+                  return lp
+                    ? `<img src="${lp}" alt="${faction.name} logo" class="faction-logo-detail" onerror="this.style.display='none'">`
+                    : `<span style="font-size: 3rem;">${icon}</span>`;
+                })()}
+                <div class="faction-detail-title">
                     <h2 style="margin: 0; color: ${color};">${faction.name}</h2>
                     <p style="margin: 0.25rem 0 0 0; opacity: 0.7;">${faction.theme}</p>
                 </div>
