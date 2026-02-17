@@ -18,7 +18,7 @@ except ImportError:
     print("Pillow is required. Install it with: pip install Pillow")
     raise SystemExit(1)
 
-ROOT = Path(__file__).parent / "Wargame" / "data" / "factions" / "Images"
+ROOT = Path(__file__).parent / "data" / "factions" / "Images"
 
 
 def compress_images(quality: int = 85, dry_run: bool = False):
