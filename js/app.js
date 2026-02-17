@@ -1,5 +1,5 @@
 // ==========================================
-// War Crier Universe Wiki - Application Logic
+// Shardborne Universe Wiki - Application Logic
 // ==========================================
 
 // Global State
@@ -33,13 +33,13 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==========================================
 const pageTemplates = {
   home: `<div id="home-page" class="page active">
-    <h2>Welcome to the War Crier Universe</h2>
-    <p class="intro-text">This is the central hub for all information related to the War Crier Universe wargame. Explore the factions, commanders, units, and the mysterious fragments that shape the battlefield.</p>
+    <h2>Welcome to the Shardborne Universe</h2>
+    <p class="intro-text">This is the central hub for all information related to the Shardborne Universe wargame. Explore the factions, commanders, units, and the mysterious fragments that shape the battlefield.</p>
     <div class="dashboard-grid">
         <div class="dashboard-card" onclick="showPage('factions')">
             <div class="dashboard-icon">⚔️</div>
             <h3>Factions</h3>
-            <p>Explore the armies of the War Crier Universe</p>
+            <p>Explore the armies of the Shardborne Universe</p>
             <span class="dashboard-count" id="faction-count"></span>
         </div>
         <div class="dashboard-card" onclick="showPage('commanders')">
@@ -98,7 +98,7 @@ const pageTemplates = {
         </ul>
     </div>
     <div class="card">
-        <h3>🌍 The War Crier Universe</h3>
+        <h3>🌍 The Shardborne Universe</h3>
         <p>In a world where clockwork precision meets cosmic fragment energy, armies clash across steam-shrouded battlefields. The <strong>Iron Dominion</strong> fields human/clockwork hybrids wielding fragment-infused technology, the <strong>Veilbound Shogunate</strong> channels eldritch cosmic rituals through masked samurai warriors, and the <strong>Nightfang Dominion</strong> unleashes plague-corrupted vampire tigers and thrall armies that spread the Scarlet Blight across every battlefield.</p>
         <p>Every commander faces a fundamental choice: embrace <strong>Knowledge</strong> for controlled, precise power, or surrender to <strong>Chaos</strong> for devastating but unpredictable effects.</p>
     </div>
@@ -151,7 +151,7 @@ const pageTemplates = {
   fragments: `<div id="fragments-page" class="page active"><h2>Fragments</h2><div id="fragment-list"></div></div>`,
 
   gameplay: `<div id="gameplay-page" class="page active">
-    <h2>📜 Core Rules — War Crier Universe</h2>
+    <h2>📜 Core Rules — Shardborne Universe</h2>
     <p style="color: #aaa;">Version ${gameData.rules ? gameData.rules.version : "1.0"} &nbsp;|&nbsp; Dice + Deck Building &nbsp;|&nbsp; Measurement in Inches</p>
     
     <div id="rules-nav" style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1.5rem;">

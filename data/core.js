@@ -1,8 +1,8 @@
 const gameData = {
   rules: {
-    version: "0.9 — War Crier Core Rules",
+    version: "0.9 — Shardborne Core Rules",
     overview:
-      "War Crier is a dice-and-card tabletop wargame for 2 players. Armies clash on a battlefield using miniatures or tokens. Combat is resolved with six-sided dice (d6). Only Commanders can play cards from their hand, making the commander your strategic brain — protecting them is critical.",
+      "Shardborne is a dice-and-card tabletop wargame for 2 players. Armies clash on a battlefield using miniatures or tokens. Combat is resolved with six-sided dice (d6). Only Commanders can play cards from their hand, making the commander your strategic brain — protecting them is critical.",
 
     measurement: {
       system: "inches",
@@ -446,7 +446,7 @@ const gameData = {
 
     card_rules: {
       overview:
-        "Commander cards are the strategic layer of War Crier. Only Commanders can play cards, and only if they are alive. Cards cost Command Points (CP) to play.",
+        "Commander cards are the strategic layer of Shardborne. Only Commanders can play cards, and only if they are alive. Cards cost Command Points (CP) to play.",
       card_types: [
         {
           type: "Command",
@@ -631,7 +631,7 @@ const gameData = {
     // LINE OF SIGHT
     // ==========================================
     line_of_sight: {
-      overview: "Line of sight (LOS) determines whether a unit can see — and therefore target — another unit. War Crier uses 'true line of sight' simplified for tabletop play.",
+      overview: "Line of sight (LOS) determines whether a unit can see — and therefore target — another unit. Shardborne uses 'true line of sight' simplified for tabletop play.",
       rules: [
         "A model has line of sight to a target if you can draw an unobstructed straight line from the attacking model's base to any part of the target model's base.",
         "Terrain classified as Heavy Cover or Impassable blocks LOS if the target is fully behind it (no part of base visible).",
@@ -758,7 +758,7 @@ const gameData = {
     // KEYWORDS GLOSSARY
     // ==========================================
     keywords: {
-      overview: "Many units have special Keywords that grant them unique abilities. Here is the complete reference for all Keywords used in War Crier.",
+      overview: "Many units have special Keywords that grant them unique abilities. Here is the complete reference for all Keywords used in Shardborne.",
       entries: [
         { name: "Grid Node", description: "This unit counts for Iron Dominion Grid Cohesion adjacency. Most ID units have this." },
         { name: "Grid Anchor", description: "This unit counts as 2 units for Grid Cohesion adjacency. War Machines only." },
@@ -793,7 +793,7 @@ const gameData = {
     // SCENARIOS & MISSIONS
     // ==========================================
     scenarios: {
-      overview: "Beyond standard victory conditions, War Crier includes narrative scenarios that create asymmetric, thematic battles. Use these for variety or as part of a campaign.",
+      overview: "Beyond standard victory conditions, Shardborne includes narrative scenarios that create asymmetric, thematic battles. Use these for variety or as part of a campaign.",
       missions: [
         {
           name: "Breakthrough",
@@ -961,7 +961,7 @@ const gameData = {
     // STATUS EFFECTS REFERENCE
     // ==========================================
     status_effects: {
-      overview: "Consolidated reference for all status effects in War Crier. Bring this page to the table. Each effect has clear start/end conditions so there's never ambiguity about what a status does or when it ends.",
+      overview: "Consolidated reference for all status effects in Shardborne. Bring this page to the table. Each effect has clear start/end conditions so there's never ambiguity about what a status does or when it ends.",
       effects: [
         {
           name: "Shaken",
@@ -1127,7 +1127,7 @@ const gameData = {
     // CAMPAIGN RULES
     // ==========================================
     campaign: {
-      overview: "Campaign mode transforms War Crier from one-off battles into multi-session narratives. Commanders gain experience, evolve, and unlock new abilities. Units carry damage between battles. Choices have lasting consequences. A campaign is typically 5-10 games.",
+      overview: "Campaign mode transforms Shardborne from one-off battles into multi-session narratives. Commanders gain experience, evolve, and unlock new abilities. Units carry damage between battles. Choices have lasting consequences. A campaign is typically 5-10 games.",
       campaign_setup: {
         steps: [
           "Each player chooses a Commander and faction. These are locked for the entire campaign.",
@@ -1260,7 +1260,7 @@ const gameData = {
         ]
       },
       commander_death_campaign: {
-        overview: "Losing your Commander in a campaign game is painful but not campaign-ending. War Crier is designed so you can recover.",
+        overview: "Losing your Commander in a campaign game is painful but not campaign-ending. Shardborne is designed so you can recover.",
         rules: [
           "Your Commander is never permanently killed in campaign mode (they are too narratively important). Even a roll of 1 on the Commander Injury Table means they miss ONE game, not all future games.",
           "When your Commander misses a game due to injury, you play with a Substitute Commander: Level 1, Command 3, generic card pool (20 basic cards from all types), no skills. This is intentionally weakened to make Commander survival matter — but still allows you to play.",
@@ -1286,7 +1286,7 @@ const gameData = {
     // MULTIPLAYER & TEAM BATTLES
     // ==========================================
     multiplayer: {
-      overview: "War Crier is designed for 2 players but supports team and free-for-all play with minor modifications. These rules handle turn order, alliances, and cross-faction interactions for 3-6 players.",
+      overview: "Shardborne is designed for 2 players but supports team and free-for-all play with minor modifications. These rules handle turn order, alliances, and cross-faction interactions for 3-6 players.",
       team_battles: {
         description: "2v2 or 3v3 battles. Each player brings a full army with their own Commander. Teams share a victory condition.",
         rules: [
@@ -1329,7 +1329,7 @@ const gameData = {
     // ANTI-FRUSTRATION & BALANCE DESIGN
     // ==========================================
     balance_design: {
-      overview: "War Crier is built to avoid common wargame frustrations. These aren't optional rules — they are baked into the core experience. If something feels unfair, check here first.",
+      overview: "Shardborne is built to avoid common wargame frustrations. These aren't optional rules — they are baked into the core experience. If something feels unfair, check here first.",
       first_turn_restrictions: {
         description: "Turn 1 is a positioning turn, not an alpha-strike turn. This prevents the player who goes first from crippling the opponent before they've had a chance to play.",
         rules: [

@@ -1,8 +1,8 @@
 const gameData = {
   rules: {
-    version: "0.9 — War Crier Core Rules",
+    version: "0.9 — Shardborne Core Rules",
     overview:
-      "War Crier is a dice-and-card tabletop wargame for 2 players. Armies clash on a battlefield using miniatures or tokens. Combat is resolved with six-sided dice (d6). Only Commanders can play cards from their hand, making the commander your strategic brain — protecting them is critical.",
+      "Shardborne is a dice-and-card tabletop wargame for 2 players. Armies clash on a battlefield using miniatures or tokens. Combat is resolved with six-sided dice (d6). Only Commanders can play cards from their hand, making the commander your strategic brain — protecting them is critical.",
 
     measurement: {
       system: "inches",
@@ -310,7 +310,7 @@ const gameData = {
 
     card_rules: {
       overview:
-        "Commander cards are the strategic layer of War Crier. Only Commanders can play cards, and only if they are alive. Cards cost Command Points (CP) to play.",
+        "Commander cards are the strategic layer of Shardborne. Only Commanders can play cards, and only if they are alive. Cards cost Command Points (CP) to play.",
       card_types: [
         {
           type: "Command",
@@ -495,7 +495,7 @@ const gameData = {
     // LINE OF SIGHT
     // ==========================================
     line_of_sight: {
-      overview: "Line of sight (LOS) determines whether a unit can see — and therefore target — another unit. War Crier uses 'true line of sight' simplified for tabletop play.",
+      overview: "Line of sight (LOS) determines whether a unit can see — and therefore target — another unit. Shardborne uses 'true line of sight' simplified for tabletop play.",
       rules: [
         "A model has line of sight to a target if you can draw an unobstructed straight line from the attacking model's base to any part of the target model's base.",
         "Terrain classified as Heavy Cover or Impassable blocks LOS if the target is fully behind it (no part of base visible).",
@@ -622,7 +622,7 @@ const gameData = {
     // KEYWORDS GLOSSARY
     // ==========================================
     keywords: {
-      overview: "Many units have special Keywords that grant them unique abilities. Here is the complete reference for all Keywords used in War Crier.",
+      overview: "Many units have special Keywords that grant them unique abilities. Here is the complete reference for all Keywords used in Shardborne.",
       entries: [
         { name: "Grid Node", description: "This unit counts for Iron Dominion Grid Cohesion adjacency. Most ID units have this." },
         { name: "Grid Anchor", description: "This unit counts as 2 units for Grid Cohesion adjacency. War Machines only." },
@@ -657,7 +657,7 @@ const gameData = {
     // SCENARIOS & MISSIONS
     // ==========================================
     scenarios: {
-      overview: "Beyond standard victory conditions, War Crier includes narrative scenarios that create asymmetric, thematic battles. Use these for variety or as part of a campaign.",
+      overview: "Beyond standard victory conditions, Shardborne includes narrative scenarios that create asymmetric, thematic battles. Use these for variety or as part of a campaign.",
       missions: [
         {
           name: "Breakthrough",
