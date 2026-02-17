@@ -2,6 +2,21 @@
 // Shardborne Universe Wiki - Commanders Page
 // ==========================================
 
+const FACTION_IMAGE_FOLDERS = {
+  'emberclaw-warpack': 'Emberclaw',
+  'iron-dominion': 'IronDominion',
+  'nightfang-dominion': 'NightFang',
+  'veilbound-shogunate': 'veilboundShogunate',
+  'thornweft-matriarchy': 'Thornweft'
+};
+
+function getCommanderImagePath(commander) {
+  const folder = FACTION_IMAGE_FOLDERS[commander.faction];
+  if (!folder) return null;
+  const name = commander.name;
+  return `data/factions/Images/${folder}/${name}.webp`;
+}
+
 function loadCommanders() {
   const contentEl = document.getElementById("commander-list");
   if (!contentEl) return;
@@ -18,7 +33,15 @@ function loadCommanders() {
           .join(" ")
       : "";
 
+    const imgPath = getCommanderImagePath(commander);
+    const imgHTML = imgPath
+      ? `<img class="commander-thumb" src="${imgPath}" alt="${commander.name}" onerror="this.style.display='none'">`
+      : '';
+
     card.innerHTML = `
+            <div class="commander-card-layout">
+            ${imgHTML}
+            <div class="commander-card-info">
             <h3><a href="#" onclick="showCommander('${commander.name}')">${commander.name}</a> ${commander.title ? "- " + commander.title : ""}</h3>
             <p><strong>Faction:</strong> ${faction ? faction.name : "Unknown"} ${commander.points_cost ? `&nbsp;|&nbsp; <strong style="color: #e94560;">${commander.points_cost} pts</strong>` : ""}</p>
             <p><strong>Theme:</strong> ${commander.theme}</p>
@@ -43,6 +66,8 @@ function loadCommanders() {
                 </div>
             </div>` : ""}
             ${tags ? `<div style="margin-top: 1rem;">${tags}</div>` : ""}
+            </div>
+            </div>
         `;
     contentEl.appendChild(card);
   });
@@ -291,8 +316,14 @@ function showCommander(name) {
         .join(" ")
     : "";
 
+  const detailImgPath = getCommanderImagePath(commander);
+  const detailImgHTML = detailImgPath
+    ? `<div class="commander-portrait-wrap"><img class="commander-portrait" src="${detailImgPath}" alt="${commander.name}" onerror="this.parentElement.style.display='none'"></div>`
+    : '';
+
   contentEl.innerHTML = `
         <div class="card">
+            ${detailImgHTML}
             <h2>${commander.name} ${commander.title ? "- " + commander.title : ""}</h2>
             <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${commander.faction}')">${faction ? faction.name : "Unknown"}</a> ${commander.points_cost ? `&nbsp;|&nbsp; <strong style="color: #e94560;">${commander.points_cost} pts</strong>` : ""}</p>
             <p><strong>Theme:</strong> ${commander.theme}</p>
