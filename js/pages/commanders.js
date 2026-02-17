@@ -42,7 +42,7 @@ function loadCommanders() {
             <div class="commander-card-layout">
             ${imgHTML}
             <div class="commander-card-info">
-            <h3><a href="#" onclick="showCommander('${commander.name}')">${commander.name}</a> ${commander.title ? "- " + commander.title : ""}</h3>
+            <h3><a href="#commander/${encodeURIComponent(commander.name)}">${commander.name}</a> ${commander.title ? "- " + commander.title : ""}</h3>
             <p><strong>Faction:</strong> ${faction ? faction.name : "Unknown"} ${commander.points_cost ? `&nbsp;|&nbsp; <strong style="color: #e94560;">${commander.points_cost} pts</strong>` : ""}</p>
             <p><strong>Theme:</strong> ${commander.theme}</p>
             <p><strong>Playstyle:</strong> ${commander.playstyle}</p>
@@ -325,7 +325,7 @@ function showCommander(name) {
         <div class="card">
             ${detailImgHTML}
             <h2>${commander.name} ${commander.title ? "- " + commander.title : ""}</h2>
-            <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${commander.faction}')">${faction ? faction.name : "Unknown"}</a> ${commander.points_cost ? `&nbsp;|&nbsp; <strong style="color: #e94560;">${commander.points_cost} pts</strong>` : ""}</p>
+            <p><strong>Faction:</strong> <a href="#faction/${commander.faction}">${faction ? faction.name : "Unknown"}</a> ${commander.points_cost ? `&nbsp;|&nbsp; <strong style="color: #e94560;">${commander.points_cost} pts</strong>` : ""}</p>
             <p><strong>Theme:</strong> ${commander.theme}</p>
             ${commander.personality ? `<p><strong>Personality:</strong> ${commander.personality}</p>` : ""}
             <p><strong>Playstyle:</strong> ${commander.playstyle}</p>
@@ -398,7 +398,7 @@ function showCommander(name) {
                 ? `
             <h3>Signature Units</h3>
             <ul>
-                ${commander.signature_units.map((u) => `<li><a href="#" onclick="showUnit('${u}')">${u}</a></li>`).join("")}
+                ${commander.signature_units.map((u) => `<li><a href="#unit/${encodeURIComponent(u)}">${u}</a></li>`).join("")}
             </ul>
             `
                 : ""
@@ -414,8 +414,8 @@ function showCommander(name) {
             }
             
             <div style="margin-top: 2rem; display: flex; gap: 0.75rem;">
-                <button class="btn btn-secondary" onclick="showFactionDetail('${commander.faction}')">← ${faction ? faction.name : "Faction"}</button>
-                <button class="btn" onclick="showPage('commanders')">← All Commanders</button>
+                <button class="btn btn-secondary" onclick="location.hash='#faction/${commander.faction}'">← ${faction ? faction.name : "Faction"}</button>
+                <button class="btn" onclick="location.hash='#commanders'">← All Commanders</button>
             </div>
         </div>
     `;

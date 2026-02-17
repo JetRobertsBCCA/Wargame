@@ -42,7 +42,7 @@ function loadFactions() {
       card.style.transform = "";
       card.style.boxShadow = "";
     };
-    card.onclick = () => showFactionDetail(faction.id);
+    card.onclick = () => location.hash = '#faction/' + faction.id;
 
     const logoPath = getFactionLogoPath(faction.id);
     const logoHtml = logoPath
@@ -105,7 +105,7 @@ function showFactionDetail(factionId) {
   const contentEl = document.getElementById("content");
   contentEl.innerHTML = `
         <div style="margin-bottom: 1rem;">
-            <button class="btn btn-secondary" onclick="showPage('factions')" style="font-size: 0.85rem;">← All Factions</button>
+            <button class="btn btn-secondary" onclick="location.hash='#factions'" style="font-size: 0.85rem;">← All Factions</button>
         </div>
 
         <div class="card" style="border-top: 4px solid ${color};">
@@ -1004,7 +1004,7 @@ function showFactionDetail(factionId) {
                 ${factionCommanders
                   .map(
                     (c) => `
-                <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-left: 3px solid ${color}; border-radius: 4px; cursor: pointer;" onclick="showCommander('${c.name}')">
+                <div style="padding: 0.75rem; background: rgba(255,255,255,0.03); border-left: 3px solid ${color}; border-radius: 4px; cursor: pointer;" onclick="location.hash='#commander/${encodeURIComponent(c.name)}'">
                     <strong style="color: #e8e8e8;">${c.name}</strong>
                     ${c.title ? `<span style="opacity: 0.6; font-size: 0.85rem;"> — ${c.title}</span>` : ""}
                     <p style="margin: 0.25rem 0 0 0; font-size: 0.85rem; opacity: 0.7;">${c.theme}</p>
@@ -1022,7 +1022,7 @@ function showFactionDetail(factionId) {
                 ${factionUnits
                   .map(
                     (u) => `
-                <div style="padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="showUnit('${u.name}')">
+                <div style="padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="location.hash='#unit/${encodeURIComponent(u.name)}'">
                     <span>${getUnitTypeIcon(u.type)} ${u.name}</span>
                     <span style="color: #e94560; font-weight: bold; font-size: 0.85rem;">${u.points_cost} pts</span>
                 </div>
@@ -1039,7 +1039,7 @@ function showFactionDetail(factionId) {
                 ${factionWarMachines
                   .map(
                     (u) => `
-                <div style="padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="showUnit('${u.name}')">
+                <div style="padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border-radius: 4px; display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="location.hash='#unit/${encodeURIComponent(u.name)}'">
                     <span>🤖 ${u.name}</span>
                     <span style="color: #e94560; font-weight: bold; font-size: 0.85rem;">${u.points_cost} pts</span>
                 </div>
@@ -1050,7 +1050,7 @@ function showFactionDetail(factionId) {
         </div>
 
         <div style="margin-top: 1.5rem;">
-            <button class="btn btn-secondary" onclick="showPage('factions')">← All Factions</button>
+            <button class="btn btn-secondary" onclick="location.hash='#factions'">← All Factions</button>
         </div>
     `;
 }

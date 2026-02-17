@@ -2,6 +2,20 @@
 // Shardborne Universe Wiki - Units Page
 // ==========================================
 
+const UNIT_IMAGE_FOLDERS = {
+  'emberclaw-warpack': 'Emberclaw',
+  'iron-dominion': 'IronDominion',
+  'nightfang-dominion': 'NightFang',
+  'veilbound-shogunate': 'veilboundShogunate',
+  'thornweft-matriarchy': 'Thornweft'
+};
+
+function getUnitImagePath(unit) {
+  const folder = UNIT_IMAGE_FOLDERS[unit.faction];
+  if (!folder) return null;
+  return `data/factions/Images/${folder}/${unit.name}.webp`;
+}
+
 function loadUnits() {
   const contentEl = document.getElementById("unit-list");
   if (!contentEl) return;
@@ -56,7 +70,7 @@ function renderUnitsList(filterType) {
     card.innerHTML = `
             <h3>
                 <span class="unit-type-icon ${typeClass}">${getUnitTypeIcon(unit.type)}</span>
-                <a href="#" onclick="showUnit('${unit.name}')">${unit.name}</a>
+                <a href="#unit/${encodeURIComponent(unit.name)}">${unit.name}</a>
             </h3>
             <p><strong>Faction:</strong> ${faction ? faction.name : "Unknown"}</p>
             <p><strong>Type:</strong> ${unit.type} | <strong>Points:</strong> <span style="color: #e94560; font-weight: bold;">${unit.points_cost}</span>${unit.ritual_flow ? ` | <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ""}${unit.corruption_spread ? ` | <strong>Corruption Spread:</strong> <span style="color: #dc2626; font-weight: bold;">+${unit.corruption_spread}</span>` : ""}</p>
@@ -153,11 +167,15 @@ function showUnit(name) {
 
   contentEl.innerHTML = `
         <div class="card">
+            ${(() => {
+              const imgPath = getUnitImagePath(unit);
+              return imgPath ? `<div class="commander-portrait-wrap"><img src="${imgPath}" alt="${unit.name}" class="commander-portrait" onerror="this.parentElement.style.display='none'"></div>` : '';
+            })()}
             <h2>
                 <span class="unit-type-icon ${typeClass}" style="font-size: 2rem;">${getUnitTypeIcon(unit.type)}</span>
                 ${unit.name}
             </h2>
-            <p><strong>Faction:</strong> <a href="#" onclick="showFactionDetail('${unit.faction}')">${faction ? faction.name : "Unknown"}</a></p>
+            <p><strong>Faction:</strong> <a href="#faction/${unit.faction}">${faction ? faction.name : "Unknown"}</a></p>
             <p><strong>Type:</strong> ${unit.type} &nbsp;|&nbsp; <strong>Points:</strong> <span style="color: #e94560; font-size: 1.3rem; font-weight: bold;">${unit.points_cost}</span>
             ${unit.ritual_flow ? ` &nbsp;|&nbsp; <strong>Ritual Flow:</strong> <span style="color: #a78bfa; font-weight: bold;">+${unit.ritual_flow}</span>` : ""}${unit.corruption_spread ? ` &nbsp;|&nbsp; <strong>Corruption Spread:</strong> <span style="color: #dc2626; font-weight: bold;">+${unit.corruption_spread}</span>` : ""}</p>
             
@@ -181,15 +199,15 @@ function showUnit(name) {
                 ? `
             <h3>Signature Unit For</h3>
             <ul>
-                ${signatureCommanders.map((c) => `<li><a href="#" onclick="showCommander('${c.name}')">${c.name}</a></li>`).join("")}
+                ${signatureCommanders.map((c) => `<li><a href="#commander/${encodeURIComponent(c.name)}">${c.name}</a></li>`).join("")}
             </ul>
             `
                 : ""
             }
             
             <div style="margin-top: 2rem; display: flex; gap: 0.75rem;">
-                <button class="btn btn-secondary" onclick="showFactionDetail('${unit.faction}')">← ${faction ? faction.name : "Faction"}</button>
-                <button class="btn" onclick="showPage('units')">← All Units</button>
+                <button class="btn btn-secondary" onclick="location.hash='#faction/${unit.faction}'">← ${faction ? faction.name : "Faction"}</button>
+                <button class="btn" onclick="location.hash='#units'">← All Units</button>
             </div>
         </div>
     `;
