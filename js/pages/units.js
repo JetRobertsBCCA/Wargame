@@ -169,7 +169,7 @@ function showUnit(name) {
         <div class="card">
             ${(() => {
               const imgPath = getUnitImagePath(unit);
-              return imgPath ? `<div class="commander-portrait-wrap"><img src="${imgPath}" alt="${unit.name}" class="commander-portrait" onerror="this.parentElement.style.display='none'"></div>` : '';
+              return imgPath ? `<div class="unit-portrait-wrap"><img src="${imgPath}" alt="${unit.name}" class="unit-portrait" onerror="this.parentElement.style.display='none'"></div>` : '';
             })()}
             <h2>
                 <span class="unit-type-icon ${typeClass}" style="font-size: 2rem;">${getUnitTypeIcon(unit.type)}</span>

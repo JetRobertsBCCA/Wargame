@@ -325,7 +325,24 @@ h4 {
 }
 
 .commander-portrait {
-    width: 280px;
+    width: 200px;
+    max-height: 260px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display: block;
+}
+
+/* Unit detail portrait – smaller than commander */
+.unit-portrait-wrap {
+    float: right;
+    margin: 0 0 1rem 1.5rem;
+}
+
+.unit-portrait {
+    width: 180px;
+    max-height: 240px;
+    object-fit: cover;
     border-radius: 6px;
     border: 1px solid var(--border);
     display: block;
@@ -346,7 +363,16 @@ h4 {
     }
     .commander-portrait {
         width: 100%;
-        max-width: 300px;
+        max-width: 220px;
+    }
+    .unit-portrait-wrap {
+        float: none;
+        margin: 0 0 1rem 0;
+        text-align: center;
+    }
+    .unit-portrait {
+        width: 100%;
+        max-width: 200px;
     }
 }
 
