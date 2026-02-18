@@ -3035,6 +3035,971 @@ const gameData = {
       timing: "End Phase",
       effect: "All friendly units that dealt melee damage this turn heal 2 HP. Your commander heals 3 HP. Units at full HP gain +1 ATK next turn instead."
     },
+
+    // ===================== EMBERCLAW WARPACK CARDS =====================
+
+    // --- Scorchcaller Vex ---
+    "Coordinated Dive": {
+      type: "command",
+      cp: 3,
+      timing: "Movement Phase",
+      effect: "Select up to 3 friendly flying units within 12\" of your commander. Each may immediately make a free dive move (up to their MOV) toward a single enemy unit. If 2+ divers reach engagement range, they each gain +1 ATK die."
+    },
+    "Breath Barrage": {
+      type: "command",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "All friendly drake units within 12\" of your commander may use their Breath Weapon this turn even if they already attacked. Each breath attack gains +1 ATK die. Breath attacks this turn ignore cover."
+    },
+    "Drake Formation": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All friendly flying units within 8\" of your commander gain +1 ATK die and +1 DEF when within 3\" of another friendly flying unit. Lasts until End Phase."
+    },
+    "Thermal Positioning": {
+      type: "tech",
+      cp: 1,
+      timing: "Movement Phase",
+      effect: "One friendly flying unit within 8\" gains +4\" MOV this turn by riding thermal updrafts. If the unit ends its move at a higher elevation than its target, it gains +1 ATK die."
+    },
+    "Flame Amplification": {
+      type: "fragment",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Activate a fire fragment: all friendly units with Breath Weapon within 8\" gain +2 ATK dice on breath attacks this turn. Breath attacks create burning terrain at their impact point."
+    },
+    "Sky Strike": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "One friendly flying unit makes a diving attack with +3 ATK dice. If the attack destroys the target, the unit may immediately fly 6\" to safety without provoking reactions."
+    },
+
+    // --- Flamewarden Kora ---
+    "Phoenix Rally": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "All friendly units within 8\" of your commander heal 2 HP. Units that were Shaken rally immediately. If any unit was at 1 HP, it gains +1 ATK die until End Phase from renewed vigor."
+    },
+    "Flame Renewal": {
+      type: "command",
+      cp: 2,
+      timing: "End Phase",
+      effect: "Choose up to 3 friendly units within 8\" of your commander. Each heals 1 HP. One destroyed friendly Infantry unit may be revived at 1 HP within 3\" of your commander (once per game)."
+    },
+    "Cauterize Wounds": {
+      type: "tech",
+      cp: 1,
+      timing: "Any Phase",
+      effect: "One friendly unit within 6\" of your commander immediately heals 2 HP. The healed unit gains Fire Resistant until End Phase. May be played as a reaction when a unit takes damage."
+    },
+    "Fireheart Blessing": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Choose up to 3 friendly units within 8\". Each gains +1 DEF and Phoenix Spark this turn. Phoenix Spark: if the unit would be destroyed, roll d6 — on 5+, it survives with 1 HP instead."
+    },
+    "Cleansing Fire": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a fire fragment: all friendly units within 6\" are cleansed of all negative status effects (Shaken, Corruption tokens, debuffs). Each cleansed unit heals 1 HP."
+    },
+    "Burning Martyr": {
+      type: "tactical",
+      cp: 2,
+      timing: "Any Phase",
+      effect: "Your commander takes 3 damage. In return, all friendly units within 6\" heal 2 HP and gain +1 ATK die until End Phase. If your commander would be destroyed by this, she survives at 1 HP (once per game)."
+    },
+
+    // --- Ashborn Ryx ---
+    "Pyroclasm": {
+      type: "command",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Choose a point within 10\" of your commander. All units (friend and foe) within 3\" suffer a 5-dice fire attack. Creates burning terrain in the area. Emberclaw units with Fire Resistant take half damage."
+    },
+    "Unbonded Fury": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All friendly Unbonded and Infantry units within 8\" of your commander gain +2 ATK dice and Fearless until End Phase. These units may use fragment abilities without instability risk this turn."
+    },
+    "Fragment Ignition": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate up to 2 fragments within 8\" of your commander simultaneously. Both gain +1 to their effects. Roll d6 per fragment: on 1, the fragment takes 1 instability damage."
+    },
+    "Fire Shaping": {
+      type: "tech",
+      cp: 1,
+      timing: "Any Phase",
+      effect: "Reshape one burning terrain zone within 12\" of your commander: move it up to 4\" in any direction, or expand its radius by 2\". Enemy units caught in the reshaped zone take 1 fire damage."
+    },
+    "Unstable Overcharge": {
+      type: "fragment",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Overcharge a fragment within 8\": one friendly unit gains +4 ATK dice for one attack. After the attack, roll d6: on 1-2, the unit takes 2 damage from fragment instability. On 6, the fragment detonates harmlessly for +1 bonus damage."
+    },
+    "Flash Fire": {
+      type: "tactical",
+      cp: 1,
+      timing: "Combat Phase",
+      effect: "One friendly Pyromancer or fire-wielding unit makes an immediate ranged attack at RNG 8\" with +2 ATK dice. The attack creates a 2\" patch of burning terrain at the target's location."
+    },
+
+    // --- Wyrmlord Tzarak ---
+    "Cataclysm Dive": {
+      type: "command",
+      cp: 4,
+      timing: "Movement Phase",
+      effect: "Your commander's Wyrm makes a devastating landing: move up to full MOV, then all enemy units within 4\" of the landing point suffer a 4-dice attack and are pushed 2\" away. The area becomes difficult terrain."
+    },
+    "Wyrm's Command": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "All friendly drake and War Machine units within 12\" of your commander gain +1 ATK die and +1 MOR until End Phase. Enemy units within 6\" of your commander must pass a Morale check or become Shaken."
+    },
+    "Earthquake Landing": {
+      type: "tech",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "When your commander or a friendly War Machine lands or charges this turn, all enemy units within 3\" of the impact point suffer -2 MOV and -1 ATK die next turn from seismic shock."
+    },
+    "Ancient Power": {
+      type: "tech",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Your commander gains +3 ATK dice and +2 DEF until End Phase. All friendly units within 6\" gain +1 MOR from the Wyrm's awe-inspiring presence. Your commander may not move this turn."
+    },
+    "Titan's Flame": {
+      type: "fragment",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Activate a fire fragment: your commander's next breath attack gains +4 ATK dice and its cone extends by 6\". The breath creates burning terrain along its entire length. Fragment loses 2 charges."
+    },
+    "Devastating Presence": {
+      type: "tactical",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All enemy units within 8\" of your commander must make an immediate Morale check at -2. Units that fail become Shaken and suffer -1 ATK die until End Phase. Terrifying units are immune."
+    },
+
+    // --- Skydancer Lyss ---
+    "Triple Dive": {
+      type: "command",
+      cp: 3,
+      timing: "Movement Phase",
+      effect: "Your commander and up to 2 friendly flying units within 6\" each make a free dive move of up to 8\" toward different enemy units. Each gains +1 ATK die if they reach engagement range."
+    },
+    "Airstream Riding": {
+      type: "tech",
+      cp: 1,
+      timing: "Movement Phase",
+      effect: "All friendly flying units within 8\" of your commander gain +3\" MOV this turn. Units that move their full MOV gain +1 DEF vs ranged attacks until End Phase (dodge bonus from speed)."
+    },
+    "Evasive Maneuvers": {
+      type: "tech",
+      cp: 1,
+      timing: "Any Phase",
+      effect: "One friendly flying unit within 8\" gains +2 DEF against the next attack targeting it. If the attack misses entirely, the unit may immediately move 3\". May be played as a reaction."
+    },
+    "Velocity Shards": {
+      type: "fragment",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Activate a speed fragment: up to 3 friendly units within 8\" gain +4\" MOV this turn. Units that move 10\"+ this turn gain +1 ATK die from momentum on their next attack."
+    },
+    "Hit and Run": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "One friendly unit makes an attack with +1 ATK die. After resolving the attack (hit or miss), the unit may immediately move up to 6\" away from the target. This move does not provoke reactions."
+    },
+
+    // --- Embersmith Torvan ---
+    "Forge Blessing": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Choose up to 4 friendly units within 8\" of your commander. Each gains +1 ATK die from enhanced weapons until End Phase. Units with the Fragment keyword also gain +1 DEF from reinforced equipment."
+    },
+    "Equipment Distribution": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "All friendly units within 10\" of your commander gain one of the following (your choice per unit): +1 ATK die, +1 DEF, or +1\" MOV. The bonus lasts until End Phase."
+    },
+    "Fragment Forging": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Forge a fragment into equipment: one friendly unit within 6\" permanently gains +1 ATK die for the rest of the game. The fragment loses 1 charge. Only one unit may benefit per game."
+    },
+    "Weapon Enhancement": {
+      type: "tech",
+      cp: 1,
+      timing: "Combat Phase",
+      effect: "One friendly unit within 6\" of your commander gains +2 ATK dice and Armor Piercing (reduce target DEF by 1) for one attack this turn."
+    },
+    "Stabilization Field": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Create a stabilization field within 6\" of your commander: all fragments within the field have no instability risk this turn. All friendly units within 4\" gain +1 DEF from fragment-reinforced shielding."
+    },
+    "Supply Line": {
+      type: "tactical",
+      cp: 1,
+      timing: "Command Phase",
+      effect: "Draw 1 extra card. One friendly Support unit within 8\" may immediately use its repair or enhancement ability as a free action. Generate 1 CP."
+    },
+
+    // --- Pyroclaw Drenna ---
+    "Berserk Charge": {
+      type: "command",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Your commander and up to 2 friendly melee units within 6\" gain +4\" MOV and +2 ATK dice on charge attacks this turn. These units suffer -1 DEF until End Phase from reckless aggression."
+    },
+    "Flame Aura": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Your commander emanates searing heat: all enemy units within 3\" take 1 fire damage at the start of each phase this turn. Friendly Fire Resistant units within 3\" gain +1 ATK die from the heat."
+    },
+    "Immolation Field": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Create a 4\" radius immolation zone centered on your commander. All non-Fire Resistant units entering or starting their turn in the zone take 1 fire damage. Lasts 2 turns. Your commander is immune."
+    },
+    "Fire  Touch": {
+      type: "tech",
+      cp: 1,
+      timing: "Combat Phase",
+      effect: "One friendly melee unit's attacks deal +1 fire damage per hit this turn. Targets hit gain a burn token: they take 1 additional fire damage at the start of their next activation."
+    },
+    "Overburn": {
+      type: "fragment",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Overcharge your commander with fire: gain +4 ATK dice for one attack this turn. After the attack, your commander takes 2 fire damage from internal overheating. Creates burning terrain at the target's location."
+    },
+    "Raging Inferno": {
+      type: "tactical",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Your commander makes a devastating melee attack against all enemy units within 2\" simultaneously, rolling full ATK dice against each. Each hit target catches fire (1 damage per turn for 2 turns)."
+    },
+
+    // --- Skywatcher Orin ---
+    "Perfect Intel": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Reveal all enemy Stealth and hidden units within 18\" of your commander. All friendly units gain +1 ATK die against revealed targets this turn. You may look at the top 2 cards of the enemy's deck."
+    },
+    "Ambush Coordination": {
+      type: "command",
+      cp: 3,
+      timing: "Movement Phase",
+      effect: "Select up to 3 friendly units within 12\" of your commander. Each may immediately redeploy anywhere on the table more than 8\" from enemies. These units gain +2 ATK dice on their first attack this turn."
+    },
+    "Stealth Flight": {
+      type: "tech",
+      cp: 1,
+      timing: "Command Phase",
+      effect: "One friendly flying unit within 8\" gains Stealth until it attacks or ends its move within 3\" of an enemy. The unit also gains +2\" MOV from high-altitude repositioning."
+    },
+    "Reconnaissance": {
+      type: "tech",
+      cp: 1,
+      timing: "Command Phase",
+      effect: "Choose one enemy unit visible to your commander. Until End Phase, all friendly units gain +1 ATK die when attacking that target. If the target moves, your commander tracks its new position."
+    },
+    "Vision Shards": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a vision fragment: gain true sight within 18\" — ignore Stealth, cover, and concealment. All friendly ranged units gain +1 ATK die and +2\" RNG this turn."
+    },
+
+    // --- Clutchmaster Vayne ---
+    "Clutch Call": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Spawn 1d3 Fledgling Swarm units (2 pts each, full HP) within 6\" of your commander. Fledglings activate immediately this turn. If a friendly Drake Handler is within 6\", spawn 1 additional Fledgling."
+    },
+    "Hatchling Swarm": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All friendly Fledgling and Swarm units within 12\" of your commander gain +1 ATK die, +1 MOV, and Pack Tactics (gain +1 ATK die when 2+ swarm units are engaged with the same target) until End Phase."
+    },
+    "Rapid Maturation": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "One friendly Fledgling Swarm unit within 8\" of your commander immediately matures: it gains +2 ATK dice, +1 DEF, and +3 HP permanently. Can only be used once per Fledgling."
+    },
+    "Nest Protection": {
+      type: "tech",
+      cp: 1,
+      timing: "Any Phase",
+      effect: "One friendly unit within 6\" of your commander gains +2 DEF until End Phase. If the unit is a Fledgling or Swarm, it also gains Fearless. May be played as a reaction when a swarm unit is attacked."
+    },
+    "Growth Acceleration": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a growth fragment: all friendly Fledgling and Swarm units within 8\" gain +1 ATK die and +1 HP permanently. Fragment generates 1 additional Fledgling Swarm within 3\"."
+    },
+    "Protective Fury": {
+      type: "tactical",
+      cp: 2,
+      timing: "Any Phase",
+      effect: "When a friendly Fledgling or Swarm unit within 8\" of your commander is destroyed, your commander and all friendly drake units within 6\" gain +2 ATK dice until End Phase from protective rage. May be played as a reaction."
+    },
+
+    // --- Cinderfist Brok ---
+    "Breach and Burn": {
+      type: "command",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Your commander makes a siege attack against a terrain piece, fortification, or heavily-armored unit within 2\". The attack deals double damage and ignores all DEF bonuses from cover and armor. Creates difficult terrain."
+    },
+    "Armor Shatter": {
+      type: "command",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Choose one enemy unit within 4\" of your commander. That unit permanently loses 1 DEF (minimum 2) as its armor is shattered. All friendly units attacking it gain +1 ATK die this turn."
+    },
+    "Fragment Fist": {
+      type: "tech",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Your commander's next melee attack gains +3 ATK dice and ignores all DEF bonuses. On a critical hit (6), the target is knocked back 3\" and loses 1 additional DEF."
+    },
+    "Structure Collapse": {
+      type: "tech",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Destroy one terrain piece (wall, barricade, fortification) within 4\" of your commander. All units within 2\" of the collapsed structure take 2 damage. Creates difficult terrain in a 3\" radius."
+    },
+    "Impact Shards": {
+      type: "fragment",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Activate a force fragment: your commander's melee attacks this turn deal +2 damage per hit and have Armor Piercing 2 (reduce target DEF by 2). On a kill, the shockwave pushes enemy units within 2\" back 2\"."
+    },
+    "Demolition Focus": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "All friendly units within 8\" of your commander gain Siege keyword this turn: their attacks deal double damage to terrain, fortifications, and War Machines. +1 ATK die against targets with DEF 5+."
+    },
+
+    // --- Flameheart Syrax ---
+    "Divine Vision": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Your commander receives a prophetic vision: you may look at the top 3 cards of your deck and rearrange them in any order. All friendly units within 8\" may reroll one failed die this turn."
+    },
+    "Tyrant's Wrath": {
+      type: "command",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Channel the Crimson Tyrant's fury: choose one enemy unit within 12\" of your commander. It suffers a 5-dice divine fire attack that ignores cover and DEF bonuses. If it destroys the target, all friendly units gain +1 MOR."
+    },
+    "Prophecy Weaving": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Your commander enters a prophetic trance: all friendly units within 10\" gain the ability to reroll one attack die each this turn. Your commander cannot move or attack this turn."
+    },
+    "Morale Dominance": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All friendly units within 8\" of your commander gain +2 MOR and auto-pass Morale checks this turn. Enemy units within 8\" suffer -1 MOR. Shaken friendly units rally immediately."
+    },
+    "Divine Channeling": {
+      type: "fragment",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Activate a divine fragment: your commander gains +2 to all base stats until End Phase. All friendly units within 6\" gain +1 ATK die and Fearless. Roll d6: on 1, the vision overwhelms — commander takes 2 damage."
+    },
+    "Faithful Fury": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "All friendly units within 6\" of your commander that have Fearless or auto-passed Morale this turn gain +2 ATK dice for their next attack. Units with the Faithful keyword gain +3 ATK dice instead."
+    },
+
+    // --- Skullcrusher Threx ---
+    "Blood Challenge": {
+      type: "command",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Issue a formal Challenge to an enemy Commander or Specialist within 8\". The challenge must be accepted. Your commander gains +3 ATK dice and crits on 5+ for the duel. The loser's army suffers -1 MOR."
+    },
+    "Melee Superiority": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All friendly melee units within 8\" of your commander gain +1 ATK die and +1 DEF in melee combat this turn. Charging units gain an additional +1 ATK die. Enemy units cannot disengage from these units."
+    },
+    "Claw and Fang": {
+      type: "tech",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Your commander's drake attacks with both claws and fangs: make 2 separate melee attacks this turn, each with full ATK dice. The second attack gains +1 ATK die if the first scored at least 1 hit."
+    },
+    "Close Combat Mastery": {
+      type: "tech",
+      cp: 1,
+      timing: "Combat Phase",
+      effect: "One friendly melee unit within 6\" gains +2 ATK dice and may reroll all misses once. If every die hits, deal +2 bonus damage from perfect technique."
+    },
+    "Fury Shards": {
+      type: "fragment",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Activate a fury fragment: your commander gains Frenzy (+3 ATK dice) until End Phase. Each kill heals 1 HP from bloodlust. If your commander takes damage while frenzied, gain +1 additional ATK die."
+    },
+
+    // --- Tidescar the Exiled ---
+    "Forbidden Power": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Tap into corrupted fragment energy: your commander gains +4 ATK dice and all attacks deal +1 damage until End Phase. At End Phase, your commander takes 2 damage from corruption backlash."
+    },
+    "Corrupt the Flame": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "All fire attacks by friendly units within 8\" gain Corruption this turn: targets hit gain 2 Corruption tokens in addition to normal damage. Corrupted burning terrain applies 1 Corruption token to units entering it."
+    },
+    "Dark Fragment Mastery": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All fragment activations within 8\" of your commander have their effects doubled this turn. Roll d6 per activation: on 1, the fragment becomes corrupted and deals 1 damage to all units within 2\"."
+    },
+    "Corruption Spread": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Choose one enemy unit with Corruption tokens within 12\". Spread 2 Corruption tokens to each enemy unit within 3\" of it. Units reaching 4+ tokens suffer -1 ATK die and -1 DEF until cleansed."
+    },
+    "Tainted Ember": {
+      type: "fragment",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Activate a corrupted fire fragment: one friendly unit's attacks deal +2 damage and apply 2 Corruption tokens per hit this turn. The unit takes 1 damage from handling tainted energy."
+    },
+    "Sacrificial Gambit": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Sacrifice one friendly unit within 4\" of your commander (destroy it). Your commander gains ATK dice equal to the destroyed unit's remaining HP (max +6). This bonus lasts for one attack only."
+    },
+
+    // ===================== THORNWEFT MATRIARCHY CARDS =====================
+
+    // --- Loom-Mother Vethiss ---
+    "Grand Weaving": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Place up to 3 Web-Anchor tokens within 12\" of your commander. All friendly units within 3\" of any Web-Anchor gain +1 DEF and may teleport to any other Web-Anchor as a free move action this turn."
+    },
+    "Network Expansion": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Connect all Web-Anchor tokens within 18\" of your commander into a network. All friendly units standing on the network gain +1 ATK die and +2\" MOV. Enemy units on the network suffer -2\" MOV."
+    },
+    "Anchor Deployment": {
+      type: "tech",
+      cp: 1,
+      timing: "Movement Phase",
+      effect: "Place 1 Web-Anchor token within 6\" of any friendly unit. The Anchor counts as Light Cover. Friendly units within 2\" may use it as a teleport node during subsequent turns."
+    },
+    "Web-Surge": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All Web-Anchor tokens within 12\" pulse with energy: friendly units within 3\" of any Anchor heal 1 HP. Enemy units within 3\" of any Anchor suffer -1 ATK die until End Phase."
+    },
+    "Fate-Thread Amplification": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a fate fragment: all friendly units within 8\" gain 1 additional Fate-Thread this turn. Fate-Threads may be spent to force enemy rerolls or grant friendly rerolls."
+    },
+    "Mass Redeployment": {
+      type: "tactical",
+      cp: 3,
+      timing: "Movement Phase",
+      effect: "Up to 4 friendly units within 12\" of your commander may instantly teleport to any Web-Anchor token on the battlefield. Each teleported unit gains +1 ATK die on its next attack this turn."
+    },
+
+    // --- Thread-Seer Kythara ---
+    "Fate Shatter": {
+      type: "command",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Choose one enemy unit within 12\". Force it to reroll ALL successful attack dice on its next attack. Additionally, its Morale stat counts as 2 lower until End Phase as its fate-threads unravel."
+    },
+    "Thread Manipulation": {
+      type: "command",
+      cp: 2,
+      timing: "Any Phase",
+      effect: "Spend 1 Fate-Thread: force one enemy to reroll any single die result, OR grant one friendly unit a reroll on any single die. May be played as a reaction. Draw 1 card."
+    },
+    "Probability Storm": {
+      type: "tech",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Create a 4\" probability storm centered on a point within 10\". All dice rolled within the storm have their results inverted (1→6, 2→5, 3→4, etc.) until End Phase. Affects friend and foe alike."
+    },
+    "Reroll Cascade": {
+      type: "tech",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "One friendly unit may reroll ALL missed attack dice. If the rerolls produce more hits than the original roll, a cascade triggers: one additional friendly unit within 6\" may also reroll misses."
+    },
+    "Causality Shards": {
+      type: "fragment",
+      cp: 2,
+      timing: "Any Phase",
+      effect: "Activate a causality fragment: for the rest of this turn, whenever an enemy rolls a natural 6, your commander may spend 1 Fate-Thread to change it to a 1. Usable up to 3 times."
+    },
+    "Fate Strike": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "One friendly unit makes an attack where all dice automatically hit (no roll needed — fate ensures it). The attack deals normal damage per hit. Costs 2 Fate-Threads in addition to CP."
+    },
+
+    // --- Silk-Marshal Draven ---
+    "Venom Cascade": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "All enemy units within 8\" of your commander gain 2 Venom tokens. At End Phase, each enemy unit takes 1 damage per 2 Venom tokens it carries. Venom tokens persist until cleansed."
+    },
+    "Toxic Offensive": {
+      type: "command",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "All friendly units within 8\" of your commander apply 1 Venom token on each successful hit this turn. Targets with 3+ Venom tokens suffer -1 ATK die and -1 DEF."
+    },
+    "Poison Engineering": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Choose up to 3 friendly units within 8\". Their weapons are coated with refined venom: hits apply 2 Venom tokens instead of 1 until End Phase. Ranged attacks leave toxic terrain at impact."
+    },
+    "Venom Refinement": {
+      type: "tech",
+      cp: 1,
+      timing: "Command Phase",
+      effect: "All Venom tokens on enemies within 12\" of your commander become Refined Venom: they now deal 1 damage per token at End Phase instead of per 2 tokens. Lasts 1 turn."
+    },
+    "Toxin Amplification": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a toxin fragment: double the number of Venom tokens on all enemies within 8\" of your commander (max 8 per unit). Each enemy with 4+ tokens also suffers -1 MOV."
+    },
+    "Debilitating Strike": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "One friendly unit makes an attack with -1 ATK die, but each hit applies 3 Venom tokens and reduces the target's ATK by 1 (cumulative, min 1) until the tokens are cleansed."
+    },
+
+    // --- Thread-Cutter Nyx ---
+    "Thread Severance": {
+      type: "command",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Your commander makes a melee attack against a target within 2\". If the attack deals damage, sever one of the target's abilities (your choice — the ability is disabled until End Phase). Commanders lose 1 CP instead."
+    },
+    "Silent Approach": {
+      type: "command",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Your commander and up to 2 friendly Stealth units within 8\" gain Infiltrate: they may move through enemy units and terrain freely, and their next attack from Stealth gains +3 ATK dice."
+    },
+    "Invisibility Silk": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "One friendly unit within 6\" becomes completely invisible: it cannot be targeted by ranged attacks and gains Stealth. The invisibility lasts until End Phase or until the unit attacks."
+    },
+    "Fate Assassination": {
+      type: "tech",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Spend 2 Fate-Threads: your commander's next melee attack crits on 4+ and deals +2 damage per crit. If the target is an enemy commander, crits deal +3 damage instead."
+    },
+    "Void Thread": {
+      type: "fragment",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Activate a void fragment: your commander's next attack ignores ALL defenses — DEF, cover, shields, abilities, and damage reduction. The attack deals +1 damage per hit. Fragment loses 2 charges."
+    },
+    "Precision Kill": {
+      type: "tactical",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Your commander makes a precision assassination attack from Stealth: +4 ATK dice, crits on 4+, and if the target is reduced to 0 HP, your commander automatically re-enters Stealth."
+    },
+
+    // --- Brood-Warden Thessari ---
+    "Brood Surge": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Spawn 1d3+1 Spiderling Swarm units (1 pt each, 2 HP) within 6\" of your commander. Swarms activate immediately. If a friendly Brood Nest is within 8\", spawn 2 additional Spiderlings."
+    },
+    "Hatching Swarm": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All friendly Spiderling and Swarm units within 12\" of your commander gain +1 ATK die and +2\" MOV until End Phase. Swarm units engaged with the same target gain Pack Tactics (+1 ATK die per additional swarm)."
+    },
+    "Accelerated Spawning": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "One friendly Spiderling Swarm within 8\" immediately splits into 2 swarm units, each with half HP (rounded up). Both may act normally this turn. Only usable on swarms with 3+ HP."
+    },
+    "Overwhelm": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Select one enemy unit engaged with 2+ friendly Swarm units. All engaged swarms attack simultaneously with +1 ATK die each. The target cannot counterattack and suffers -1 DEF from being overwhelmed."
+    },
+
+    // --- Silk-Warden Morthis ---
+    "Grand Trap": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Place a Grand Gossamer Trap within 8\" of your commander (4\" radius). Enemy units entering the trap area lose all remaining movement and suffer -2 ATK dice on their next attack. Lasts 2 turns."
+    },
+    "Web Fortress": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Create a web fortress within 6\" of your commander: a 4\" radius zone of Heavy Cover that blocks enemy movement. Friendly units inside gain +2 DEF. The fortress lasts 3 turns."
+    },
+    "Gossamer Engineering": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Enhance all trap tokens within 12\": they now also deal 1 damage to enemy units that trigger them and their slowing effect is increased to -4\" MOV. Traps gain Invisible (enemies cannot see them)."
+    },
+    "Trap Refinement": {
+      type: "tech",
+      cp: 1,
+      timing: "Command Phase",
+      effect: "One existing Gossamer Trap within 12\" has its radius doubled and duration extended by 1 turn. Enemy units already inside the trap take 1 immediate damage as it tightens."
+    },
+    "Silk Reinforcement": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a silk fragment: all web structures, traps, and fortifications within 12\" gain +1 DEF (if targetable) and their effects are enhanced by +1. Friendly units within web structures heal 1 HP."
+    },
+    "Ambush Architecture": {
+      type: "tactical",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Deploy 3 hidden Gossamer Trap tokens within 12\" of your commander. When an enemy unit moves within 2\" of a trap, it triggers: the enemy stops, takes 1 damage, and is Entangled (-3\" MOV for 1 turn)."
+    },
+
+    // --- Loom-Mother Silivex ---
+    "Whisper Web": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Your commander weaves a psychic web: reveal all enemy units within 14\". You may look at 2 random cards in the enemy's hand. All friendly units gain +1 ATK die against revealed targets this turn."
+    },
+    "Secrets Stolen": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Choose one enemy unit within 12\". Steal one of its keywords or abilities (your choice) — your commander gains that ability until End Phase, and the enemy loses it. Cannot steal innate abilities."
+    },
+    "Shadow Weaving": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Up to 3 friendly units within 8\" gain Shadow Cloak: enemies can only target them from within 6\". Ranged attacks against cloaked units suffer -1 ATK die. Lasts until End Phase."
+    },
+    "Morale Collapse": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Choose one enemy unit within 10\". It suffers -3 MOR until End Phase and must immediately make a Morale check. If failed, all enemy units within 4\" of it also suffer -1 MOR from spreading panic."
+    },
+    "Fear Silk": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a fear fragment: all enemy units within 8\" must make an immediate Morale check at -1. Units that fail become Shaken and suffer -1 ATK die. Units that critically fail (by 3+) Rout immediately."
+    },
+    "Psychological Strike": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "One friendly unit attacks with -1 ATK die, but regardless of damage dealt, the target must make an immediate Morale check at -2. If the target was already Shaken, it automatically Routs."
+    },
+
+    // --- Spindle-Knight Varek ---
+    "Silk Shield Wall": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Your commander and all friendly units within 4\" form a Silk Shield Wall: +2 DEF, immune to flanking, and any damage dealt to units in the wall is shared equally among them. Lasts until End Phase."
+    },
+    "Stand Your Ground": {
+      type: "command",
+      cp: 2,
+      timing: "Any Phase",
+      effect: "One friendly unit within 6\" becomes Immovable: it cannot be pushed, displaced, or forced to retreat. It gains +2 DEF and auto-passes Morale until End Phase. May be played as a reaction."
+    },
+    "Chitin Reinforcement": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Up to 3 friendly units within 8\" gain chitin-reinforced armor: +1 DEF permanently (max once per unit per game). Units that already have DEF 5+ instead gain +1 HP."
+    },
+    "Bodyguard Protocol": {
+      type: "tech",
+      cp: 1,
+      timing: "Any Phase",
+      effect: "Your commander intercepts an attack targeting a friendly unit within 3\": redirect the attack to your commander instead. Your commander gains +2 DEF for this redirected attack. May be played as a reaction."
+    },
+    "Silk Armor": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a silk fragment: your commander and up to 2 friendly units within 4\" gain Silk Armor (+2 DEF, absorb the first 2 points of damage from each attack). Lasts until End Phase."
+    },
+    "Immovable Defense": {
+      type: "tactical",
+      cp: 2,
+      timing: "Any Phase",
+      effect: "One friendly unit reduces all damage from one attack to 0 (completely negated). The unit gains +1 ATK die on its next counterattack from absorbing the impact. May be played as a reaction."
+    },
+
+    // --- Web-Walker Ithris ---
+    "Phase Walk": {
+      type: "command",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Your commander and up to 2 friendly units within 6\" gain Phase: they may move through terrain, walls, and enemy units freely this turn. Phase units gain +1 ATK die on their first attack after phasing."
+    },
+    "Between-Step": {
+      type: "command",
+      cp: 3,
+      timing: "Any Phase",
+      effect: "Instantly teleport your commander to any point within 12\" that is not in base contact with an enemy. Your commander may immediately make an attack with +2 ATK dice at the destination. May be played as a reaction."
+    },
+    "Reality Slip": {
+      type: "tech",
+      cp: 1,
+      timing: "Any Phase",
+      effect: "One friendly unit within 8\" briefly slips between realities: negate one attack targeting it (the attack passes through). The unit may then teleport 4\" in any direction. May be played as a reaction."
+    },
+    "Spatial Manipulation": {
+      type: "tech",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Warp the space around your commander: swap the positions of 2 units (friendly or enemy) within 8\". Swapped units become disoriented — enemy units suffer -1 ATK die next attack."
+    },
+    "Phase Silk": {
+      type: "fragment",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Activate a phase fragment: up to 3 friendly units within 8\" gain Phase (move through all obstacles and enemies) and +3\" MOV this turn. Phase units cannot be targeted by reactions during movement."
+    },
+    "Teleport Strike": {
+      type: "tactical",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Your commander teleports up to 10\" to a target, makes a melee attack with +3 ATK dice, then immediately teleports back to the original position. The target cannot react to this attack."
+    },
+
+    // --- Cocoon-Keeper Rathis ---
+    "Mass Harvest": {
+      type: "command",
+      cp: 3,
+      timing: "End Phase",
+      effect: "All destroyed enemy units this turn are Harvested: gain 2 CP per harvested unit. Up to 2 harvested units may be converted into Spiderling Swarms (placed within 6\" of your commander)."
+    },
+    "Resource Surge": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Generate 3 bonus CP this turn. Additionally, all friendly Support units within 8\" may use their abilities twice this turn. Draw 1 extra card."
+    },
+    "Efficient Processing": {
+      type: "tech",
+      cp: 1,
+      timing: "Command Phase",
+      effect: "One friendly unit within 6\" may convert 1 enemy model it destroyed last turn into resources: heal 2 HP or gain 1 CP or spawn 1 Spiderling within 3\"."
+    },
+    "Cocoon Engineering": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Place a Cocoon token within 6\" of your commander. Friendly units within 2\" of the Cocoon heal 1 HP at the start of each turn. After 2 turns, the Cocoon hatches a free Spiderling Swarm."
+    },
+    "Conversion Silk": {
+      type: "fragment",
+      cp: 2,
+      timing: "End Phase",
+      effect: "Activate a conversion fragment: all enemy casualties within 8\" this turn generate additional resources. Gain 1 Fragment Charge and 1 CP per enemy destroyed. One casualty may become a Spiderling."
+    },
+    "Economy of Violence": {
+      type: "tactical",
+      cp: 1,
+      timing: "Combat Phase",
+      effect: "One friendly unit makes an attack. If it destroys the target, gain resources equal to the target's points cost: 1 CP per 2 points. If the unit is a Swarm, it also gains +1 permanent HP from feeding."
+    },
+
+    // --- Silk-Mender Yalith ---
+    "Mending Weave": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All friendly units within 8\" of your commander heal 2 HP. Units at full HP instead gain +1 DEF until End Phase. One friendly unit may have a single negative status effect (Shaken, Venom, etc.) removed."
+    },
+    "Silk Shield": {
+      type: "command",
+      cp: 2,
+      timing: "Any Phase",
+      effect: "Create a protective silk barrier around up to 2 friendly units within 6\". Each shielded unit reduces damage from the next attack against it by 3 (minimum 0). May be played as a reaction."
+    },
+    "Restorative Silk": {
+      type: "tech",
+      cp: 1,
+      timing: "End Phase",
+      effect: "One friendly unit within 6\" heals 3 HP and is cleansed of all Venom tokens, Corruption tokens, and negative status effects. The healed unit gains +1 MOR until End Phase."
+    },
+    "Cleansing Thread": {
+      type: "tech",
+      cp: 1,
+      timing: "Any Phase",
+      effect: "Remove all negative status effects (Shaken, Venom, Corruption, debuffs) from all friendly units within 6\" of your commander. Each cleansed unit gains +1 ATK die for its next attack."
+    },
+    "Life-Weave Resonance": {
+      type: "fragment",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Activate a life fragment: all friendly units within 10\" heal 2 HP and gain Regeneration (heal 1 HP at the start of each turn) for 2 turns. Units below half HP heal 3 HP instead."
+    },
+
+    // --- Fang-Rider Kaelyx ---
+    "Thundering Charge": {
+      type: "command",
+      cp: 3,
+      timing: "Movement Phase",
+      effect: "All friendly Cavalry and mounted units within 10\" of your commander gain +4\" MOV and +2 ATK dice on charge attacks this turn. Targets of charges must make Morale checks from the impact."
+    },
+    "Flanking Orders": {
+      type: "command",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Up to 3 friendly Cavalry units within 8\" may immediately make a free 6\" move. Units that end this move flanking an enemy gain +2 ATK dice on their next attack."
+    },
+    "Spider-Bond Tactics": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "All friendly spider-mounted Cavalry within 8\" gain Spider-Bond: +1 ATK die, +1 DEF, and the ability to move over terrain freely. Spider mounts may climb walls and move vertically."
+    },
+    "Silk Saddle Reinforcement": {
+      type: "tech",
+      cp: 1,
+      timing: "Command Phase",
+      effect: "One friendly Cavalry unit within 6\" gains +1 DEF and immunity to being dismounted or knocked prone. Its charge damage bonus increases by +1 ATK die."
+    },
+    "Stampede Resonance": {
+      type: "fragment",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Activate a stampede fragment: all friendly Cavalry within 8\" gain +3\" MOV and their charge attacks deal +1 damage per hit this turn. Enemy units in the charge path take 1 trampling damage."
+    },
+    "Cavalry Wedge": {
+      type: "tactical",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Up to 3 friendly Cavalry units form a wedge formation: they charge as one unit, each gaining +1 ATK die per additional unit in the wedge. The lead unit gains +2 DEF from the formation."
+    },
+
+    // --- Loom-Shaper Quileth ---
+    "Raise Silk Wall": {
+      type: "command",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Place a Silk Wall (6\" long, counts as Heavy Cover) within 8\" of your commander. The wall blocks enemy movement but friendly Thornweft units may pass through freely. Lasts 3 turns."
+    },
+    "Web Flood": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Flood a 6\" radius area within 10\" of your commander with web terrain. Enemy units in the area suffer -3\" MOV and -1 ATK die. Friendly Thornweft units treat the area as normal terrain. Lasts 2 turns."
+    },
+    "Terrain Engineering": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Reshape one terrain piece within 12\" of your commander: move it up to 4\" in any direction, convert its type (open→difficult, cover→heavy cover), or create a new elevation. Lasts until destroyed."
+    },
+    "Web Architecture": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Create a web bridge or ramp within 8\" of your commander: friendly units may move over gaps, between elevations, or across water freely this turn. The structure also provides Light Cover."
+    },
+    "Earth-Silk Resonance": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a terrain fragment: all friendly units standing on web terrain or within 2\" of a Silk Wall gain +1 ATK die and +1 DEF until End Phase. Web terrain expands by 1\" in all directions."
+    },
+    "Chokepoint Creation": {
+      type: "tactical",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Create an impassable web barrier blocking a 4\" wide gap or passage. Enemy units cannot pass through for 2 turns (they must go around). Friendly Thornweft units may pass freely."
+    },
+
+    // --- Shared / Additional Thornweft cards ---
+    "Growth Silk": {
+      type: "fragment",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Activate a growth fragment: all friendly Spiderling and Swarm units within 8\" gain +1 ATK die and +2 HP permanently. One Spiderling within range grows into a Spider Warrior (gains +2 ATK, +1 DEF)."
+    },
+
   },
   factions: [],
   commanders: [],
