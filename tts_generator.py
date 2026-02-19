@@ -925,6 +925,11 @@ GameState = {
     },
     kills = {White = 0, Red = 0},   -- Kill counter per player
     unit_hp = {},                     -- HP tracking keyed by object GUID
+    unit_statuses = {},               -- Status effects keyed by object GUID
+    game_start_time = 0,              -- os.time() when game started
+    total_attacks = {White = 0, Red = 0},
+    total_damage_dealt = {White = 0, Red = 0},
+    first_player = "White",            -- Player who goes first each turn (alternates)
     -- Setup wizard state
     setup = {
         step = 0,               -- 0=not started, 1=battle_size, 2=map, 3=scenario, 4=p1_faction, 5=p2_faction, 6=army_build, 7=deploy
@@ -972,6 +977,11 @@ function onLoad(save_state)
             if not GameState.setup then
                 GameState.setup = {step=0, battle_size="standard", points_limit=250, map_choice="", scenario_name="", p1_faction="", p2_faction="", p1_ready=false, p2_ready=false}
             end
+            if not GameState.unit_statuses then GameState.unit_statuses = {} end
+            if not GameState.game_start_time then GameState.game_start_time = 0 end
+            if not GameState.total_attacks then GameState.total_attacks = {White=0, Red=0} end
+            if not GameState.total_damage_dealt then GameState.total_damage_dealt = {White=0, Red=0} end
+            if not GameState.first_player then GameState.first_player = "White" end
         end
     end
     
@@ -984,7 +994,7 @@ function onLoad(save_state)
         end
     end, 1)
     
-    broadcastToAll("═══ SHARDBORNE v3.1 ═══\nTabletop Simulator Edition\n\nWelcome, Commanders!\nClick ⚙ SETUP GAME to begin guided setup.\nOr type !help for manual commands.", {1, 0.8, 0.2})
+    broadcastToAll("═══ SHARDBORNE v3.2 ═══\nTabletop Simulator Edition\n\nWelcome, Commanders!\nClick ⚙ SETUP GAME to begin guided setup.\nOr type !help for manual commands.", {1, 0.8, 0.2})
     printToAll("[Phase: " .. GameState.phase .. "] Turn " .. GameState.turn, {0.8, 0.8, 0.8})
 end
 
@@ -1415,21 +1425,91 @@ function nextTurn(player, value, id)
     GameState.phase = "Command"
     GameState.cards_drawn_this_turn = {White = 0, Red = 0}
     
+    -- Clear all Activated markers at start of new turn
+    clearAllActivated()
+    
+    -- Alternate first player each turn
+    if GameState.first_player == "White" then
+        GameState.first_player = "Red"
+    else
+        GameState.first_player = "White"
+    end
+    GameState.active_player = GameState.first_player
+    
     if GameState.turn > GameState.max_turns then
-        local winner = "TIE"
+        -- ═══ GAME OVER — Comprehensive Summary ═══
         local wVP = GameState.player_vp.White or 0
         local rVP = GameState.player_vp.Red or 0
+        local winner = "TIE"
         if wVP > rVP then winner = "Player 1 (White)" 
         elseif rVP > wVP then winner = "Player 2 (Red)" end
         
-        broadcastToAll("═══ GAME OVER ═══\nWhite VP: " .. wVP .. " | Red VP: " .. rVP ..
-                       "\n" .. (winner == "TIE" and "It's a TIE!" or winner .. " WINS!"), {1, 0.2, 0.2})
+        -- Calculate game duration
+        local duration = ""
+        if GameState.game_start_time and GameState.game_start_time > 0 then
+            local elapsed = os.time() - GameState.game_start_time
+            local mins = math.floor(elapsed / 60)
+            local secs = elapsed % 60
+            duration = mins .. "m " .. secs .. "s"
+        end
+        
+        -- Combat stats from log
+        local total_hits = 0
+        local total_crits = 0
+        local total_dmg_log = 0
+        local total_combats = #GameState.combat_log
+        for _, e in ipairs(GameState.combat_log) do
+            total_hits = total_hits + (e.hits or 0)
+            total_crits = total_crits + (e.crits or 0)
+            total_dmg_log = total_dmg_log + (e.dmg or 0)
+        end
+        
+        -- Count surviving units (any object with HP tracking still alive)
+        local alive_white = 0
+        local alive_red = 0
+        local dead_count = 0
+        for guid, data in pairs(GameState.unit_hp) do
+            if data.current_hp and data.current_hp <= 0 then
+                dead_count = dead_count + 1
+            else
+                -- Try to determine owner by position (z < 0 = White, z > 0 = Red)
+                local obj = getObjectFromGUID(guid)
+                if obj then
+                    local pos = obj.getPosition()
+                    if pos.z < 0 then alive_white = alive_white + 1
+                    else alive_red = alive_red + 1 end
+                end
+            end
+        end
+        
+        broadcastToAll("\\n══════════════════════════════════════\\n" ..
+                       "           ⚔ GAME OVER ⚔\\n" ..
+                       "══════════════════════════════════════\\n\\n" ..
+                       "🏆 " .. (winner == "TIE" and "IT'S A TIE!" or winner .. " WINS!") .. "\\n\\n" ..
+                       "── Victory Points ──\\n" ..
+                       "  ⬜ White: " .. wVP .. " VP\\n" ..
+                       "  🟥 Red:   " .. rVP .. " VP\\n\\n" ..
+                       "── Kill Tally ──\\n" ..
+                       "  ⬜ White kills: " .. (GameState.kills.White or 0) .. "\\n" ..
+                       "  🟥 Red kills:   " .. (GameState.kills.Red or 0) .. "\\n\\n" ..
+                       "── Battle Statistics ──\\n" ..
+                       "  ⚔ Total combats resolved: " .. total_combats .. "\\n" ..
+                       "  🎯 Total hits landed: " .. total_hits .. "\\n" ..
+                       "  💥 Critical hits (6s): " .. total_crits .. "\\n" ..
+                       "  💀 Total damage dealt: " .. total_dmg_log .. "\\n" ..
+                       "  🗡 Units destroyed: " .. dead_count .. "\\n\\n" ..
+                       (duration ~= "" and ("⏱ Game duration: " .. duration .. "\\n") or "") ..
+                       "\\n══════════════════════════════════════\\n" ..
+                       "Type !reset to start a new game.", {1, 0.8, 0.2})
+        
         GameState.phase = "Game Over"
         updateUI()
         return
     end
     
-    broadcastToAll("═══════════════════════\n   TURN " .. GameState.turn .. " BEGINS\n═══════════════════════", {0.2, 1, 0.4})
+    broadcastToAll("═══════════════════════\\n   TURN " .. GameState.turn .. " BEGINS\\n" ..
+                   "   First Player: " .. GameState.first_player ..
+                   "\\n═══════════════════════", {0.2, 1, 0.4})
     
     if GameState.timer_enabled then
         GameState.timer_start = os.time()
@@ -1447,6 +1527,9 @@ function startGame()
     GameState.player_cp = {White = 3, Red = 3}
     GameState.player_fragments = {White = 0, Red = 0}
     GameState.player_vp = {White = 0, Red = 0}
+    GameState.game_start_time = os.time()
+    GameState.first_player = "White"
+    GameState.active_player = "White"
     
     broadcastToAll("═══════════════════════\n   SHARDBORNE BEGINS!\n   Turn 1 — Command Phase\n═══════════════════════\n\nBoth players start with 3 CP.\nDraw your starting hand of 5 cards.\n\nType !help for all commands.", {1, 0.8, 0.2})
     if GameState.timer_enabled then
@@ -2226,8 +2309,9 @@ function rollMorale(player)
     local d1 = math.random(1, 6)
     local d2 = math.random(1, 6)
     local total = d1 + d2
-    broadcastToAll("🎲 Morale Test: " .. d1 .. " + " .. d2 .. " = " .. total ..
-                   "\n(Unit passes if " .. total .. " ≤ its MOR stat)", {0.4, 0.8, 1})
+    broadcastToAll("🎲 Morale Roll: " .. d1 .. " + " .. d2 .. " = " .. total ..
+                   "\n  Pass if ≤ MOR   |   Fail by <3 → ⚡SHAKEN   |   Fail by 3+ → 💀ROUTED" ..
+                   "\n  (Right-click a unit for auto Morale Test, or use !morale <MOR>)", {0.4, 0.8, 1})
 end
 
 function rollGeneric(player)
@@ -2465,6 +2549,126 @@ function addHPContextMenu(obj)
     obj.addContextMenuItem("Heal 2 HP", function(pc) healUnit(obj, 2) end)
     obj.addContextMenuItem("Show HP", function(pc) showHP(obj) end)
     obj.addContextMenuItem("Blood Tithe (-1HP +1ATK)", function(pc) bloodTithe(obj) end)
+    obj.addContextMenuItem("Toggle ⚡Shaken", function(pc) toggleStatus(obj, "Shaken") end)
+    obj.addContextMenuItem("Toggle ⚔Engaged", function(pc) toggleStatus(obj, "Engaged") end)
+    obj.addContextMenuItem("Toggle 👁Stealthed", function(pc) toggleStatus(obj, "Stealthed") end)
+    obj.addContextMenuItem("Toggle ✓Activated", function(pc) toggleStatus(obj, "Activated") end)
+    obj.addContextMenuItem("Morale Test", function(pc) contextMoraleTest(obj) end)
+    obj.addContextMenuItem("Show Full Stats", function(pc) showFullStats(obj) end)
+end
+
+-- ─── Status Effect Toggles ──────────────────────
+
+function toggleStatus(obj, status)
+    local guid = obj.getGUID()
+    if not GameState.unit_statuses[guid] then
+        GameState.unit_statuses[guid] = {}
+    end
+    local statuses = GameState.unit_statuses[guid]
+    local name = obj.getName() or "Unit"
+    
+    if statuses[status] then
+        statuses[status] = nil
+        broadcastToAll("➖ " .. name .. ": " .. status .. " REMOVED", {0.5, 1, 0.5})
+    else
+        statuses[status] = true
+        local effect_desc = {
+            Shaken = "(-1 ATK die, must rally in Command Phase)",
+            Engaged = "(cannot shoot, cannot move away freely)",
+            Stealthed = "(hidden from ranged attacks >8\")",
+            Activated = "(has acted this turn)",
+        }
+        broadcastToAll("➕ " .. name .. ": " .. status .. " " .. (effect_desc[status] or ""), {1, 0.7, 0.3})
+    end
+end
+
+function getUnitStatuses(obj)
+    local guid = obj.getGUID()
+    if not GameState.unit_statuses[guid] then return "" end
+    local parts = {}
+    for status, _ in pairs(GameState.unit_statuses[guid]) do
+        table.insert(parts, status)
+    end
+    if #parts == 0 then return "" end
+    return table.concat(parts, ", ")
+end
+
+function clearAllActivated()
+    for guid, statuses in pairs(GameState.unit_statuses) do
+        if statuses then statuses["Activated"] = nil end
+    end
+    printToAll("✓ All Activated markers cleared for new turn.", {0.6, 0.8, 0.6})
+end
+
+-- ─── Context Menu Morale Test ──────────────────────
+
+function contextMoraleTest(obj)
+    local desc = obj.getDescription() or ""
+    local mor = tonumber(desc:match("MOR:%s*(%d+)"))
+    if not mor then
+        printToAll("⚠ Cannot find MOR stat in this unit's description. Use !morale <MOR> instead.", {1, 0.5, 0.3})
+        return
+    end
+    local name = obj.getName() or "Unit"
+    local d1 = math.random(1, 6)
+    local d2 = math.random(1, 6)
+    local total = d1 + d2
+    
+    -- Check if Shaken already (affects result)
+    local guid = obj.getGUID()
+    local is_shaken = GameState.unit_statuses[guid] and GameState.unit_statuses[guid]["Shaken"]
+    
+    if total <= mor then
+        if is_shaken then
+            -- rallied
+            GameState.unit_statuses[guid]["Shaken"] = nil
+            broadcastToAll("🎲 MORALE: " .. name .. " rolls " .. d1 .. "+" .. d2 .. "=" .. total .. 
+                           " vs MOR " .. mor .. "\n✅ RALLIED! Shaken status removed!", {0.3, 1, 0.3})
+        else
+            broadcastToAll("🎲 MORALE: " .. name .. " rolls " .. d1 .. "+" .. d2 .. "=" .. total .. 
+                           " vs MOR " .. mor .. "\n✅ PASSED — unit holds firm!", {0.3, 1, 0.3})
+        end
+    else
+        local margin = total - mor
+        if margin < 3 then
+            -- Shaken
+            if not GameState.unit_statuses[guid] then GameState.unit_statuses[guid] = {} end
+            GameState.unit_statuses[guid]["Shaken"] = true
+            broadcastToAll("🎲 MORALE: " .. name .. " rolls " .. d1 .. "+" .. d2 .. "=" .. total .. 
+                           " vs MOR " .. mor .. " (failed by " .. margin .. ")\n⚡ SHAKEN — -1 ATK die, must rally next Command Phase!", {1, 0.8, 0.2})
+        else
+            -- Routed
+            broadcastToAll("🎲 MORALE: " .. name .. " rolls " .. d1 .. "+" .. d2 .. "=" .. total .. 
+                           " vs MOR " .. mor .. " (failed by " .. margin .. ")\n💀 ROUTED — unit is DESTROYED! Remove from play!", {1, 0, 0})
+        end
+    end
+end
+
+-- ─── Show Full Stats ──────────────────────
+
+function showFullStats(obj)
+    local name = obj.getName() or "Unknown"
+    local desc = obj.getDescription() or "No description"
+    local guid = obj.getGUID()
+    
+    printToAll("═══ " .. name .. " ═══", {1, 0.8, 0.3})
+    printToAll(desc, {0.8, 0.8, 0.8})
+    
+    -- HP status
+    if GameState.unit_hp[guid] then
+        local unit = GameState.unit_hp[guid]
+        local pct = math.floor((unit.current_hp / unit.max_hp) * 100)
+        local bar = ""
+        local filled = math.floor(pct / 10)
+        for i = 1, 10 do bar = bar .. (i <= filled and "█" or "░") end
+        printToAll("❤ HP: " .. unit.current_hp .. "/" .. unit.max_hp .. " [" .. bar .. "] " .. pct .. "%", {0.8, 0.4, 0.4})
+    end
+    
+    -- Active statuses
+    local statuses = getUnitStatuses(obj)
+    if statuses ~= "" then
+        printToAll("🏷️ Status: " .. statuses, {1, 0.7, 0.3})
+    end
 end
 
 function dealDamage(obj, amount)
@@ -2793,10 +2997,19 @@ function onChat(message, player)
         local d1 = math.random(1, 6)
         local d2 = math.random(1, 6)
         local total = d1 + d2
-        local passed = total <= mor
-        broadcastToAll("🎲 Morale Test vs MOR " .. mor .. ": " .. d1 .. "+" .. d2 .. "=" .. total .. 
-                       " → " .. (passed and "✅ PASSED" or "❌ FAILED — unit flees!"), 
-                       passed and {0.3, 1, 0.3} or {1, 0.3, 0.3})
+        if total <= mor then
+            broadcastToAll("🎲 Morale Test vs MOR " .. mor .. ": " .. d1 .. "+" .. d2 .. "=" .. total .. 
+                           "\n✅ PASSED — unit holds firm!", {0.3, 1, 0.3})
+        else
+            local margin = total - mor
+            if margin < 3 then
+                broadcastToAll("🎲 Morale Test vs MOR " .. mor .. ": " .. d1 .. "+" .. d2 .. "=" .. total ..
+                               " (failed by " .. margin .. ")\n⚡ SHAKEN — -1 ATK die next activation. Must rally in Command Phase!", {1, 0.8, 0.2})
+            else
+                broadcastToAll("🎲 Morale Test vs MOR " .. mor .. ": " .. d1 .. "+" .. d2 .. "=" .. total ..
+                               " (failed by " .. margin .. ")\n💀 ROUTED — unit is DESTROYED! Remove from play!", {1, 0, 0})
+            end
+        end
         return false
     end
     
@@ -2835,6 +3048,47 @@ function onChat(message, player)
     -- !scenario — generate random scenario
     if msg:match("^!scenario") then
         generateScenario()
+        return false
+    end
+    
+    -- !initiative — roll off for first player
+    if msg:match("^!initiative") then
+        local w = math.random(1, 6)
+        local r = math.random(1, 6)
+        while w == r do
+            w = math.random(1, 6)
+            r = math.random(1, 6)
+        end
+        local first = w > r and "White" or "Red"
+        GameState.first_player = first
+        GameState.active_player = first
+        broadcastToAll("🎲 INITIATIVE ROLL\\n" ..
+                       "  ⬜ White: " .. w .. "  |  🟥 Red: " .. r ..
+                       "\\n  → " .. first .. " goes first this turn!", 
+                       first == "White" and {0.8, 0.8, 1} or {1, 0.5, 0.5})
+        updateUI()
+        return false
+    end
+    
+    -- !statuses — show all tracked unit statuses
+    if msg:match("^!statuses") then
+        printToAll("═══ UNIT STATUS EFFECTS ═══", {1, 0.8, 0.3})
+        local any_found = false
+        for guid, statuses in pairs(GameState.unit_statuses) do
+            local parts = {}
+            for status, _ in pairs(statuses) do
+                table.insert(parts, status)
+            end
+            if #parts > 0 then
+                local obj = getObjectFromGUID(guid)
+                local name = obj and obj.getName() or (GameState.unit_hp[guid] and GameState.unit_hp[guid].name or guid)
+                printToAll("  " .. name .. ": " .. table.concat(parts, ", "), {0.8, 0.7, 0.3})
+                any_found = true
+            end
+        end
+        if not any_found then
+            printToAll("  No active status effects.", {0.6, 0.6, 0.6})
+        end
         return false
     end
     
@@ -3014,7 +3268,13 @@ function onChat(message, player)
         GameState.kills = {White = 0, Red = 0}
         GameState.faction_pools = {heat=0, hunger=0, flow=0, fate_threads=0, anchors=0, fragment_charges=0, stance="none"}
         GameState.unit_hp = {}
-        broadcastToAll("🔄 Game state RESET (all pools, kills, HP cleared).\nPress 'Next Phase' to start.", {1, 0.5, 0.2})
+        GameState.unit_statuses = {}
+        GameState.game_start_time = 0
+        GameState.total_attacks = {White=0, Red=0}
+        GameState.total_damage_dealt = {White=0, Red=0}
+        GameState.first_player = "White"
+        GameState.active_player = "White"
+        broadcastToAll("🔄 Game state RESET (all pools, kills, HP, statuses cleared).\nPress 'Next Phase' to start or use ⚙ Setup Game.", {1, 0.5, 0.2})
         updateUI()
         return false
     end
@@ -3036,13 +3296,13 @@ function onChat(message, player)
     
     -- !help
     if msg:match("^!help") then
-        printToAll("═══ SHARDBORNE v3.0 COMMANDS ═══", {1, 0.8, 0.3})
+        printToAll("═══ SHARDBORNE v3.2 COMMANDS ═══", {1, 0.8, 0.3})
         printToAll("── Combat ──", {0.8, 0.6, 0.3})
         printToAll("  !atk <dice> vs <DEF> [mods]  — Attack roll with optional modifiers", {0.8, 0.8, 0.2})
         printToAll("    Modifiers: charge flank rear cover heavy_cover elevated", {0.6, 0.6, 0.6})
         printToAll("    Stances: honor revelation | Grid: grid_active grid_fortified isolated", {0.6, 0.6, 0.6})
         printToAll("    Example: !atk 6 vs 4 charge flank", {0.5, 0.5, 0.5})
-        printToAll("  !morale <MOR>         — Morale test (e.g., !morale 8)", {0.8, 0.8, 0.2})
+        printToAll("  !morale <MOR>         — Morale test (pass/shaken/routed)", {0.8, 0.8, 0.2})
         printToAll("  !roll XdY             — Roll any dice (e.g., !roll 2d6)", {0.8, 0.8, 0.2})
         printToAll("  !breath <dice>        — Breath Weapon attack (ignores cover, +2 Heat)", {0.8, 0.8, 0.2})
         printToAll("  !measure              — Distance between last 2 picked-up objects", {0.8, 0.8, 0.2})
@@ -3062,10 +3322,14 @@ function onChat(message, player)
         printToAll("  !vp <player> <+/-N>   — Adjust VP (e.g., !vp white +2)", {0.8, 0.8, 0.2})
         printToAll("  !cp <player> <+/-N>   — Adjust CP (e.g., !cp red -3)", {0.8, 0.8, 0.2})
         printToAll("  !army                 — Validate army composition", {0.8, 0.8, 0.2})
+        printToAll("  !statuses             — Show all active unit status effects", {0.8, 0.8, 0.2})
         printToAll("── Game ──", {0.8, 0.6, 0.3})
+        printToAll("  !initiative           — Roll off for first player", {0.8, 0.8, 0.2})
         printToAll("  !scenario  !phase  !reset  !help", {0.8, 0.8, 0.2})
         printToAll("── Right-Click Units ──", {0.8, 0.6, 0.3})
         printToAll("  Deal 1/2/3 Damage | Heal 1/2 HP | Show HP | Blood Tithe", {0.8, 0.8, 0.2})
+        printToAll("  Toggle ⚡Shaken | ⚔Engaged | 👁Stealthed | ✓Activated", {0.8, 0.8, 0.2})
+        printToAll("  Morale Test (auto-reads MOR) | Show Full Stats", {0.8, 0.8, 0.2})
         return false
     end
     
@@ -3132,7 +3396,7 @@ end
 def build_quick_reference():
     """Create a notecard with the full quick reference rules."""
     return make_notecard(
-        "📖 SHARDBORNE QUICK REFERENCE v3.0",
+        "📖 SHARDBORNE QUICK REFERENCE v3.2",
         """═══ TURN STRUCTURE ═══
 1. COMMAND PHASE
    • Gain CP (3 + Commander's Command bonus)
@@ -3157,8 +3421,10 @@ def build_quick_reference():
 
 4. END PHASE
    • Morale test for units at half HP or below: 2d6 <= MOR
+     Pass: holds firm | Fail by <3: SHAKEN | Fail by 3+: ROUTED (destroyed)
    • Score objectives, remove destroyed, clean up effects
    • Corruption: undamaged units remove 1 token (Natural Resistance)
+   • Remove all Activated markers (automatic)
 
 ═══ COMBAT MODIFIERS ═══
 Charge (+5" straight): +1 ATK | Flank: +1 ATK | Rear: +2 ATK
@@ -3187,10 +3453,18 @@ Iron Dominion: Grid Cohesion + Fragment Charges
 !heat/!hunger/!flow/!fate/!anchors/!charges <+/-N>
 !stance <type>  !instability  !corruption <tokens>
 !kill <white/red>  !pools  !vp/!cp <player> <+/-N>
-!army  !scenario  !phase  !reset  !help
+!initiative  !statuses  !army  !scenario  !phase  !reset  !help
 
 ═══ RIGHT-CLICK UNITS ═══
 Deal 1/2/3 Damage | Heal 1/2 HP | Show HP | Blood Tithe
+Toggle: ⚡Shaken | ⚔Engaged | 👁Stealthed | ✓Activated
+Morale Test (auto-reads MOR) | Show Full Stats
+
+═══ STATUS EFFECTS ═══
+⚡ Shaken: -1 ATK die, must rally (2d6 <= MOR) in Command Phase
+⚔ Engaged: no ranged attacks, cannot move away without Disengaging
+👁 Stealthed: hidden from ranged attacks >8"
+✓ Activated: unit has acted this turn
 
 ═══ KEY RULES ═══
 • Commander death = no more cards for that player
@@ -3823,6 +4097,162 @@ def main():
                       contents=hp_bag_contents)
     all_objects.append(hp_bag)
     print(f"  ✓ Damage tokens (30 × 1dmg, 10 × 5dmg)")
+    
+    # --- Status Effect Tokens ---
+    def make_status_token(name, desc, hex_color, icon, tags=None):
+        return {
+            "GUID": make_guid(),
+            "Name": "Custom_Token",
+            "Transform": make_transform(0, 1, 0, scale=1.0),
+            "Nickname": name,
+            "Description": desc,
+            "ColorDiffuse": {
+                "r": int(hex_color[0:2], 16) / 255,
+                "g": int(hex_color[2:4], 16) / 255,
+                "b": int(hex_color[4:6], 16) / 255,
+            },
+            "CustomImage": {
+                "ImageURL": f"https://placehold.co/128x128/{hex_color}/ffffff?text={icon}",
+                "CustomToken": {
+                    "Thickness": 0.08,
+                    "MergeDistancePixels": 15.0,
+                    "StandUp": False,
+                    "Stackable": True,
+                },
+            },
+            "Locked": False,
+            "Tooltip": True,
+            "Tags": tags or ["status"],
+        }
+    
+    status_tokens = []
+    
+    # Shaken — failed morale by <3
+    for i in range(8):
+        status_tokens.append(make_status_token(
+            "⚡ Shaken",
+            "SHAKEN\n─────────────────\n-1 ATK die next activation\nMust rally (roll 2d6 ≤ MOR) in Command Phase\nor remain Shaken.\nRemove after rallying.",
+            "ddaa00", "⚡Shaken"))
+    
+    # Engaged — within 1" of enemy
+    for i in range(10):
+        status_tokens.append(make_status_token(
+            "⚔ Engaged",
+            "ENGAGED IN MELEE\n─────────────────\nCannot make ranged attacks.\nCannot voluntarily move away without\nDisengaging (forfeit all attacks this turn).\nPlace between combatants.",
+            "cc3333", "⚔Engaged"))
+    
+    # Stealthed — hidden from targeting
+    for i in range(6):
+        status_tokens.append(make_status_token(
+            "👁 Stealthed",
+            "STEALTHED\n─────────────────\nCannot be targeted by ranged attacks\nfrom more than 8\" away.\nRemoved when unit attacks, takes damage,\nor enters Burning Terrain.",
+            "334466", "👁Stealth"))
+    
+    # Charging — declared charge this turn
+    for i in range(6):
+        status_tokens.append(make_status_token(
+            "🔺 Charging",
+            "CHARGING\n─────────────────\n+1 ATK die on the charge attack.\nUnit must move in a straight line\ninto base contact with target.\nRemove at end of Combat Phase.",
+            "ff6622", "🔺Charge"))
+    
+    # Overwatch — holding fire
+    for i in range(4):
+        status_tokens.append(make_status_token(
+            "🎯 Overwatch",
+            "OVERWATCH\n─────────────────\nUnit skips its attack this turn.\nMay make a free ranged attack against\nany enemy unit that moves within RNG\nduring the opponent's Movement Phase.\nRemove after firing or at end of turn.",
+            "2266aa", "🎯Watch"))
+    
+    # Corrupted — Blight infection
+    for i in range(6):
+        status_tokens.append(make_status_token(
+            "☠ Corrupted",
+            "CORRUPTED (Blight)\n─────────────────\n-1 MOR permanently while corrupted.\nRoll 1d6 at start of each turn:\n1-2: Take 1 damage from spreading infection.\nRemove only via healing or purify ability.",
+            "662288", "☠Blight"))
+    
+    # Inspired / Buffed
+    for i in range(6):
+        status_tokens.append(make_status_token(
+            "✦ Inspired",
+            "INSPIRED\n─────────────────\n+1 to Morale (MOR) tests.\nGranted by Commander auras,\ncards, or special abilities.\nRemove at end of turn unless stated otherwise.",
+            "44bb44", "✦Buff"))
+    
+    # Stunned — cannot act
+    for i in range(4):
+        status_tokens.append(make_status_token(
+            "💫 Stunned",
+            "STUNNED\n─────────────────\nCannot move, attack, or use abilities\nthis turn. Skip this unit's activation.\nRemove at end of turn.\nCaused by critical hits or special effects.",
+            "8888aa", "💫Stun"))
+    
+    # Activated — already acted this turn
+    for i in range(10):
+        status_tokens.append(make_status_token(
+            "✓ Activated",
+            "ACTIVATED\n─────────────────\nThis unit has already acted this turn.\nPlace after unit completes its activation.\nRemove all at start of next turn.\nHelps track which units have gone.",
+            "555555", "✓Done"))
+    
+    status_bag = make_bag("🏷️ Status Tokens", x=-26, y=1.5, z=16,
+                         color={"r": 0.7, "g": 0.6, "b": 0.2},
+                         contents=status_tokens)
+    all_objects.append(status_bag)
+    print(f"  ✓ Status effect tokens ({len(status_tokens)})")
+    
+    # --- Discard Pile Zones ---
+    # Player 1 discard tile
+    p1_discard = {
+        "GUID": make_guid(),
+        "Name": "Custom_Tile",
+        "Transform": {
+            "posX": -15, "posY": 1.01, "posZ": -25,
+            "rotX": 0, "rotY": 0, "rotZ": 0,
+            "scaleX": 3.0, "scaleY": 1.0, "scaleZ": 4.0,
+        },
+        "Nickname": "📥 P1 Discard Pile",
+        "Description": "Player 1 (White) — Place played and discarded cards here.",
+        "ColorDiffuse": {"r": 0.2, "g": 0.2, "b": 0.25},
+        "CustomImage": {
+            "ImageURL": "https://placehold.co/300x400/333344/aaaaaa?text=P1+DISCARD",
+            "ImageSecondaryURL": "",
+            "WidthScale": 0.0,
+            "CustomTile": {
+                "Type": 0,
+                "Thickness": 0.02,
+                "Stackable": False,
+            },
+        },
+        "Locked": True,
+        "Tooltip": True,
+        "Tags": ["discard"],
+    }
+    all_objects.append(p1_discard)
+    
+    # Player 2 discard tile
+    p2_discard = {
+        "GUID": make_guid(),
+        "Name": "Custom_Tile",
+        "Transform": {
+            "posX": 15, "posY": 1.01, "posZ": -25,
+            "rotX": 0, "rotY": 0, "rotZ": 0,
+            "scaleX": 3.0, "scaleY": 1.0, "scaleZ": 4.0,
+        },
+        "Nickname": "📥 P2 Discard Pile",
+        "Description": "Player 2 (Red) — Place played and discarded cards here.",
+        "ColorDiffuse": {"r": 0.25, "g": 0.15, "b": 0.15},
+        "CustomImage": {
+            "ImageURL": "https://placehold.co/300x400/443333/aaaaaa?text=P2+DISCARD",
+            "ImageSecondaryURL": "",
+            "WidthScale": 0.0,
+            "CustomTile": {
+                "Type": 0,
+                "Thickness": 0.02,
+                "Stackable": False,
+            },
+        },
+        "Locked": True,
+        "Tooltip": True,
+        "Tags": ["discard"],
+    }
+    all_objects.append(p2_discard)
+    print("  ✓ Discard pile zones (P1 + P2)")
     
     # ── Step 4: Build Save File ──
     print("\n📄 Building TTS save file...")

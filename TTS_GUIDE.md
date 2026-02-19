@@ -40,8 +40,10 @@ If TTS is installed and the Saves directory exists, the generator will also auto
 | **Combat Dice** | White d6 dice for attacks | 10 |
 | **Morale Dice** | Red d6 dice for morale tests | 2 |
 | **Damage Tokens** | Red stackable tokens (1-damage and 5-damage) | 40 |
+| **Status Tokens** | Shaken, Engaged, Stealthed, Charging, Overwatch, Corrupted, Inspired, Stunned, Activated | 60 |
 | **Objective Markers** | Gold tokens for scoring objectives | 5 |
 | **Terrain System** | 3D structures, area tiles, faction terrain (3 sub-bags) | 70 |
+| **Discard Piles** | Labeled tiles for P1 and P2 to discard played cards | 2 |
 | **VP Counters** | Click-adjustable victory point counters | 2 |
 | **Round Counter** | Track current game round | 1 |
 | **Ruler** | 12" measurement tool | 1 |
@@ -133,9 +135,13 @@ The UI panel (top-right) shows the current phase. Click **"Next Phase ▶"** to 
 
 #### 4. End Phase
 - Units at half HP or below: roll **2d6 ≤ MOR** to pass morale
-- Failed morale = unit flees (remove from play)
+  - **Pass**: unit holds firm
+  - **Fail by <3**: unit is **⚡ Shaken** (-1 ATK, must rally next Command Phase)
+  - **Fail by 3+**: unit is **💀 Routed** (destroyed, remove from play)
 - Score objectives (1 VP per controlled marker)
+- All ✓ Activated markers auto-clear
 - Click **"Next Turn ⟳"** to begin the next turn
+- First player **alternates** each turn (announced in chat)
 
 ---
 
@@ -233,9 +239,11 @@ Modifiers stack: `!atk 6 vs 4 charge flank elevated`
 ### Game
 | Command | Example | Description |
 |---------|---------|-------------|
+| `!initiative` | `!initiative` | Roll off for first player (d6 vs d6, re-rolls ties) |
+| `!statuses` | `!statuses` | Show all active unit status effects |
 | `!scenario` | `!scenario` | Generate a random scenario/mission |
 | `!phase` | `!phase` | Show current turn/phase/all pools |
-| `!reset` | `!reset` | Reset game state (all pools, kills, HP cleared) |
+| `!reset` | `!reset` | Reset game state (all pools, kills, HP, statuses cleared) |
 | `!help` | `!help` | Lists all commands |
 
 ### Right-Click Unit Context Menu
@@ -244,6 +252,12 @@ Right-click any unit token with HP stats to access:
 - **Heal 1/2 HP** — Restore HP up to maximum
 - **Show HP** — Display current HP with visual health bar
 - **Blood Tithe** — Sacrifice 1 HP for +1 ATK die (Nightfang mechanic)
+- **Toggle ⚡Shaken** — Mark unit as Shaken (-1 ATK, must rally)
+- **Toggle ⚔Engaged** — Mark unit as in melee (can't shoot or move freely)
+- **Toggle 👁Stealthed** — Mark unit as hidden from ranged attacks >8"
+- **Toggle ✓Activated** — Mark unit as having acted this turn
+- **Morale Test** — Auto-reads MOR from description, rolls 2d6, determines Pass/Shaken/Routed
+- **Show Full Stats** — Displays complete unit description, HP bar, and active statuses
 
 ### Attack Resolution Example
 ```
@@ -333,6 +347,48 @@ A unit with 9 HP takes 7 damage:
 - Place one 5-damage token and two 1-damage tokens on it
 - The unit has 2 HP remaining
 - At End Phase, it's below half HP → roll morale (2d6 ≤ MOR)
+
+---
+
+## Status Effect Tokens (New in v3.2)
+
+The **🏷️ Status Tokens** bag contains 60 stackable tokens for tracking unit conditions.
+
+| Token | Qty | Effect |
+|-------|-----|--------|
+| **⚡ Shaken** | 8 | -1 ATK die. Must rally (2d6 ≤ MOR) in Command Phase. |
+| **⚔ Engaged** | 10 | Cannot make ranged attacks. Cannot move away without Disengaging. |
+| **👁 Stealthed** | 6 | Cannot be targeted by ranged attacks from >8". Removed on attack/damage. |
+| **🔺 Charging** | 6 | +1 ATK die on charge attack. Remove at end of Combat Phase. |
+| **🎯 Overwatch** | 4 | Skips attack; may free-fire at enemies entering RNG. Remove at end of turn. |
+| **☠ Corrupted** | 6 | -1 MOR. Roll 1d6 each turn: 1-2 = take 1 damage. |
+| **✦ Inspired** | 6 | +1 to MOR tests. Remove at end of turn unless stated. |
+| **💫 Stunned** | 4 | Cannot move, attack, or use abilities this turn. Remove at end of turn. |
+| **✓ Activated** | 10 | Marks unit as having acted. Auto-cleared at start of each turn. |
+
+### Using Status Tokens
+1. Open the **🏷️ Status Tokens** bag
+2. Pull the appropriate token and place it near/on the affected unit
+3. **Right-click a unit** and use **Toggle ⚡Shaken / ⚔Engaged / etc.** to track in the system
+4. System-tracked statuses appear in `!statuses` and in **Show Full Stats**
+
+### Discard Piles
+Two labeled tiles are placed near the player areas:
+- **📥 P1 Discard Pile** — Player 1 (White) places played/discarded cards here
+- **📥 P2 Discard Pile** — Player 2 (Red) places played/discarded cards here
+
+---
+
+## Game Over Summary (New in v3.2)
+
+When the final turn ends, the game displays a comprehensive summary:
+- **Winner announcement** with VP comparison
+- **Kill tallies** for both players
+- **Battle statistics**: total combats resolved, hits landed, critical hits, total damage
+- **Units destroyed** count
+- **Game duration** (if timer was running)
+
+Type `!reset` to start a new game.
 
 ---
 
