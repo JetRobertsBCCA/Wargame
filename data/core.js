@@ -7,9 +7,9 @@ const gameData = {
     measurement: {
       system: "inches",
       table_sizes: {
-        skirmish: '24" x 24" (50-100 pts)',
-        standard: '36" x 48" (200-300 pts)',
-        epic: '48" x 72" (500+ pts)',
+        skirmish: '30" x 30" (50-100 pts)',
+        standard: '48" x 48" (200-300 pts)',
+        epic: '60" x 72" (500+ pts)',
       },
     },
 
@@ -21,26 +21,37 @@ const gameData = {
         skirmish: {
           points: "50–100",
           min_units: 5,
-          max_units: 15,
+          max_units: 20,
           max_war_machines: 1,
-          table_size: '24" x 24"',
-          recommended_turns: 5
+          table_size: '30" x 30"',
+          recommended_turns: 5,
+          special_rules: [
+            "Artillery Range Cap: All ranged attacks (including Indirect Fire) have a maximum range of 10\" in Skirmish games. Artillery must be pushed forward to be effective, rewarding aggressive positioning.",
+            "Turn 1 Engagement Protection: On Turn 1 only, no ranged attacks may target units beyond 12\". This prevents devastating alpha-strikes before the defending player can act.",
+            "Scout Forward Deploy: Scout units deploy only 4\" ahead of the deployment zone (not the standard 8\"). Small boards leave insufficient room for full forward deployment."
+          ]
         },
         standard: {
           points: "200–300",
           min_units: 15,
           max_units: 30,
           max_war_machines: 3,
-          table_size: '36" x 48"',
-          recommended_turns: 6
+          table_size: '48" x 48"',
+          recommended_turns: 6,
+          special_rules: []
         },
         epic: {
           points: "500+",
           min_units: 30,
           max_units: 60,
           max_war_machines: 6,
-          table_size: '48" x 72"',
-          recommended_turns: 7
+          table_size: '60" x 72"',
+          recommended_turns: 7,
+          special_rules: [
+            "Alternating Activation (Recommended): Instead of completing all your activations before your opponent acts, players alternate activating 1 unit (or 1 squad of up to 3 units) at a time. This dramatically reduces downtime and keeps both players engaged throughout the turn.",
+            "Squad Activation: Units of the same type deployed within 4\" of each other may be grouped into a squad (max 3 per squad). Squads activate together — move all, then attack all — counting as a single activation. This speeds Epic games by roughly 40%.",
+            "Grid Cohesion Simplification: For Iron Dominion in Epic games, Grid status may be calculated per squad rather than per individual unit. If a squad is within 4\" of another squad or unit, the entire squad gains Grid Active."
+          ]
         }
       },
       composition_rules: [
@@ -50,7 +61,8 @@ const gameData = {
         "Support units cannot exceed 25% of your total points.",
         "You may include up to 3 copies of any single unit type.",
         "You cannot mix factions — all units must belong to the same faction as your Commander.",
-        "Fragments are limited to 2 per army in Skirmish, 3 in Standard, and 5 in Epic."
+        "Fragments are limited to 2 per army in Skirmish, 3 in Standard, and 5 in Epic.",
+        "War Machine Budget Guideline: War Machines costing 80+ points consume a large share of your army budget. At Standard (200–300 pts), a single 80-pt WM leaves only 120–220 pts for all other units. Players fielding expensive WMs should expect fewer bodies on the table — this is a deliberate trade-off between raw power and board presence."
       ],
       deck_rules: {
         pool_size: 20,
@@ -67,11 +79,56 @@ const gameData = {
           "As your Commander levels up (campaign mode), they unlock additional cards for their pool."
         ]
       },
+      sample_army_lists: {
+        description: "Pre-built starter armies for each faction at Skirmish scale (75 pts, 15–20 units). Use these to learn the game without the complexity of full army building.",
+        lists: [
+          {
+            faction: "Emberclaw Warpack",
+            commander: "Ashborn Ryx (18 pts)",
+            total_points: 74,
+            total_units: 17,
+            units: "Flameborn Guard ×2, Emberforged Blades, Ashwalker Skirmishers ×2, Pyromancer Adepts, Unbonded Berserkers, Hatchery Guard, Faithful Guard, Flameheart Clerics, Drake Handlers, Silent Wing Scouts, Thermal Trackers, Fragment-Blade Assassins, Pyroclast Catapult (WM)",
+            strategy: "Aggressive ranged/melee hybrid. Use the catapult for fire support, Ryx and Emberforged for damage, and Flameheart Clerics to sustain."
+          },
+          {
+            faction: "Iron Dominion",
+            commander: "Commander Ironweld (24 pts)",
+            total_points: 75,
+            total_units: 16,
+            units: "Clockwork Infantry ×3, Gear Infused Infantry ×2, Elite Vanguard, Steam Heavy Guards, Clockwork Vanguard, Gearwright Engineers ×2, Steam Medic Corps, Scouts/Recon, Aether Infused Soldiers, Clockwork Cavalry",
+            strategy: "Dense Grid formation. Keep infantry within 4\" of each other for Grid Active (+1 ATK). Engineers and Medic maintain the line. Cavalry flanks."
+          },
+          {
+            faction: "Nightfang Dominion",
+            commander: "Thrallmaster Ghûl (17 pts)",
+            total_points: 73,
+            total_units: 18,
+            units: "Thrall Conscripts ×2, Shadow Claw Infantry ×2, Fang Guard ×2, Nightfang Warriors, Plague Knights, Blood Reavers, Tiger Berserkers, Blood Shamans, Corruption Spreaders, Nightveil Infiltrators, Midnight Assassin, Blood Champion",
+            strategy: "Swarm with Thralls, spread Corruption via melee, and use the Assassin to target the enemy commander. Hunger Pool grows as you kill."
+          },
+          {
+            faction: "Thornweft Matriarchy",
+            commander: "Loom-Mother Vethiss (24 pts)",
+            total_points: 74,
+            total_units: 15,
+            units: "Thread-Warden Infantry ×3, Gossamer Guard, Venom Dancers, Silk-Blade Duelists, Anchor Guard ×2, Web-Anchor Engineers ×2, Silk Surgeons, Spiderling Scouts ×2, Phase-Silk Infiltrators",
+            strategy: "Build the Web-Anchor Network, then teleport Silk-Blade Duelists and Phase-Silk Infiltrators to key positions. Use Fate-Threads at critical moments."
+          },
+          {
+            faction: "Veilbound Shogunate",
+            commander: "The Shrouded Shogun (29 pts)",
+            total_points: 75,
+            total_units: 15,
+            units: "Temple Defenders ×2, Shrine Wardens ×2, Veiled Ashigaru ×2, Moonlit Duelists, Starblade Samurai, Spirit Healer Monks, Banner of Silent Prayer, Flow Adepts, Dreampiercer Archers, Ink Dragon Scouts, Ritual Captains",
+            strategy: "Build Ritual Flow gradually. Start in Honor Stance for defense, switch to Revelation when you reach Surging (12 Flow). Spirit Healer Monks sustain the line."
+          }
+        ]
+      },
     },
 
     turn_structure: {
       overview:
-        "Players alternate full turns. On your turn, you complete all phases before your opponent takes their turn. CP does NOT carry over between turns — use it or lose it.",
+        "Players alternate full turns. On your turn, you complete all phases before your opponent takes their turn. CP does NOT carry over between turns — use it or lose it. Note: In Epic games, alternating activation is recommended (see Epic special rules) — players take turns activating 1 unit or squad at a time instead of completing all activations.",
       phases: [
         {
           name: "Command Phase",
@@ -94,7 +151,7 @@ const gameData = {
             'Difficult terrain costs 2\" of movement per 1\" moved.',
             'A unit that moves its base within 1\" of an enemy model is now Engaged (in melee).',
             "Engaged units cannot move away unless they Disengage (sacrifice entire movement and cannot attack this turn).",
-            'Charging: A unit that moves 4\"+ in a straight line directly toward an enemy and becomes Engaged is Charging (+1 ATK die in melee this turn).',
+            'Charging: A unit that moves 5\"+ in a straight line directly toward an enemy and becomes Engaged is Charging (+1 ATK die in melee this turn).',
             "You may play Movement-timing cards during this phase (paying CP costs)."
           ],
         },
@@ -168,13 +225,13 @@ const gameData = {
         { name: "Light Cover", effect: "+1 DEF vs ranged attacks" },
         { name: "Heavy Cover", effect: "+2 DEF vs ranged attacks" },
         { name: "Elevated Attacker (ranged)", effect: "+1 ATK die" },
-        { name: "Charging (moved 4\"+ directly toward target)", effect: "+1 ATK die (melee only)" },
+        { name: "Charging (moved 5\"+ directly toward target)", effect: "+1 ATK die (melee only)" },
         { name: "Unit is Shaken", effect: "−1 ATK die (minimum 1)" },
-        { name: "Grid Active (Iron Dominion, 2+ allies within 3\")", effect: "+1 ATK die" },
+        { name: "Grid Active (Iron Dominion, 2+ allies within 4\")", effect: "+1 ATK die" },
         { name: "Grid Fortified (Iron Dominion, 3+ allies incl. Support)", effect: "+1 ATK die and +1 DEF" },
         { name: "Revelation Stance (Veilbound)", effect: "+1 ATK die, −1 DEF" },
         { name: "Honor Stance (Veilbound)", effect: "+1 DEF, −1 ATK die, cannot be flanked" },
-        { name: "Commander Aura (within 6\")", effect: "+1 MOR to friendly units" },
+        { name: "Commander Aura (within 8\")", effect: "+1 MOR to friendly units" },
       ],
       example:
         "A Steam Shock Infantry (ATK 4) attacks Temple Defenders (DEF 4). Roll 4d6: results are 2, 4, 5, 6. The 4, 5, and 6 meet or exceed DEF 4, so that's 3 hits. The 6 is a critical, dealing 2 damage. Total damage: 4 HP. The Temple Defenders had 3 HP, so they are destroyed.",
@@ -184,7 +241,7 @@ const gameData = {
       iron_dominion: {
         grid_cohesion: {
           description:
-            "Iron Dominion units fight as nodes in a tactical Grid. When units maintain formation, they share bonuses. When isolated, they lose effectiveness. During the Command Phase, calculate Grid status for each unit by counting friendly units within 3\" (War Machines with Grid Anchor count as 2 units for this purpose). Grid status is LOCKED for the rest of the turn once calculated — it does not change if units move apart during the Movement Phase. This rewards careful pre-movement positioning.",
+            "Iron Dominion units fight as nodes in a tactical Grid. When units maintain formation, they share bonuses. When isolated, they lose effectiveness. During the Command Phase, calculate Grid status for each unit by counting friendly units within 4\" (War Machines with Grid Anchor count as 2 units for this purpose). Grid status is LOCKED for the rest of the turn once calculated — it does not change if units move apart during the Movement Phase. This rewards careful pre-movement positioning. In Epic games, Grid status may be calculated per squad rather than per individual unit (see Epic special rules) to reduce bookkeeping.",
           tiers: [
             { name: "Isolated", units_within_3_inches: 0, bonus: "−1 ATK die. Unit operates alone without Grid support." },
             { name: "Connected", units_within_3_inches: 1, bonus: "No bonus or penalty. Stable but unremarkable." },
@@ -197,7 +254,7 @@ const gameData = {
           description:
             "Iron Dominion armies accumulate Fragment Charges — energy tokens spent to activate their Fragment loadout. Fragment Charges are tracked with tokens or a counter.",
           instability: [
-            "Each Iron Dominion unit generates 1 Fragment Charge at the start of your turn if within 6\" of a War Machine or Support unit.",
+            "Each Iron Dominion unit generates 1 Fragment Charge at the start of your turn if within 8\" of a War Machine or Support unit.",
             "Spend Fragment Charges to activate fragments. Each fragment lists its activation cost (Low=1, Medium=2, High=3, Very High=4 charges).",
             "After activating a fragment, roll 1d6 for instability. If the result ≤ the instability threshold (Low=1, Medium=1-2, High=1-3, Very High=1-4), the fragment backfires: deal 1 damage to the activating unit and all units within 2\".",
             "Fragment Charges persist between turns but are lost if the generating unit is destroyed.",
@@ -216,7 +273,7 @@ const gameData = {
             { name: "Ascendant", flow_required: 30, effect: "Unlock Tier 4 Flow abilities. All Veilbound units gain +1 ATK die. Transformation-stage units may attempt transformation." }
           ],
           pool_rules: [
-            "The Flow Pool has no maximum — it grows each turn as long as units survive.",
+            "The Flow Pool has a maximum capacity of 40. Excess Flow generated beyond 40 is lost. This prevents instant Ascendant-tier access in large armies.",
             "Flow is tracked with a counter or dial. Flow does NOT carry between games.",
             "When you spend Flow on an ability, your pool total decreases. Spending can drop you below a threshold — you lose that threshold's passive bonuses until you rebuild.",
             "If all your units with Ritual Flow are destroyed, you can no longer generate Flow (but may still spend remaining pool)."
@@ -249,7 +306,8 @@ const gameData = {
           ],
           spread_rules: [
             "Each Nightfang unit has a corruption_spread stat (0-4) indicating tokens applied per melee hit.",
-            "Corruption tokens persist between turns and cannot be removed except by specific abilities.",
+            "Corruption tokens persist between turns. During the End Phase, each non-Nightfang unit with Corruption tokens that was NOT damaged this turn removes 1 Corruption token (the body fights off the Blight when given respite). This is called Natural Resistance.",
+            "Heal and Repair abilities may choose to remove 1 Corruption token from the target instead of restoring 1 HP. The healer must choose one effect or the other — not both.",
             "When a corrupted unit (3+ tokens) is destroyed, adjacent enemy units each gain 1 Corruption token.",
             "Nightfang units are immune to Corruption tokens — they are carriers, not victims.",
             "A maximum of 9 Corruption tokens can be placed on a single unit."
@@ -269,16 +327,30 @@ const gameData = {
         hunger_pool: {
           description:
             "The Nightfang track kills in a shared Hunger Pool. As the Pool grows, the entire army enters a feeding frenzy, gaining cumulative bonuses. The Hunger Pool represents the collective bloodlust of the Nightfang horde.",
-          thresholds: [
-            { name: "Peckish", kills: 5, effect: "All Nightfang units gain +1 MOV. The hunt begins." },
-            { name: "Ravenous", kills: 10, effect: "All Nightfang units gain +1 ATK die. Blood frenzy spreads." },
-            { name: "Gorged", kills: 15, effect: "Commander heals 3 HP. All units gain Blood Drain for the rest of the game." }
-          ],
+          thresholds: {
+            description: "Hunger Pool thresholds scale by battle size to ensure all three tiers are reachable at every scale.",
+            skirmish: [
+              { name: "Peckish", kills: 3, effect: "All Nightfang units gain +1 MOV. The hunt begins." },
+              { name: "Ravenous", kills: 6, effect: "All Nightfang units gain +1 ATK die. Blood frenzy spreads." },
+              { name: "Gorged", kills: 10, effect: "Commander heals 3 HP. All units gain Blood Drain for the rest of the game." }
+            ],
+            standard: [
+              { name: "Peckish", kills: 5, effect: "All Nightfang units gain +1 MOV. The hunt begins." },
+              { name: "Ravenous", kills: 10, effect: "All Nightfang units gain +1 ATK die. Blood frenzy spreads." },
+              { name: "Gorged", kills: 15, effect: "Commander heals 3 HP. All units gain Blood Drain for the rest of the game." }
+            ],
+            epic: [
+              { name: "Peckish", kills: 8, effect: "All Nightfang units gain +1 MOV. The hunt begins." },
+              { name: "Ravenous", kills: 15, effect: "All Nightfang units gain +1 ATK die. Blood frenzy spreads." },
+              { name: "Gorged", kills: 25, effect: "Commander heals 3 HP. All units gain Blood Drain for the rest of the game." }
+            ]
+          },
           pool_rules: [
             "Each enemy model destroyed adds 1 to the Hunger Pool.",
             "The Hunger Pool never decreases — it only grows.",
-            "Thresholds are cumulative — reaching 10 gives both the 5 and 10 bonuses.",
-            "Some cards and abilities add directly to the Hunger Pool without requiring kills."
+            "Thresholds are cumulative — reaching Ravenous gives both the Peckish and Ravenous bonuses.",
+            "Some cards and abilities add directly to the Hunger Pool without requiring kills.",
+            "Use the thresholds matching your current battle size (Skirmish, Standard, or Epic)."
           ]
         },
         nocturnal_predators: {
@@ -293,7 +365,7 @@ const gameData = {
           generation: [
             "Each Emberclaw unit with the Fire keyword generates 1 Heat at the start of your Command Phase.",
             "Each Breath Weapon attack generates 2 Heat after resolving.",
-            "Drake Bond pairs generate 1 Heat when they activate within 6\" of each other.",
+            "Drake Bond pairs generate 1 Heat when they activate within 8\" of each other.",
             "Destroying an enemy unit with a Fire attack generates 1 bonus Heat.",
             "Your Commander generates Heat equal to half their Command stat (rounded up)."
           ],
@@ -301,7 +373,7 @@ const gameData = {
             "Spend 2 Heat: One friendly unit's attacks gain +1 damage per hit this turn (Superheated Strikes).",
             "Spend 3 Heat: One friendly unit with Breath Weapon may use it a second time this turn.",
             "Spend 4 Heat: All friendly flying units gain +2\" MOV and +1 ATK die this turn (Thermal Updraft).",
-            "Spend 5 Heat: Activate Firestorm — choose a 3\" radius area within 12\" of your Commander. All units in the area suffer a 3-dice fire attack. Creates Burning Terrain.",
+            "Spend 5 Heat: Activate Firestorm — choose a 4\" radius area within 15\" of your Commander. All units in the area suffer a 3-dice fire attack. Creates Burning Terrain.",
             "Spend Heat on Fragment activations: Heat replaces Fragment Charges for Emberclaw. Fragment activation costs are paid in Heat at a 1:1 ratio."
           ],
           overheat: {
@@ -327,17 +399,17 @@ const gameData = {
           rules: [
             "During army building, you may designate up to 3 Drake Bond pairs. Each pair consists of one Rider unit and one Drake unit. Both must be purchased separately.",
             "Bonded pairs activate simultaneously during the Movement and Combat Phases — they use a single activation slot. Move and/or attack both units in any order during that shared activation.",
-            "Bonded pairs within 6\" of each other share a wound pool: when one takes damage, the controlling player chooses which unit loses HP.",
+            "Bonded pairs within 8\" of each other share a wound pool: when one takes damage, the controlling player chooses which unit loses HP.",
             "If one half of a Bond is destroyed, the survivor gains Vengeful: +2 ATK dice, Fearless, and +2\" MOV for the rest of the game. This is permanent and powerful.",
-            "Bonded units may use each other's special abilities while within 6\" (e.g., a Rider can use the Drake's Breath Weapon).",
+            "Bonded units may use each other's special abilities while within 8\" (e.g., a Rider can use the Drake's Breath Weapon).",
             "A unit can only be part of one Bond. Bonds cannot be reformed during a game."
           ]
         },
         aerial_supremacy: {
           description: "Emberclaw armies dominate the skies. Their flying units have special rules that reward vertical control and punish grounded opponents.",
           rules: [
-            "Breath Weapon: Emberclaw units with this keyword make a special attack that hits all units (friend and foe) in a cone template (2\" wide at origin, 4\" wide at 6\" range). Breath attacks ignore cover. Each Breath Weapon can only be used once per turn unless Heat is spent.",
-            "Strafing Run: A flying unit that moves at least 6\" in a straight line over enemy units may make a free 2-dice ranged attack against one unit it passed over. This does not count as its normal attack.",
+            "Breath Weapon: Emberclaw units with this keyword make a special attack that hits all units (friend and foe) in a cone template (2\" wide at origin, 5\" wide at 8\" range). Breath attacks ignore cover. Each Breath Weapon can only be used once per turn unless Heat is spent.",
+            "Strafing Run: A flying unit that moves at least 8\" in a straight line over enemy units may make a free 2-dice ranged attack against one unit it passed over. This does not count as its normal attack.",
             "Elevated Dive: A flying unit that charges from above gains +2 ATK dice instead of +1 (Diving Charge). The unit lands and becomes a ground unit until its next Movement Phase.",
             "Grounded: If a flying unit takes 3+ damage in a single attack, roll 1d6. On a 1-2, it is Grounded — it loses Fly until the end of its next turn. Grounded flying units suffer -2 MOR.",
             "Anti-Air Vulnerability: Emberclaw flying units suffer -1 DEF against ranged attacks from Elevated terrain or units with the Anti-Air keyword."
@@ -360,14 +432,14 @@ const gameData = {
             "The Thornweft fight by weaving a Web across the battlefield — a network of silk anchor points that enable teleportation, grant bonuses, and restrict enemy movement. The Web starts small and grows each turn, rewarding patient positional play.",
           anchor_placement: [
             "The Thornweft player starts the game with 2 Web-Anchor tokens placed during deployment (within deployment zone).",
-            "During each Command Phase, the Thornweft player may place 1 new Web-Anchor token within 6\" of any friendly Thornweft unit. The unit must not be Engaged.",
-            "Web-Spinner units (Support keyword) may place 1 additional Anchor per turn within 3\" of themselves (free action during Movement Phase).",
+            "During each Command Phase, the Thornweft player may place 1 new Web-Anchor token within 8\" of any friendly Thornweft unit. The unit must not be Engaged.",
+            "Web-Spinner units (Support keyword) may place 1 additional Anchor per turn within 4\" of themselves (free action during Movement Phase).",
             "Maximum Anchors: 4 in Skirmish, 6 in Standard, 10 in Epic.",
-            "Web-Anchors are terrain tokens (not units). They cannot be attacked directly, but any unit can spend a full activation in contact with an Anchor to remove it (no movement or attacks that turn).",
-            "If a Web-Anchor is removed, any Thornweft unit within 3\" of it becomes Severed (see below) until a new Anchor is placed within range."
+            "Web-Anchors are terrain tokens (not units). They cannot be attacked with ranged attacks, but any unit can spend a full activation in base contact with an Anchor to remove it (the unit cannot move or attack that turn). This is the primary counterplay against the Web-Anchor Network — committing a unit to dismantle an Anchor is a meaningful tactical sacrifice.",
+            "If a Web-Anchor is removed, any Thornweft unit within 4\" of it becomes Severed (see below) until a new Anchor is placed within range."
           ],
           web_teleport: [
-            "Web-Network Teleport: Instead of normal movement, a Thornweft unit within 3\" of a Web-Anchor may teleport to within 3\" of any other friendly Web-Anchor on the table.",
+            "Web-Network Teleport: Instead of normal movement, a Thornweft unit within 4\" of a Web-Anchor may teleport to within 4\" of any other friendly Web-Anchor on the table.",
             "A unit that teleports cannot Charge on the turn it arrives (it needs a moment to reorient after translocation).",
             "Only 3 units may teleport per turn (the Web's bandwidth is limited). War Machines cannot teleport.",
             "A unit that teleports counts as having used its full movement — it cannot move further this turn.",
@@ -393,14 +465,14 @@ const gameData = {
             "Spend 2 Fate-Threads: Force an enemy to reroll a Morale check. The new result stands.",
             "Spend 3 Fate-Threads: After an enemy plays a card, negate its effect. The card is still discarded and CP spent.",
             "Fate-Threads do NOT regenerate during a game — once spent, they are gone. They represent the Thornweft's pre-woven destiny unraveling.",
-            "If the Thornweft Commander is within 3\" of a Web-Anchor when spending a Fate-Thread, gain +1 bonus: reroll results of 1-2 become rerolls of 1-3 (broader manipulation).",
+            "If the Thornweft Commander is within 4\" of a Web-Anchor when spending a Fate-Thread, gain +1 bonus: reroll results of 1-2 become rerolls of 1-3 (broader manipulation).",
             "A maximum of 2 Fate-Threads may be spent per turn (the Web can only be pulled so hard)."
           ]
         },
         gossamer_trap: {
           description: "Thornweft terrain manipulation — reality re-woven in silk. Gossamer Traps are terrain pieces placed by Thornweft abilities that restrict enemy movement while empowering Thornweft units.",
           rules: [
-            "Gossamer Trap tokens may be placed by specific units, cards, or abilities. Each is a 3\" radius terrain zone.",
+            "Gossamer Trap tokens may be placed by specific units, cards, or abilities. Each is a 4\" radius terrain zone.",
             "For enemy units: Gossamer Traps count as Impassable Terrain. Enemies cannot enter or pass through them.",
             "For Thornweft units: Gossamer Traps count as Open Ground. Thornweft units inside gain +1 DEF (Silk Shroud).",
             "An enemy unit that starts its turn within 1\" of a Gossamer Trap (adjacent but outside) suffers -2\" MOV as trailing silk clings to them.",
@@ -409,13 +481,13 @@ const gameData = {
           ]
         },
         silk_shroud: {
-          description: "All Thornweft units gain Light Cover (+1 DEF vs ranged attacks) when within 6\" of any Web-Anchor or Gossamer Trap. This represents the ambient silk-haze that cloaks the Thornweft's territory.",
+          description: "All Thornweft units gain Light Cover (+1 DEF vs ranged attacks) when within 8\" of any Web-Anchor or Gossamer Trap. This represents the ambient silk-haze that cloaks the Thornweft's territory.",
           rule: "Passive faction ability — always active when within range. Stacks with actual terrain cover (max +3 DEF from all cover sources combined)."
         },
         fragment_interaction: {
           description: "Thornweft fragments are woven into Web-Anchors. Fragments must be assigned to specific Web-Anchors during deployment. A fragment activates from its Anchor's location.",
           rules: [
-            "Each Web-Anchor can hold 1 fragment. Fragments placed at Anchors affect all units within 4\" of that Anchor.",
+            "Each Web-Anchor can hold 1 fragment. Fragments placed at Anchors affect all units within 5\" of that Anchor.",
             "Thornweft do not use Fragment Charges or Heat. Instead, fragment activation costs are paid in Fate-Threads (1 Thread per activation).",
             "Because Fate-Threads are finite, Thornweft fragment activations are few but guaranteed — no instability rolls. The Web absorbs the chaos.",
             "If a Web-Anchor holding a fragment is removed by an enemy, the fragment is lost for the rest of the game."
@@ -432,7 +504,7 @@ const gameData = {
         "Commanders have their own stat line (derived from base_stats): ATK, DEF, HP, MOV, RNG, MOR.",
         "Commanders generate Command Points (CP) equal to their Command stat each turn.",
         "Only your Commander can play cards from your hand. Each card has a CP cost.",
-        'Your Commander has a 6" Command Aura: friendly units within this range gain +1 MOR.',
+        'Your Commander has a 8" Command Aura: friendly units within this range gain +1 MOR.',
         "If your Commander is destroyed, you immediately lose all remaining CP and can no longer play cards for the rest of the game. Your hand is discarded.",
       ],
       commander_stats_formula: {
@@ -507,7 +579,7 @@ const gameData = {
         {
           name: "Objective Control",
           description:
-            "Place 3 objective markers during setup (one at table center, one in each player's half at least 8\" from edges). At the end of the final turn, the player controlling more objectives wins. A unit controls an objective if it is the closest model to that marker with no enemy model closer. If both players have a model equidistant from an objective, neither controls it — it is Contested."
+            "Place 3 objective markers during setup (one at table center, one in each player's half at least 10\" from edges). At the end of the final turn, the player controlling more objectives wins. A unit controls an objective if it is the closest model to that marker with no enemy model closer. If both players have a model equidistant from an objective, neither controls it — it is Contested."
         },
         {
           name: "Attrition",
@@ -517,7 +589,7 @@ const gameData = {
         {
           name: "King of the Hill",
           description:
-            'One objective in the center of the table. At the end of each turn (starting Turn 2), the player with the most total current HP (not maximum) of units within 3\" of the objective scores 1 Victory Point. First to 5 VP wins. If the game ends in a tie, most remaining HP wins.'
+            'One objective in the center of the table. At the end of each turn (starting Turn 2), the player with the most total current HP (not maximum) of units within 4\" of the objective scores 1 Victory Point. First to 5 VP wins. If the game ends in a tie, most remaining HP wins.'
         }
       ],
     },
@@ -532,8 +604,8 @@ const gameData = {
         { name: "Impassable Terrain", effect: "Cannot be entered by non-Fly units. Blocks line of sight completely." },
         { name: "Elevated Ground", effect: "+1 ATK die for ranged attacks targeting lower ground. +1 DEF vs melee from units on lower ground." },
         { name: "Dangerous Terrain", effect: 'Any unit entering or starting its turn in dangerous terrain rolls 1d6: on a 1, it takes 1 damage.' },
-        { name: "Fragment Deposit", effect: 'Iron Dominion units within 3\" generate +1 Fragment Charge per turn. Veilbound units treat this as Difficult Terrain.' },
-        { name: "Spirit Well", effect: 'Veilbound units within 3\" generate +2 Ritual Flow per turn. Iron Dominion units treat this as Dangerous Terrain.' }
+        { name: "Fragment Deposit", effect: 'Iron Dominion units within 4\" generate +1 Fragment Charge per turn. Veilbound units treat this as Difficult Terrain.' },
+        { name: "Spirit Well", effect: 'Veilbound units within 4\" generate +2 Ritual Flow per turn. Iron Dominion units treat this as Dangerous Terrain.' }
       ]
     },
 
@@ -547,6 +619,7 @@ const gameData = {
         name: "Defense",
         description:
           "The target number an attacker must roll to score a hit. Higher = harder to damage. Standard range: 2-6. Some legendary units and War Machines have DEF 7+ — these can only be damaged by Critical Hits (natural 6, which always hit regardless of DEF).",
+        stacking_cap: "A unit's effective DEF (after all bonuses from stances, cover, terrain, auras, abilities, and keywords) can never exceed 6 for non-War Machine units. War Machines and Legendary units may exceed DEF 6. This prevents stacking defensive bonuses (e.g., Honor Stance + Shield Wall + Spirit Monolith) from making regular units functionally invulnerable to all non-critical attacks.",
       },
       HP: {
         name: "Hit Points",
@@ -598,12 +671,12 @@ const gameData = {
         {
           step: 4,
           name: "Determine Deployment Zones",
-          description: "Standard deployment: divide the table into two equal halves along the long edge. Each player's deployment zone is their half, but units must deploy at least 12\" from the center line. Alternative: corner deployment (each player gets a table corner with a 12\" radius deployment zone)."
+          description: "Standard deployment: divide the table into two equal halves along the long edge. Each player's deployment zone is their half, but units must deploy at least 15\" from the center line. Alternative: corner deployment (each player gets a table corner with a 15\" radius deployment zone)."
         },
         {
           step: 5,
           name: "Place Objectives (if applicable)",
-          description: "For Objective Control: place 3 objective markers — one at table center, and each player places one in their half (at least 8\" from any table edge). For King of the Hill: place 1 objective at table center."
+          description: "For Objective Control: place 3 objective markers — one at table center, and each player places one in their half (at least 10\" from any table edge). For King of the Hill: place 1 objective at table center."
         },
         {
           step: 6,
@@ -613,7 +686,7 @@ const gameData = {
         {
           step: 7,
           name: "Deploy Armies",
-          description: "Players alternate placing units one at a time, starting with the player who chose to deploy first. Commanders must be deployed. Units with the Scout keyword may deploy up to 6\" ahead of the deployment zone. War Machines must be placed in your deployment zone."
+          description: "Players alternate placing units one at a time, starting with the player who chose to deploy first. Commanders must be deployed. Units with the Scout keyword may deploy up to 8\" ahead of the deployment zone (4\" in Skirmish games — see Skirmish special rules). War Machines must be placed in your deployment zone."
         },
         {
           step: 8,
@@ -642,7 +715,7 @@ const gameData = {
       ],
       exceptions: [
         "Units with Fly always have LOS to ground units and vice versa.",
-        "Stealth units cannot be targeted by ranged attacks from beyond 6\" until they attack or an ability reveals them.",
+        "Stealth units cannot be targeted by ranged attacks from beyond 8\" until they attack or an ability reveals them.",
         "Sniper-keyword units ignore LOS restrictions from intervening models (but not terrain).",
         "Towering units (War Machines with Towering keyword) can always be seen and targeted from anywhere on the table."
       ]
@@ -669,19 +742,19 @@ const gameData = {
       charging: {
         description: "A Charge is a special movement where a unit rushes directly at an enemy to engage in melee.",
         rules: [
-          "To Charge, a unit must move at least 4\" in a straight line directly toward an enemy model and end within 1\" of it (becoming Engaged).",
+          "To Charge, a unit must move at least 5\" in a straight line directly toward an enemy model and end within 1\" of it (becoming Engaged).",
           "A Charging unit gains +1 ATK die on its melee attack this turn.",
           "A unit cannot Charge if it starts its Movement Phase already Engaged.",
           "A Charge must be declared at the start of the unit's activation during the Movement Phase.",
           "If the charging unit cannot reach within 1\" of the target, the Charge fails — the unit moves its full MOV toward the target but gains no Charge bonus.",
-          "Note: A unit already within 1-3\" of an enemy cannot Charge (it cannot cover 4\" of straight-line distance). It simply moves into Engagement normally without the Charge bonus. This 'dead zone' is intentional — charges represent a running start.",
+          "Note: A unit already within 1-4\" of an enemy cannot Charge (it cannot cover 5\" of straight-line distance). It simply moves into Engagement normally without the Charge bonus. This 'dead zone' is intentional — charges represent a running start.",
           "Units with Fly may Charge from any direction, ignoring intervening terrain and models."
         ]
       },
       special_movement: [
         "Fly: The unit ignores all terrain during movement and may move over other models. It still cannot end overlapping another model.",
         "Phase: The unit may move through enemy models and terrain features. It does not become Engaged when passing through enemies — only when it ends within 1\".",
-        "Scout (Deployment): During setup, Scout units may deploy up to 6\" ahead of the deployment zone boundary.",
+        "Scout (Deployment): During setup, Scout units may deploy up to 8\" ahead of the deployment zone boundary (4\" in Skirmish games).",
         "Disengage: An Engaged unit may use its entire Movement Phase to move away from all enemies. It must move at least 1\" away from all enemy models. It cannot attack this turn.",
         "Consolidate: After destroying a melee opponent, a unit may make a free 2\" move in any direction.",
         "Fall Back: A Shaken unit may voluntarily Fall Back — it moves its full MOV directly away from the nearest enemy. It cannot attack this turn.",
@@ -753,7 +826,7 @@ const gameData = {
         "Shaken: The unit suffers −1 ATK die (minimum 1 die) on its next turn. Shaken does NOT stack — a Shaken unit that fails another Morale check does not get −2; it stays at −1.",
         "Rally: During the End Phase, a Shaken unit that was NOT damaged this turn may attempt to Rally. Roll 2d6: if the result is ≤ MOR, remove Shaken status.",
         "Units with Fearless automatically pass all Morale checks. They can never become Shaken or Rout.",
-        "Commander's Aura: Friendly units within 6\" of their Commander gain +1 MOR for Morale checks.",
+        "Commander's Aura: Friendly units within 8\" of their Commander gain +1 MOR for Morale checks.",
         "If your Commander is destroyed, all friendly units must immediately make a Morale check at −2 MOR (this check happens even if they weren't damaged this turn)."
       ]
     },
@@ -767,12 +840,12 @@ const gameData = {
         { name: "Grid Node", description: "This unit counts for Iron Dominion Grid Cohesion adjacency. Most ID units have this." },
         { name: "Grid Anchor", description: "This unit counts as 2 units for Grid Cohesion adjacency. War Machines only." },
         { name: "Fearless", description: "Automatically passes all Morale checks. Cannot be Shaken or Routed." },
-        { name: "Charge", description: "Gains +1 ATK die when it moves 4\"+ in a straight line directly into melee this turn." },
+        { name: "Charge", description: "Gains +1 ATK die when it moves 5\"+ in a straight line directly into melee this turn." },
         { name: "Blast", description: "Attacks hit the target and all units (friend or foe) within the stated radius." },
         { name: "Siege", description: "Deals double damage to terrain pieces and fortifications." },
-        { name: "Stealth", description: "Cannot be targeted by ranged attacks from more than 6\" away. Lost when the unit attacks or an ability reveals it." },
+        { name: "Stealth", description: "Cannot be targeted by ranged attacks from more than 8\" away. Lost when the unit attacks or an ability reveals it." },
         { name: "Fly", description: "Ignores terrain during movement. May move over other models. Has LOS to all ground units." },
-        { name: "Scout", description: "May deploy up to 6\" ahead of the deployment zone during setup." },
+        { name: "Scout", description: "May deploy up to 8\" ahead of the deployment zone during setup." },
         { name: "Spotter", description: "Grants +1 ATK die to friendly Artillery units targeting the same enemy this unit can see." },
         { name: "Bodyguard", description: "If an adjacent friendly Commander or Specialist is targeted by an attack, this unit may redirect the attack to itself instead." },
         { name: "Immobile", description: "Cannot move and attack in the same turn. Must choose one." },
@@ -780,38 +853,38 @@ const gameData = {
         { name: "Unstable", description: "At the start of each turn, roll 1d6. On a 1, this unit suffers damage as described on its stat line." },
         { name: "Phase", description: "May move through enemy models and terrain. Does not become Engaged by moving through enemies." },
         { name: "Sniper", description: "May target enemy Commanders and Specialists even if other enemy units are closer. Ignores intervening models for LOS." },
-        { name: "Fragment Infused", description: "Gains +1 ATK die when Fragment Charges are spent on abilities within 3\" of this unit." },
-        { name: "Fragment Amplifier", description: "Friendly units within 3\" gain +1 to fragment activation rolls." },
-        { name: "Repair", description: "During the End Phase, restore 1 HP to an adjacent friendly unit." },
-        { name: "Heal", description: "During the End Phase, restore 1 HP to an adjacent friendly unit (organic version of Repair)." },
+        { name: "Fragment Infused", description: "Gains +1 ATK die when Fragment Charges are spent on abilities within 4\" of this unit." },
+        { name: "Fragment Amplifier", description: "Friendly units within 4\" gain +1 to fragment activation rolls." },
+        { name: "Repair", description: "During the End Phase, restore 1 HP to an adjacent friendly unit. Alternatively, may remove 1 Corruption token from the target instead of healing (choose one effect per activation)." },
+        { name: "Heal", description: "During the End Phase, restore 1 HP to an adjacent friendly unit (organic version of Repair). Alternatively, may remove 1 Corruption token from the target instead of healing (choose one effect per activation)." },
         { name: "All-Terrain", description: "Ignores Difficult Terrain penalties." },
         { name: "Sharpshot", description: "Critical hits occur on rolls of 5+ instead of only on 6." },
         { name: "Double Strike", description: "May attack twice in a single Combat Phase. Both attacks may target the same or different enemies within range. Resolve each attack fully (including damage and morale checks) before starting the second attack." },
-        { name: "Terror Aura", description: "Enemy units within 3\" suffer −1 MOR on Morale checks." },
+        { name: "Terror Aura", description: "Enemy units within 4\" suffer −1 MOR on Morale checks." },
         { name: "Guardian", description: "When attacked in melee, this unit counterattacks at full ATK before damage is applied." },
         { name: "Ritual Flow", description: "This unit generates the stated amount of Ritual Flow for the Veilbound Flow Pool each Command Phase." },
         { name: "Blood Drain", description: "When this unit destroys an enemy model in melee, it heals 1 HP. Represents the vampiric feeding of the Nightfang Dominion." },
         { name: "Anti-Air", description: "This unit's ranged attacks gain +1 ATK die against targets with the Fly keyword. Targets with Fly suffer -1 DEF against this unit's ranged attacks." },
         { name: "Fire", description: "This unit's attacks have the Fire type. Fire attacks generate 1 Heat for Emberclaw armies, can create Burning Terrain, and deal +1 damage to targets in flammable terrain." },
-        { name: "Breath Weapon", description: "This unit can make a special attack using a cone template (2\" wide at origin, 4\" wide at 6\" range). Breath attacks ignore cover and hit all units (friend and foe) in the area. Can only be used once per turn unless Heat is spent (Emberclaw) or a card allows additional uses." },
+        { name: "Breath Weapon", description: "This unit can make a special attack using a cone template (2\" wide at origin, 5\" wide at 8\" range). Breath attacks ignore cover and hit all units (friend and foe) in the area. Can only be used once per turn unless Heat is spent (Emberclaw) or a card allows additional uses." },
         { name: "Corruption Spread", description: "This unit applies Corruption tokens to enemies hit in melee. The number of tokens applied equals the unit's corruption_spread stat (typically 1-4). See Corruption system for threshold effects." },
         { name: "Thrall", description: "This unit is a mindless undead servant of the Nightfang Dominion. Thralls are immune to Morale effects (they have no will to break) but cannot benefit from Commander Aura bonuses. Cards referencing 'Thrall' affect these units." },
         { name: "Expendable", description: "When this unit is destroyed, it does not count toward Hunger Pool kills for the enemy. The unit was considered disposable by its own army. No Injury Roll in campaign mode." },
-        { name: "Web-Spinner", description: "This Support unit may place 1 additional Web-Anchor token per turn within 3\" of itself as a free action during the Movement Phase. Thornweft Matriarchy only." },
+        { name: "Web-Spinner", description: "This Support unit may place 1 additional Web-Anchor token per turn within 4\" of itself as a free action during the Movement Phase. Thornweft Matriarchy only." },
         { name: "Transport", description: "This War Machine can carry Infantry units. It has a Transport Capacity (usually 3-5). Infantry may embark/disembark during Movement Phase. Embarked units cannot act but are protected. If the Transport is destroyed, embarked units take 1 damage each." },
         { name: "Mobile Fire", description: "This unit may Attack and then Move (reversing the normal activation order). Useful for shoot-and-scoot tactics." },
         { name: "Non-Combatant", description: "This unit has ATK 0 and cannot make attacks. It cannot be forced to attack in melee. If Engaged by an enemy, it may Disengage freely without sacrificing its activation (it offers no meaningful resistance). Non-Combatants exist to provide support abilities, not to fight." },
         { name: "Massive", description: "This unit is enormous. It counts as Towering (can be seen and targeted from anywhere on the table). It cannot benefit from cover. It blocks line of sight for smaller units behind it." },
         { name: "Legendary", description: "Only one unit with this keyword may be included in your army. Legendary units represent unique, lore-defining war machines that are the pinnacle of their faction's power." },
         { name: "Corruption Aura", description: "All enemy units within the stated radius gain 1 Corruption token at the start of each of this unit's activations. Nightfang Dominion only." },
-        { name: "Terrifying", description: "Enemy units within 3\" must pass a Morale check (2d6 vs MOR) at the start of their activation or suffer -1 ATK die this turn. Functionally similar to Terror Aura but triggers a check rather than a passive penalty." },
+        { name: "Terrifying", description: "Enemy units within 4\" must pass a Morale check (2d6 vs MOR) at the start of their activation or suffer -1 ATK die this turn. Functionally similar to Terror Aura but triggers a check rather than a passive penalty." },
         { name: "Immovable", description: "This unit cannot move. It is placed during deployment and remains stationary for the entire game. Unlike Immobile (which allows choosing move OR attack), Immovable units can never move at all. They should have MOV: 0. They CAN still attack and use abilities normally if they have ATK > 0." },
         { name: "Void Resolve", description: "This unit automatically passes all Morale checks (same as Fearless). Additionally, the controlling player may spend 1 Ritual Flow to grant Void Resolve to one adjacent friendly unit for 1 turn. Veilbound Shogunate only." },
         { name: "Indirect Fire", description: "This unit can fire over intervening models and terrain (it does not need direct line of sight). The attack follows a high arc. Cannot target units in melee engagement." },
         { name: "Armor Piercing", description: "This unit's attacks ignore 1 point of the target's DEF. Stacks with other DEF-reducing effects." },
         { name: "Swarm", description: "Multiple models count as 1 unit for game purposes. Swarm units cannot be targeted by Blast effects (they disperse). They always take only 1 damage from any single source (they reform around losses). Their ATK represents collective attacks from many small creatures." },
         { name: "Heavy Armor", description: "This unit has reinforced protection. It reduces all incoming damage by 1 (minimum 1). However, it suffers -1 MOV penalty due to the weight." },
-        { name: "Devastating Charge", description: "When this unit Charges (moves 4\"+ in a straight line into melee), it gains +2 ATK dice instead of the normal +1 from Charge. If the charge attack destroys the target, this unit may make a free 3\" follow-up move." },
+        { name: "Devastating Charge", description: "When this unit Charges (moves 5\"+ in a straight line into melee), it gains +2 ATK dice instead of the normal +1 from Charge. If the charge attack destroys the target, this unit may make a free 4\" follow-up move." },
         { name: "Veteran", description: "This unit may reroll one failed ATK die per attack. Represents combat experience and superior training." },
         { name: "Skirmish", description: "This unit may shoot and then move (reversing the normal sequence). After attacking, it may move up to half its MOV value. The unit cannot use Skirmish and Charge in the same turn." },
         { name: "Terror", description: "Enemy units must pass a Morale check when this unit Charges them. If failed, the target unit suffers -1 ATK die for this combat round. Different from Terror Aura (passive aura) and Terrifying (activation-triggered check)." },
@@ -822,19 +895,19 @@ const gameData = {
         { name: "Pack Tactics", description: "When 2 or more friendly units with Pack Tactics attack the same enemy unit in the same Combat Phase, each gains +1 ATK die. Nightfang Dominion only." },
         { name: "Corruption", description: "This unit interacts with the Corruption token system. It can apply, benefit from, or trigger Corruption threshold effects. See Corruption system rules for token thresholds (3: -1 MOV, 6: -1 ATK, 9: -1 DEF, 12: unit destroyed). Nightfang Dominion faction keyword." },
         { name: "Shadow Meld", description: "This unit gains Stealth while in terrain or shadow areas. When attacking from Shadow Meld, the attack applies 1 additional Corruption token to the target. Nightfang Dominion only." },
-        { name: "Frenzy", description: "This unit must Charge the nearest enemy if possible. While in Frenzy, it gains +2 ATK dice but cannot disengage voluntarily. A Commander within 6\" can suppress Frenzy for one turn." },
+        { name: "Frenzy", description: "This unit must Charge the nearest enemy if possible. While in Frenzy, it gains +2 ATK dice but cannot disengage voluntarily. A Commander within 8\" can suppress Frenzy for one turn." },
         { name: "Venom Strike", description: "This unit's melee attacks apply Venom tokens to the target. Venom token thresholds: 3 tokens = -1 MOV, 5 tokens = -1 ATK, 7 tokens = target takes 1 damage per End Phase. Venom tokens are removed by Heal/Repair or at a rate of 1 per End Phase. Thornweft Matriarchy only." },
         { name: "Web-Walk", description: "This unit ignores movement penalties from Web terrain and Web-Anchor effects. It treats all Web-covered areas as open ground. Thornweft Matriarchy only." },
         { name: "Wall-Climber", description: "This unit can move vertically up walls and cliff faces at normal speed. It does not need to go around terrain obstacles. Does not grant Fly — the unit still follows surfaces." },
-        { name: "Silk-Anchored", description: "While within 3\" of a friendly Web-Anchor, this unit gains +1 DEF and +1 MOR. The web network provides stability and confidence. Thornweft Matriarchy only." },
+        { name: "Silk-Anchored", description: "While within 4\" of a friendly Web-Anchor, this unit gains +1 DEF and +1 MOR. The web network provides stability and confidence. Thornweft Matriarchy only." },
         { name: "Fate-Bound", description: "This unit automatically passes all Morale checks (similar to Fearless). Narratively, the Fate-Weavers have seen this unit's thread in the Great Web and know its destiny is not to flee. Thornweft Matriarchy only." },
         { name: "Overcharge", description: "This unit may spend 1 Fragment Charge to gain +2 ATK dice for one attack. After the attack, roll d6: on 1-2, the unit suffers 1 damage from mechanical stress. Iron Dominion only." },
         { name: "Stance", description: "Veilbound infantry and cavalry units can switch between combat stances during the Command Phase (free action, before movement). Each stance provides a different stat trade-off. See Veilbound faction rules for available stances. War Machines and Support units cannot use stances." },
-        { name: "Commander Bond", description: "This unit gains +1 ATK or +1 DEF (chosen when deployed) while within 6\" of its faction's Commander. The bonus is lost if the Commander is destroyed." },
+        { name: "Commander Bond", description: "This unit gains +1 ATK or +1 DEF (chosen when deployed) while within 8\" of its faction's Commander. The bonus is lost if the Commander is destroyed." },
         { name: "Brace", description: "As a reaction to being Charged, this unit may Brace. A Bracing unit gains +1 DEF against the charging attack but cannot move on its next activation." },
         { name: "Hold Ground", description: "This unit gains +1 DEF when it does not move during its activation. The bonus lasts until the start of its next activation." },
-        { name: "Detect Hidden Units", description: "This unit reveals enemy Stealth units within 6\" at the start of each Command Phase. Revealed units lose Stealth until they re-enter concealment conditions." },
-        { name: "Relay Commands", description: "Friendly units within 6\" of this unit are considered within the Commander's Aura range, even if the Commander is farther away. Extends effective command range." },
+        { name: "Detect Hidden Units", description: "This unit reveals enemy Stealth units within 8\" at the start of each Command Phase. Revealed units lose Stealth until they re-enter concealment conditions." },
+        { name: "Relay Commands", description: "Friendly units within 8\" of this unit are considered within the Commander's Aura range, even if the Commander is farther away. Extends effective command range." },
         { name: "Fragment User", description: "This unit can activate Fragments as if it were a Commander (normally only Commanders can activate Fragments). It still costs the normal Fragment Charge." },
         { name: "Dodge", description: "When this unit is hit by a melee attack, roll d6: on 5+, the attack misses entirely. Only one Dodge roll per attack." },
         { name: "Unyielding", description: "This unit cannot be pushed, displaced, or moved by enemy abilities or effects. It holds its ground against all forced movement but can still move normally on its own activation." }
@@ -865,14 +938,14 @@ const gameData = {
           name: "Assassination",
           type: "Asymmetric",
           description: "One player is the Assassin; the other is the Protector. The Assassin must destroy the Protector's Commander. The Protector must keep their Commander alive for 5 turns.",
-          special_rules: "The Protector gets 25% more points. The Assassin deploys second and goes first. The Protector's Commander cannot be placed within 6\" of any table edge during deployment.",
+          special_rules: "The Protector gets 25% more points. The Assassin deploys second and goes first. The Protector's Commander cannot be placed within 8\" of any table edge during deployment.",
           recommended_size: "Skirmish (50–100 pts)"
         },
         {
           name: "Scorched Earth",
           type: "Symmetric",
           description: "Each player places 2 objective markers in their opponent's half of the table. A unit can destroy an enemy objective by spending a full turn in contact with it (no movement or attacks). The first player to destroy both enemy objectives wins.",
-          special_rules: "Destroying an objective awards 50 bonus XP in campaign mode. Objectives must be at least 6\" apart and at least 6\" from table edges.",
+          special_rules: "Destroying an objective awards 50 bonus XP in campaign mode. Objectives must be at least 8\" apart and at least 8\" from table edges.",
           recommended_size: "Standard (200–300 pts)"
         },
         {
@@ -931,7 +1004,7 @@ const gameData = {
           resource: "Heat Pool",
           generation: "Fire attacks, Breath Weapons, and Drake Bonds generate Heat. Aggressive play fuels the forge.",
           activation: "Spend Heat equal to fragment cost tier (Low=1, Medium=2, High=3, Very High=4). Same costs as Iron Dominion but different generation.",
-          instability: "Roll 1d6: on a 1, the fragment ignites — deal 2 damage to all non-Emberclaw units within 3\" (enemies AND allies of other factions in multiplayer). Emberclaw are immune to their own flame.",
+          instability: "Roll 1d6: on a 1, the fragment ignites — deal 2 damage to all non-Emberclaw units within 4\" (enemies AND allies of other factions in multiplayer). Emberclaw are immune to their own flame.",
           flavor: "Dragonfire forges fragment energy into raw destruction. The Warpack's fragments burn hotter than anyone else's."
         },
         thornweft_matriarchy: {
@@ -995,7 +1068,7 @@ const gameData = {
           name: "Emergency Retreat",
           cost: "2 RP",
           trigger: "One of your units is about to be attacked in melee.",
-          effect: "Your unit immediately disengages and moves up to 3\" away from the attacker. The attacker's activation is not wasted — they may redirect to another target within range or forfeit their attack.",
+          effect: "Your unit immediately disengages and moves up to 4\" away from the attacker. The attacker's activation is not wasted — they may redirect to another target within range or forfeit their attack.",
           restriction: "Cannot be used if the unit is surrounded (enemies on 3+ sides within 2\")."
         }
       ],
@@ -1090,9 +1163,9 @@ const gameData = {
         {
           name: "Stealthed",
           icon: "👻",
-          effect: "Cannot be targeted by ranged attacks from more than 6\" away. Does not appear on opponent's threat assessment until revealed.",
+          effect: "Cannot be targeted by ranged attacks from more than 8\" away. Does not appear on opponent's threat assessment until revealed.",
           applied: "Stealth keyword (innate), cards (Stealth Field, Veil Shroud), or abilities.",
-          removed: "The unit makes an attack, moves within 3\" of an enemy, or an ability reveals it (Veil Sight, Marrowlight). Also removed by Burning Terrain.",
+          removed: "The unit makes an attack, moves within 4\" of an enemy, or an ability reveals it (Veil Sight, Marrowlight). Also removed by Burning Terrain.",
           stacking: "N/A — binary state.",
           notes: "Stealth is about positioning, not invisibility. Once you attack, you're visible."
         },
@@ -1109,8 +1182,8 @@ const gameData = {
           name: "Severed",
           icon: "✂️",
           effect: "-1 ATK die, -1 MOR. Unit is cut off from faction network.",
-          applied: "Thornweft units with no Web-Anchor within 8\". Affects only Thornweft units.",
-          removed: "A Web-Anchor is placed or moved within 8\" of the unit, or the unit moves within 8\" of an existing Anchor.",
+          applied: "Thornweft units with no Web-Anchor within 10\". Affects only Thornweft units.",
+          removed: "A Web-Anchor is placed or moved within 10\" of the unit, or the unit moves within 10\" of an existing Anchor.",
           stacking: "N/A — binary state.",
           notes: "The cost of the Thornweft's Web dependency. Destroy their Anchors and their army crumbles."
         },
@@ -1159,7 +1232,7 @@ const gameData = {
           "When destroyed, a War Machine leaves a Wreckage token at its position. Wreckage counts as Difficult Terrain and Heavy Cover.",
           "If the War Machine had the Unstable keyword, it explodes on death: all units within 2\" take 2 damage.",
           "Wreckage persists for the rest of the game. It can be a defensive position for surviving infantry.",
-          "Iron Dominion War Machine wreckage generates 1 Fragment Charge per turn for ID units within 3\" (residual energy).",
+          "Iron Dominion War Machine wreckage generates 1 Fragment Charge per turn for ID units within 4\" (residual energy).",
           "Emberclaw War Machine wreckage becomes Burning Terrain for 2 turns, then becomes normal wreckage."
         ]
       },
@@ -1168,8 +1241,8 @@ const gameData = {
         rules: [
           "A Transport War Machine has a Transport Capacity (usually 3-5 models).",
           "Infantry units may embark onto a Transport by moving into base contact during the Movement Phase (free action). The embarked unit is removed from the table.",
-          "During the Transport's Movement Phase, it may Disembark units: place them within 3\" of the Transport. Disembarked units may act normally this turn.",
-          "If a Transport is destroyed, all embarked units are placed within 3\" and each takes 1 damage (crash landing). They may not act this turn.",
+          "During the Transport's Movement Phase, it may Disembark units: place them within 4\" of the Transport. Disembarked units may act normally this turn.",
+          "If a Transport is destroyed, all embarked units are placed within 4\" and each takes 1 damage (crash landing). They may not act this turn.",
           "Embarked units cannot attack, be targeted, or use abilities. They are safe but inactive."
         ]
       }
@@ -1231,12 +1304,12 @@ const gameData = {
               { name: "Calculated Strike", effect: "Once per turn, reroll up to 2 ATK dice on any one friendly unit's attack." },
               { name: "Tactical Foresight", effect: "+1 RP (Reaction Point) during opponent's turn." },
               { name: "Efficient Command", effect: "+1 CP per turn." },
-              { name: "Precision Aura", effect: "Friendly units within 6\" of Commander crit on 5+ instead of only 6." },
+              { name: "Precision Aura", effect: "Friendly units within 8\" of Commander crit on 5+ instead of only 6." },
               { name: "Fortified Mind", effect: "Commander gains +1 DEF and is immune to Morale penalties." },
               { name: "Analytical Engine", effect: "At the start of each game, look at the top 3 cards of your opponent's deck and return them in any order." },
               { name: "Master Strategist", effect: "Once per game, you may take 2 consecutive turns (skip your opponent's turn once). Declare at start of your Command Phase." },
               { name: "Knowledge Ascendant", effect: "Unlock all Knowledge-locked cards in your card pool. All Fragment activations have no instability risk." },
-              { name: "Supreme Coordination", effect: "All friendly units within 8\" of Commander may activate in any order you choose (ignore normal activation sequence)." }
+              { name: "Supreme Coordination", effect: "All friendly units within 10\" of Commander may activate in any order you choose (ignore normal activation sequence)." }
             ]
           },
           chaos: {
@@ -1246,22 +1319,22 @@ const gameData = {
               { name: "Blood Frenzy", effect: "When your Commander kills an enemy unit in melee, it gains +1 ATK die permanently (max +3 over base)." },
               { name: "Unstable Power", effect: "Gain +2 CP per turn, but roll 1d6 at start of turn: on a 1, lose all CP this turn." },
               { name: "Chaotic Surge", effect: "Once per game, double ALL damage dealt by ALL units (yours and your opponent's) for one full turn." },
-              { name: "Terror Presence", effect: "Commander gains Terror Aura: enemy units within 3\" suffer -1 MOR." },
+              { name: "Terror Presence", effect: "Commander gains Terror Aura: enemy units within 4\" suffer -1 MOR." },
               { name: "Volatile Core", effect: "When your Commander is damaged, it deals 1 damage to all units within 2\" (friend and foe). Includes your own units." },
               { name: "Death or Glory", effect: "If your Commander is reduced to 1 HP, it gains +4 ATK dice and Fearless permanently (no going back)." },
               { name: "Chaos Ascendant", effect: "Unlock all Chaos-locked cards in your card pool. All your Fragment activations trigger twice (but instability roll applies to both)." },
-              { name: "Annihilation Aura", effect: "Once per game, every unit within 6\" of Commander (friend and foe) takes damage equal to Commander's ATK stat." }
+              { name: "Annihilation Aura", effect: "Once per game, every unit within 8\" of Commander (friend and foe) takes damage equal to Commander's ATK stat." }
             ]
           },
           tactical: {
             theme: "Mobility, adaptability, and versatility. Tactical commanders can pivot strategies mid-game.",
             skills: [
-              { name: "Quick Deployment", effect: "One friendly unit may deploy via alternative deployment (6\" from any table edge) instead of normal deployment." },
+              { name: "Quick Deployment", effect: "One friendly unit may deploy via alternative deployment (8\" from any table edge) instead of normal deployment." },
               { name: "Adaptive Tactics", effect: "Once per turn, discard 1 card to draw 2 cards." },
               { name: "Field Promotion", effect: "Once per game, if your Commander dies, designate a Specialist unit as your new Commander. It gains Command 3 and may play your remaining cards." },
               { name: "Forced March", effect: "All friendly Infantry units gain +1\" MOV permanently." },
               { name: "Overwatch Expert", effect: "Your Overwatch Reactions are at full ATK dice instead of -1." },
-              { name: "Combat Medic", effect: "During the End Phase, heal 1 HP to all friendly units within 6\" of Commander that did NOT attack this turn." },
+              { name: "Combat Medic", effect: "During the End Phase, heal 1 HP to all friendly units within 8\" of Commander that did NOT attack this turn." },
               { name: "Combined Arms", effect: "When both a ranged and melee unit attack the same target in the same turn, both gain +1 ATK die." },
               { name: "Tactical Ascendant", effect: "Unlock all Tactical-locked cards in your card pool. Draw 3 cards per turn instead of 2." },
               { name: "Perfect Plan", effect: "Once per game, during your Command Phase, you may rearrange the positions of up to 3 of your units anywhere on the table (not within 1\" of enemies)." }
@@ -1425,7 +1498,7 @@ const gameData = {
         rules: [
           "Turn Limit: All games have a maximum turn count (Skirmish: 5, Standard: 6, Epic: 7). If neither player has won by the last turn, use the Attrition tiebreaker (most enemy points destroyed).",
           "Passive Play Penalty: Starting Turn 3, if a player has not made any attacks or moved any unit toward an enemy for 2 consecutive turns, their opponent gains +2 VP at end of game (Attrition tiebreaker adjustment).",
-          "Shrinking Battlefield (Optional): For tournament play, at the start of Turn 4, all table edges push inward by 6\". Units caught outside the new boundary must immediately move to the nearest legal position. This forces engagement in EP+ games."
+          "Shrinking Battlefield (Optional): For tournament play, at the start of Turn 4, all table edges push inward by 8\". Units caught outside the new boundary must immediately move to the nearest legal position. This forces engagement in EP+ games."
         ]
       },
       new_faction_design_guidelines: {
@@ -1448,7 +1521,7 @@ const gameData = {
     quick_reference: {
       turn_summary: [
         "1. COMMAND PHASE — Generate CP (= Commander's Command stat; any CP from last turn is lost). Draw 2 cards (max hand 7). Play Command/Fragment cards. Unspent CP carries into opponent's turn for Reactions.",
-        "2. MOVEMENT PHASE — Activate each unit. Move up to MOV stat in inches. Declare Charges (4\"+ straight = +1 ATK). Engaged units must Disengage (sacrifice turn) to leave.",
+        "2. MOVEMENT PHASE — Activate each unit. Move up to MOV stat in inches. Declare Charges (5\"+ straight = +1 ATK). Engaged units must Disengage (sacrifice turn) to leave.",
         "3. COMBAT PHASE — Activate attack units one at a time (you choose order). Ranged first (RNG > 1, not Engaged). Then Melee (Engaged units). Roll d6 = ATK stat; hits on ≥ DEF; 6 = crit (always hits, 2 dmg). Destroyed units don't attack back.",
         "4. END PHASE — Morale (damaged units roll 2d6 > MOR = Shaken; MOR+3 = Rout). Rally (Shaken + no dmg: 2d6 ≤ MOR). Fragment effects. Repair. Check victory. Discard to 7."
       ],
@@ -1457,11 +1530,11 @@ const gameData = {
         crit: "Natural 6 = 2 damage, unblockable",
         flanking: "+1 ATK die (from side)",
         rear: "+2 ATK dice (from behind)",
-        charging: "+1 ATK die (moved 4\"+ straight into melee)",
+        charging: "+1 ATK die (moved 5\"+ straight into melee)",
         light_cover: "+1 DEF vs ranged",
         heavy_cover: "+2 DEF vs ranged",
         shaken: "-1 ATK die",
-        commander_aura: "+1 MOR within 6\""
+        commander_aura: "+1 MOR within 8\""
       },
       morale_quick: {
         test: "Damaged this turn → roll 2d6",
@@ -1494,42 +1567,42 @@ const gameData = {
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'Choose up to 3 friendly units within 6" of your Commander. They gain +2" MOV this turn.',
+        'Choose up to 3 friendly units within 8" of your Commander. They gain +2" MOV this turn.',
     },
     "Coordinated Assault": {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
       effect:
-        'All friendly units within 6" of Commander that attack the same target this turn gain +1 ATK die each.',
+        'All friendly units within 8" of Commander that attack the same target this turn gain +1 ATK die each.',
     },
     "Swift Advance": {
       type: "command",
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'One friendly unit within 8" gains +3" MOV this turn. That unit may run and still shoot.',
+        'One friendly unit within 10" gains +4" MOV this turn. That unit may run and still shoot.',
     },
     "Flanking Maneuver": {
       type: "command",
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'Choose 1 friendly unit within 8". Remove it from the table and redeploy it within 6" of any table edge.',
+        'Choose 1 friendly unit within 10". Remove it from the table and redeploy it within 8" of any table edge.',
     },
     "Fragment Command": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Gain 2 Fragment Charges. All friendly units within 6" may use Fragment abilities this turn without instability risk.',
+        'Gain 2 Fragment Charges. All friendly units within 8" may use Fragment abilities this turn without instability risk.',
     },
     "War Machine Command": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
       effect:
-        'One friendly War Machine within 12" may activate twice this turn (move + attack, or attack + attack).',
+        'One friendly War Machine within 15" may activate twice this turn (move + attack, or attack + attack).',
     },
     "Heavy Assault Order": {
       type: "command",
@@ -1543,21 +1616,21 @@ const gameData = {
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'Choose 1 friendly Stealth unit. It may redeploy anywhere on the table more than 6" from enemies. It gains Stealth again.',
+        'Choose 1 friendly Stealth unit. It may redeploy anywhere on the table more than 8" from enemies. It gains Stealth again.',
     },
     "Sabotage Order": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Choose 1 enemy unit within 12" of a friendly Stealth unit. That enemy suffers -2 ATK dice next attack.',
+        'Choose 1 enemy unit within 15" of a friendly Stealth unit. That enemy suffers -2 ATK dice next attack.',
     },
     "Fortification Order": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Place 2 Barricade tokens (Light Cover) within 4" of your Commander.',
+        'Place 2 Barricade tokens (Light Cover) within 5" of your Commander.',
     },
     "Engineer Deployment": {
       type: "command",
@@ -1571,7 +1644,7 @@ const gameData = {
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'One friendly melee unit within 8" gains +3" MOV and +1 ATK die if it charges this turn.',
+        'One friendly melee unit within 10" gains +4" MOV and +1 ATK die if it charges this turn.',
     },
     "Brutal Assault": {
       type: "command",
@@ -1585,7 +1658,7 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'All friendly units within 6" gain +1 to all Fragment activation rolls this turn. Generate 1 Fragment Charge.',
+        'All friendly units within 8" gain +1 to all Fragment activation rolls this turn. Generate 1 Fragment Charge.',
     },
     "Artillery Barrage Order": {
       type: "command",
@@ -1606,28 +1679,28 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'All friendly units within 4" gain +1 DEF until end of turn. They cannot move this turn.',
+        'All friendly units within 5" gain +1 DEF until end of turn. They cannot move this turn.',
     },
     "Hold the Line": {
       type: "command",
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'All friendly units within 6" automatically pass Morale checks this turn. They gain +1 DEF but cannot advance.',
+        'All friendly units within 8" automatically pass Morale checks this turn. They gain +1 DEF but cannot advance.',
     },
     "Rapid Deployment": {
       type: "command",
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'One friendly unit in reserve may deploy immediately within 6" of your Commander.',
+        'One friendly unit in reserve may deploy immediately within 8" of your Commander.',
     },
     "Machine Command": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
       effect:
-        'All friendly War Machines within 12" gain +1 ATK die and auto-pass Malfunction rolls this turn.',
+        'All friendly War Machines within 15" gain +1 ATK die and auto-pass Malfunction rolls this turn.',
     },
     "Coordinated Machines": {
       type: "command",
@@ -1648,42 +1721,42 @@ const gameData = {
       cp: 2,
       timing: "Any Phase",
       effect:
-        'Choose 1 friendly unit within 8". It may immediately take 1 action (move OR attack OR use ability).',
+        'Choose 1 friendly unit within 10". It may immediately take 1 action (move OR attack OR use ability).',
     },
     "Shadow Phalanx": {
       type: "command",
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'Up to 3 friendly units within 4" of each other gain Phase this turn (may move through enemy units).',
+        'Up to 3 friendly units within 5" of each other gain Phase this turn (may move through enemy units).',
     },
     "Formation Command": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'All friendly units within 6" of Commander gain +1 DEF and +1 MOR this turn if in Stance.',
+        'All friendly units within 8" of Commander gain +1 DEF and +1 MOR this turn if in Stance.',
     },
     "Duel Challenge": {
       type: "command",
       cp: 1,
       timing: "Combat Phase",
       effect:
-        'Issue a Challenge to an enemy Specialist or Commander within 6". Must be accepted. Winner deals double damage.',
+        'Issue a Challenge to an enemy Specialist or Commander within 8". Must be accepted. Winner deals double damage.',
     },
     "Starfall Strike": {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
       effect:
-        'One friendly unit within 8" makes an attack with +3 ATK dice. Crits on 5+ this attack.',
+        'One friendly unit within 10" makes an attack with +3 ATK dice. Crits on 5+ this attack.',
     },
     "Ascendant Guard": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Your Commander and all units within 3" gain +2 DEF this turn. They cannot attack this turn.',
+        'Your Commander and all units within 4" gain +2 DEF this turn. They cannot attack this turn.',
     },
     "Ritual Surge": {
       type: "command",
@@ -1697,69 +1770,69 @@ const gameData = {
       cp: 3,
       timing: "Combat Phase",
       effect:
-        'All enemy units within 4" of Commander suffer -1 ATK die and -2 MOV next turn. Area becomes Difficult Terrain.',
+        'All enemy units within 5" of Commander suffer -1 ATK die and -2 MOV next turn. Area becomes Difficult Terrain.',
     },
     "Flame Crescent": {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
       effect:
-        'Commander makes a sweeping attack hitting all units (friend and foe) within 3". Roll 5 ATK dice vs each target.',
+        'Commander makes a sweeping attack hitting all units (friend and foe) within 4". Roll 5 ATK dice vs each target.',
     },
     "Momentum Surge": {
       type: "command",
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'All friendly Cavalry within 8" gain +3" MOV and +1 ATK die on charges this turn.',
+        'All friendly Cavalry within 10" gain +4" MOV and +1 ATK die on charges this turn.',
     },
     "Spirit Fang Charge": {
       type: "command",
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'One friendly pack unit within 6" may charge and gains +2 ATK dice. If it destroys the target, another pack unit within 3" may immediately charge.',
+        'One friendly pack unit within 8" may charge and gains +2 ATK dice. If it destroys the target, another pack unit within 4" may immediately charge.',
     },
     "Pack Command": {
       type: "command",
       cp: 1,
       timing: "Command Phase",
       effect:
-        'All Spirit Wolf units within 8" gain +1 ATK die and may move 2" as a free action.',
+        'All Spirit Wolf units within 10" gain +1 ATK die and may move 2" as a free action.',
     },
     "Celestial Bow": {
       type: "command",
       cp: 2,
       timing: "Combat Phase",
       effect:
-        'Commander makes a ranged attack at 24" range with 4 ATK dice. This attack ignores cover and Stealth.',
+        'Commander makes a ranged attack at 30" range with 4 ATK dice. This attack ignores cover and Stealth.',
     },
     "Lotus Bloom": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: 'All friendly units within 6" heal 1 HP. Generate 3 Ritual Flow.',
+      effect: 'All friendly units within 8" heal 1 HP. Generate 3 Ritual Flow.',
     },
     "Phantom Strike": {
       type: "command",
       cp: 2,
       timing: "Combat Phase",
       effect:
-        'Commander teleports up to 8" and makes an attack with +2 ATK dice. Returns to original position after.',
+        'Commander teleports up to 10" and makes an attack with +2 ATK dice. Returns to original position after.',
     },
     Inkstep: {
       type: "command",
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'Commander or 1 friendly unit within 6" may teleport up to 4" in any direction, ignoring terrain and engagement.',
+        'Commander or 1 friendly unit within 8" may teleport up to 5" in any direction, ignoring terrain and engagement.',
     },
     "Starfall Volley": {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
       effect:
-        'Choose a point within 18". All enemy units within 3" of that point suffer a 4-dice attack. Crits generate 1 Ritual Flow each.',
+        'Choose a point within 22". All enemy units within 4" of that point suffer a 4-dice attack. Crits generate 1 Ritual Flow each.',
     },
 
     // ===================== TECH CARDS =====================
@@ -1768,7 +1841,7 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'All friendly units within 4" gain +1 ATK die this turn. Grid Cohesion bonuses are doubled for these units.',
+        'All friendly units within 5" gain +1 ATK die this turn. Grid Cohesion bonuses are doubled for these units.',
     },
     "Precision Calibration": {
       type: "tech",
@@ -1782,7 +1855,7 @@ const gameData = {
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'One friendly unit within 6" gains +3" MOV this turn. If it\'s a War Machine, +4" instead.',
+        'One friendly unit within 8" gains +4" MOV this turn. If it\'s a War Machine, +5" instead.',
     },
     "Experimental Protocol": {
       type: "tech",
@@ -1823,34 +1896,34 @@ const gameData = {
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'Place 2 Trap tokens within 4" of a friendly Support unit. Enemy units stepping on them take 1 damage and lose 2" MOV.',
+        'Place 2 Trap tokens within 5" of a friendly Support unit. Enemy units stepping on them take 1 damage and lose 2" MOV.',
     },
     "Stealth Field": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Up to 2 friendly units within 6" gain Stealth until they attack or are within 3" of an enemy.',
+        'Up to 2 friendly units within 8" gain Stealth until they attack or are within 4" of an enemy.',
     },
     "Rapid Construction": {
       type: "tech",
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'Place 3 Barricade tokens (Light Cover) within 6" of a friendly Support unit.',
+        'Place 3 Barricade tokens (Light Cover) within 8" of a friendly Support unit.',
     },
     "Repair Protocol": {
       type: "tech",
       cp: 1,
       timing: "End Phase",
-      effect: 'Heal 2 HP to one friendly unit within 6" of a Support unit.',
+      effect: 'Heal 2 HP to one friendly unit within 8" of a Support unit.',
     },
     "Defensive Enhancement": {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
       effect:
-        'All friendly units within 4" of a Barricade gain +1 DEF this turn.',
+        'All friendly units within 5" of a Barricade gain +1 DEF this turn.',
     },
     "Melee Enhancement": {
       type: "tech",
@@ -1864,14 +1937,14 @@ const gameData = {
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'One friendly unit gains +4" MOV and +1 ATK die this turn. After combat, it suffers -1 DEF next turn.',
+        'One friendly unit gains +5" MOV and +1 ATK die this turn. After combat, it suffers -1 DEF next turn.',
     },
     "Fragment Attunement": {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
       effect:
-        'All Fragment activations by friendly units within 6" automatically succeed this turn (no instability roll).',
+        'All Fragment activations by friendly units within 8" automatically succeed this turn (no instability roll).',
     },
     "Aether Enhancement": {
       type: "tech",
@@ -1891,7 +1964,7 @@ const gameData = {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
-      effect: 'One friendly Artillery unit gains +6" RNG this turn.',
+      effect: 'One friendly Artillery unit gains +8" RNG this turn.',
     },
     "Reload Optimization": {
       type: "tech",
@@ -1926,14 +1999,14 @@ const gameData = {
       cp: 1,
       timing: "Any Phase",
       effect:
-        'Immediately heal 2 HP on one friendly unit within 6" of Commander. May be played as a reaction.',
+        'Immediately heal 2 HP on one friendly unit within 8" of Commander. May be played as a reaction.',
     },
     "Machine Enhancement": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'All friendly War Machines within 8" gain +1 ATK die and +1 DEF this turn.',
+        'All friendly War Machines within 10" gain +1 ATK die and +1 DEF this turn.',
     },
     "Efficiency Protocol": {
       type: "tech",
@@ -1947,14 +2020,14 @@ const gameData = {
       cp: 2,
       timing: "End Phase",
       effect:
-        'All friendly War Machines within 8" heal 1 HP. If adjacent to a Support unit, heal 2 HP instead.',
+        'All friendly War Machines within 10" heal 1 HP. If adjacent to a Support unit, heal 2 HP instead.',
     },
     "Universal Enhancement": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Choose all friendly units within 4". They gain +1 to the stat of your choice (ATK, DEF, or MOV) this turn.',
+        'Choose all friendly units within 5". They gain +1 to the stat of your choice (ATK, DEF, or MOV) this turn.',
     },
     "Balanced Protocol": {
       type: "tech",
@@ -1975,7 +2048,7 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'All friendly units within 3" of Commander gain +2 DEF vs melee this turn. They cannot move.',
+        'All friendly units within 4" of Commander gain +2 DEF vs melee this turn. They cannot move.',
     },
     "Veil Ward": {
       type: "tech",
@@ -1989,7 +2062,7 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Bond 2 friendly units within 6" of each other: they share damage equally (round up) this turn.',
+        'Bond 2 friendly units within 8" of each other: they share damage equally (round up) this turn.',
     },
     "Celestial Shield": {
       type: "tech",
@@ -2003,7 +2076,7 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Create a Spirit Wall within 4" of Commander: counts as Heavy Cover and blocks enemy movement for 2 turns.',
+        'Create a Spirit Wall within 5" of Commander: counts as Heavy Cover and blocks enemy movement for 2 turns.',
     },
     "Flow Channeling": {
       type: "tech",
@@ -2017,13 +2090,13 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Place a Sigil token within 6". Enemy units within 2" of the Sigil suffer -1 ATK die. Lasts 2 turns.',
+        'Place a Sigil token within 8". Enemy units within 2" of the Sigil suffer -1 ATK die. Lasts 2 turns.',
     },
     "Spirit Bond Boost": {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
-      effect: 'All friendly units within 4" generate +2 Ritual Flow this turn.',
+      effect: 'All friendly units within 5" generate +2 Ritual Flow this turn.',
     },
     "Veil Step": {
       type: "tech",
@@ -2044,7 +2117,7 @@ const gameData = {
       cp: 2,
       timing: "Any Phase",
       effect:
-        'One enemy unit within 8" cannot move next turn. Roll d6: on 4+, it also cannot attack.',
+        'One enemy unit within 10" cannot move next turn. Roll d6: on 4+, it also cannot attack.',
     },
     "Dual Stance Mastery": {
       type: "tech",
@@ -2065,21 +2138,21 @@ const gameData = {
       cp: 1,
       timing: "Command Phase",
       effect:
-        'Reveal all Stealth units within 12" of Commander. Friendly ranged units gain +1 ATK die vs revealed units.',
+        'Reveal all Stealth units within 15" of Commander. Friendly ranged units gain +1 ATK die vs revealed units.',
     },
     "Momentum Boost": {
       type: "tech",
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'All friendly Cavalry within 6" gain +2" MOV. Charge bonuses are +1 ATK die higher this turn.',
+        'All friendly Cavalry within 8" gain +2" MOV. Charge bonuses are +1 ATK die higher this turn.',
     },
     "Veil Shroud": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Commander and all units within 3" gain Stealth this turn. Enemies can only target them from within 6".',
+        'Commander and all units within 4" gain Stealth this turn. Enemies can only target them from within 8".',
     },
     "Dual Momentum": {
       type: "tech",
@@ -2093,28 +2166,28 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Spend 5 Ritual Flow: all friendly units within 4" gain +2 ATK dice this turn.',
+        'Spend 5 Ritual Flow: all friendly units within 5" gain +2 ATK dice this turn.',
     },
     "Veil Aura": {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
       effect:
-        'Friendly units within 4" of Commander gain +1 DEF vs ranged attacks this turn.',
+        'Friendly units within 5" of Commander gain +1 DEF vs ranged attacks this turn.',
     },
     "Veil Phantasm": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Create a Phantom copy of one friendly unit within 6". The copy has 1 HP and the same ATK/DEF. Lasts 1 turn.',
+        'Create a Phantom copy of one friendly unit within 8". The copy has 1 HP and the same ATK/DEF. Lasts 1 turn.',
     },
     "Flow Link": {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
       effect:
-        'Link 2 friendly units within 8". They share Ritual Flow generation and both gain +1 ATK die this turn.',
+        'Link 2 friendly units within 10". They share Ritual Flow generation and both gain +1 ATK die this turn.',
     },
 
     // ===================== FRAGMENT CARDS =====================
@@ -2123,14 +2196,14 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        "Activate a Fragment with no instability risk. All friendly units within 4\" gain the Fragment's buff at full power.",
+        "Activate a Fragment with no instability risk. All friendly units within 5\" gain the Fragment's buff at full power.",
     },
     "Aether Pulse Activation": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Activate a Fragment and pulse its energy: all friendly units within 6" gain +1 ATK die this turn. Risk: roll d6, on 1 = 1 damage to Commander.',
+        'Activate a Fragment and pulse its energy: all friendly units within 8" gain +1 ATK die this turn. Risk: roll d6, on 1 = 1 damage to Commander.',
     },
     "Fragment Surge": {
       type: "fragment",
@@ -2144,14 +2217,14 @@ const gameData = {
       cp: 3,
       timing: "Any Phase",
       effect:
-        'Choose one terrain piece within 12" of Commander. Move it up to 6" in any direction or change its type (e.g., cover → open).',
+        'Choose one terrain piece within 15" of Commander. Move it up to 8" in any direction or change its type (e.g., cover → open).',
     },
     "Chaos Tap": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Drain Fragment energy recklessly: gain 4 Fragment Charges but all friendly units within 3" take 1 damage.',
+        'Drain Fragment energy recklessly: gain 4 Fragment Charges but all friendly units within 4" take 1 damage.',
     },
     "Overclock Node Activation": {
       type: "fragment",
@@ -2165,21 +2238,21 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Reveal all hidden/stealth units within 12". Your Commander gains true sight — ignore cover and Stealth for targeting this turn.',
+        'Reveal all hidden/stealth units within 15". Your Commander gains true sight — ignore cover and Stealth for targeting this turn.',
     },
     "Disruption Pulse": {
       type: "fragment",
       cp: 2,
       timing: "Any Phase",
       effect:
-        'All enemy units within 4" of a Fragment source lose 1 ATK die and suffer -2" MOV next turn.',
+        'All enemy units within 5" of a Fragment source lose 1 ATK die and suffer -2" MOV next turn.',
     },
     "Steam Core Activation": {
       type: "fragment",
       cp: 1,
       timing: "Command Phase",
       effect:
-        'Generate 2 Fragment Charges. One friendly unit within 4" heals 1 HP.',
+        'Generate 2 Fragment Charges. One friendly unit within 5" heals 1 HP.',
     },
     "Infused Cog Activation": {
       type: "fragment",
@@ -2193,7 +2266,7 @@ const gameData = {
       cp: 2,
       timing: "Combat Phase",
       effect:
-        'All friendly units within 6" gain +1 ATK die this turn. Fragment energy ripples: enemies within 3" suffer -1 DEF.',
+        'All friendly units within 8" gain +1 ATK die this turn. Fragment energy ripples: enemies within 4" suffer -1 DEF.',
     },
     "Fragment Harmony": {
       type: "fragment",
@@ -2207,7 +2280,7 @@ const gameData = {
       cp: 3,
       timing: "Command Phase",
       effect:
-        'Create a 4" radius zone centered on Commander. All friendlies inside gain +1 ATK, +1 DEF, and auto-pass instability. Lasts 2 turns.',
+        'Create a 5" radius zone centered on Commander. All friendlies inside gain +1 ATK, +1 DEF, and auto-pass instability. Lasts 2 turns.',
     },
     "Arcane Spark Activation": {
       type: "fragment",
@@ -2221,7 +2294,7 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Activate an experimental Fragment: roll d6. 1-2: nothing. 3-4: +2 ATK to one unit. 5-6: +2 ATK and +1 DEF to all within 4".',
+        'Activate an experimental Fragment: roll d6. 1-2: nothing. 3-4: +2 ATK to one unit. 5-6: +2 ATK and +1 DEF to all within 5".',
     },
     "Gear Infusion": {
       type: "fragment",
@@ -2270,7 +2343,7 @@ const gameData = {
       cp: 3,
       timing: "Combat Phase",
       effect:
-        'Spend 5 Ritual Flow: Attack all enemy units within 4" of Commander with 3 ATK dice each. Crits generate 1 Flow.',
+        'Spend 5 Ritual Flow: Attack all enemy units within 5" of Commander with 3 ATK dice each. Crits generate 1 Flow.',
     },
     "Flow Amplification": {
       type: "fragment",
@@ -2298,7 +2371,7 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Manifest an Ink Spirit: place a spirit token within 6". It has ATK 3, DEF 3, HP 2. Acts on your turn. Lasts 2 turns.',
+        'Manifest an Ink Spirit: place a spirit token within 8". It has ATK 3, DEF 3, HP 2. Acts on your turn. Lasts 2 turns.',
     },
     "Sigil Cascade": {
       type: "fragment",
@@ -2340,28 +2413,28 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Heal all friendly units within 6" for 1 HP. Generate 3 Ritual Flow. Units healed gain +1 DEF this turn.',
+        'Heal all friendly units within 8" for 1 HP. Generate 3 Ritual Flow. Units healed gain +1 DEF this turn.',
     },
     "Debuff Enhancement": {
       type: "fragment",
       cp: 1,
       timing: "Command Phase",
       effect:
-        'All debuffs currently on enemy units within 8" have their duration extended by 1 turn. Apply one extra -1 ATK die to one enemy.',
+        'All debuffs currently on enemy units within 10" have their duration extended by 1 turn. Apply one extra -1 ATK die to one enemy.',
     },
     "Shadow Manifestation": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
       effect:
-        "Create a shadow clone of Commander within 8\". The clone has half Commander's stats and lasts 1 turn. Enemies must target the clone first.",
+        "Create a shadow clone of Commander within 10\". The clone has half Commander's stats and lasts 1 turn. Enemies must target the clone first.",
     },
     "Ink Current Activation": {
       type: "fragment",
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'Create an Ink Current on the battlefield (6" line). Friendly units crossing it gain +2" MOV. Enemy units crossing it lose 2" MOV.',
+        'Create an Ink Current on the battlefield (8" line). Friendly units crossing it gain +2" MOV. Enemy units crossing it lose 2" MOV.',
     },
     "Flow Pulse": {
       type: "fragment",
@@ -2375,14 +2448,14 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'All friendly units within 6" gain ranged attacks at RNG 8" with 2 ATK dice this turn (in addition to normal attacks).',
+        'All friendly units within 8" gain ranged attacks at RNG 10" with 2 ATK dice this turn (in addition to normal attacks).',
     },
     "Illusion Weave": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
       effect:
-        'Create 3 Illusion tokens within 8". They look like units to the enemy. Enemies must target them before real units unless within 4". Lasts 1 turn.',
+        'Create 3 Illusion tokens within 10". They look like units to the enemy. Enemies must target them before real units unless within 5". Lasts 1 turn.',
     },
 
     // ===================== TACTICAL CARDS =====================
@@ -2468,7 +2541,7 @@ const gameData = {
       cp: 1,
       timing: "Any Phase",
       effect:
-        'All friendly units within 4" of Commander auto-pass their next Morale check. They gain +1 ATK die if they were forced to check Morale.',
+        'All friendly units within 5" of Commander auto-pass their next Morale check. They gain +1 ATK die if they were forced to check Morale.',
     },
     "Field Innovation": {
       type: "tactical",
@@ -2482,21 +2555,21 @@ const gameData = {
       cp: 2,
       timing: "Combat Phase",
       effect:
-        'One friendly War Machine gains +3 ATK dice for this attack. If it destroys the target, it may immediately move 3".',
+        'One friendly War Machine gains +3 ATK dice for this attack. If it destroys the target, it may immediately move 4".',
     },
     "Strategic Flexibility": {
       type: "tactical",
       cp: 1,
       timing: "Any Phase",
       effect:
-        'Swap the positions of 2 friendly units within 8" of Commander. Both units may act normally after swapping.',
+        'Swap the positions of 2 friendly units within 10" of Commander. Both units may act normally after swapping.',
     },
     "Disciplined Advance": {
       type: "tactical",
       cp: 2,
       timing: "Movement Phase",
       effect:
-        'Up to 3 friendly units within 6" may move simultaneously in formation (maintaining relative positions). Each gains +1" MOV.',
+        'Up to 3 friendly units within 8" may move simultaneously in formation (maintaining relative positions). Each gains +1" MOV.',
     },
     "Precision Duel": {
       type: "tactical",
@@ -2510,7 +2583,7 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect:
-        'All friendly units within 4" of Commander gain +1 DEF and Bodyguard (may redirect attacks to each other).',
+        'All friendly units within 5" of Commander gain +1 DEF and Bodyguard (may redirect attacks to each other).',
     },
     "Defensive Ritual": {
       type: "tactical",
@@ -2524,35 +2597,35 @@ const gameData = {
       cp: 3,
       timing: "Combat Phase",
       effect:
-        'Choose a 4" radius area within 12". All units in that area (friend and foe) suffer -2 ATK dice next turn. Area becomes Difficult Terrain.',
+        'Choose a 5" radius area within 15". All units in that area (friend and foe) suffer -2 ATK dice next turn. Area becomes Difficult Terrain.',
     },
     "Chain Attack": {
       type: "tactical",
       cp: 2,
       timing: "Combat Phase",
       effect:
-        'If your unit destroys an enemy, it may immediately attack another enemy within 3" with -1 ATK die. Can chain up to 3 times.',
+        'If your unit destroys an enemy, it may immediately attack another enemy within 4" with -1 ATK die. Can chain up to 3 times.',
     },
     "Hunt Formation": {
       type: "tactical",
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'All Spirit Wolf / Pack units within 8" may immediately move 2" toward the nearest enemy. They gain +1 ATK vs that target.',
+        'All Spirit Wolf / Pack units within 10" may immediately move 2" toward the nearest enemy. They gain +1 ATK vs that target.',
     },
     "Sniper Position": {
       type: "tactical",
       cp: 1,
       timing: "Command Phase",
       effect:
-        'One friendly ranged unit gains +4" RNG, Sniper (target anyone), and crits on 5+ for this turn. Cannot move.',
+        'One friendly ranged unit gains +5" RNG, Sniper (target anyone), and crits on 5+ for this turn. Cannot move.',
     },
     "Area Suppression": {
       type: "tactical",
       cp: 2,
       timing: "Combat Phase",
       effect:
-        'Choose a 3" radius area within 12". All enemy units in the area suffer -1 ATK die and cannot use special abilities next turn.',
+        'Choose a 4" radius area within 15". All enemy units in the area suffer -1 ATK die and cannot use special abilities next turn.',
     },
     "Silent Kill": {
       type: "tactical",
@@ -2566,14 +2639,14 @@ const gameData = {
       cp: 1,
       timing: "Movement Phase",
       effect:
-        'Up to 2 friendly units within 6" may immediately move up to 3" each. This does not count as their normal movement.',
+        'Up to 2 friendly units within 8" may immediately move up to 4" each. This does not count as their normal movement.',
     },
     "Area Bombardment": {
       type: "tactical",
       cp: 3,
       timing: "Combat Phase",
       effect:
-        'Choose a point within 16". All units (friend and foe) within 3" suffer a 5-dice attack. Creates Difficult Terrain in the area.',
+        'Choose a point within 16". All units (friend and foe) within 4" suffer a 5-dice attack. Creates Difficult Terrain in the area.',
     },
 
     // ===================== NIGHTFANG DOMINION CARDS =====================
@@ -2581,91 +2654,91 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Select up to 3 Nightfang units within 12\" of your commander. Each selected unit may immediately make a free 4\" move. Units with the Thrall keyword gain +1 ATK until End Phase."
+      effect: "Select up to 3 Nightfang units within 15\" of your commander. Each selected unit may immediately make a free 5\" move. Units with the Thrall keyword gain +1 ATK until End Phase."
     },
     "Thrall Surge": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "All Thrall units within 18\" of your commander gain +1 ATK and +1 MOV until End Phase. If your Hunger Pool is 5 or higher, they also gain +1 DEF."
+      effect: "All Thrall units within 22\" of your commander gain +1 ATK and +1 MOV until End Phase. If your Hunger Pool is 5 or higher, they also gain +1 DEF."
     },
     "Corruption Wave": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Choose a point within 12\" of your commander. All enemy units within 4\" of that point gain 2 Corruption tokens. Units that already have 3+ tokens also suffer -1 MOR until End Phase."
+      effect: "Choose a point within 15\" of your commander. All enemy units within 5\" of that point gain 2 Corruption tokens. Units that already have 3+ tokens also suffer -1 MOR until End Phase."
     },
     "Plague Wind": {
       type: "command",
       cp: 4,
       timing: "Command Phase",
-      effect: "All enemy units within 18\" of your commander gain 1 Corruption token. Enemy units that are already corrupted (3+ tokens) also take 1 damage."
+      effect: "All enemy units within 22\" of your commander gain 1 Corruption token. Enemy units that are already corrupted (3+ tokens) also take 1 damage."
     },
     "Horde Command": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Select up to 5 Thrall units within 12\" of your commander. Each may immediately make a free 3\" move toward the nearest enemy. Thrall units that reach engagement range gain +1 ATK die for the following Action Phase."
+      effect: "Select up to 5 Thrall units within 15\" of your commander. Each may immediately make a free 4\" move toward the nearest enemy. Thrall units that reach engagement range gain +1 ATK die for the following Action Phase."
     },
     "Endless Tide": {
       type: "command",
       cp: 4,
       timing: "Command Phase",
-      effect: "Place 1 Thrall Conscripts unit (1 pt, full HP) in base contact with any board edge within 12\" of your commander. If your commander has the Thrall Horde keyword, place 2 units instead."
+      effect: "Place 1 Thrall Conscripts unit (1 pt, full HP) in base contact with any board edge within 15\" of your commander. If your commander has the Thrall Horde keyword, place 2 units instead."
     },
     "Pack Hunt": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Select up to 3 beast or cavalry units within 12\" of your commander. Each selected unit may immediately make a free charge move (up to their MOV) toward the nearest enemy. If they reach engagement range, they gain +1 ATK die."
+      effect: "Select up to 3 beast or cavalry units within 15\" of your commander. Each selected unit may immediately make a free charge move (up to their MOV) toward the nearest enemy. If they reach engagement range, they gain +1 ATK die."
     },
     "Alpha Roar": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "All beast units within 12\" of your commander gain Fearless until End Phase. Enemy units within 6\" of any beast unit must make an immediate MOR check at -1."
+      effect: "All beast units within 15\" of your commander gain Fearless until End Phase. Enemy units within 8\" of any beast unit must make an immediate MOR check at -1."
     },
     "Nightfang Siege Command": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "All War Machine and artillery units within 12\" of your commander gain +1 ATK and may reroll 1 missed die until End Phase. War Machines that did not move this turn gain an additional +1 ATK."
+      effect: "All War Machine and artillery units within 15\" of your commander gain +1 ATK and may reroll 1 missed die until End Phase. War Machines that did not move this turn gain an additional +1 ATK."
     },
     "Noble Command": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Select up to 3 units with points_cost 4 or higher within 12\" of your commander. Each gains +1 ATK and +1 MOR until End Phase."
+      effect: "Select up to 3 units with points_cost 4 or higher within 15\" of your commander. Each gains +1 ATK and +1 MOR until End Phase."
     },
     "Shadow Step": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Your commander or 1 Stealth unit within 12\" may immediately teleport up to 8\" to any position not in line of sight of enemy units. The unit gains Stealth until it attacks or is detected."
+      effect: "Your commander or 1 Stealth unit within 15\" may immediately teleport up to 10\" to any position not in line of sight of enemy units. The unit gains Stealth until it attacks or is detected."
     },
     "Prophecy of Blood": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Look at the top 3 cards of your deck. Keep 1, discard the rest. Then activate 1 fragment within 12\" of your commander for free (no charge cost). The fragment gains +1 to its effect this activation."
+      effect: "Look at the top 3 cards of your deck. Keep 1, discard the rest. Then activate 1 fragment within 15\" of your commander for free (no charge cost). The fragment gains +1 to its effect this activation."
     },
     "Pack Rally": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "All beast and cavalry units within 12\" of your commander gain +1 MOV and Pack Tactics until End Phase. If your commander is in Tiger Form, the range increases to 18\"."
+      effect: "All beast and cavalry units within 15\" of your commander gain +1 MOV and Pack Tactics until End Phase. If your commander is in Tiger Form, the range increases to 22\"."
     },
     "Feral Roar": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "All enemy units within 8\" of your commander must make an immediate MOR check. Beast units within 8\" gain +2 ATK until End Phase. Your commander gains +1 ATK until End Phase."
+      effect: "All enemy units within 10\" of your commander must make an immediate MOR check. Beast units within 10\" gain +2 ATK until End Phase. Your commander gains +1 ATK until End Phase."
     },
     "Tactical Advance": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Select up to 4 units within 12\" of your commander. Each may make a free 3\" move. Units that end this move in cover gain +1 DEF until they leave cover."
+      effect: "Select up to 4 units within 15\" of your commander. Each may make a free 4\" move. Units that end this move in cover gain +1 DEF until they leave cover."
     },
     "Combined Arms": {
       type: "command",
@@ -2677,73 +2750,73 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Your commander and all units within 6\" gain +2 DEF until your next Command Phase. These units cannot move this turn. Units that were already stationary gain +1 ATK as well."
+      effect: "Your commander and all units within 8\" gain +2 DEF until your next Command Phase. These units cannot move this turn. Units that were already stationary gain +1 ATK as well."
     },
     "Immovable Wall": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Select up to 4 units within 8\" of your commander. They gain Immovable (cannot be pushed, displaced, or forced to retreat) and +1 DEF until End Phase. Enemy units cannot move through their bases."
+      effect: "Select up to 4 units within 10\" of your commander. They gain Immovable (cannot be pushed, displaced, or forced to retreat) and +1 DEF until End Phase. Enemy units cannot move through their bases."
     },
     "Blood Transfusion": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Choose 1 friendly unit within 8\" of your commander. It heals 3 HP. If the unit is at full HP, it instead gains +2 ATK until End Phase. Your commander loses 1 HP (Blood Tithe cost)."
+      effect: "Choose 1 friendly unit within 10\" of your commander. It heals 3 HP. If the unit is at full HP, it instead gains +2 ATK until End Phase. Your commander loses 1 HP (Blood Tithe cost)."
     },
     "Corruption Bloom": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Choose a point within 12\" of your commander. Create a 3\" Corruption Zone that lasts until End Phase. Non-Nightfang units entering or starting their turn in it gain 2 Corruption tokens. Nightfang units in the zone gain +1 ATK."
+      effect: "Choose a point within 15\" of your commander. Create a 4\" Corruption Zone that lasts until End Phase. Non-Nightfang units entering or starting their turn in it gain 2 Corruption tokens. Nightfang units in the zone gain +1 ATK."
     },
     "War Beast Rally": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "All War Machine units within 12\" of your commander heal 2 HP and may immediately pivot to face any direction. War Machines that have not moved gain +1 ATK until End Phase."
+      effect: "All War Machine units within 15\" of your commander heal 2 HP and may immediately pivot to face any direction. War Machines that have not moved gain +1 ATK until End Phase."
     },
     "Aristocratic Precision": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Select up to 3 elite units (4+ pts) within 12\" of your commander. Each may reroll all missed attack dice on their next attack this turn. On a successful hit, the target gains 1 Corruption token."
+      effect: "Select up to 3 elite units (4+ pts) within 15\" of your commander. Each may reroll all missed attack dice on their next attack this turn. On a successful hit, the target gains 1 Corruption token."
     },
     "Nightfang Silent Kill": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Your commander or 1 Stealth unit within 12\" may make an immediate melee attack against an adjacent enemy. If attacking from Stealth, gain +3 ATK for this attack. If the target is destroyed, the attacker re-enters Stealth."
+      effect: "Your commander or 1 Stealth unit within 15\" may make an immediate melee attack against an adjacent enemy. If attacking from Stealth, gain +3 ATK for this attack. If the target is destroyed, the attacker re-enters Stealth."
     },
     "Nightfang Fragment Surge": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Activate up to 2 fragments within 12\" of your commander simultaneously. Both activations cost only 1 charge each (instead of normal cost). Fragment effects stack."
+      effect: "Activate up to 2 fragments within 15\" of your commander simultaneously. Both activations cost only 1 charge each (instead of normal cost). Fragment effects stack."
     },
     "Blight Infusion": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "Select 1 friendly unit within 6\" of your commander. It gains +1 ATK and Corruption Spread until End Phase. If the unit already has Corruption Spread, its spread applies 2 tokens instead of 1."
+      effect: "Select 1 friendly unit within 8\" of your commander. It gains +1 ATK and Corruption Spread until End Phase. If the unit already has Corruption Spread, its spread applies 2 tokens instead of 1."
     },
     "Corruption Amplifier": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "Until End Phase, all Corruption tokens on enemies within 12\" of your commander have double effect. The threshold for Corruption penalties becomes 2 tokens instead of 3."
+      effect: "Until End Phase, all Corruption tokens on enemies within 15\" of your commander have double effect. The threshold for Corruption penalties becomes 2 tokens instead of 3."
     },
     "Intensified Blight": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "Choose 1 enemy unit with Corruption tokens within 12\". Double the number of Corruption tokens on it (max 8). The unit immediately takes 1 damage."
+      effect: "Choose 1 enemy unit with Corruption tokens within 15\". Double the number of Corruption tokens on it (max 8). The unit immediately takes 1 damage."
     },
     "Corruption Seeds": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "Place 3 Corruption Seed markers within 12\" of your commander. At End Phase, each Seed detonates: all enemy units within 2\" gain 2 Corruption tokens. Seeds are removed after detonation."
+      effect: "Place 3 Corruption Seed markers within 15\" of your commander. At End Phase, each Seed detonates: all enemy units within 2\" gain 2 Corruption tokens. Seeds are removed after detonation."
     },
     "Predator's Instinct": {
       type: "tech",
@@ -2755,115 +2828,115 @@ const gameData = {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "1 beast unit within 8\" of your commander gains Frenzy (+2 ATK when below half HP) and +2 MOV until End Phase. If the unit kills a model this turn, it heals 2 HP."
+      effect: "1 beast unit within 10\" of your commander gains Frenzy (+2 ATK when below half HP) and +2 MOV until End Phase. If the unit kills a model this turn, it heals 2 HP."
     },
     "Thrall Enhancement": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "All Thrall units within 12\" of your commander gain +1 to all stats (ATK, DEF, MOV) until End Phase. Thralls lose the Expendable keyword for this turn."
+      effect: "All Thrall units within 15\" of your commander gain +1 to all stats (ATK, DEF, MOV) until End Phase. Thralls lose the Expendable keyword for this turn."
     },
     "Blight-Link Pulse": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "All Nightfang units within 12\" of your commander may share information: they ignore Fog of War effects and gain +1 ATK against targets that another Nightfang unit can see. Lasts until End Phase."
+      effect: "All Nightfang units within 15\" of your commander may share information: they ignore Fog of War effects and gain +1 ATK against targets that another Nightfang unit can see. Lasts until End Phase."
     },
     "Regenerative Blight": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "Select up to 3 friendly units within 8\" of your commander. Each heals 2 HP. If any healed unit is at full HP, it instead gains +1 ATK until End Phase."
+      effect: "Select up to 3 friendly units within 10\" of your commander. Each heals 2 HP. If any healed unit is at full HP, it instead gains +1 ATK until End Phase."
     },
     "Vital Extraction": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "Choose 1 enemy unit within 8\" of your commander. It takes 2 damage (ignoring DEF). 1 friendly unit within 6\" of the target heals 2 HP. This counts as Blood Drain."
+      effect: "Choose 1 enemy unit within 10\" of your commander. It takes 2 damage (ignoring DEF). 1 friendly unit within 8\" of the target heals 2 HP. This counts as Blood Drain."
     },
     "Venom Claws": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "Select up to 2 friendly units within 8\" of your commander. Their melee attacks apply 1 Corruption token on hit and deal +1 damage against targets with 3+ Corruption tokens. Lasts until End Phase."
+      effect: "Select up to 2 friendly units within 10\" of your commander. Their melee attacks apply 1 Corruption token on hit and deal +1 damage against targets with 3+ Corruption tokens. Lasts until End Phase."
     },
     "Night Vision": {
       type: "tech",
       cp: 1,
       timing: "Action Phase",
-      effect: "All friendly units within 12\" of your commander ignore cover penalties and Fog of War effects until End Phase. Stealth units gain an additional +1 ATK when attacking from Stealth."
+      effect: "All friendly units within 15\" of your commander ignore cover penalties and Fog of War effects until End Phase. Stealth units gain an additional +1 ATK when attacking from Stealth."
     },
     "Blight Channeling": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 12\" of your commander. The fragment's effects are doubled for this activation. The fragment does not lose a charge for this activation."
+      effect: "Activate 1 fragment within 15\" of your commander. The fragment's effects are doubled for this activation. The fragment does not lose a charge for this activation."
     },
     "Wellspring Link": {
       type: "tech",
       cp: 4,
       timing: "Action Phase",
-      effect: "Restore 2 charges to all fragments within 12\" of your commander. Each restored fragment pulses: all friendly units within 3\" of it heal 1 HP and gain +1 ATK until End Phase."
+      effect: "Restore 2 charges to all fragments within 15\" of your commander. Each restored fragment pulses: all friendly units within 4\" of it heal 1 HP and gain +1 ATK until End Phase."
     },
     "Fortified Position": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "Create a fortified position at your commander's location. All friendly units within 4\" gain +2 DEF and cannot be pushed or displaced. Lasts until your commander moves."
+      effect: "Create a fortified position at your commander's location. All friendly units within 5\" gain +2 DEF and cannot be pushed or displaced. Lasts until your commander moves."
     },
     "Siege Protocols": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "All War Machine and artillery units within 12\" of your commander gain +2\" range, +1 ATK, and Sharpshot (enemy cover bonuses reduced by 1) until End Phase."
+      effect: "All War Machine and artillery units within 15\" of your commander gain +2\" range, +1 ATK, and Sharpshot (enemy cover bonuses reduced by 1) until End Phase."
     },
     "Elite Enhancement": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "Select up to 2 units with points_cost 4 or higher within 8\" of your commander. Each gains +1 ATK, +1 DEF, and Blood Drain until End Phase."
+      effect: "Select up to 2 units with points_cost 4 or higher within 10\" of your commander. Each gains +1 ATK, +1 DEF, and Blood Drain until End Phase."
     },
     "Blood Refinement": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "1 friendly unit within 8\" of your commander gains +2 ATK until End Phase. If the unit makes a kill this turn, the bonus becomes permanent (+1 ATK, not +2)."
+      effect: "1 friendly unit within 10\" of your commander gains +2 ATK until End Phase. If the unit makes a kill this turn, the bonus becomes permanent (+1 ATK, not +2)."
     },
     "Blight Cloud": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "Create a 4\" Blight Cloud centered on a point within 12\" of your commander. Non-Nightfang units inside have -1 ATK, -1 RNG, and gain 1 Corruption token at End Phase. Lasts 2 turns."
+      effect: "Create a 5\" Blight Cloud centered on a point within 15\" of your commander. Non-Nightfang units inside have -1 ATK, -1 RNG, and gain 1 Corruption token at End Phase. Lasts 2 turns."
     },
     "Toxin Enhancement": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "Select up to 3 units within 8\" of your commander. Their attacks apply 1 additional Corruption token per hit until End Phase. Units with Corruption Spread apply 2 additional tokens instead."
+      effect: "Select up to 3 units within 10\" of your commander. Their attacks apply 1 additional Corruption token per hit until End Phase. Units with Corruption Spread apply 2 additional tokens instead."
     },
     "Battle Formation": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "Select up to 4 infantry units within 8\" of your commander. If any of them are within 3\" of another selected unit, all selected units gain +1 ATK and +1 DEF until End Phase."
+      effect: "Select up to 4 infantry units within 10\" of your commander. If any of them are within 4\" of another selected unit, all selected units gain +1 ATK and +1 DEF until End Phase."
     },
     "Iron Discipline": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "All friendly units within 12\" of your commander become immune to MOR checks and Terrifying effects until End Phase. Units that were Shaken rally immediately."
+      effect: "All friendly units within 15\" of your commander become immune to MOR checks and Terrifying effects until End Phase. Units that were Shaken rally immediately."
     },
     "Bone Armor Reinforcement": {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "Your commander and up to 2 units within 6\" gain +2 DEF until End Phase. The first point of damage dealt to each reinforced unit is negated."
+      effect: "Your commander and up to 2 units within 8\" gain +2 DEF until End Phase. The first point of damage dealt to each reinforced unit is negated."
     },
     "Blight Shield": {
       type: "tech",
       cp: 3,
       timing: "Action Phase",
-      effect: "Select up to 3 friendly units within 8\" of your commander. Each gains a Blight Shield: the next attack against them has its damage reduced by 2 (minimum 0). Lasts until triggered or End Phase."
+      effect: "Select up to 3 friendly units within 10\" of your commander. Each gains a Blight Shield: the next attack against them has its damage reduced by 2 (minimum 0). Lasts until triggered or End Phase."
     },
     "Shapeshift Mastery": {
       type: "tech",
@@ -2875,91 +2948,91 @@ const gameData = {
       type: "tech",
       cp: 2,
       timing: "Action Phase",
-      effect: "All beast and cavalry units within 12\" of your commander gain +1 ATK and +1 MOV until End Phase. These units may reroll 1 failed charge distance die."
+      effect: "All beast and cavalry units within 15\" of your commander gain +1 ATK and +1 MOV until End Phase. These units may reroll 1 failed charge distance die."
     },
     "Crimson Wellspring Tap": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 8\" of your commander. The fragment heals all Nightfang units within 3\" for 2 HP and grants them +1 ATK until End Phase. Add 1 to the Hunger Pool."
+      effect: "Activate 1 fragment within 10\" of your commander. The fragment heals all Nightfang units within 4\" for 2 HP and grants them +1 ATK until End Phase. Add 1 to the Hunger Pool."
     },
     "Blighted Harvest": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "All Corruption tokens on enemies within 12\" of your commander generate energy. For every 3 Corruption tokens total, draw 1 card (max 3 cards). Each drawn card costs 1 less CP this turn."
+      effect: "All Corruption tokens on enemies within 15\" of your commander generate energy. For every 3 Corruption tokens total, draw 1 card (max 3 cards). Each drawn card costs 1 less CP this turn."
     },
     "Mass Quickening": {
       type: "fragment",
       cp: 4,
       timing: "Action Phase",
-      effect: "All Nightfang units within 12\" of your commander gain the Quickening: +1 ATK, +1 MOV, and their Corruption Spread applies 1 extra token. Lasts until End Phase. If any fragment is within 6\" of the commander, the range increases to 18\"."
+      effect: "All Nightfang units within 15\" of your commander gain the Quickening: +1 ATK, +1 MOV, and their Corruption Spread applies 1 extra token. Lasts until End Phase. If any fragment is within 8\" of the commander, the range increases to 22\"."
     },
     "Crimson Rejuvenation": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "Choose 1 fragment within 8\" of your commander. It regains 2 charges. All friendly units within 4\" of the fragment heal 3 HP. Units at full HP gain +1 DEF until End Phase instead."
+      effect: "Choose 1 fragment within 10\" of your commander. It regains 2 charges. All friendly units within 5\" of the fragment heal 3 HP. Units at full HP gain +1 DEF until End Phase instead."
     },
     "Shadow Fragment": {
       type: "fragment",
       cp: 2,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 12\" of your commander. All friendly units within 4\" of the fragment gain Stealth until they attack or are detected. Stealth units already within range gain +2 ATK on their next attack from Stealth."
+      effect: "Activate 1 fragment within 15\" of your commander. All friendly units within 5\" of the fragment gain Stealth until they attack or are detected. Stealth units already within range gain +2 ATK on their next attack from Stealth."
     },
     "Crimson Revelation": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 12\" of your commander. Its effects target all units (friend and foe) within 6\" instead of its normal range. Enemy units affected gain 2 Corruption tokens. Fragment does not lose a charge."
+      effect: "Activate 1 fragment within 15\" of your commander. Its effects target all units (friend and foe) within 8\" instead of its normal range. Enemy units affected gain 2 Corruption tokens. Fragment does not lose a charge."
     },
     "Fragment Overcharge": {
       type: "fragment",
       cp: 4,
       timing: "Action Phase",
-      effect: "Choose 1 fragment within 8\" of your commander. Triple its effect for this activation (healing, ATK bonuses, etc. are tripled). The fragment loses 3 charges instead of 1. If it has fewer than 3 charges, it detonates: 4 damage to all units within 3\"."
+      effect: "Choose 1 fragment within 10\" of your commander. Triple its effect for this activation (healing, ATK bonuses, etc. are tripled). The fragment loses 3 charges instead of 1. If it has fewer than 3 charges, it detonates: 4 damage to all units within 4\"."
     },
     "Blight Engine Boost": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "All War Machine units within 8\" of a fragment gain +2 ATK and +1 DEF until End Phase. The fragment pulses: all friendly units within 3\" gain +1 ATK. Fragment loses 1 charge."
+      effect: "All War Machine units within 10\" of a fragment gain +2 ATK and +1 DEF until End Phase. The fragment pulses: all friendly units within 4\" gain +1 ATK. Fragment loses 1 charge."
     },
     "Crimson Elegance": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 12\" of your commander. All elite units (4+ pts) within 6\" of the fragment gain +1 ATK, +1 DEF, and may reroll 1 missed die until End Phase."
+      effect: "Activate 1 fragment within 15\" of your commander. All elite units (4+ pts) within 8\" of the fragment gain +1 ATK, +1 DEF, and may reroll 1 missed die until End Phase."
     },
     "Plague Fragment": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 12\" of your commander. All enemy units within 6\" of the fragment gain 3 Corruption tokens and take 1 damage. The fragment creates a 3\" Corruption Zone at its location."
+      effect: "Activate 1 fragment within 15\" of your commander. All enemy units within 8\" of the fragment gain 3 Corruption tokens and take 1 damage. The fragment creates a 4\" Corruption Zone at its location."
     },
     "Tactical Corruption": {
       type: "fragment",
       cp: 2,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 12\" of your commander. Choose: either all friendlies within 4\" gain +1 ATK, or all enemies within 4\" gain 2 Corruption tokens. The fragment does not lose a charge."
+      effect: "Activate 1 fragment within 15\" of your commander. Choose: either all friendlies within 5\" gain +1 ATK, or all enemies within 5\" gain 2 Corruption tokens. The fragment does not lose a charge."
     },
     "Endurance Fragment": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 8\" of your commander. All friendly units within 6\" gain +2 DEF and Immovable (cannot be pushed or displaced) until End Phase. Your commander gains +1 HP permanently (max once per battle)."
+      effect: "Activate 1 fragment within 10\" of your commander. All friendly units within 8\" gain +2 DEF and Immovable (cannot be pushed or displaced) until End Phase. Your commander gains +1 HP permanently (max once per battle)."
     },
     "Feral Awakening": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 12\" of your commander. All beast units within 8\" of the fragment undergo partial transformation: +2 ATK, +1 MOV, and Terrifying until End Phase. Non-beast units within 4\" gain +1 ATK."
+      effect: "Activate 1 fragment within 15\" of your commander. All beast units within 10\" of the fragment undergo partial transformation: +2 ATK, +1 MOV, and Terrifying until End Phase. Non-beast units within 5\" gain +1 ATK."
     },
     "Feral Fragment": {
       type: "fragment",
       cp: 3,
       timing: "Action Phase",
-      effect: "Activate 1 fragment within 12\" of your commander. All beast and cavalry units within 6\" gain +1 ATK and +2 MOV until End Phase. Your commander may immediately make a free 4\" move."
+      effect: "Activate 1 fragment within 15\" of your commander. All beast and cavalry units within 8\" gain +1 ATK and +2 MOV until End Phase. Your commander may immediately make a free 5\" move."
     },
     "Apex Strike": {
       type: "tactical",
@@ -2971,13 +3044,13 @@ const gameData = {
       type: "tactical",
       cp: 2,
       timing: "Action Phase",
-      effect: "1 friendly unit within 8\" of your commander makes an immediate attack. The target gains 2 Corruption tokens regardless of whether the attack hits. If the target already has 3+ tokens, it takes 1 extra damage."
+      effect: "1 friendly unit within 10\" of your commander makes an immediate attack. The target gains 2 Corruption tokens regardless of whether the attack hits. If the target already has 3+ tokens, it takes 1 extra damage."
     },
     "Rending Claws": {
       type: "tactical",
       cp: 3,
       timing: "Action Phase",
-      effect: "Your commander or 1 beast unit within 8\" makes a melee attack with +3 ATK dice. This attack ignores 2 points of DEF. Killed models add 1 to the Hunger Pool."
+      effect: "Your commander or 1 beast unit within 10\" makes a melee attack with +3 ATK dice. This attack ignores 2 points of DEF. Killed models add 1 to the Hunger Pool."
     },
     "Swarm Tactics": {
       type: "tactical",
@@ -2995,7 +3068,7 @@ const gameData = {
       type: "tactical",
       cp: 3,
       timing: "Action Phase",
-      effect: "Your commander or 1 Stealth unit makes an attack against a target within 6\". If attacking from Stealth, gain +4 ATK for this attack. If the target is an enemy commander, gain an additional +2 ATK."
+      effect: "Your commander or 1 Stealth unit makes an attack against a target within 8\". If attacking from Stealth, gain +4 ATK for this attack. If the target is an enemy commander, gain an additional +2 ATK."
     },
     "Prophetic Strike": {
       type: "tactical",
@@ -3007,13 +3080,13 @@ const gameData = {
       type: "tactical",
       cp: 3,
       timing: "Action Phase",
-      effect: "Your commander or 1 War Machine within 12\" makes an attack with +2 ATK. If the attack deals 3+ damage, the target is Staggered: -2 MOV and -1 ATK until End Phase."
+      effect: "Your commander or 1 War Machine within 15\" makes an attack with +2 ATK. If the attack deals 3+ damage, the target is Staggered: -2 MOV and -1 ATK until End Phase."
     },
     "Nightfang Precision Strike": {
       type: "tactical",
       cp: 2,
       timing: "Action Phase",
-      effect: "1 friendly unit within 8\" of your commander makes an attack with +1 ATK that ignores 1 point of DEF. If the target has Corruption tokens, ignore an additional point of DEF per 3 tokens."
+      effect: "1 friendly unit within 10\" of your commander makes an attack with +1 ATK that ignores 1 point of DEF. If the target has Corruption tokens, ignore an additional point of DEF per 3 tokens."
     },
     "Withering Touch": {
       type: "tactical",
@@ -3025,13 +3098,13 @@ const gameData = {
       type: "tactical",
       cp: 3,
       timing: "Reaction",
-      effect: "When your commander or a unit within 6\" is attacked in melee, the attacked unit may immediately strike back before the attacker rolls. If the counterattack kills the attacker, the original attack is negated."
+      effect: "When your commander or a unit within 8\" is attacked in melee, the attacked unit may immediately strike back before the attacker rolls. If the counterattack kills the attacker, the original attack is negated."
     },
     "Savage Pounce": {
       type: "tactical",
       cp: 3,
       timing: "Action Phase",
-      effect: "Your commander or 1 beast unit within 8\" makes a charge attack with +3 MOV and +2 ATK for this charge. If the charge starts from outside the target's line of sight, gain an additional +2 ATK."
+      effect: "Your commander or 1 beast unit within 10\" makes a charge attack with +3 MOV and +2 ATK for this charge. If the charge starts from outside the target's line of sight, gain an additional +2 ATK."
     },
     "Surgical Strike": {
       type: "tactical",
@@ -3049,7 +3122,7 @@ const gameData = {
       type: "tech",
       cp: 4,
       timing: "Action Phase",
-      effect: "When an enemy unit with 3+ Corruption tokens is destroyed this turn, all enemy units within 4\" of it gain Corruption tokens equal to the destroyed unit's token count. Lasts until End Phase."
+      effect: "When an enemy unit with 3+ Corruption tokens is destroyed this turn, all enemy units within 5\" of it gain Corruption tokens equal to the destroyed unit's token count. Lasts until End Phase."
     },
     "Hunger Frenzy": {
       type: "tactical",
@@ -3073,13 +3146,13 @@ const gameData = {
       type: "tech",
       cp: 4,
       timing: "Action Phase",
-      effect: "Choose a point within 12\" of your commander. All units within 3\" take 3 damage (Nightfang units take only 1). All surviving enemy units gain 3 Corruption tokens. Creates a Corruption Zone lasting 2 turns."
+      effect: "Choose a point within 15\" of your commander. All units within 4\" take 3 damage (Nightfang units take only 1). All surviving enemy units gain 3 Corruption tokens. Creates a Corruption Zone lasting 2 turns."
     },
     "Thrall Sacrifice": {
       type: "tactical",
       cp: 1,
       timing: "Any Phase",
-      effect: "Destroy 1 Thrall unit within 6\" of your commander. Your commander heals HP equal to the destroyed unit's remaining HP (max 4). Add 2 to the Hunger Pool. Draw 1 card."
+      effect: "Destroy 1 Thrall unit within 8\" of your commander. Your commander heals HP equal to the destroyed unit's remaining HP (max 4). Add 2 to the Hunger Pool. Draw 1 card."
     },
     "Vampiric Regeneration": {
       type: "tech",
@@ -3095,19 +3168,19 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Movement Phase",
-      effect: "Select up to 3 friendly flying units within 12\" of your commander. Each may immediately make a free dive move (up to their MOV) toward a single enemy unit. If 2+ divers reach engagement range, they each gain +1 ATK die."
+      effect: "Select up to 3 friendly flying units within 15\" of your commander. Each may immediately make a free dive move (up to their MOV) toward a single enemy unit. If 2+ divers reach engagement range, they each gain +1 ATK die."
     },
     "Breath Barrage": {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
-      effect: "All friendly drake units within 12\" of your commander may use their Breath Weapon this turn even if they already attacked. Each breath attack gains +1 ATK die. Breath attacks this turn ignore cover."
+      effect: "All friendly drake units within 15\" of your commander may use their Breath Weapon this turn even if they already attacked. Each breath attack gains +1 ATK die. Breath attacks this turn ignore cover."
     },
     "Drake Formation": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "All friendly flying units within 8\" of your commander gain +1 ATK die and +1 DEF when within 3\" of another friendly flying unit. Lasts until End Phase."
+      effect: "All friendly flying units within 10\" of your commander gain +1 ATK die and +1 DEF when within 4\" of another friendly flying unit. Lasts until End Phase."
     },
     "Thermal Positioning": {
       type: "tech",
@@ -3119,13 +3192,13 @@ const gameData = {
       type: "fragment",
       cp: 2,
       timing: "Combat Phase",
-      effect: "Activate a fire fragment: all friendly units with Breath Weapon within 8\" gain +2 ATK dice on breath attacks this turn. Breath attacks create burning terrain at their impact point."
+      effect: "Activate a fire fragment: all friendly units with Breath Weapon within 10\" gain +2 ATK dice on breath attacks this turn. Breath attacks create burning terrain at their impact point."
     },
     "Sky Strike": {
       type: "tactical",
       cp: 2,
       timing: "Combat Phase",
-      effect: "One friendly flying unit makes a diving attack with +3 ATK dice. If the attack destroys the target, the unit may immediately fly 6\" to safety without provoking reactions."
+      effect: "One friendly flying unit makes a diving attack with +3 ATK dice. If the attack destroys the target, the unit may immediately fly 8\" to safety without provoking reactions."
     },
 
     // --- Flamewarden Kora ---
@@ -3133,37 +3206,37 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "All friendly units within 8\" of your commander heal 2 HP. Units that were Shaken rally immediately. If any unit was at 1 HP, it gains +1 ATK die until End Phase from renewed vigor."
+      effect: "All friendly units within 10\" of your commander heal 2 HP. Units that were Shaken rally immediately. If any unit was at 1 HP, it gains +1 ATK die until End Phase from renewed vigor."
     },
     "Flame Renewal": {
       type: "command",
       cp: 2,
       timing: "End Phase",
-      effect: "Choose up to 3 friendly units within 8\" of your commander. Each heals 1 HP. One destroyed friendly Infantry unit may be revived at 1 HP within 3\" of your commander (once per game)."
+      effect: "Choose up to 3 friendly units within 10\" of your commander. Each heals 1 HP. One destroyed friendly Infantry unit may be revived at 1 HP within 4\" of your commander (once per game)."
     },
     "Cauterize Wounds": {
       type: "tech",
       cp: 1,
       timing: "Any Phase",
-      effect: "One friendly unit within 6\" of your commander immediately heals 2 HP. The healed unit gains Fire Resistant until End Phase. May be played as a reaction when a unit takes damage."
+      effect: "One friendly unit within 8\" of your commander immediately heals 2 HP. The healed unit gains Fire Resistant until End Phase. May be played as a reaction when a unit takes damage."
     },
     "Fireheart Blessing": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Choose up to 3 friendly units within 8\". Each gains +1 DEF and Phoenix Spark this turn. Phoenix Spark: if the unit would be destroyed, roll d6 — on 5+, it survives with 1 HP instead."
+      effect: "Choose up to 3 friendly units within 10\". Each gains +1 DEF and Phoenix Spark this turn. Phoenix Spark: if the unit would be destroyed, roll d6 — on 5+, it survives with 1 HP instead."
     },
     "Cleansing Fire": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a fire fragment: all friendly units within 6\" are cleansed of all negative status effects (Shaken, Corruption tokens, debuffs). Each cleansed unit heals 1 HP."
+      effect: "Activate a fire fragment: all friendly units within 8\" are cleansed of all negative status effects (Shaken, Corruption tokens, debuffs). Each cleansed unit heals 1 HP."
     },
     "Burning Martyr": {
       type: "tactical",
       cp: 2,
       timing: "Any Phase",
-      effect: "Your commander takes 3 damage. In return, all friendly units within 6\" heal 2 HP and gain +1 ATK die until End Phase. If your commander would be destroyed by this, she survives at 1 HP (once per game)."
+      effect: "Your commander takes 3 damage. In return, all friendly units within 8\" heal 2 HP and gain +1 ATK die until End Phase. If your commander would be destroyed by this, she survives at 1 HP (once per game)."
     },
 
     // --- Ashborn Ryx ---
@@ -3171,37 +3244,37 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
-      effect: "Choose a point within 10\" of your commander. All units (friend and foe) within 3\" suffer a 5-dice fire attack. Creates burning terrain in the area. Emberclaw units with Fire Resistant take half damage."
+      effect: "Choose a point within 10\" of your commander. All units (friend and foe) within 4\" suffer a 5-dice fire attack. Creates burning terrain in the area. Emberclaw units with Fire Resistant take half damage."
     },
     "Unbonded Fury": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "All friendly Unbonded and Infantry units within 8\" of your commander gain +2 ATK dice and Fearless until End Phase. These units may use fragment abilities without instability risk this turn."
+      effect: "All friendly Unbonded and Infantry units within 10\" of your commander gain +2 ATK dice and Fearless until End Phase. These units may use fragment abilities without instability risk this turn."
     },
     "Fragment Ignition": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate up to 2 fragments within 8\" of your commander simultaneously. Both gain +1 to their effects. Roll d6 per fragment: on 1, the fragment takes 1 instability damage."
+      effect: "Activate up to 2 fragments within 10\" of your commander simultaneously. Both gain +1 to their effects. Roll d6 per fragment: on 1, the fragment takes 1 instability damage."
     },
     "Fire Shaping": {
       type: "tech",
       cp: 1,
       timing: "Any Phase",
-      effect: "Reshape one burning terrain zone within 12\" of your commander: move it up to 4\" in any direction, or expand its radius by 2\". Enemy units caught in the reshaped zone take 1 fire damage."
+      effect: "Reshape one burning terrain zone within 15\" of your commander: move it up to 5\" in any direction, or expand its radius by 2\". Enemy units caught in the reshaped zone take 1 fire damage."
     },
     "Unstable Overcharge": {
       type: "fragment",
       cp: 2,
       timing: "Combat Phase",
-      effect: "Overcharge a fragment within 8\": one friendly unit gains +4 ATK dice for one attack. After the attack, roll d6: on 1-2, the unit takes 2 damage from fragment instability. On 6, the fragment detonates harmlessly for +1 bonus damage."
+      effect: "Overcharge a fragment within 10\": one friendly unit gains +4 ATK dice for one attack. After the attack, roll d6: on 1-2, the unit takes 2 damage from fragment instability. On 6, the fragment detonates harmlessly for +1 bonus damage."
     },
     "Flash Fire": {
       type: "tactical",
       cp: 1,
       timing: "Combat Phase",
-      effect: "One friendly Pyromancer or fire-wielding unit makes an immediate ranged attack at RNG 8\" with +2 ATK dice. The attack creates a 2\" patch of burning terrain at the target's location."
+      effect: "One friendly Pyromancer or fire-wielding unit makes an immediate ranged attack at RNG 10\" with +2 ATK dice. The attack creates a 2\" patch of burning terrain at the target's location."
     },
 
     // --- Wyrmlord Tzarak ---
@@ -3209,37 +3282,37 @@ const gameData = {
       type: "command",
       cp: 4,
       timing: "Movement Phase",
-      effect: "Your commander's Wyrm makes a devastating landing: move up to full MOV, then all enemy units within 4\" of the landing point suffer a 4-dice attack and are pushed 2\" away. The area becomes difficult terrain."
+      effect: "Your commander's Wyrm makes a devastating landing: move up to full MOV, then all enemy units within 5\" of the landing point suffer a 4-dice attack and are pushed 2\" away. The area becomes difficult terrain."
     },
     "Wyrm's Command": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "All friendly drake and War Machine units within 12\" of your commander gain +1 ATK die and +1 MOR until End Phase. Enemy units within 6\" of your commander must pass a Morale check or become Shaken."
+      effect: "All friendly drake and War Machine units within 15\" of your commander gain +1 ATK die and +1 MOR until End Phase. Enemy units within 8\" of your commander must pass a Morale check or become Shaken."
     },
     "Earthquake Landing": {
       type: "tech",
       cp: 2,
       timing: "Movement Phase",
-      effect: "When your commander or a friendly War Machine lands or charges this turn, all enemy units within 3\" of the impact point suffer -2 MOV and -1 ATK die next turn from seismic shock."
+      effect: "When your commander or a friendly War Machine lands or charges this turn, all enemy units within 4\" of the impact point suffer -2 MOV and -1 ATK die next turn from seismic shock."
     },
     "Ancient Power": {
       type: "tech",
       cp: 3,
       timing: "Command Phase",
-      effect: "Your commander gains +3 ATK dice and +2 DEF until End Phase. All friendly units within 6\" gain +1 MOR from the Wyrm's awe-inspiring presence. Your commander may not move this turn."
+      effect: "Your commander gains +3 ATK dice and +2 DEF until End Phase. All friendly units within 8\" gain +1 MOR from the Wyrm's awe-inspiring presence. Your commander may not move this turn."
     },
     "Titan's Flame": {
       type: "fragment",
       cp: 3,
       timing: "Combat Phase",
-      effect: "Activate a fire fragment: your commander's next breath attack gains +4 ATK dice and its cone extends by 6\". The breath creates burning terrain along its entire length. Fragment loses 2 charges."
+      effect: "Activate a fire fragment: your commander's next breath attack gains +4 ATK dice and its cone extends by 8\". The breath creates burning terrain along its entire length. Fragment loses 2 charges."
     },
     "Devastating Presence": {
       type: "tactical",
       cp: 2,
       timing: "Command Phase",
-      effect: "All enemy units within 8\" of your commander must make an immediate Morale check at -2. Units that fail become Shaken and suffer -1 ATK die until End Phase. Terrifying units are immune."
+      effect: "All enemy units within 10\" of your commander must make an immediate Morale check at -2. Units that fail become Shaken and suffer -1 ATK die until End Phase. Terrifying units are immune."
     },
 
     // --- Skydancer Lyss ---
@@ -3247,7 +3320,7 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Movement Phase",
-      effect: "Your commander and up to 2 friendly flying units within 6\" each make a free dive move of up to 8\" toward different enemy units. Each gains +1 ATK die if they reach engagement range."
+      effect: "Your commander and up to 2 friendly flying units within 8\" each make a free dive move of up to 10\" toward different enemy units. Each gains +1 ATK die if they reach engagement range."
     },
     "Airstream Riding": {
       type: "tech",
@@ -3259,7 +3332,7 @@ const gameData = {
       type: "tech",
       cp: 1,
       timing: "Any Phase",
-      effect: "One friendly flying unit within 8\" gains +2 DEF against the next attack targeting it. If the attack misses entirely, the unit may immediately move 3\". May be played as a reaction."
+      effect: "One friendly flying unit within 10\" gains +2 DEF against the next attack targeting it. If the attack misses entirely, the unit may immediately move 4\". May be played as a reaction."
     },
     "Velocity Shards": {
       type: "fragment",
@@ -3271,7 +3344,7 @@ const gameData = {
       type: "tactical",
       cp: 2,
       timing: "Combat Phase",
-      effect: "One friendly unit makes an attack with +1 ATK die. After resolving the attack (hit or miss), the unit may immediately move up to 6\" away from the target. This move does not provoke reactions."
+      effect: "One friendly unit makes an attack with +1 ATK die. After resolving the attack (hit or miss), the unit may immediately move up to 8\" away from the target. This move does not provoke reactions."
     },
 
     // --- Embersmith Torvan ---
@@ -3279,7 +3352,7 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Choose up to 4 friendly units within 8\" of your commander. Each gains +1 ATK die from enhanced weapons until End Phase. Units with the Fragment keyword also gain +1 DEF from reinforced equipment."
+      effect: "Choose up to 4 friendly units within 10\" of your commander. Each gains +1 ATK die from enhanced weapons until End Phase. Units with the Fragment keyword also gain +1 DEF from reinforced equipment."
     },
     "Equipment Distribution": {
       type: "command",
@@ -3291,25 +3364,25 @@ const gameData = {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Forge a fragment into equipment: one friendly unit within 6\" permanently gains +1 ATK die for the rest of the game. The fragment loses 1 charge. Only one unit may benefit per game."
+      effect: "Forge a fragment into equipment: one friendly unit within 8\" permanently gains +1 ATK die for the rest of the game. The fragment loses 1 charge. Only one unit may benefit per game."
     },
     "Weapon Enhancement": {
       type: "tech",
       cp: 1,
       timing: "Combat Phase",
-      effect: "One friendly unit within 6\" of your commander gains +2 ATK dice and Armor Piercing (reduce target DEF by 1) for one attack this turn."
+      effect: "One friendly unit within 8\" of your commander gains +2 ATK dice and Armor Piercing (reduce target DEF by 1) for one attack this turn."
     },
     "Stabilization Field": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Create a stabilization field within 6\" of your commander: all fragments within the field have no instability risk this turn. All friendly units within 4\" gain +1 DEF from fragment-reinforced shielding."
+      effect: "Create a stabilization field within 8\" of your commander: all fragments within the field have no instability risk this turn. All friendly units within 5\" gain +1 DEF from fragment-reinforced shielding."
     },
     "Supply Line": {
       type: "tactical",
       cp: 1,
       timing: "Command Phase",
-      effect: "Draw 1 extra card. One friendly Support unit within 8\" may immediately use its repair or enhancement ability as a free action. Generate 1 CP."
+      effect: "Draw 1 extra card. One friendly Support unit within 10\" may immediately use its repair or enhancement ability as a free action. Generate 1 CP."
     },
 
     // --- Pyroclaw Drenna ---
@@ -3323,13 +3396,13 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Your commander emanates searing heat: all enemy units within 3\" take 1 fire damage at the start of each phase this turn. Friendly Fire Resistant units within 3\" gain +1 ATK die from the heat."
+      effect: "Your commander emanates searing heat: all enemy units within 4\" take 1 fire damage at the start of each phase this turn. Friendly Fire Resistant units within 4\" gain +1 ATK die from the heat."
     },
     "Immolation Field": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Create a 4\" radius immolation zone centered on your commander. All non-Fire Resistant units entering or starting their turn in the zone take 1 fire damage. Lasts 2 turns. Your commander is immune."
+      effect: "Create a 5\" radius immolation zone centered on your commander. All non-Fire Resistant units entering or starting their turn in the zone take 1 fire damage. Lasts 2 turns. Your commander is immune."
     },
     "Fire  Touch": {
       type: "tech",
@@ -3355,13 +3428,13 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Reveal all enemy Stealth and hidden units within 18\" of your commander. All friendly units gain +1 ATK die against revealed targets this turn. You may look at the top 2 cards of the enemy's deck."
+      effect: "Reveal all enemy Stealth and hidden units within 22\" of your commander. All friendly units gain +1 ATK die against revealed targets this turn. You may look at the top 2 cards of the enemy's deck."
     },
     "Ambush Coordination": {
       type: "command",
       cp: 3,
       timing: "Movement Phase",
-      effect: "Select up to 3 friendly units within 12\" of your commander. Each may immediately redeploy anywhere on the table more than 8\" from enemies. These units gain +2 ATK dice on their first attack this turn."
+      effect: "Select up to 3 friendly units within 15\" of your commander. Each may immediately redeploy anywhere on the table more than 10\" from enemies. These units gain +2 ATK dice on their first attack this turn."
     },
     "Stealth Flight": {
       type: "tech",
@@ -3379,7 +3452,7 @@ const gameData = {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a vision fragment: gain true sight within 18\" — ignore Stealth, cover, and concealment. All friendly ranged units gain +1 ATK die and +2\" RNG this turn."
+      effect: "Activate a vision fragment: gain true sight within 22\" — ignore Stealth, cover, and concealment. All friendly ranged units gain +1 ATK die and +2\" RNG this turn."
     },
 
     // --- Clutchmaster Vayne ---
@@ -3387,37 +3460,37 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Spawn 1d3 Fledgling Swarm units (2 pts each, full HP) within 6\" of your commander. Fledglings activate immediately this turn. If a friendly Drake Handler is within 6\", spawn 1 additional Fledgling."
+      effect: "Spawn 1d3 Fledgling Swarm units (2 pts each, full HP) within 8\" of your commander. Fledglings activate immediately this turn. If a friendly Drake Handler is within 8\", spawn 1 additional Fledgling."
     },
     "Hatchling Swarm": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "All friendly Fledgling and Swarm units within 12\" of your commander gain +1 ATK die, +1 MOV, and Pack Tactics (gain +1 ATK die when 2+ swarm units are engaged with the same target) until End Phase."
+      effect: "All friendly Fledgling and Swarm units within 15\" of your commander gain +1 ATK die, +1 MOV, and Pack Tactics (gain +1 ATK die when 2+ swarm units are engaged with the same target) until End Phase."
     },
     "Rapid Maturation": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "One friendly Fledgling Swarm unit within 8\" of your commander immediately matures: it gains +2 ATK dice, +1 DEF, and +3 HP permanently. Can only be used once per Fledgling."
+      effect: "One friendly Fledgling Swarm unit within 10\" of your commander immediately matures: it gains +2 ATK dice, +1 DEF, and +3 HP permanently. Can only be used once per Fledgling."
     },
     "Nest Protection": {
       type: "tech",
       cp: 1,
       timing: "Any Phase",
-      effect: "One friendly unit within 6\" of your commander gains +2 DEF until End Phase. If the unit is a Fledgling or Swarm, it also gains Fearless. May be played as a reaction when a swarm unit is attacked."
+      effect: "One friendly unit within 8\" of your commander gains +2 DEF until End Phase. If the unit is a Fledgling or Swarm, it also gains Fearless. May be played as a reaction when a swarm unit is attacked."
     },
     "Growth Acceleration": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a growth fragment: all friendly Fledgling and Swarm units within 8\" gain +1 ATK die and +1 HP permanently. Fragment generates 1 additional Fledgling Swarm within 3\"."
+      effect: "Activate a growth fragment: all friendly Fledgling and Swarm units within 10\" gain +1 ATK die and +1 HP permanently. Fragment generates 1 additional Fledgling Swarm within 4\"."
     },
     "Protective Fury": {
       type: "tactical",
       cp: 2,
       timing: "Any Phase",
-      effect: "When a friendly Fledgling or Swarm unit within 8\" of your commander is destroyed, your commander and all friendly drake units within 6\" gain +2 ATK dice until End Phase from protective rage. May be played as a reaction."
+      effect: "When a friendly Fledgling or Swarm unit within 10\" of your commander is destroyed, your commander and all friendly drake units within 8\" gain +2 ATK dice until End Phase from protective rage. May be played as a reaction."
     },
 
     // --- Cinderfist Brok ---
@@ -3431,19 +3504,19 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Combat Phase",
-      effect: "Choose one enemy unit within 4\" of your commander. That unit permanently loses 1 DEF (minimum 2) as its armor is shattered. All friendly units attacking it gain +1 ATK die this turn."
+      effect: "Choose one enemy unit within 5\" of your commander. That unit permanently loses 1 DEF (minimum 2) as its armor is shattered. All friendly units attacking it gain +1 ATK die this turn."
     },
     "Fragment Fist": {
       type: "tech",
       cp: 2,
       timing: "Combat Phase",
-      effect: "Your commander's next melee attack gains +3 ATK dice and ignores all DEF bonuses. On a critical hit (6), the target is knocked back 3\" and loses 1 additional DEF."
+      effect: "Your commander's next melee attack gains +3 ATK dice and ignores all DEF bonuses. On a critical hit (6), the target is knocked back 4\" and loses 1 additional DEF."
     },
     "Structure Collapse": {
       type: "tech",
       cp: 2,
       timing: "Combat Phase",
-      effect: "Destroy one terrain piece (wall, barricade, fortification) within 4\" of your commander. All units within 2\" of the collapsed structure take 2 damage. Creates difficult terrain in a 3\" radius."
+      effect: "Destroy one terrain piece (wall, barricade, fortification) within 5\" of your commander. All units within 2\" of the collapsed structure take 2 damage. Creates difficult terrain in a 4\" radius."
     },
     "Impact Shards": {
       type: "fragment",
@@ -3455,7 +3528,7 @@ const gameData = {
       type: "tactical",
       cp: 2,
       timing: "Combat Phase",
-      effect: "All friendly units within 8\" of your commander gain Siege keyword this turn: their attacks deal double damage to terrain, fortifications, and War Machines. +1 ATK die against targets with DEF 5+."
+      effect: "All friendly units within 10\" of your commander gain Siege keyword this turn: their attacks deal double damage to terrain, fortifications, and War Machines. +1 ATK die against targets with DEF 5+."
     },
 
     // --- Flameheart Syrax ---
@@ -3463,13 +3536,13 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Your commander receives a prophetic vision: you may look at the top 3 cards of your deck and rearrange them in any order. All friendly units within 8\" may reroll one failed die this turn."
+      effect: "Your commander receives a prophetic vision: you may look at the top 3 cards of your deck and rearrange them in any order. All friendly units within 10\" may reroll one failed die this turn."
     },
     "Tyrant's Wrath": {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
-      effect: "Channel the Crimson Tyrant's fury: choose one enemy unit within 12\" of your commander. It suffers a 5-dice divine fire attack that ignores cover and DEF bonuses. If it destroys the target, all friendly units gain +1 MOR."
+      effect: "Channel the Crimson Tyrant's fury: choose one enemy unit within 15\" of your commander. It suffers a 5-dice divine fire attack that ignores cover and DEF bonuses. If it destroys the target, all friendly units gain +1 MOR."
     },
     "Prophecy Weaving": {
       type: "tech",
@@ -3481,19 +3554,19 @@ const gameData = {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "All friendly units within 8\" of your commander gain +2 MOR and auto-pass Morale checks this turn. Enemy units within 8\" suffer -1 MOR. Shaken friendly units rally immediately."
+      effect: "All friendly units within 10\" of your commander gain +2 MOR and auto-pass Morale checks this turn. Enemy units within 10\" suffer -1 MOR. Shaken friendly units rally immediately."
     },
     "Divine Channeling": {
       type: "fragment",
       cp: 3,
       timing: "Command Phase",
-      effect: "Activate a divine fragment: your commander gains +2 to all base stats until End Phase. All friendly units within 6\" gain +1 ATK die and Fearless. Roll d6: on 1, the vision overwhelms — commander takes 2 damage."
+      effect: "Activate a divine fragment: your commander gains +2 to all base stats until End Phase. All friendly units within 8\" gain +1 ATK die and Fearless. Roll d6: on 1, the vision overwhelms — commander takes 2 damage."
     },
     "Faithful Fury": {
       type: "tactical",
       cp: 2,
       timing: "Combat Phase",
-      effect: "All friendly units within 6\" of your commander that have Fearless or auto-passed Morale this turn gain +2 ATK dice for their next attack. Units with the Faithful keyword gain +3 ATK dice instead."
+      effect: "All friendly units within 8\" of your commander that have Fearless or auto-passed Morale this turn gain +2 ATK dice for their next attack. Units with the Faithful keyword gain +3 ATK dice instead."
     },
 
     // --- Skullcrusher Threx ---
@@ -3501,13 +3574,13 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Combat Phase",
-      effect: "Issue a formal Challenge to an enemy Commander or Specialist within 8\". The challenge must be accepted. Your commander gains +3 ATK dice and crits on 5+ for the duel. The loser's army suffers -1 MOR."
+      effect: "Issue a formal Challenge to an enemy Commander or Specialist within 10\". The challenge must be accepted. Your commander gains +3 ATK dice and crits on 5+ for the duel. The loser's army suffers -1 MOR."
     },
     "Melee Superiority": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "All friendly melee units within 8\" of your commander gain +1 ATK die and +1 DEF in melee combat this turn. Charging units gain an additional +1 ATK die. Enemy units cannot disengage from these units."
+      effect: "All friendly melee units within 10\" of your commander gain +1 ATK die and +1 DEF in melee combat this turn. Charging units gain an additional +1 ATK die. Enemy units cannot disengage from these units."
     },
     "Claw and Fang": {
       type: "tech",
@@ -3519,7 +3592,7 @@ const gameData = {
       type: "tech",
       cp: 1,
       timing: "Combat Phase",
-      effect: "One friendly melee unit within 6\" gains +2 ATK dice and may reroll all misses once. If every die hits, deal +2 bonus damage from perfect technique."
+      effect: "One friendly melee unit within 8\" gains +2 ATK dice and may reroll all misses once. If every die hits, deal +2 bonus damage from perfect technique."
     },
     "Fury Shards": {
       type: "fragment",
@@ -3539,19 +3612,19 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "All fire attacks by friendly units within 8\" gain Corruption this turn: targets hit gain 2 Corruption tokens in addition to normal damage. Corrupted burning terrain applies 1 Corruption token to units entering it."
+      effect: "All fire attacks by friendly units within 10\" gain Corruption this turn: targets hit gain 2 Corruption tokens in addition to normal damage. Corrupted burning terrain applies 1 Corruption token to units entering it."
     },
     "Dark Fragment Mastery": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "All fragment activations within 8\" of your commander have their effects doubled this turn. Roll d6 per activation: on 1, the fragment becomes corrupted and deals 1 damage to all units within 2\"."
+      effect: "All fragment activations within 10\" of your commander have their effects doubled this turn. Roll d6 per activation: on 1, the fragment becomes corrupted and deals 1 damage to all units within 2\"."
     },
     "Corruption Spread": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Choose one enemy unit with Corruption tokens within 12\". Spread 2 Corruption tokens to each enemy unit within 3\" of it. Units reaching 4+ tokens suffer -1 ATK die and -1 DEF until cleansed."
+      effect: "Choose one enemy unit with Corruption tokens within 15\". Spread 2 Corruption tokens to each enemy unit within 4\" of it. Units reaching 4+ tokens suffer -1 ATK die and -1 DEF until cleansed."
     },
     "Tainted Ember": {
       type: "fragment",
@@ -3563,7 +3636,7 @@ const gameData = {
       type: "tactical",
       cp: 2,
       timing: "Combat Phase",
-      effect: "Sacrifice one friendly unit within 4\" of your commander (destroy it). Your commander gains ATK dice equal to the destroyed unit's remaining HP (max +6). This bonus lasts for one attack only."
+      effect: "Sacrifice one friendly unit within 5\" of your commander (destroy it). Your commander gains ATK dice equal to the destroyed unit's remaining HP (max +6). This bonus lasts for one attack only."
     },
 
     // ===================== THORNWEFT MATRIARCHY CARDS =====================
@@ -3573,7 +3646,7 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Place up to 3 Web-Anchor tokens within 12\" of your commander. All friendly units within 3\" of any Web-Anchor gain +1 DEF and may teleport to any other Web-Anchor as a free move action this turn."
+      effect: "Place up to 3 Web-Anchor tokens within 15\" of your commander. All friendly units within 4\" of any Web-Anchor gain +1 DEF and may teleport to any other Web-Anchor as a free move action this turn."
     },
     "Network Expansion": {
       type: "command",
@@ -3585,25 +3658,25 @@ const gameData = {
       type: "tech",
       cp: 1,
       timing: "Movement Phase",
-      effect: "Place 1 Web-Anchor token within 6\" of any friendly unit. The Anchor counts as Light Cover. Friendly units within 2\" may use it as a teleport node during subsequent turns."
+      effect: "Place 1 Web-Anchor token within 8\" of any friendly unit. The Anchor counts as Light Cover. Friendly units within 2\" may use it as a teleport node during subsequent turns."
     },
     "Web-Surge": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "All Web-Anchor tokens within 12\" pulse with energy: friendly units within 3\" of any Anchor heal 1 HP. Enemy units within 3\" of any Anchor suffer -1 ATK die until End Phase."
+      effect: "All Web-Anchor tokens within 15\" pulse with energy: friendly units within 4\" of any Anchor heal 1 HP. Enemy units within 4\" of any Anchor suffer -1 ATK die until End Phase."
     },
     "Fate-Thread Amplification": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a fate fragment: all friendly units within 8\" gain 1 additional Fate-Thread this turn. Fate-Threads may be spent to force enemy rerolls or grant friendly rerolls."
+      effect: "Activate a fate fragment: all friendly units within 10\" gain 1 additional Fate-Thread this turn. Fate-Threads may be spent to force enemy rerolls or grant friendly rerolls."
     },
     "Mass Redeployment": {
       type: "tactical",
       cp: 3,
       timing: "Movement Phase",
-      effect: "Up to 4 friendly units within 12\" of your commander may instantly teleport to any Web-Anchor token on the battlefield. Each teleported unit gains +1 ATK die on its next attack this turn."
+      effect: "Up to 4 friendly units within 15\" of your commander may instantly teleport to any Web-Anchor token on the battlefield. Each teleported unit gains +1 ATK die on its next attack this turn."
     },
 
     // --- Thread-Seer Kythara ---
@@ -3611,7 +3684,7 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
-      effect: "Choose one enemy unit within 12\". Force it to reroll ALL successful attack dice on its next attack. Additionally, its Morale stat counts as 2 lower until End Phase as its fate-threads unravel."
+      effect: "Choose one enemy unit within 15\". Force it to reroll ALL successful attack dice on its next attack. Additionally, its Morale stat counts as 2 lower until End Phase as its fate-threads unravel."
     },
     "Thread Manipulation": {
       type: "command",
@@ -3623,13 +3696,13 @@ const gameData = {
       type: "tech",
       cp: 3,
       timing: "Command Phase",
-      effect: "Create a 4\" probability storm centered on a point within 10\". All dice rolled within the storm have their results inverted (1→6, 2→5, 3→4, etc.) until End Phase. Affects friend and foe alike."
+      effect: "Create a 5\" probability storm centered on a point within 10\". All dice rolled within the storm have their results inverted (1→6, 2→5, 3→4, etc.) until End Phase. Affects friend and foe alike."
     },
     "Reroll Cascade": {
       type: "tech",
       cp: 2,
       timing: "Combat Phase",
-      effect: "One friendly unit may reroll ALL missed attack dice. If the rerolls produce more hits than the original roll, a cascade triggers: one additional friendly unit within 6\" may also reroll misses."
+      effect: "One friendly unit may reroll ALL missed attack dice. If the rerolls produce more hits than the original roll, a cascade triggers: one additional friendly unit within 8\" may also reroll misses."
     },
     "Causality Shards": {
       type: "fragment",
@@ -3649,31 +3722,31 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "All enemy units within 8\" of your commander gain 2 Venom tokens. At End Phase, each enemy unit takes 1 damage per 2 Venom tokens it carries. Venom tokens persist until cleansed."
+      effect: "All enemy units within 10\" of your commander gain 2 Venom tokens. At End Phase, each enemy unit takes 1 damage per 2 Venom tokens it carries. Venom tokens persist until cleansed."
     },
     "Toxic Offensive": {
       type: "command",
       cp: 2,
       timing: "Combat Phase",
-      effect: "All friendly units within 8\" of your commander apply 1 Venom token on each successful hit this turn. Targets with 3+ Venom tokens suffer -1 ATK die and -1 DEF."
+      effect: "All friendly units within 10\" of your commander apply 1 Venom token on each successful hit this turn. Targets with 3+ Venom tokens suffer -1 ATK die and -1 DEF."
     },
     "Poison Engineering": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Choose up to 3 friendly units within 8\". Their weapons are coated with refined venom: hits apply 2 Venom tokens instead of 1 until End Phase. Ranged attacks leave toxic terrain at impact."
+      effect: "Choose up to 3 friendly units within 10\". Their weapons are coated with refined venom: hits apply 2 Venom tokens instead of 1 until End Phase. Ranged attacks leave toxic terrain at impact."
     },
     "Venom Refinement": {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
-      effect: "All Venom tokens on enemies within 12\" of your commander become Refined Venom: they now deal 1 damage per token at End Phase instead of per 2 tokens. Lasts 1 turn."
+      effect: "All Venom tokens on enemies within 15\" of your commander become Refined Venom: they now deal 1 damage per token at End Phase instead of per 2 tokens. Lasts 1 turn."
     },
     "Toxin Amplification": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a toxin fragment: double the number of Venom tokens on all enemies within 8\" of your commander (max 8 per unit). Each enemy with 4+ tokens also suffers -1 MOV."
+      effect: "Activate a toxin fragment: double the number of Venom tokens on all enemies within 10\" of your commander (max 8 per unit). Each enemy with 4+ tokens also suffers -1 MOV."
     },
     "Debilitating Strike": {
       type: "tactical",
@@ -3693,13 +3766,13 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Movement Phase",
-      effect: "Your commander and up to 2 friendly Stealth units within 8\" gain Infiltrate: they may move through enemy units and terrain freely, and their next attack from Stealth gains +3 ATK dice."
+      effect: "Your commander and up to 2 friendly Stealth units within 10\" gain Infiltrate: they may move through enemy units and terrain freely, and their next attack from Stealth gains +3 ATK dice."
     },
     "Invisibility Silk": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "One friendly unit within 6\" becomes completely invisible: it cannot be targeted by ranged attacks and gains Stealth. The invisibility lasts until End Phase or until the unit attacks."
+      effect: "One friendly unit within 8\" becomes completely invisible: it cannot be targeted by ranged attacks and gains Stealth. The invisibility lasts until End Phase or until the unit attacks."
     },
     "Fate Assassination": {
       type: "tech",
@@ -3725,7 +3798,7 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Spawn 1d3+1 Spiderling Swarm units (1 pt each, 2 HP) within 6\" of your commander. Swarms activate immediately. If a friendly Brood Nest is within 8\", spawn 2 additional Spiderlings."
+      effect: "Spawn 1d3+1 Spiderling Swarm units (1 pt each, 2 HP) within 8\" of your commander. Swarms activate immediately. If a friendly Brood Nest is within 10\", spawn 2 additional Spiderlings."
     },
     "Hatching Swarm": {
       type: "command",
@@ -3737,7 +3810,7 @@ const gameData = {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "One friendly Spiderling Swarm within 8\" immediately splits into 2 swarm units, each with half HP (rounded up). Both may act normally this turn. Only usable on swarms with 3+ HP."
+      effect: "One friendly Spiderling Swarm within 10\" immediately splits into 2 swarm units, each with half HP (rounded up). Both may act normally this turn. Only usable on swarms with 3+ HP."
     },
     "Overwhelm": {
       type: "tactical",
@@ -3751,13 +3824,13 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Place a Grand Gossamer Trap within 8\" of your commander (4\" radius). Enemy units entering the trap area lose all remaining movement and suffer -2 ATK dice on their next attack. Lasts 2 turns."
+      effect: "Place a Grand Gossamer Trap within 10\" of your commander (5\" radius). Enemy units entering the trap area lose all remaining movement and suffer -2 ATK dice on their next attack. Lasts 2 turns."
     },
     "Web Fortress": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Create a web fortress within 6\" of your commander: a 4\" radius zone of Heavy Cover that blocks enemy movement. Friendly units inside gain +2 DEF. The fortress lasts 3 turns."
+      effect: "Create a web fortress within 8\" of your commander: a 5\" radius zone of Heavy Cover that blocks enemy movement. Friendly units inside gain +2 DEF. The fortress lasts 3 turns."
     },
     "Gossamer Engineering": {
       type: "tech",
@@ -3769,13 +3842,13 @@ const gameData = {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
-      effect: "One existing Gossamer Trap within 12\" has its radius doubled and duration extended by 1 turn. Enemy units already inside the trap take 1 immediate damage as it tightens."
+      effect: "One existing Gossamer Trap within 15\" has its radius doubled and duration extended by 1 turn. Enemy units already inside the trap take 1 immediate damage as it tightens."
     },
     "Silk Reinforcement": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a silk fragment: all web structures, traps, and fortifications within 12\" gain +1 DEF (if targetable) and their effects are enhanced by +1. Friendly units within web structures heal 1 HP."
+      effect: "Activate a silk fragment: all web structures, traps, and fortifications within 15\" gain +1 DEF (if targetable) and their effects are enhanced by +1. Friendly units within web structures heal 1 HP."
     },
     "Ambush Architecture": {
       type: "tactical",
@@ -3795,25 +3868,25 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Choose one enemy unit within 12\". Steal one of its keywords or abilities (your choice) — your commander gains that ability until End Phase, and the enemy loses it. Cannot steal innate abilities."
+      effect: "Choose one enemy unit within 15\". Steal one of its keywords or abilities (your choice) — your commander gains that ability until End Phase, and the enemy loses it. Cannot steal innate abilities."
     },
     "Shadow Weaving": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Up to 3 friendly units within 8\" gain Shadow Cloak: enemies can only target them from within 6\". Ranged attacks against cloaked units suffer -1 ATK die. Lasts until End Phase."
+      effect: "Up to 3 friendly units within 10\" gain Shadow Cloak: enemies can only target them from within 8\". Ranged attacks against cloaked units suffer -1 ATK die. Lasts until End Phase."
     },
     "Morale Collapse": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Choose one enemy unit within 10\". It suffers -3 MOR until End Phase and must immediately make a Morale check. If failed, all enemy units within 4\" of it also suffer -1 MOR from spreading panic."
+      effect: "Choose one enemy unit within 10\". It suffers -3 MOR until End Phase and must immediately make a Morale check. If failed, all enemy units within 5\" of it also suffer -1 MOR from spreading panic."
     },
     "Fear Silk": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a fear fragment: all enemy units within 8\" must make an immediate Morale check at -1. Units that fail become Shaken and suffer -1 ATK die. Units that critically fail (by 3+) Rout immediately."
+      effect: "Activate a fear fragment: all enemy units within 10\" must make an immediate Morale check at -1. Units that fail become Shaken and suffer -1 ATK die. Units that critically fail (by 3+) Rout immediately."
     },
     "Psychological Strike": {
       type: "tactical",
@@ -3827,31 +3900,31 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Your commander and all friendly units within 4\" form a Silk Shield Wall: +2 DEF, immune to flanking, and any damage dealt to units in the wall is shared equally among them. Lasts until End Phase."
+      effect: "Your commander and all friendly units within 5\" form a Silk Shield Wall: +2 DEF, immune to flanking, and any damage dealt to units in the wall is shared equally among them. Lasts until End Phase."
     },
     "Stand Your Ground": {
       type: "command",
       cp: 2,
       timing: "Any Phase",
-      effect: "One friendly unit within 6\" becomes Immovable: it cannot be pushed, displaced, or forced to retreat. It gains +2 DEF and auto-passes Morale until End Phase. May be played as a reaction."
+      effect: "One friendly unit within 8\" becomes Immovable: it cannot be pushed, displaced, or forced to retreat. It gains +2 DEF and auto-passes Morale until End Phase. May be played as a reaction."
     },
     "Chitin Reinforcement": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Up to 3 friendly units within 8\" gain chitin-reinforced armor: +1 DEF permanently (max once per unit per game). Units that already have DEF 5+ instead gain +1 HP."
+      effect: "Up to 3 friendly units within 10\" gain chitin-reinforced armor: +1 DEF permanently (max once per unit per game). Units that already have DEF 5+ instead gain +1 HP."
     },
     "Bodyguard Protocol": {
       type: "tech",
       cp: 1,
       timing: "Any Phase",
-      effect: "Your commander intercepts an attack targeting a friendly unit within 3\": redirect the attack to your commander instead. Your commander gains +2 DEF for this redirected attack. May be played as a reaction."
+      effect: "Your commander intercepts an attack targeting a friendly unit within 4\": redirect the attack to your commander instead. Your commander gains +2 DEF for this redirected attack. May be played as a reaction."
     },
     "Silk Armor": {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a silk fragment: your commander and up to 2 friendly units within 4\" gain Silk Armor (+2 DEF, absorb the first 2 points of damage from each attack). Lasts until End Phase."
+      effect: "Activate a silk fragment: your commander and up to 2 friendly units within 5\" gain Silk Armor (+2 DEF, absorb the first 2 points of damage from each attack). Lasts until End Phase."
     },
     "Immovable Defense": {
       type: "tactical",
@@ -3865,25 +3938,25 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Movement Phase",
-      effect: "Your commander and up to 2 friendly units within 6\" gain Phase: they may move through terrain, walls, and enemy units freely this turn. Phase units gain +1 ATK die on their first attack after phasing."
+      effect: "Your commander and up to 2 friendly units within 8\" gain Phase: they may move through terrain, walls, and enemy units freely this turn. Phase units gain +1 ATK die on their first attack after phasing."
     },
     "Between-Step": {
       type: "command",
       cp: 3,
       timing: "Any Phase",
-      effect: "Instantly teleport your commander to any point within 12\" that is not in base contact with an enemy. Your commander may immediately make an attack with +2 ATK dice at the destination. May be played as a reaction."
+      effect: "Instantly teleport your commander to any point within 15\" that is not in base contact with an enemy. Your commander may immediately make an attack with +2 ATK dice at the destination. May be played as a reaction."
     },
     "Reality Slip": {
       type: "tech",
       cp: 1,
       timing: "Any Phase",
-      effect: "One friendly unit within 8\" briefly slips between realities: negate one attack targeting it (the attack passes through). The unit may then teleport 4\" in any direction. May be played as a reaction."
+      effect: "One friendly unit within 10\" briefly slips between realities: negate one attack targeting it (the attack passes through). The unit may then teleport 5\" in any direction. May be played as a reaction."
     },
     "Spatial Manipulation": {
       type: "tech",
       cp: 2,
       timing: "Movement Phase",
-      effect: "Warp the space around your commander: swap the positions of 2 units (friendly or enemy) within 8\". Swapped units become disoriented — enemy units suffer -1 ATK die next attack."
+      effect: "Warp the space around your commander: swap the positions of 2 units (friendly or enemy) within 10\". Swapped units become disoriented — enemy units suffer -1 ATK die next attack."
     },
     "Phase Silk": {
       type: "fragment",
@@ -3903,31 +3976,31 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "End Phase",
-      effect: "All destroyed enemy units this turn are Harvested: gain 2 CP per harvested unit. Up to 2 harvested units may be converted into Spiderling Swarms (placed within 6\" of your commander)."
+      effect: "All destroyed enemy units this turn are Harvested: gain 2 CP per harvested unit. Up to 2 harvested units may be converted into Spiderling Swarms (placed within 8\" of your commander)."
     },
     "Resource Surge": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Generate 3 bonus CP this turn. Additionally, all friendly Support units within 8\" may use their abilities twice this turn. Draw 1 extra card."
+      effect: "Generate 3 bonus CP this turn. Additionally, all friendly Support units within 10\" may use their abilities twice this turn. Draw 1 extra card."
     },
     "Efficient Processing": {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
-      effect: "One friendly unit within 6\" may convert 1 enemy model it destroyed last turn into resources: heal 2 HP or gain 1 CP or spawn 1 Spiderling within 3\"."
+      effect: "One friendly unit within 8\" may convert 1 enemy model it destroyed last turn into resources: heal 2 HP or gain 1 CP or spawn 1 Spiderling within 4\"."
     },
     "Cocoon Engineering": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Place a Cocoon token within 6\" of your commander. Friendly units within 2\" of the Cocoon heal 1 HP at the start of each turn. After 2 turns, the Cocoon hatches a free Spiderling Swarm."
+      effect: "Place a Cocoon token within 8\" of your commander. Friendly units within 2\" of the Cocoon heal 1 HP at the start of each turn. After 2 turns, the Cocoon hatches a free Spiderling Swarm."
     },
     "Conversion Silk": {
       type: "fragment",
       cp: 2,
       timing: "End Phase",
-      effect: "Activate a conversion fragment: all enemy casualties within 8\" this turn generate additional resources. Gain 1 Fragment Charge and 1 CP per enemy destroyed. One casualty may become a Spiderling."
+      effect: "Activate a conversion fragment: all enemy casualties within 10\" this turn generate additional resources. Gain 1 Fragment Charge and 1 CP per enemy destroyed. One casualty may become a Spiderling."
     },
     "Economy of Violence": {
       type: "tactical",
@@ -3941,25 +4014,25 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "All friendly units within 8\" of your commander heal 2 HP. Units at full HP instead gain +1 DEF until End Phase. One friendly unit may have a single negative status effect (Shaken, Venom, etc.) removed."
+      effect: "All friendly units within 10\" of your commander heal 2 HP. Units at full HP instead gain +1 DEF until End Phase. One friendly unit may have a single negative status effect (Shaken, Venom, etc.) removed."
     },
     "Silk Shield": {
       type: "command",
       cp: 2,
       timing: "Any Phase",
-      effect: "Create a protective silk barrier around up to 2 friendly units within 6\". Each shielded unit reduces damage from the next attack against it by 3 (minimum 0). May be played as a reaction."
+      effect: "Create a protective silk barrier around up to 2 friendly units within 8\". Each shielded unit reduces damage from the next attack against it by 3 (minimum 0). May be played as a reaction."
     },
     "Restorative Silk": {
       type: "tech",
       cp: 1,
       timing: "End Phase",
-      effect: "One friendly unit within 6\" heals 3 HP and is cleansed of all Venom tokens, Corruption tokens, and negative status effects. The healed unit gains +1 MOR until End Phase."
+      effect: "One friendly unit within 8\" heals 3 HP and is cleansed of all Venom tokens, Corruption tokens, and negative status effects. The healed unit gains +1 MOR until End Phase."
     },
     "Cleansing Thread": {
       type: "tech",
       cp: 1,
       timing: "Any Phase",
-      effect: "Remove all negative status effects (Shaken, Venom, Corruption, debuffs) from all friendly units within 6\" of your commander. Each cleansed unit gains +1 ATK die for its next attack."
+      effect: "Remove all negative status effects (Shaken, Venom, Corruption, debuffs) from all friendly units within 8\" of your commander. Each cleansed unit gains +1 ATK die for its next attack."
     },
     "Life-Weave Resonance": {
       type: "fragment",
@@ -3979,19 +4052,19 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Movement Phase",
-      effect: "Up to 3 friendly Cavalry units within 8\" may immediately make a free 6\" move. Units that end this move flanking an enemy gain +2 ATK dice on their next attack."
+      effect: "Up to 3 friendly Cavalry units within 10\" may immediately make a free 8\" move. Units that end this move flanking an enemy gain +2 ATK dice on their next attack."
     },
     "Spider-Bond Tactics": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "All friendly spider-mounted Cavalry within 8\" gain Spider-Bond: +1 ATK die, +1 DEF, and the ability to move over terrain freely. Spider mounts may climb walls and move vertically."
+      effect: "All friendly spider-mounted Cavalry within 10\" gain Spider-Bond: +1 ATK die, +1 DEF, and the ability to move over terrain freely. Spider mounts may climb walls and move vertically."
     },
     "Silk Saddle Reinforcement": {
       type: "tech",
       cp: 1,
       timing: "Command Phase",
-      effect: "One friendly Cavalry unit within 6\" gains +1 DEF and immunity to being dismounted or knocked prone. Its charge damage bonus increases by +1 ATK die."
+      effect: "One friendly Cavalry unit within 8\" gains +1 DEF and immunity to being dismounted or knocked prone. Its charge damage bonus increases by +1 ATK die."
     },
     "Stampede Resonance": {
       type: "fragment",
@@ -4011,7 +4084,7 @@ const gameData = {
       type: "command",
       cp: 2,
       timing: "Command Phase",
-      effect: "Place a Silk Wall (6\" long, counts as Heavy Cover) within 8\" of your commander. The wall blocks enemy movement but friendly Thornweft units may pass through freely. Lasts 3 turns."
+      effect: "Place a Silk Wall (8\" long, counts as Heavy Cover) within 10\" of your commander. The wall blocks enemy movement but friendly Thornweft units may pass through freely. Lasts 3 turns."
     },
     "Web Flood": {
       type: "command",
@@ -4023,13 +4096,13 @@ const gameData = {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Reshape one terrain piece within 12\" of your commander: move it up to 4\" in any direction, convert its type (open→difficult, cover→heavy cover), or create a new elevation. Lasts until destroyed."
+      effect: "Reshape one terrain piece within 15\" of your commander: move it up to 5\" in any direction, convert its type (open→difficult, cover→heavy cover), or create a new elevation. Lasts until destroyed."
     },
     "Web Architecture": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Create a web bridge or ramp within 8\" of your commander: friendly units may move over gaps, between elevations, or across water freely this turn. The structure also provides Light Cover."
+      effect: "Create a web bridge or ramp within 10\" of your commander: friendly units may move over gaps, between elevations, or across water freely this turn. The structure also provides Light Cover."
     },
     "Earth-Silk Resonance": {
       type: "fragment",
@@ -4041,7 +4114,7 @@ const gameData = {
       type: "tactical",
       cp: 2,
       timing: "Command Phase",
-      effect: "Create an impassable web barrier blocking a 4\" wide gap or passage. Enemy units cannot pass through for 2 turns (they must go around). Friendly Thornweft units may pass freely."
+      effect: "Create an impassable web barrier blocking a 5\" wide gap or passage. Enemy units cannot pass through for 2 turns (they must go around). Friendly Thornweft units may pass freely."
     },
 
     // --- Shared / Additional Thornweft cards ---
@@ -4049,7 +4122,7 @@ const gameData = {
       type: "fragment",
       cp: 2,
       timing: "Command Phase",
-      effect: "Activate a growth fragment: all friendly Spiderling and Swarm units within 8\" gain +1 ATK die and +2 HP permanently. One Spiderling within range grows into a Spider Warrior (gains +2 ATK, +1 DEF)."
+      effect: "Activate a growth fragment: all friendly Spiderling and Swarm units within 10\" gain +1 ATK die and +2 HP permanently. One Spiderling within range grows into a Spider Warrior (gains +2 ATK, +1 DEF)."
     },
 
     // --- Additional Veilbound Shogunate cards ---
@@ -4057,37 +4130,37 @@ const gameData = {
       type: "command",
       cp: 3,
       timing: "Command Phase",
-      effect: "Issue a supreme command through the Veil: up to 3 friendly units within 12\" of your commander may immediately change Stance (free action) and gain +1 ATK die this turn. Generate +2 Ritual Flow."
+      effect: "Issue a supreme command through the Veil: up to 3 friendly units within 15\" of your commander may immediately change Stance (free action) and gain +1 ATK die this turn. Generate +2 Ritual Flow."
     },
     "Spirit Link": {
       type: "tech",
       cp: 2,
       timing: "Command Phase",
-      effect: "Link your commander's spirit to up to 2 friendly units within 8\". Linked units share Ritual Flow generation (+1 each) and gain +1 DEF until End Phase. If a linked unit would be destroyed, the commander may spend 3 Flow to reduce the damage to 0 (once per turn)."
+      effect: "Link your commander's spirit to up to 2 friendly units within 10\". Linked units share Ritual Flow generation (+1 each) and gain +1 DEF until End Phase. If a linked unit would be destroyed, the commander may spend 3 Flow to reduce the damage to 0 (once per turn)."
     },
     "Decisive Strike": {
       type: "tactical",
       cp: 2,
       timing: "Combat Phase",
-      effect: "Your commander or 1 friendly unit within 6\" makes an attack with +2 ATK that cannot be reacted to. If the attack destroys the target, generate +3 Ritual Flow."
+      effect: "Your commander or 1 friendly unit within 8\" makes an attack with +2 ATK that cannot be reacted to. If the attack destroys the target, generate +3 Ritual Flow."
     },
     "Inkstep": {
       type: "tech",
       cp: 2,
       timing: "Movement Phase",
-      effect: "Your commander or 1 friendly unit within 6\" may teleport up to 4\" in any direction, ignoring terrain and intervening models. The unit may still act normally after teleporting. Veilbound Shogunate only."
+      effect: "Your commander or 1 friendly unit within 8\" may teleport up to 5\" in any direction, ignoring terrain and intervening models. The unit may still act normally after teleporting. Veilbound Shogunate only."
     },
     "Inkwave": {
       type: "command",
       cp: 3,
       timing: "Combat Phase",
-      effect: "Your commander unleashes a wave of spirit ink in a 6\" cone. All enemy units in the area suffer -1 ATK die and -1 MOV until End Phase. Friendly units in the area generate +1 Ritual Flow. Veilbound Shogunate only."
+      effect: "Your commander unleashes a wave of spirit ink in a 8\" cone. All enemy units in the area suffer -1 ATK die and -1 MOV until End Phase. Friendly units in the area generate +1 Ritual Flow. Veilbound Shogunate only."
     },
     "Repositioning": {
       type: "tactical",
       cp: 2,
       timing: "Movement Phase",
-      effect: "Move up to 3 friendly units within 8\" of your commander up to 3\" each out of sequence. These units may not charge this turn but may shoot normally. Veilbound Shogunate only."
+      effect: "Move up to 3 friendly units within 10\" of your commander up to 4\" each out of sequence. These units may not charge this turn but may shoot normally. Veilbound Shogunate only."
     },
 
   },

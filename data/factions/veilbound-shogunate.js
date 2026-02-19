@@ -834,7 +834,7 @@
         Agility: 7,
         Health: 450,
       },
-      battle_stats: { ATK: 18, DEF: 5, HP: 45, MOV: 7, RNG: 6, MOR: 10 },
+      battle_stats: { ATK: 18, DEF: 5, HP: 45, MOV: 9, RNG: 8, MOR: 10 },
       points_cost: 29,
       level_1_deck: {
         command: ["Reality Manipulation", "Veil Command"],
@@ -1058,7 +1058,7 @@
         Agility: 6,
         Health: 360,
       },
-      battle_stats: { ATK: 18, DEF: 5, HP: 36, MOV: 6, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 18, DEF: 5, HP: 36, MOV: 8, RNG: 5, MOR: 10 },
       points_cost: 26,
       level_1_deck: {
         command: ["Shadow Phalanx", "Formation Command"],
@@ -1168,7 +1168,7 @@
         Agility: 10,
         Health: 270,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 10, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 12, RNG: 8, MOR: 9 },
       points_cost: 22,
       level_1_deck: {
         command: ["Duel Challenge"],
@@ -1279,7 +1279,7 @@
         Agility: 6,
         Health: 330,
       },
-      battle_stats: { ATK: 15, DEF: 5, HP: 33, MOV: 6, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 5, HP: 33, MOV: 8, RNG: 5, MOR: 10 },
       points_cost: 23,
       level_1_deck: {
         command: ["Starfall Strike", "Ascendant Guard"],
@@ -1390,7 +1390,7 @@
         Agility: 5,
         Health: 255,
       },
-      battle_stats: { ATK: 15, DEF: 3, HP: 27, MOV: 5, RNG: 6, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 27, MOV: 7, RNG: 8, MOR: 10 },
       points_cost: 19,
       level_1_deck: {
         command: ["Ritual Surge"],
@@ -1505,7 +1505,7 @@
         Agility: 6,
         Health: 270,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 6, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 8, RNG: 8, MOR: 9 },
       points_cost: 20,
       level_1_deck: {
         command: ["Inkwave"],
@@ -1621,7 +1621,7 @@
         Agility: 8,
         Health: 315,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 33, MOV: 8, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 33, MOV: 10, RNG: 5, MOR: 10 },
       points_cost: 22,
       level_1_deck: {
         command: ["Flame Crescent", "Momentum Surge"],
@@ -1731,7 +1731,7 @@
         Agility: 9,
         Health: 300,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 9, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 11, RNG: 5, MOR: 10 },
       points_cost: 22,
       level_1_deck: {
         command: ["Spirit Fang Charge", "Pack Command"],
@@ -1843,7 +1843,7 @@
         Agility: 8,
         Health: 255,
       },
-      battle_stats: { ATK: 12, DEF: 3, HP: 27, MOV: 8, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 12, DEF: 3, HP: 27, MOV: 10, RNG: 8, MOR: 9 },
       points_cost: 20,
       level_1_deck: {
         command: ["Celestial Bow"],
@@ -1949,7 +1949,7 @@
         Agility: 6,
         Health: 285,
       },
-      battle_stats: { ATK: 9, DEF: 4, HP: 30, MOV: 6, RNG: 6, MOR: 10 },
+      battle_stats: { ATK: 9, DEF: 4, HP: 30, MOV: 8, RNG: 8, MOR: 10 },
       points_cost: 22,
       level_1_deck: {
         command: ["Lotus Bloom"],
@@ -2057,7 +2057,7 @@
         Agility: 10,
         Health: 240,
       },
-      battle_stats: { ATK: 18, DEF: 3, HP: 24, MOV: 10, RNG: 3, MOR: 9 },
+      battle_stats: { ATK: 18, DEF: 3, HP: 24, MOV: 12, RNG: 5, MOR: 9 },
       points_cost: 19,
       level_1_deck: {
         command: ["Phantom Strike"],
@@ -2175,7 +2175,7 @@
         Agility: 7,
         Health: 270,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 7, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 9, RNG: 8, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Inkstep"],
@@ -2283,7 +2283,7 @@
         Agility: 7,
         Health: 255,
       },
-      battle_stats: { ATK: 12, DEF: 3, HP: 27, MOV: 7, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 12, DEF: 3, HP: 27, MOV: 9, RNG: 8, MOR: 9 },
       points_cost: 19,
       level_1_deck: {
         command: ["Starfall Volley"],
@@ -2395,7 +2395,7 @@
       flavor_text: "Serpentine cosmic dragon fused with shrine architecture",
       description: "A serpentine cosmic dragon summoned from beyond the Veil, its scales shimmering with captured starlight and its breath a torrent of spirit-fire that detonates across wide areas. It glides between dimensions with terrifying grace, its Phase Strikes bypassing armor and wards alike while its Void Resolve renders it impervious to banishment.",
       type: "War Machine",
-      stats: { ATK: 21, DEF: 4, HP: 30, MOV: 8, RNG: 12, MOR: 10 },
+      stats: { ATK: 21, DEF: 4, HP: 30, MOV: 10, RNG: 14, MOR: 10 },
       special: [
         'Dragon Breath (Blast: hits target + all within 2")',
         "Spirit Glide (float over terrain; generate +1 Flow per terrain piece crossed)",
@@ -2415,7 +2415,7 @@
         "Colossal torii gate with phasing pillars, eyes of cosmic energy along crossbeams",
       description: "A colossal torii gate torn from the boundary between worlds, now striding across the battlefield on pillars of solidified void-energy. Its Reality Warp ability tears open temporary portals that teleport friendly units across the field, while its Flow Beacon floods the surrounding area with ritual energy that empowers every Veilbound warrior nearby.",
       type: "War Machine",
-      stats: { ATK: 12, DEF: 5, HP: 27, MOV: 4, RNG: 1, MOR: 10 },
+      stats: { ATK: 12, DEF: 5, HP: 27, MOV: 6, RNG: 1, MOR: 10 },
       special: [
         'Reality Warp (once per turn: teleport one friendly unit within 6" to any point within 6" of this model)',
         'Flow Beacon (friendly units within 3" generate +2 Ritual Flow)',
@@ -2433,7 +2433,7 @@
       flavor_text: "Giant lion-dog made of living starlight and ink",
       description: "A titanic lion-dog sculpted from starlight and living ink, this guardian construct answers every attack with a devastating counter-strike at full power. Its mere presence radiates yokai authority that shakes enemy morale, and its Void Resolve ensures that no mortal weapon can fell it easily.",
       type: "War Machine",
-      stats: { ATK: 18, DEF: 5, HP: 30, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 18, DEF: 5, HP: 30, MOV: 7, RNG: 1, MOR: 10 },
       special: [
         'Yokai Presence (enemies within 3" suffer -1 MOR; affected enemies generate Flow for Veilbound)',
         "Guardian (counterattacks at full ATK when attacked in melee)",
@@ -2451,7 +2451,7 @@
       flavor_text: "Living temple with spirit-infused arms and shifting walls",
       description: "A living temple that walks on legs of braided spirit-energy, its inner sanctum housing bound spirits that can be summoned forth as reinforcements. Its Shield Aura projects a protective blessing over nearby allies, and the prayers echoing from within its halls make it a mobile fortress of faith and power.",
       type: "War Machine",
-      stats: { ATK: 12, DEF: 5, HP: 24, MOV: 4, RNG: 1, MOR: 10 },
+      stats: { ATK: 12, DEF: 5, HP: 24, MOV: 6, RNG: 1, MOR: 10 },
       special: [
         'Spirit Summon (once per turn: place a Spirit Token within 6" — acts as Light Cover and deals 1 damage to enemies who enter it)',
         'Shield Aura (friendly units within 3" gain +1 DEF)',
@@ -2469,7 +2469,7 @@
       flavor_text: "Shadowed samurai of immense size, half flesh, half void",
       description: "An immense automaton in the shape of a masterless samurai, forged from shadow-steel and animated by a chorus of vengeful spirits. Its Multi-Strike technique unleashes blinding flurries of sword-blows, while its Phase ability allows it to step through enemy formations and its Terror Aura sends lesser troops fleeing.",
       type: "War Machine",
-      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 6, RNG: 1, MOR: 10 },
+      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 8, RNG: 1, MOR: 10 },
       special: [
         'Multi-Strike (may split ATK dice between up to 3 targets within 2")',
         "Phase (ignore Engagement — may move freely through enemy units)",
@@ -2488,7 +2488,7 @@
       flavor_text: "Dragon-shaped ink cloud solidified in starlight form",
       description: "Born when a master calligrapher's final masterwork was struck by starlight and given terrible life, this dragon-shaped ink cloud solidifies into scales harder than steel when it strikes. It soars above the battlefield trailing clouds of blinding ink, then dives to deliver explosive Blast attacks that scatter formations like wind through paper.",
       type: "War Machine",
-      stats: { ATK: 18, DEF: 4, HP: 27, MOV: 8, RNG: 16, MOR: 10 },
+      stats: { ATK: 18, DEF: 4, HP: 27, MOV: 10, RNG: 18, MOR: 10 },
       special: [
         'Ink Cloud (after attacking, target area becomes obscured: -2 ATK for enemies within 2" for 1 turn)',
         "Spirit Glide (float over terrain; generate +1 Flow per terrain piece crossed)",
@@ -2508,7 +2508,7 @@
         "Gigantic manta-like creature with void-black wings spanning hundreds of feet",
       description: "A gigantic manta ray whose void-black wings span the width of a castle wall, blotting out the sky as it passes overhead. Its Knockback Wave sends entire formations tumbling backward, its Suppression pins survivors in place, and its Spirit Glide carries it effortlessly beyond the reach of ground-bound retaliation.",
       type: "War Machine",
-      stats: { ATK: 18, DEF: 4, HP: 30, MOV: 10, RNG: 6, MOR: 10 },
+      stats: { ATK: 18, DEF: 4, HP: 30, MOV: 12, RNG: 8, MOR: 10 },
       special: [
         "Spirit Glide (float over terrain; generate +1 Flow per terrain piece crossed)",
         'Knockback Wave (after moving over enemy units, each must pass MOR check or be pushed 3" and take 1 damage)',
@@ -2548,7 +2548,7 @@
         "Gigantic Oni armored in celestial patterns, wielding oversized weapons",
       description: "The largest and most terrible of the Shogunate's war machines, this colossal oni was bound in chains of spirit-gold and set loose upon the enemy. Its Devastating Charge smashes through defensive lines like a landslide, its Terror Aura breaks the courage of entire battalions, and its berserk Rampage ensures it fights until nothing is left standing.",
       type: "War Machine",
-      stats: { ATK: 27, DEF: 4, HP: 36, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 27, DEF: 4, HP: 36, MOV: 7, RNG: 1, MOR: 10 },
       special: [
         "Devastating Charge (+3 ATK dice when charging)",
         'Terror Aura (enemies within 3" suffer -2 MOR)',
@@ -2568,7 +2568,7 @@
         "Walking throne with spectral figures orbiting; pilot merges partially into it",
       description: "A spectral throne carried by ghostly courtiers, upon which sits a faceless entity that warps reality in a vast radius around itself. Its Reality Distortion field saps the strength and speed of all enemies nearby, while its Flow Nexus feeds the Shogunate's rituals. Immovable and suffused with Void Resolve, it is less a war machine than a localized apocalypse.",
       type: "War Machine",
-      stats: { ATK: 15, DEF: 5, HP: 36, MOV: 0, RNG: 8, MOR: 10 },
+      stats: { ATK: 15, DEF: 5, HP: 36, MOV: 0, RNG: 10, MOR: 10 },
       special: [
         'Reality Distortion (all enemy units within 6" suffer -1 ATK and -1 MOV)',
         'Flow Nexus (doubles Ritual Flow generated by all friendly units within 6")',
@@ -2588,7 +2588,7 @@
       description: "Clad in lacquered armor etched with protective sutras, Shrine Wardens plant their spears before sacred ground and refuse to yield. Their disciplined Stance shifts between warding prayer and striking fury, and any foe who dares contest an objective they guard finds their blades impossibly hard to land.",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Stance",
         'Objective Holders (+1 DEF when within 3" of an objective marker)',
@@ -2605,7 +2605,7 @@
       description: "These conscript soldiers wear pale ceramic masks that mark them as servants of the Veil, their identities surrendered to the Shogunate's cause. Though lightly trained, their Stance drills and interlocking formations make them surprisingly resilient when anchored beside heavier cavalry units.",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 6 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 7, RNG: 1, MOR: 6 },
       special: [
         "Stance",
         "Cavalry Screen (+1 DEF when adjacent to a friendly Cavalry unit)",
@@ -2622,7 +2622,7 @@
       description: "Each Mask Bearer carries a dozen spirit-carved visages that whisper dread into the minds of nearby enemies, sapping their will to fight. Sworn to Temple Vow, they march in eerie silence, their Dread Aura spreading unease through enemy ranks while their own resolve remains unshakeable.",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 0, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 0, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         'Dread Aura (enemies within 3" suffer -1 MOR)',
@@ -2640,7 +2640,7 @@
       description: "Young warriors who have just begun the path of the inkblade, their swords trailing faint calligraphic afterimages with every swing. Though inexperienced, their Duelist training allows them to read an opponent's rhythm and correct a faulty strike mid-combat, making them dangerous in single engagements.",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 6, RNG: 1, MOR: 6 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 8, RNG: 1, MOR: 6 },
       special: [
         "Stance",
         "Duelist (reroll 1 die when in 1v1 melee engagement)",
@@ -2657,7 +2657,7 @@
       description: "This towering war-banner is inscribed with prayers that make no sound yet resonate in the souls of all who fight beneath it. Its presence amplifies the Flow of nearby ritualists and steadies the hearts of allies, turning wavering soldiers into unyielding defenders of the Veil.",
       type: "Support",
       ritual_flow: 2,
-      stats: { ATK: 0, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 0, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         'Inspiring (+1 MOR to friendly units within 3")',
         'Flow Amplifier (friendly units within 3" generate +1 Ritual Flow)',
@@ -2675,7 +2675,7 @@
       description: "Bearing tower shields reinforced with spirit-bonded iron, Temple Defenders form impenetrable walls of faith and steel. Their Shield Wall Stance absorbs charges that would shatter lesser formations, and their Brace technique turns the enemy's own momentum into a killing force.",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 4, RNG: 1, MOR: 8 },
+      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 6, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         'Shield Wall (friendly units within 2" gain +1 DEF vs ranged)',
@@ -2693,7 +2693,7 @@
       description: "Elite warriors whose katanas are forged from fallen starlight, these samurai have mastered the Revelation Stance to a supernatural degree. When they shed their concealment and strike openly, their blades find killing angles that seem impossible, turning near-misses into devastating critical wounds.",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         "Revelation Mastery (in Revelation Stance: crits on 5+ instead of 6)",
@@ -2710,7 +2710,7 @@
       description: "These fearsome warriors don masks carved in the likeness of wrathful oni, channeling yokai fury into their enormous two-handed blades. They are drawn to the scent of blood—wounded enemies find no mercy, only the Executioner's terrible downward stroke that cleaves through armor and bone alike.",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 8, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         "Executioner (+2 ATK dice against targets below half HP)",
@@ -2728,7 +2728,7 @@
       description: "Masters of the counter-cut, these samurai fight best under pale moonlight where their silver-threaded armor shimmers with deceptive radiance. They issue formal challenges to enemy champions and answer every strike with a lethal Riposte, turning their opponent's aggression into openings for the killing blow.",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 6, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 8, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         "Riposte (when attacked in melee and survives, immediately make a free 2-die counter-attack)",
@@ -2746,7 +2746,7 @@
       description: "Warrior-monks who have transcended the rigid boundaries between Stances, flowing between Concealment and Revelation as naturally as breathing. Their Adaptive mastery makes them unpredictable in battle, shifting from ghostly evasion to explosive offense without pause, confounding enemies who try to read their patterns.",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         "Adaptive (may switch stance as a free action at ANY point during the turn, not just Movement Phase)",
@@ -2763,7 +2763,7 @@
       description: "Wreathed in living ink that bends light and shadow around them, these assassins step between the folds of reality to appear behind their targets. They strike from impossible angles with blades that leave wounds like brushstrokes, then dissolve back into darkness before retaliation can find them.",
       type: "Specialist",
       ritual_flow: 1,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         "Ink Shadow Cloak (invisible while stationary; movement breaks concealment; costs 1 Flow to reactivate)",
         "Phase (ignore Engagement — move freely through enemies)",
@@ -2781,7 +2781,7 @@
       description: "Scarred veterans whose broken bodies have been repaired with veins of spirit-gold, these warriors grow more dangerous with every wound they sustain. Each crack in their armor blazes with golden light as their Kintsugi Rage builds, transforming accumulated damage into a fury that makes their blades sing with devastating power.",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 12, DEF: 4, HP: 12, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 12, DEF: 4, HP: 12, MOV: 7, RNG: 1, MOR: 9 },
       special: [
         "Stance",
         "Kintsugi Rage (+1 ATK die for each HP lost)",
@@ -2800,7 +2800,7 @@
       description: "Mounted on serpentine steeds that slither across the battlefield with terrifying speed, these lancers strike in rapid succession along enemy flanks. Their Momentum Chain technique allows each successful charge to fuel the next, creating a cascading wave of lances that can shatter an entire battle line.",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 11, RNG: 1, MOR: 7 },
       special: [
         'Charge (+1 ATK die when charging 4"+)',
         "Momentum Chain (if this unit destroys an enemy on a charge, +2 ATK dice on next charge this game)",
@@ -2817,7 +2817,7 @@
       description: "These trickster cavalry ride foxes wreathed in moonfire, projecting illusory duplicates that scatter enemy aim and sow confusion. Ranged attackers find their arrows passing through phantom images while the true riders circle unseen, using Misdirect to appear where they are least expected.",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 11, RNG: 1, MOR: 8 },
       special: [
         "Illusion (enemy ranged attacks against this unit suffer -1 ATK die)",
         'Misdirect (once per turn: when targeted, redirect the attack to a different friendly unit within 3")',
@@ -2833,7 +2833,7 @@
       description: "Mounted atop snarling crimson oni, these heavy shock cavalry are the Shogunate's battering ram, built to smash through enemy formations with overwhelming force. Their charges hit with the fury of a yokai stampede, breaking disciplined lines into panicked fragments that are easily run down.",
       type: "Cavalry",
       ritual_flow: 1,
-      stats: { ATK: 15, DEF: 4, HP: 9, MOV: 8, RNG: 1, MOR: 8 },
+      stats: { ATK: 15, DEF: 4, HP: 9, MOV: 10, RNG: 1, MOR: 8 },
       special: [
         "Charge (+2 ATK dice when charging)",
         'Yokai Presence (enemies within 3" suffer -1 MOR; affected enemies generate Flow for Veilbound)',
@@ -2850,7 +2850,7 @@
       description: "Astride spectral cranes that glide between the material world and the spirit realm, these aerial duelists descend from impossible heights to challenge enemy champions. Their Spirit Descent strikes carry the weight of a falling star, and their Samurai's Challenge ensures no worthy foe can refuse their blade.",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 10, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 12, RNG: 1, MOR: 7 },
       special: [
         "Spirit Glide (float over terrain; generate +1 Flow per terrain piece crossed)",
         "Spirit Descent (+2 ATK dice from glide charge; apply Sigil of Weakness on target)",
@@ -2868,7 +2868,7 @@
       description: "Riding storm-wreathed kirin whose hooves crack with lightning, these cavalry build devastating momentum through sustained combat. Each clash of arms feeds their Cascading Thunder, layering crackling energy into their strikes until their weapons discharge with the fury of a thunderbolt.",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 11, RNG: 1, MOR: 7 },
       special: [
         "Momentum Strike (+1 ATK die on charge; generate +1 Ritual Flow on kill)",
         "Cascading Thunder (each successive combat this unit enters in the same game adds +1 ATK die permanently, max +3)",
@@ -2886,7 +2886,7 @@
       description: "These otherworldly cavalry exist partially within the Dream, allowing them to dissolve from one location and reconstitute anywhere on the battlefield. Their Dream Step ability defies conventional tactics entirely, making them impossible to pin down and capable of delivering devastating charges from utterly unexpected vectors.",
       type: "Cavalry",
       ritual_flow: 3,
-      stats: { ATK: 12, DEF: 4, HP: 12, MOV: 10, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 4, HP: 12, MOV: 12, RNG: 1, MOR: 8 },
       special: [
         "Dream Walk (ignore engagement and terrain; costs 1 Flow per use)",
         "Dream Step (once per game: remove from table, redeploy anywhere on the battlefield next turn)",
@@ -2904,7 +2904,7 @@
       description: "Mounted on stone-skinned komainu brought to life by temple prayers, these riders serve as mobile bastions that protect the Shogunate's flanks. Their Guardian Aura hardens the defenses of nearby allies, and their Shrine Oath binds them to fight harder when sacred ground is threatened.",
       type: "Cavalry",
       ritual_flow: 1,
-      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 8, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 10, RNG: 1, MOR: 8 },
       special: [
         "Momentum Strike (+1 ATK die on charge; generate +1 Ritual Flow on kill)",
         'Guardian Aura (friendly units within 3" gain +1 DEF)',
@@ -2922,7 +2922,7 @@
       description: "Swift riders on serpentine ink-constructs that flow across terrain like living calligraphy, these scouts range far ahead of the main force. Their Spirit Sight pierces illusions and concealment, and their Flowing Retreat ensures they can deliver vital intelligence without being caught by pursuing enemies.",
       type: "Scout",
       ritual_flow: 1,
-      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 9, RNG: 8, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 11, RNG: 10, MOR: 7 },
       special: [
         'Spirit Sight Patrol (deploy 6" ahead; detect hidden enemies via spirit sense)',
         'Flowing Retreat (move 4" after attacking; generate 1 Flow)',
@@ -2939,7 +2939,7 @@
       description: "Bonded to spectral wolves that run alongside their mounts, these hunters fight in coordinated packs that grow deadlier as they converge. Each allied unit nearby adds its spiritual resonance to the pack's fury, and their Momentum Strikes ensure fleeing prey never escapes.",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 3, HP: 9, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 9, MOV: 11, RNG: 1, MOR: 7 },
       special: [
         'Pack Tactics (+1 ATK die for each other Spirit Wolf Hunter unit within 3", max +3)',
         "Momentum Strike (+1 ATK die on charge; generate +1 Ritual Flow on kill)",
@@ -2956,7 +2956,7 @@
       description: "Soaring on void-black mantas that blot out the light beneath their wings, these aerial cavalry harass enemy positions with suppressive ink-bolts. They swoop low to pin down enemy units, then glide away on spectral currents before retaliation can reach them, a maddening cycle of hit-and-fade.",
       type: "Cavalry",
       ritual_flow: 2,
-      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 10, RNG: 6, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 12, RNG: 8, MOR: 7 },
       special: [
         "Spirit Glide (float over terrain; generate +1 Flow per terrain piece crossed)",
         "Suppression (enemy units this model flew over suffer -1 ATK this turn)",
@@ -2975,7 +2975,7 @@
       description: "Gentle monks who channel the Flow of the spirit world through healing sutras, mending torn flesh and shattered bone with whispered prayers. Their Temple Vow binds them to preserve life above all else, and their Flow-attuned healing grows more potent when the army's ritual energy runs strong.",
       type: "Support",
       ritual_flow: 3,
-      stats: { ATK: 0, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 0, DEF: 4, HP: 9, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         "Heal (restore 2 HP to adjacent friendly unit, once per turn)",
         "Non-Combatant",
@@ -2995,7 +2995,7 @@
       description: "Ritualists who have devoted their lives to mastering the Flow, the spiritual energy that fuels the Shogunate's most powerful abilities. They serve as living amplifiers for nearby casters, and when enough Flow is gathered, their Ritual Surge can channel it into a devastating burst of offensive power.",
       type: "Support",
       ritual_flow: 4,
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         'Flow Amplifier (friendly units within 3" generate +1 Ritual Flow)',
         'Ritual Surge (spend 5 Flow: one friendly unit within 6" gains +2 ATK dice this turn)',
@@ -3012,7 +3012,7 @@
       description: "Cunning artisans who construct spirit-traps and ethereal barricades from blessed materials carried into battle. Their Spirit Walls block enemy movement with shimmering barriers of solidified prayer, while their hidden Spirit Traps punish foes who advance without caution through sacred ground.",
       type: "Support",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         'Construct Spirit Wall (place Light Cover within 2")',
         'Spirit Trap (place trap token within 3": 1 damage + -1 MOV on trigger)',
@@ -3030,7 +3030,7 @@
       description: "Carrying paper lanterns filled with captured starlight, these humble support troops radiate calm that banishes supernatural dread. Their warm glow neutralizes the Terror Auras of yokai and undead within a generous radius, while their quiet presence inspires nearby allies to stand firm against the darkness.",
       type: "Support",
       ritual_flow: 1,
-      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         'Lantern Light (friendly units within 4" ignore Terror Aura effects)',
         'Inspiring (+1 MOR to friendlies within 3")',
@@ -3048,7 +3048,7 @@
       description: "These battlefield calligraphers paint binding sigils in mid-air with spirit-ink brushes, layering debilitating enchantments onto enemy units. Their Sigil of Binding roots targets in place with spectral chains, while their Sigil of Weakness saps the striking power from even the mightiest warriors.",
       type: "Support",
       ritual_flow: 2,
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 12, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 7, RNG: 14, MOR: 7 },
       special: [
         'Sigil of Binding (target enemy unit within 12": -2 MOV next turn)',
         'Sigil of Weakness (target enemy unit within 12": -1 ATK die next turn)',
@@ -3068,7 +3068,7 @@
       description: "Armed with bows strung with dream-silk, these archers loose arrows that briefly phase into the spirit realm to bypass physical obstacles. Their shafts pass through walls and cover as though they were mist, striking targets who believed themselves safe, while the arrows' disorienting venom slows those they wound.",
       type: "Artillery",
       ritual_flow: 1,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 20, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 22, MOR: 7 },
       special: [
         "Phase Arrows (target does not benefit from Light Cover)",
         "Disorientation (targets hit suffer -1 MOV next turn)",
@@ -3085,7 +3085,7 @@
       description: "Wielding massive repeating crossbows loaded with void-tipped bolts, these heavy ranged troops sacrifice mobility for devastating armor penetration. Their bolts punch through enchanted plate and spirit-wards alike, making them the Shogunate's answer to heavily armored enemy formations that lesser weapons cannot crack.",
       type: "Artillery",
       ritual_flow: 1,
-      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 4, RNG: 16, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 6, RNG: 18, MOR: 7 },
       special: [
         "Armor Piercing (target's DEF reduced by 1 for this attack)",
         "Heavy (cannot move and shoot same turn)",
@@ -3102,7 +3102,7 @@
       description: "Light infantry armed with javelins tipped with crystallized spirit energy, these mobile harassers strike and reposition in fluid cycles. Their Stance training gives them versatility beyond mere skirmishing, and their ability to dart away after throwing ensures they control the tempo of any engagement.",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 6, RNG: 10, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 8, RNG: 12, MOR: 7 },
       special: [
         "Stance",
         'Skirmish (may move 3" after making a ranged attack)',
@@ -3120,7 +3120,7 @@
       description: "Using slings loaded with pellets of compressed moonstone, these artillery troops blanket areas with explosive bursts of spirit energy. When infused with additional Flow, their projectiles detonate in wider blasts that can engulf entire formations, making them devastatingly effective against clustered enemies.",
       type: "Artillery",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 14, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 16, MOR: 7 },
       special: [
         'Blast (hits target + all within 1")',
         'Flow Infused (spend 2 Ritual Flow: Blast radius becomes 2")',
@@ -3138,7 +3138,7 @@
       description: "Elite snipers who wrap themselves in layered veils of shadow-ink, these patient killers specialize in eliminating enemy leadership from extreme range. Their Sharpshot discipline ensures pinpoint accuracy, and their Commander Hunter training drives them to seek out and destroy the officers that hold enemy armies together.",
       type: "Artillery",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 22, MOR: 8 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 24, MOR: 8 },
       special: [
         "Sharpshot (crits on 5+)",
         "Sniper (may target Commanders and Specialists regardless)",
@@ -3158,7 +3158,7 @@
       description: "Senior ritualists who serve as living conduits for the Shogunate's Flow network, amplifying spiritual energy across the battlefield. Their Flow Nexus radiates power to nearby units, and their Ritual Command mastery allows them to squeeze additional actions from the army's turn, bending the tempo of battle to their will.",
       type: "Specialist",
       ritual_flow: 5,
-      stats: { ATK: 6, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 6, DEF: 4, HP: 9, MOV: 7, RNG: 1, MOR: 9 },
       special: [
         'Flow Nexus (friendly units within 4" generate +2 Ritual Flow)',
         'Ritual Command (spend 4 Flow: one friendly unit within 6" may immediately take an extra action)',
@@ -3197,7 +3197,7 @@
       description: "Marked with full-body tattoos of dread sigils that pulse with malevolent light, these specialists project an aura of supernatural terror. Enemy warriors within their influence feel their confidence shatter and their strikes weaken, as the sigils drink courage and replace it with creeping, paralyzing fear.",
       type: "Specialist",
       ritual_flow: 3,
-      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         'Sigil of Dread (enemies within 4" suffer -1 ATK die)',
         "Terror Aura",
@@ -3234,7 +3234,7 @@
       description: "Animated suits of ceremonial armor housing bound void-spirits, these constructs radiate an oppressive field that terrifies and slows all enemies in their vicinity. Their extended Terror Aura reaches farther than any mortal dread, and the creeping lethargy of their Slow Aura makes escape nearly impossible.",
       type: "Specialist",
       ritual_flow: 3,
-      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 4, RNG: 1, MOR: 9 },
+      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 6, RNG: 1, MOR: 9 },
       special: [
         'Terror Aura (enemies within 4" suffer -1 MOR — extended range)',
         'Slow Aura (enemies within 3" suffer -2 MOV)',
@@ -3252,7 +3252,7 @@
       description: "Scouts who dissolve their physical forms into living ink, slithering through shadows and under doors to infiltrate enemy positions undetected. Their Spirit Sight reveals hidden threats while their ink-form disrupts enemy communications and supply lines, making them invaluable for intelligence gathering and sabotage.",
       type: "Scout",
       ritual_flow: 1,
-      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 8, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 10, RNG: 1, MOR: 7 },
       special: [
         'Spirit Sight Patrol (deploy 6" ahead; detect hidden enemies via spirit sense)',
         "Ink Shadow Cloak (invisible while stationary; movement breaks concealment; costs 1 Flow to reactivate)",
@@ -3271,7 +3271,7 @@
       description: "Ronin-like warriors who fight with a fluid, unorthodox style built around constant movement and disengagement. After striking, they flow backward like receding tidewater, impossible to pin down or pursue. Their Free Disengage ensures they choose every engagement on their own terms.",
       type: "Infantry",
       ritual_flow: 1,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 8, RNG: 1, MOR: 7 },
       special: [
         "Stance",
         'Flowing Retreat (move 4" after attacking; generate 1 Flow)',
@@ -3289,7 +3289,7 @@
       description: "Packs of spectral wolves given physical form through Veilbound rituals, these beasts fight with coordinated pack intelligence that rewards concentration. They swarm individual targets with flanking attacks, each wolf's strikes growing more vicious as its packmates close in from every angle.",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         "Stance",
         'Pack Tactics (+1 ATK die for each other Spirit Wolf Pack within 3", max +2)',
@@ -3307,7 +3307,7 @@
       description: "Sinuous warriors who channel serpent-spirits to strike through the spaces between realities, their blades phasing to hit not just their target but adjacent enemies as well. Their Serpent Strike cleaves through tight formations, and their Phase ability lets them slip through obstacles to reach vulnerable positions.",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         "Stance",
         "Serpent Strike (melee hits target + 1 adjacent enemy)",
@@ -3325,7 +3325,7 @@
       description: "The deadliest killers in the Shogunate's arsenal, these assassins walk the Dream to teleport across the battlefield and materialize behind priority targets. Their Flow-fueled Teleport makes them almost impossible to screen against, and their Assassin training ensures that their first strike from concealment is usually their last needed.",
       type: "Specialist",
       ritual_flow: 3,
-      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 9, RNG: 1, MOR: 8 },
       special: [
         "Dream Walk (move through units and terrain; costs 1 Flow)",
         'Teleport (spend 3 Flow: immediately redeploy within 8")',
@@ -3343,7 +3343,7 @@
       description: "The Shogun's personal shadow guard, each vassal has sacrificed their name, face, and past to become an extension of their lord's will. Their Bodyguard protocol and Void Resolve make them nearly impossible to bypass or break, ensuring that any attack aimed at the Shogun must pass through their unyielding wall of steel first.",
       type: "Specialist",
       ritual_flow: 5,
-      stats: { ATK: 15, DEF: 5, HP: 12, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 15, DEF: 5, HP: 12, MOV: 7, RNG: 1, MOR: 10 },
       special: [
         "Shogun Only (can only be taken if The Shrouded Shogun is your Commander)",
         "Bodyguard (redirect attacks from Shogun to this unit)",
@@ -3362,7 +3362,7 @@
       description: "Elite warriors sworn to protect the Shogunate's commanders through Shrine Oath, fighting with redoubled ferocity when their lord is near. Their Commander Bond fuels them with supernatural strength in proximity to their charge, and their Retinue Synergy ensures they fight as a single, cohesive killing unit.",
       type: "Specialist",
       ritual_flow: 4,
-      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 7, RNG: 1, MOR: 9 },
       special: [
         'Commander Bond (+1 ATK when within 6" of Commander)',
         "Shrine Oath (intercept attack on commander; spend 2 Flow to negate all damage)",
@@ -3381,7 +3381,7 @@
       description: "A formation of void-touched heavy infantry that serves as the nucleus around which commanders build their battle plans. Their Transformation Catalyst awakens latent power in nearby leaders, while their Momentum Engine generates escalating combat bonuses that make Late-battle engagements overwhelmingly favor the Shogunate.",
       type: "Infantry",
       ritual_flow: 3,
-      stats: { ATK: 12, DEF: 5, HP: 15, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 12, DEF: 5, HP: 15, MOV: 7, RNG: 1, MOR: 9 },
       special: [
         "Stance",
         "Transformation Catalyst (if Flow Pool ≥30, this unit gains +2 ATK dice and +1 DEF)",
@@ -3400,7 +3400,7 @@
       description: "Cavalry mounted on lesser spirit-dragons whose resonant roars embolden nearby riders, these units serve as force multipliers for the Shogunate's mounted forces. Their Cavalry Amplifier aura and Dragon Bond enhance every allied rider within range, transforming scattered cavalry into a synchronized wave of devastating charges.",
       type: "Cavalry",
       ritual_flow: 3,
-      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 11, RNG: 1, MOR: 8 },
       special: [
         "Momentum Strike (+1 ATK die on charge; generate +1 Ritual Flow on kill)",
         'Cavalry Amplifier (all friendly Cavalry within 3" gain +1 ATK die on charges)',
@@ -3419,7 +3419,7 @@
       description: "Peerless swordsmen who have spent decades perfecting the inkblade arts, their katanas leaving trails of living calligraphy that can cut through reality itself. They fight alongside commanders through sacred bond, issuing formal challenges to enemy champions and dispatching them with the flawless technique of a true Master Swordsman.",
       type: "Infantry",
       ritual_flow: 2,
-      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 4, HP: 9, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         "Stance",
         'Commander Bond (+2 ATK dice when within 3" of friendly Commander)',
@@ -3444,7 +3444,7 @@
         ATK: 3,
         DEF: 2,
         HP: 3,
-        MOV: 10,
+        MOV: 12,
         RNG: 1,
         MOR: 6,
       },
@@ -3470,7 +3470,7 @@
         ATK: 6,
         DEF: 3,
         HP: 6,
-        MOV: 8,
+        MOV: 10,
         RNG: 1,
         MOR: 7,
       },
@@ -3498,8 +3498,8 @@
         ATK: 27,
         DEF: 7,
         HP: 54,
-        MOV: 5,
-        RNG: 6,
+        MOV: 7,
+        RNG: 8,
         MOR: 10,
       },
       special: [

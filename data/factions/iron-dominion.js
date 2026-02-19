@@ -874,7 +874,7 @@
         Agility: 5,
         Health: 300,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 5, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 7, RNG: 8, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Strategic Advance", "Coordinated Assault"],
@@ -991,7 +991,7 @@
         Agility: 9,
         Health: 270,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 9, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 11, RNG: 5, MOR: 10 },
       points_cost: 21,
       level_1_deck: {
         command: ["Swift Advance", "Flanking Maneuver"],
@@ -1105,7 +1105,7 @@
         Agility: 6,
         Health: 255,
       },
-      battle_stats: { ATK: 12, DEF: 3, HP: 27, MOV: 6, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 12, DEF: 3, HP: 27, MOV: 8, RNG: 8, MOR: 9 },
       points_cost: 17,
       level_1_deck: {
         command: ["Fragment Command"],
@@ -1223,7 +1223,7 @@
         Agility: 4,
         Health: 330,
       },
-      battle_stats: { ATK: 18, DEF: 5, HP: 33, MOV: 4, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 18, DEF: 5, HP: 33, MOV: 6, RNG: 5, MOR: 10 },
       points_cost: 24,
       level_1_deck: {
         command: ["War Machine Command", "Heavy Assault Order"],
@@ -1343,7 +1343,7 @@
         Agility: 8,
         Health: 240,
       },
-      battle_stats: { ATK: 15, DEF: 3, HP: 24, MOV: 8, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 24, MOV: 10, RNG: 8, MOR: 9 },
       points_cost: 19,
       level_1_deck: {
         command: ["Hidden Deployment", "Sabotage Order"],
@@ -1462,7 +1462,7 @@
         Agility: 5,
         Health: 285,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 5, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 7, RNG: 8, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Fortification Order", "Engineer Deployment"],
@@ -1584,7 +1584,7 @@
         Agility: 6,
         Health: 360,
       },
-      battle_stats: { ATK: 18, DEF: 5, HP: 36, MOV: 6, RNG: 1, MOR: 10 },
+      battle_stats: { ATK: 18, DEF: 5, HP: 36, MOV: 8, RNG: 1, MOR: 10 },
       points_cost: 25,
       level_1_deck: {
         command: ["Charge Order", "Brutal Assault"],
@@ -1697,7 +1697,7 @@
         Agility: 7,
         Health: 255,
       },
-      battle_stats: { ATK: 15, DEF: 3, HP: 27, MOV: 7, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 3, HP: 27, MOV: 9, RNG: 8, MOR: 9 },
       points_cost: 19,
       level_1_deck: {
         command: ["Aether Command"],
@@ -1814,7 +1814,7 @@
         Agility: 4,
         Health: 300,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 4, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 6, RNG: 5, MOR: 10 },
       points_cost: 20,
       level_1_deck: {
         command: ["Artillery Barrage Order", "Siege Command"],
@@ -1932,7 +1932,7 @@
         Agility: 5,
         Health: 390,
       },
-      battle_stats: { ATK: 15, DEF: 5, HP: 39, MOV: 5, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 5, HP: 39, MOV: 7, RNG: 5, MOR: 10 },
       points_cost: 25,
       level_1_deck: {
         command: ["Defensive Formation", "Hold the Line"],
@@ -2045,7 +2045,7 @@
         Agility: 7,
         Health: 270,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 7, RNG: 6, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 27, MOV: 9, RNG: 8, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Rapid Deployment"],
@@ -2155,7 +2155,7 @@
         Agility: 6,
         Health: 300,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 6, RNG: 3, MOR: 10 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 8, RNG: 5, MOR: 10 },
       points_cost: 21,
       level_1_deck: {
         command: ["Machine Command", "Coordinated Machines"],
@@ -2263,7 +2263,7 @@
         Agility: 7,
         Health: 300,
       },
-      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 7, RNG: 3, MOR: 9 },
+      battle_stats: { ATK: 15, DEF: 4, HP: 30, MOV: 9, RNG: 5, MOR: 9 },
       points_cost: 21,
       level_1_deck: {
         command: ["Adaptive Command", "Flexible Orders"],
@@ -2377,7 +2377,7 @@
       flavor_text: "Standard human troops; disciplined formation",
       description: "The backbone of the Iron Dominion, these disciplined soldiers march in lockstep across the battlefield, their boots shaking the earth in unison. Equipped with standard-issue steam rifles and linked into the Grid Node network, they provide a reliable foundation for any battle line and amplify nearby units through shared tactical data.",
       type: "Infantry",
-      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 6 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 7, RNG: 1, MOR: 6 },
       special: ["Grid Node"],
     },
     {
@@ -2389,7 +2389,7 @@
       flavor_text: "Soldiers with mechanized limbs; immune to morale effects",
       description: "Fitted with mechanized limbs powered by miniature steam pistons, these soldiers fight long past the point where flesh alone would fail. Their augmented bodies render them immune to fear and fatigue, and their Grid Node uplinks ensure they remain synchronized with the greater war effort. They are the Iron Dominion's answer to attrition.",
       type: "Infantry",
-      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 7, RNG: 1, MOR: 10 },
       special: ["Grid Node", "Fearless (auto-pass Morale)"],
     },
     {
@@ -2402,7 +2402,7 @@
       flavor_text: "Humans with glowing fragment augmentations",
       description: "These volunteers have undergone dangerous fragment implantation, weaving raw aetheric energy into their musculature and nervous systems. The result is a strike force that hits harder than any conventional infantry, their fragment-laced weapons cutting through armor with unnatural ease. They are living proof that the Dominion will sacrifice anything for an edge.",
       type: "Infantry",
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 8, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Fragment Infused (+1 ATK when Fragment Charge spent)",
@@ -2417,7 +2417,7 @@
       flavor_text: "Can build temporary traps or structures",
       description: "Part builder, part battlefield architect, these engineers reshape the terrain itself to suit the Dominion's needs. They erect barricades from prefabricated gear-plates, lay mechanical traps, and repair damaged constructs under fire. No Iron Dominion commander would march without them.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Repair (restore 1 HP to adjacent friendly unit, End Phase)",
@@ -2433,7 +2433,7 @@
       flavor_text: "Small elite unit with high damage output",
       description: "Handpicked from the most decorated veterans, the Elite Vanguard wield precision-engineered weaponry calibrated to exploit every weakness. Their targeting optics allow them to reroll missed strikes, ensuring that when they commit to an assault, the enemy falls. They are the tip of the Dominion's iron spear.",
       type: "Infantry",
-      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 8 },
+      stats: { ATK: 12, DEF: 4, HP: 6, MOV: 7, RNG: 1, MOR: 8 },
       special: [
         "Grid Node",
         "Precision Strike (reroll 1 missed die per attack)",
@@ -2448,7 +2448,7 @@
       flavor_text: "Quick, mobile units for exploration",
       description: "Lightly armored and equipped with gyro-drone relays, these scouts range ahead of the main force to paint targets and map enemy positions. Their spotter designations feed directly into artillery targeting arrays, making them far more dangerous than their modest armament suggests. Speed and information are their weapons.",
       type: "Scout",
-      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 8, RNG: 6, MOR: 5 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 10, RNG: 8, MOR: 5 },
       special: [
         'Gyro-Drone Recon (deploy 6" ahead; reveal hidden units within 8")',
         "Spotter (+1 ATK die to friendly Artillery targeting spotted unit)",
@@ -2463,7 +2463,7 @@
       flavor_text: "Operates long-range cannons powered by fragments",
       description: "Manning massive steam-pressure cannons bolted to reinforced platforms, these crews rain explosive ordnance across the battlefield from positions far behind the front line. Once emplaced they cannot relocate, but their devastating blast radius makes them the centerpiece of any defensive strategy. Entire formations have been erased by a single well-placed salvo.",
       type: "Artillery",
-      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 3, RNG: 24, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 5, RNG: 26, MOR: 7 },
       special: [
         "Grid Node",
         'Blast (hits target + all units within 1")',
@@ -2479,7 +2479,7 @@
       flavor_text: "Break walls and fortifications",
       description: "Clad in reinforced plating and carrying breaching charges, Siege Infantry exist to crack open fortifications. They deal double damage against terrain features and hit even harder against heavily armored targets. Walls, bunkers, and barricades are merely obstacles waiting to be removed.",
       type: "Infantry",
-      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 4, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 6, RNG: 1, MOR: 8 },
       special: [
         "Grid Node",
         "Siege (double damage vs terrain and fortifications)",
@@ -2496,7 +2496,7 @@
         "Human + small mechanical suit; balanced durability & attack",
       description: "Each soldier wears a powered exoskeleton that blurs the line between human and machine, granting them the endurance of a construct and the adaptability of a veteran. Plugged into the Grid Node, they share real-time battlefield data, adjusting tactics on the fly. They represent the Dominion's vision of the perfect hybrid warrior.",
       type: "Infantry",
-      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: ["Grid Node"],
     },
     {
@@ -2508,7 +2508,7 @@
       flavor_text: "Elite unit triggering tactical zoom-ins",
       description: "A lone operative of extraordinary skill, this specialist bonds with a commander to execute precision duels and surgical strikes. Their elite training lets them challenge enemy champions directly, turning the tide of key engagements. Where they walk, legends are forged in steam and steel.",
       type: "Specialist",
-      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 6, RNG: 1, MOR: 8 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 8, RNG: 1, MOR: 8 },
       special: [
         'Commander Bond (+1 ATK when within 6" of your Commander)',
         "Duelist (may issue Challenge — 1v1 combat vs enemy Specialist/Commander)",
@@ -2523,7 +2523,7 @@
       flavor_text: "Unstable fragment-driven mechanical constructs",
       description: "Cobbled together from unstable fragment cores and salvaged chassis, these constructs are as dangerous to their handlers as to the enemy. They feel no fear and fight with reckless abandon, but the volatile energy within them can detonate without warning. Commanders deploy them knowing full well they are lighting a fuse.",
       type: "Infantry",
-      stats: { ATK: 12, DEF: 3, HP: 9, MOV: 5, RNG: 1, MOR: 10 },
+      stats: { ATK: 12, DEF: 3, HP: 9, MOV: 7, RNG: 1, MOR: 10 },
       special: [
         "Fearless",
         'Unstable (at start of each turn, roll 1d6: on a 1, deal 1 damage to this unit and all within 2")',
@@ -2538,7 +2538,7 @@
       flavor_text: "Long-range rifles, overclockable with fragment energy",
       description: "Armed with long-barreled rifles stabilized by steam-driven gyroscopes, these marksmen deliver punishing fire from extreme range. Their weapons achieve critical penetration on rolls of five or higher, making them lethal against high-value targets. Patient and methodical, they embody the Dominion's belief in mechanical precision.",
       type: "Infantry",
-      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 5, RNG: 18, MOR: 6 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 7, RNG: 20, MOR: 6 },
       special: ["Grid Node", "Sharpshot (crits on 5+ instead of 6)"],
     },
     {
@@ -2550,7 +2550,7 @@
       flavor_text: "Build barricades, traps, and battlefield improvements",
       description: "These forward-deployed engineers specialize in preparing the battlefield before the main force arrives. They construct barricades to channel enemy movement and plant hidden traps that punish reckless advances. Their work transforms open ground into a killing field of the Dominion's design.",
       type: "Support",
-      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 4, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Construct Barricade (place Light Cover within 2")',
@@ -2566,7 +2566,7 @@
       flavor_text: "Fragment boosts hacking success",
       description: "Wielding modified fragment-pulse emitters, these specialists target the control systems of enemy War Machines, attempting to disable them with focused data-corruption bursts. A successful hack on a roll of four or higher can shut down even the mightiest construct. Connected to the Grid Node, they coordinate their intrusion attempts for maximum disruption.",
       type: "Specialist",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 12, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 7, RNG: 14, MOR: 7 },
       special: [
         'Hack (target enemy War Machine within 12": roll d6, on 4+ target cannot act next turn)',
         "Grid Node",
@@ -2581,7 +2581,7 @@
       flavor_text: "Extract battlefield materials; support units",
       description: "Originally industrial extraction crews repurposed for war, Steam Miners scavenge the battlefield for usable materials and spent fragment cores. Their salvage operations provide valuable resources mid-battle, fueling repairs and resupply. They turn the wreckage of war into the fuel for victory.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 4, RNG: 1, MOR: 5 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 6, RNG: 1, MOR: 5 },
       special: [
         "Grid Node",
         "Salvage (generate 1 extra Fragment Charge if adjacent to destroyed unit)",
@@ -2597,7 +2597,7 @@
       flavor_text: "Engineers who harness fragments creatively",
       description: "These eccentric specialists carry portable fragment amplifiers that boost the combat effectiveness of all friendly units within close proximity. However, the unstable aura they generate can ripple unpredictably, sometimes affecting allies as much as enemies. Their power is undeniable, but their presence demands careful positioning.",
       type: "Specialist",
-      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 4, RNG: 1, MOR: 8 },
+      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 6, RNG: 1, MOR: 8 },
       special: [
         'Fragment Amplifier (friendly units within 3" gain +1 to fragment activation rolls)',
         'Unstable Aura (if fragment backfires within 3", this unit takes 1 extra damage)',
@@ -2612,7 +2612,7 @@
       flavor_text: "Throw explosive steam grenades",
       description: "Carrying bandoliers of steam-compressed explosive charges, these infantry excel at breaking clustered formations. Their grenades detonate in wide blast patterns, punishing enemies who bunch together. They advance in short rushes, lobbing death with mechanical regularity.",
       type: "Infantry",
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 8, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 10, MOR: 7 },
       special: ["Grid Node", 'Blast (hits target + all units within 1")'],
     },
     {
@@ -2625,7 +2625,7 @@
       flavor_text: "Mounted mechanical units",
       description: "Mounted on piston-driven mechanical steeds, these cavalry units thunder across the field with terrifying momentum. Their signature piston charge delivers crushing impact on contact, while spark lances crackle with electrical discharge that arcs between targets. They are the hammer that shatters what the anvil holds.",
       type: "Cavalry",
-      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
+      stats: { ATK: 9, DEF: 4, HP: 6, MOV: 11, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Piston Charge (+1 ATK die; push target back 2")',
@@ -2641,7 +2641,7 @@
       flavor_text: "Precision rifle units",
       description: "These sharpshooters wield fragment-enhanced rifles that achieve devastating critical hits on rolls of five or higher. Calm and calculating, they pick apart enemy formations from range, prioritizing officers and specialists. Each shot carries the faint shimmer of aetheric energy as it finds its mark.",
       type: "Infantry",
-      stats: { ATK: 9, DEF: 3, HP: 3, MOV: 5, RNG: 18, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 3, MOV: 7, RNG: 20, MOR: 7 },
       special: ["Grid Node", "Sharpshot (crits on 5+)"],
     },
     {
@@ -2653,7 +2653,7 @@
       flavor_text: "Heal or repair units and constructs",
       description: "Equipped with field repair kits and medical steam-injectors, these non-combatant support units keep the Dominion's forces fighting. They mend flesh and machine alike, sealing wounds and replacing shattered gears under fire. They carry no weapons, trusting that the soldiers they save will be weapon enough.",
       type: "Support",
-      stats: { ATK: 0, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 0, DEF: 3, HP: 3, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Heal (restore 1 HP to adjacent friendly unit, once per turn)",
@@ -2669,7 +2669,7 @@
       flavor_text: "Units linked via mechanical network",
       description: "Hardwired into a localized mechanical network, these soldiers grow stronger as they fight together. When two or more units operate within close proximity, their shared targeting data grants a bonus to attack rolls. Alone they are competent; together they are devastating.",
       type: "Infantry",
-      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Network (+1 ATK die when 2+ Gear-Linked Infantry within 3" of each other)',
@@ -2684,7 +2684,7 @@
       flavor_text: "Plant traps or explosives on battlefield",
       description: "Specialists in demolition and controlled destruction, these sappers plant timed explosive charges on structures, terrain, and enemy fortifications. They work with methodical precision, wiring detonation sequences that can reshape the battlefield in an instant. Enemy positions thought impregnable crumble at their touch.",
       type: "Support",
-      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Plant Charge (place explosive token within 1": detonates for 2 damage to all within 2" when triggered by enemy movement or commander card)',
@@ -2699,7 +2699,7 @@
       flavor_text: "Rapid repair at risk of accidental hazards",
       description: "Pushing their repair rigs beyond safe operational limits, these engineers can restore two hit points to damaged units in a single action. The risk is real—their overclocked equipment can backfire, damaging the engineers themselves. They are the desperate remedy for desperate situations.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 9, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 9, MOV: 7, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Rapid Repair (restore 2 HP instead of 1 to adjacent War Machine, but roll d6: on 1, deal 1 damage to self)",
@@ -2714,7 +2714,7 @@
       flavor_text: "Explosive devices powered by fragments",
       description: "An elite variant of the Dominion's grenadier corps, these soldiers carry mechanically-fused explosive devices with improved blast yield. Their ordnance blankets target areas in shrapnel and superheated steam, clearing entrenched positions with brutal efficiency. They are the answer to any enemy who thinks cover will save them.",
       type: "Infantry",
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 5, RNG: 10, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 7, RNG: 12, MOR: 7 },
       special: ["Grid Node", 'Blast (hits target + all units within 1")'],
     },
     {
@@ -2726,7 +2726,7 @@
       flavor_text: "Mechanical flying units",
       description: "These lightweight mechanical ornithopters carry a single pilot above the battlefield, providing unmatched reconnaissance from the air. Their flight capability lets them bypass terrain entirely, while their spotter designations guide allied artillery with pinpoint accuracy. Fragile but invaluable, they are the Dominion's eyes in the sky.",
       type: "Scout",
-      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 10, RNG: 8, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 12, RNG: 10, MOR: 7 },
       special: [
         "Fly (ignore terrain during movement)",
         "Spotter (+1 ATK die to friendly Artillery targeting spotted unit)",
@@ -2741,7 +2741,7 @@
       flavor_text: "Disable enemy units or traps",
       description: "Cloaked by fragment-powered stealth fields, these operatives slip behind enemy lines to disable units and dismantle traps. Their sabotage capabilities can cripple key enemy assets before the battle even begins. Silent, invisible, and ruthlessly efficient, they are the Iron Dominion's unseen blade.",
       type: "Specialist",
-      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 9, RNG: 1, MOR: 7 },
       special: [
         'Stealth (cannot be targeted by ranged attacks until this unit attacks or moves within 6" of an enemy)',
         "Sabotage (instead of attacking, disable 1 enemy trap or reduce enemy War Machine ATK by 1 for 1 turn)",
@@ -2756,7 +2756,7 @@
       flavor_text: "Aggressive assault units",
       description: "Reckless shock troops who overclock their mechanical augments during charges, trading defensive resilience for raw killing power. They gain a significant attack bonus on the charge but leave themselves dangerously exposed in the process. Commanders use them as a scalpel—one devastating cut before withdrawing.",
       type: "Infantry",
-      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 8, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Reckless (+1 ATK die but -1 DEF on the turn this unit charges)",
@@ -2771,7 +2771,7 @@
       flavor_text: "Protect elite units or commanders",
       description: "Encased in the thickest armor the Dominion forges, these guards exist for one purpose: to stand between the enemy and the Dominion's most valuable assets. Their bodyguard protocol lets them intercept attacks meant for nearby commanders and elite units. They do not advance; they endure.",
       type: "Infantry",
-      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 4, RNG: 1, MOR: 8 },
+      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 6, RNG: 1, MOR: 8 },
       special: [
         "Grid Node",
         "Bodyguard (if adjacent friendly Commander or Specialist is attacked, may redirect the attack to this unit instead)",
@@ -2786,7 +2786,7 @@
       flavor_text: "Fragment-controlled swarms",
       description: "Controlled by networked fragment cores, these semi-autonomous swarm constructs overwhelm enemies through sheer numbers and relentless aggression. Their swarm tactics make them difficult to pin down, but the unstable fragments powering them risk catastrophic detonation. They are a calculated gamble—a tide of steel that might turn on its own masters.",
       type: "Infantry",
-      stats: { ATK: 15, DEF: 2, HP: 6, MOV: 6, RNG: 3, MOR: 10 },
+      stats: { ATK: 15, DEF: 2, HP: 6, MOV: 8, RNG: 5, MOR: 10 },
       special: [
         "Fearless",
         "Swarm (cannot be targeted by Blast; takes 1 damage from any source instead of normal damage)",
@@ -2802,7 +2802,7 @@
       flavor_text: "Portable fragment cannons; unstable but powerful",
       description: "Portable fragment cannons operated by two-person crews, these weapons can be overcharged to unleash devastating volleys of aetheric energy. When overcharged, they add two additional attack dice, turning them into pocket artillery pieces. The strain on the weapon is immense, but so is the carnage.",
       type: "Artillery",
-      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 4, RNG: 16, MOR: 7 },
+      stats: { ATK: 9, DEF: 3, HP: 6, MOV: 6, RNG: 18, MOR: 7 },
       special: [
         "Grid Node",
         "Overcharge (spend 1 Fragment Charge: +2 ATK dice this attack, but on any roll of 1, deal 1 damage to self)",
@@ -2817,7 +2817,7 @@
       flavor_text: "Repair and fortify units",
       description: "The standard field repair units of the Iron Dominion, these engineers keep the war machine grinding forward. Armed with wrenches, solder-guns, and replacement parts, they restore damaged constructs and vehicles to fighting condition. They are unsung, essential, and never far from the front.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 6 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 8, RNG: 1, MOR: 6 },
       special: [
         "Grid Node",
         "Repair (restore 1 HP to adjacent friendly unit, End Phase)",
@@ -2833,7 +2833,7 @@
       flavor_text: "Slow, but area control",
       description: "Immovable bastions of iron and steam, these heavy infantry anchor defensive positions with an unbreakable shield wall. Their interlocking tower shields grant them a defense bonus against ranged attacks, and no force can push them from ground they've claimed. They are the Dominion's living fortifications.",
       type: "Infantry",
-      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 3, RNG: 1, MOR: 8 },
+      stats: { ATK: 6, DEF: 5, HP: 9, MOV: 5, RNG: 1, MOR: 8 },
       special: [
         "Grid Node",
         'Shield Wall (friendly units within 2" gain +1 DEF vs ranged attacks)',
@@ -2849,7 +2849,7 @@
       flavor_text: "Precision long-range attacks",
       description: "The deadliest snipers in the Iron Dominion's arsenal, these marksmen combine fragment-enhanced optics with sharpshot training to deliver killing blows at extreme range. They specialize in targeting enemy commanders, decapitating leadership with a single well-placed round. Armies have routed from the loss of a general they never saw die.",
       type: "Infantry",
-      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 5, RNG: 20, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 3, MOV: 7, RNG: 22, MOR: 7 },
       special: [
         "Grid Node",
         "Sharpshot (crits on 5+)",
@@ -2865,7 +2865,7 @@
       flavor_text: "Traverse difficult terrain quickly",
       description: "Riding all-terrain mechanical walkers, these scouts traverse any landscape with ease—mud, rubble, and steep grades mean nothing to their multi-jointed legs. Their advanced scout protocols ensure the main force is never caught off guard. They map the enemy's world so the Dominion can unmake it.",
       type: "Scout",
-      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 8, RNG: 8, MOR: 7 },
+      stats: { ATK: 6, DEF: 3, HP: 6, MOV: 10, RNG: 10, MOR: 7 },
       special: [
         'Scout (deploy 6" ahead)',
         "All-Terrain (ignore difficult terrain penalties)",
@@ -2880,7 +2880,7 @@
       flavor_text: "Heavy cannons powered by fragments",
       description: "The heaviest guns in the Iron Dominion's conventional arsenal, these massive cannons fire explosive ordnance capable of leveling entire city blocks. Immobile once deployed, they compensate with overwhelming firepower and heavy ordinance that punches through any barrier. The ground itself trembles when they speak.",
       type: "Artillery",
-      stats: { ATK: 15, DEF: 3, HP: 9, MOV: 3, RNG: 24, MOR: 7 },
+      stats: { ATK: 15, DEF: 3, HP: 9, MOV: 5, RNG: 26, MOR: 7 },
       special: [
         "Grid Node",
         'Blast (hits target + all within 1")',
@@ -2897,7 +2897,7 @@
       flavor_text: "Aggressive assault units",
       description: "Built for the decisive first charge, these assault troops are fitted with piston-driven impact gauntlets that deliver bone-crushing force on contact. Their piston charge ability turns them into living battering rams, ideal for breaking through weakened lines. They hit hard, hit fast, and rarely need to hit twice.",
       type: "Infantry",
-      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 7 },
+      stats: { ATK: 12, DEF: 3, HP: 6, MOV: 8, RNG: 1, MOR: 7 },
       special: ["Grid Node", 'Piston Charge (+1 ATK die; push target back 2")'],
     },
     {
@@ -2909,7 +2909,7 @@
       flavor_text: "Durable, disciplined frontline unit",
       description: "These frontline veterans inspire those around them with their unflinching resolve, granting a morale bonus to nearby allies. Clad in heavy clockwork armor, they are built to absorb punishment and hold the line while lesser units rally behind them. Their very presence tells the army that the Dominion does not retreat.",
       type: "Infantry",
-      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 5, RNG: 1, MOR: 9 },
+      stats: { ATK: 9, DEF: 4, HP: 9, MOV: 7, RNG: 1, MOR: 9 },
       special: ["Grid Node", 'Inspiring (+1 MOR to friendly units within 3")'],
     },
     {
@@ -2921,7 +2921,7 @@
       flavor_text: "Manipulate battlefield hazards",
       description: "Masters of battlefield manipulation, these engineers deploy fragment-powered traps and remotely detonated charges to control enemy movement. They can trigger their devices from a safe distance, turning prepared ground into a death zone at the moment of their choosing. The battlefield is their weapon, and they wield it with cruel precision.",
       type: "Support",
-      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 4, RNG: 6, MOR: 8 },
+      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 6, RNG: 8, MOR: 8 },
       special: [
         "Grid Node",
         'Trap Layer (place trap token within 3": 1 damage on trigger)',
@@ -2937,7 +2937,7 @@
       flavor_text: "Recover destroyed units or machines",
       description: "Scavenging teams equipped with portable smelters and sorting automatons, Reclaimers strip the battlefield of anything useful. Their salvage operations recover spent ammunition, usable scrap, and intact fragment cores from the wreckage of war. What the enemy discards, the Dominion reclaims and reforges.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 6 },
+      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 7, RNG: 1, MOR: 6 },
       special: [
         "Grid Node",
         "Salvage (when adjacent to destroyed friendly unit's position, recover 2 Fragment Charges)",
@@ -2952,7 +2952,7 @@
       flavor_text: "Standard troops with minor mechanical augmentation",
       description: "Standard infantry who have received minor mechanical augmentations—a reinforced joint here, a targeting lens there. These subtle enhancements make them more reliable than raw recruits without the cost of full mechanization. They are the quiet middle ground between flesh and machine, and the Dominion fields them in vast numbers.",
       type: "Infantry",
-      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 6, DEF: 4, HP: 6, MOV: 7, RNG: 1, MOR: 7 },
       special: ["Grid Node"],
     },
     {
@@ -2964,7 +2964,7 @@
       flavor_text: "Small group that enhances fragment effects",
       description: "These specialist teams carry fragment amplifiers and portable fragment batteries, creating zones of enhanced aetheric energy on the battlefield. Friendly units within their influence deal amplified fragment damage, making them force multipliers of the highest order. They are the spark that ignites the Dominion's most devastating offensives.",
       type: "Specialist",
-      stats: { ATK: 3, DEF: 4, HP: 9, MOV: 4, RNG: 1, MOR: 8 },
+      stats: { ATK: 3, DEF: 4, HP: 9, MOV: 6, RNG: 1, MOR: 8 },
       special: [
         'Fragment Amplifier (+1 to fragment activation rolls within 3")',
         "Fragment Battery (generate 2 Fragment Charges per turn instead of 1 when near a source)",
@@ -2980,7 +2980,7 @@
       flavor_text: "Massive humanoid construct, slow but devastating",
       description: "A towering humanoid construct of iron, brass, and fury, the Clockwork Titan strides across the battlefield crushing everything beneath its massive feet. Its stomp attack devastates infantry clusters, and its sheer height lets it fire over intervening terrain. It is the Iron Dominion's answer to gods and monsters alike.",
       type: "War Machine",
-      stats: { ATK: 21, DEF: 5, HP: 30, MOV: 4, RNG: 1, MOR: 10 },
+      stats: { ATK: 21, DEF: 5, HP: 30, MOV: 6, RNG: 1, MOR: 10 },
       special: [
         "Grid Anchor (counts as 2 units for Grid adjacency)",
         'Stomp (melee hits all enemy units within 2")',
@@ -2997,7 +2997,7 @@
       flavor_text: "Siege & artillery hybrid",
       description: "Part mobile fortress, part artillery platform, the Steam Colossus lumbers forward on grinding treads, demolishing fortifications and raining explosive shells on distant targets. Its combination of siege capability and blast weaponry makes it equally deadly against structures and soldiers. Cities have surrendered at the mere rumor of its approach.",
       type: "War Machine",
-      stats: { ATK: 18, DEF: 5, HP: 24, MOV: 3, RNG: 24, MOR: 10 },
+      stats: { ATK: 18, DEF: 5, HP: 24, MOV: 5, RNG: 26, MOR: 10 },
       special: [
         "Grid Anchor",
         'Blast (hits target + all within 2")',
@@ -3015,7 +3015,7 @@
       flavor_text: "Huge fragment-powered artillery unit",
       description: "A towering bipedal war machine mounting a fragment-powered cannon of devastating yield, the Aether Cannon Walker warps the very terrain around its impact zones. Its blasts reshape the battlefield itself, creating craters and hazards that persist long after the shot lands. Reality bends where its shells fall.",
       type: "War Machine",
-      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 4, RNG: 20, MOR: 10 },
+      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 6, RNG: 22, MOR: 10 },
       special: [
         "Grid Anchor",
         'Blast (hits target + all within 2")',
@@ -3032,7 +3032,7 @@
       flavor_text: "Multi-legged mechanical war machine",
       description: "A nightmarish multi-legged war machine built to mimic the predatory movement of great beasts, the Gear-Beast charges across any terrain with frightening speed. Its all-terrain locomotion and savage charge attacks make it an apex predator of the mechanical battlefield, though its complex systems are prone to malfunction at the worst possible moments.",
       type: "War Machine",
-      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 6, RNG: 1, MOR: 10 },
+      stats: { ATK: 21, DEF: 4, HP: 24, MOV: 8, RNG: 1, MOR: 10 },
       special: [
         "Grid Anchor",
         "Charge (+2 ATK dice when charging)",
@@ -3051,7 +3051,7 @@
       flavor_text: "Half-mechanical, half-living construct",
       description: "The Dominion's most ambitious and terrifying creation—a half-mechanical, half-living monstrosity that blurs the line between engineering and abomination. Its reality-distorting fragment core warps the battlefield around it, while its massive frame stomps enemies flat. Deeply unstable, it is as likely to fracture reality as to win the battle, but the Dominion considers that an acceptable risk.",
       type: "War Machine",
-      stats: { ATK: 24, DEF: 5, HP: 36, MOV: 4, RNG: 3, MOR: 10 },
+      stats: { ATK: 24, DEF: 5, HP: 36, MOV: 6, RNG: 5, MOR: 10 },
       special: [
         "Grid Anchor",
         'Stomp (melee hits all within 2")',
@@ -3069,7 +3069,7 @@
       flavor_text: "Fast mechanical unit with explosive attacks",
       description: "A war machine pushed far beyond its design specifications, the Overclocked Automaton strikes with blinding speed, delivering two attacks where others manage one. Its double strike capability makes it devastating in close combat, but its overtaxed systems generate dangerous levels of heat that threaten catastrophic overload. It burns bright and burns fast.",
       type: "War Machine",
-      stats: { ATK: 18, DEF: 4, HP: 21, MOV: 7, RNG: 1, MOR: 10 },
+      stats: { ATK: 18, DEF: 4, HP: 21, MOV: 9, RNG: 1, MOR: 10 },
       special: [
         "Grid Anchor",
         "Double Strike (may attack twice per Combat Phase)",
@@ -3086,7 +3086,7 @@
       flavor_text: "Flying mechanical scout/assault unit",
       description: "A flying mechanical horror of iron wings and steam-driven talons, the Steam Gargoyle swoops from the skies to deliver devastating dive attacks on unsuspecting targets. Its flight lets it bypass ground defenses entirely, striking where the enemy is weakest. The shadow of its wings is the last thing many soldiers ever see.",
       type: "War Machine",
-      stats: { ATK: 18, DEF: 4, HP: 24, MOV: 10, RNG: 8, MOR: 10 },
+      stats: { ATK: 18, DEF: 4, HP: 24, MOV: 12, RNG: 10, MOR: 10 },
       special: [
         "Grid Anchor",
         "Fly (ignore terrain)",
@@ -3103,7 +3103,7 @@
       flavor_text: "Slow, massive damage output",
       description: "A slow, implacable mountain of iron and ordnance, the Mechanized Siege Engine exists to reduce fortifications to rubble. Immobile once deployed, it compensates with the ability to collapse terrain features entirely and deal catastrophic siege damage. Walls do not stop it—it simply erases them from existence.",
       type: "War Machine",
-      stats: { ATK: 18, DEF: 5, HP: 27, MOV: 3, RNG: 18, MOR: 10 },
+      stats: { ATK: 18, DEF: 5, HP: 27, MOV: 5, RNG: 20, MOR: 10 },
       special: [
         "Grid Anchor",
         "Siege (double damage vs fortifications)",
@@ -3121,7 +3121,7 @@
       flavor_text: "Fragment-powered giant construct",
       description: "Powered by a volatile fragment core housed in its chest cavity, this towering golem radiates an aura of raw aetheric energy that empowers nearby allies while threatening to destabilize at any moment. Its fragment aura makes it a walking force multiplier, but its unstable power source means every battle could be its last. The Dominion considers this an acceptable rate of return.",
       type: "War Machine",
-      stats: { ATK: 18, DEF: 5, HP: 27, MOV: 4, RNG: 1, MOR: 10 },
+      stats: { ATK: 18, DEF: 5, HP: 27, MOV: 6, RNG: 1, MOR: 10 },
       special: [
         "Grid Anchor",
         'Fragment Aura (friendly units within 3" gain +1 ATK die)',
@@ -3138,7 +3138,7 @@
       flavor_text: "Time-manipulation-themed war machine",
       description: "The pinnacle of the Iron Dominion's forbidden research, the Chrono Walker manipulates the flow of time itself through an array of experimental fragment cores. Once per game it can execute a time warp—taking an entire additional turn while the enemy stands frozen. Its temporal shield deflects attacks by shifting them to moments that never happened, though the staggering instability of its systems threatens to unravel it from the timeline entirely.",
       type: "War Machine",
-      stats: { ATK: 15, DEF: 5, HP: 30, MOV: 5, RNG: 12, MOR: 10 },
+      stats: { ATK: 15, DEF: 5, HP: 30, MOV: 7, RNG: 14, MOR: 10 },
       special: [
         "Grid Anchor",
         "Time Warp (once per game: take an extra full turn immediately after this one)",
@@ -3164,7 +3164,7 @@
         ATK: 9,
         DEF: 3,
         HP: 6,
-        MOV: 9,
+        MOV: 11,
         RNG: 1,
         MOR: 7,
       },
@@ -3188,7 +3188,7 @@
         ATK: 12,
         DEF: 4,
         HP: 9,
-        MOV: 8,
+        MOV: 10,
         RNG: 1,
         MOR: 8,
       },
@@ -3213,8 +3213,8 @@
         ATK: 12,
         DEF: 3,
         HP: 9,
-        MOV: 9,
-        RNG: 12,
+        MOV: 11,
+        RNG: 14,
         MOR: 8,
       },
       special: [
@@ -3238,7 +3238,7 @@
         ATK: 15,
         DEF: 5,
         HP: 12,
-        MOV: 7,
+        MOV: 9,
         RNG: 1,
         MOR: 9,
       },
@@ -3266,8 +3266,8 @@
         ATK: 30,
         DEF: 8,
         HP: 60,
-        MOV: 4,
-        RNG: 24,
+        MOV: 6,
+        RNG: 26,
         MOR: 10,
       },
       special: [

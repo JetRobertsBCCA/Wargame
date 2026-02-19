@@ -475,8 +475,8 @@
         ATK: 18,
         DEF: 4,
         HP: 33,
-        MOV: 5,
-        RNG: 3,
+        MOV: 7,
+        RNG: 5,
         MOR: 10
       },
       points_cost: 25,
@@ -591,8 +591,8 @@
         ATK: 12,
         DEF: 3,
         HP: 27,
-        MOV: 5,
-        RNG: 6,
+        MOV: 7,
+        RNG: 8,
         MOR: 9
       },
       points_cost: 20,
@@ -707,7 +707,7 @@
         ATK: 21,
         DEF: 5,
         HP: 36,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 10
       },
@@ -815,8 +815,8 @@
         ATK: 9,
         DEF: 3,
         HP: 24,
-        MOV: 5,
-        RNG: 3,
+        MOV: 7,
+        RNG: 5,
         MOR: 8
       },
       points_cost: 17,
@@ -927,8 +927,8 @@
         ATK: 12,
         DEF: 4,
         HP: 30,
-        MOV: 4,
-        RNG: 6,
+        MOV: 6,
+        RNG: 8,
         MOR: 9
       },
       points_cost: 22,
@@ -1043,7 +1043,7 @@
         ATK: 18,
         DEF: 3,
         HP: 24,
-        MOV: 7,
+        MOV: 9,
         RNG: 1,
         MOR: 9
       },
@@ -1155,8 +1155,8 @@
         ATK: 9,
         DEF: 4,
         HP: 30,
-        MOV: 4,
-        RNG: 8,
+        MOV: 6,
+        RNG: 10,
         MOR: 10
       },
       points_cost: 21,
@@ -1267,8 +1267,8 @@
         ATK: 15,
         DEF: 5,
         HP: 33,
-        MOV: 4,
-        RNG: 3,
+        MOV: 6,
+        RNG: 5,
         MOR: 10
       },
       points_cost: 25,
@@ -1383,8 +1383,8 @@
         ATK: 15,
         DEF: 4,
         HP: 27,
-        MOV: 5,
-        RNG: 6,
+        MOV: 7,
+        RNG: 8,
         MOR: 10
       },
       points_cost: 23,
@@ -1495,8 +1495,8 @@
         ATK: 12,
         DEF: 3,
         HP: 27,
-        MOV: 6,
-        RNG: 6,
+        MOV: 8,
+        RNG: 8,
         MOR: 8
       },
       points_cost: 20,
@@ -1611,8 +1611,8 @@
         ATK: 15,
         DEF: 4,
         HP: 30,
-        MOV: 5,
-        RNG: 3,
+        MOV: 7,
+        RNG: 5,
         MOR: 9
       },
       points_cost: 23,
@@ -1719,7 +1719,7 @@
         ATK: 12,
         DEF: 6,
         HP: 39,
-        MOV: 3,
+        MOV: 5,
         RNG: 1,
         MOR: 10
       },
@@ -1831,7 +1831,7 @@
         ATK: 21,
         DEF: 3,
         HP: 30,
-        MOV: 8,
+        MOV: 10,
         RNG: 1,
         MOR: 9
       },
@@ -1949,7 +1949,7 @@
         ATK: 3,
         DEF: 3,
         HP: 3,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 4
       },
@@ -1973,7 +1973,7 @@
         ATK: 3,
         DEF: 2,
         HP: 3,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 4
       },
@@ -1993,7 +1993,7 @@
         ATK: 6,
         DEF: 3,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 5
       },
@@ -2013,7 +2013,7 @@
         ATK: 6,
         DEF: 4,
         HP: 3,
-        MOV: 4,
+        MOV: 6,
         RNG: 1,
         MOR: 5
       },
@@ -2033,7 +2033,7 @@
         ATK: 9,
         DEF: 3,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 7
       },
@@ -2053,7 +2053,7 @@
         ATK: 6,
         DEF: 4,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 7
       },
@@ -2077,7 +2077,7 @@
         ATK: 12,
         DEF: 3,
         HP: 6,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 8
       },
@@ -2101,7 +2101,7 @@
         ATK: 12,
         DEF: 3,
         HP: 6,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 7
       },
@@ -2125,7 +2125,7 @@
         ATK: 9,
         DEF: 5,
         HP: 9,
-        MOV: 4,
+        MOV: 6,
         RNG: 1,
         MOR: 8
       },
@@ -2150,7 +2150,7 @@
         ATK: 15,
         DEF: 3,
         HP: 6,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 9
       },
@@ -2175,7 +2175,7 @@
         ATK: 9,
         DEF: 3,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 7
       },
@@ -2199,7 +2199,7 @@
         ATK: 9,
         DEF: 5,
         HP: 9,
-        MOV: 4,
+        MOV: 6,
         RNG: 1,
         MOR: 9
       },
@@ -2219,7 +2219,7 @@
         ATK: 12,
         DEF: 3,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 8
       },
@@ -2239,8 +2239,8 @@
         ATK: 9,
         DEF: 3,
         HP: 3,
-        MOV: 5,
-        RNG: 14,
+        MOV: 7,
+        RNG: 16,
         MOR: 6
       },
       special: ["Corruption", "Corruption Spread (ranged hits also apply Corruption tokens)", "Volley (may fire over friendly units)"]
@@ -2259,8 +2259,8 @@
         ATK: 6,
         DEF: 2,
         HP: 3,
-        MOV: 5,
-        RNG: 6,
+        MOV: 7,
+        RNG: 8,
         MOR: 4
       },
       special: ["Corruption", "Thrall", "Expendable", "Corruption Spread", "Blast 1\" (hits all models within 1\" of target)"]
@@ -2279,7 +2279,7 @@
         ATK: 18,
         DEF: 4,
         HP: 12,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 9
       },
@@ -2299,7 +2299,7 @@
         ATK: 9,
         DEF: 4,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 7
       },
@@ -2319,7 +2319,7 @@
         ATK: 9,
         DEF: 5,
         HP: 12,
-        MOV: 4,
+        MOV: 6,
         RNG: 1,
         MOR: 9
       },
@@ -2339,7 +2339,7 @@
         ATK: 9,
         DEF: 3,
         HP: 6,
-        MOV: 8,
+        MOV: 10,
         RNG: 1,
         MOR: 5
       },
@@ -2359,7 +2359,7 @@
         ATK: 12,
         DEF: 4,
         HP: 6,
-        MOV: 9,
+        MOV: 11,
         RNG: 1,
         MOR: 8
       },
@@ -2385,7 +2385,7 @@
         ATK: 15,
         DEF: 4,
         HP: 9,
-        MOV: 9,
+        MOV: 11,
         RNG: 1,
         MOR: 9
       },
@@ -2405,7 +2405,7 @@
         ATK: 6,
         DEF: 3,
         HP: 6,
-        MOV: 10,
+        MOV: 12,
         RNG: 1,
         MOR: 6
       },
@@ -2429,7 +2429,7 @@
         ATK: 15,
         DEF: 4,
         HP: 9,
-        MOV: 10,
+        MOV: 12,
         RNG: 1,
         MOR: 9
       },
@@ -2449,7 +2449,7 @@
         ATK: 12,
         DEF: 3,
         HP: 6,
-        MOV: 9,
+        MOV: 11,
         RNG: 1,
         MOR: 7
       },
@@ -2469,7 +2469,7 @@
         ATK: 3,
         DEF: 3,
         HP: 9,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 7
       },
@@ -2493,8 +2493,8 @@
         ATK: 0,
         DEF: 3,
         HP: 6,
-        MOV: 5,
-        RNG: 6,
+        MOV: 7,
+        RNG: 8,
         MOR: 6
       },
       special: [
@@ -2517,7 +2517,7 @@
         ATK: 0,
         DEF: 3,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 7
       },
@@ -2541,7 +2541,7 @@
         ATK: 3,
         DEF: 3,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 7
       },
@@ -2565,7 +2565,7 @@
         ATK: 0,
         DEF: 3,
         HP: 6,
-        MOV: 4,
+        MOV: 6,
         RNG: 1,
         MOR: 8
       },
@@ -2589,7 +2589,7 @@
         ATK: 0,
         DEF: 3,
         HP: 3,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 5
       },
@@ -2614,7 +2614,7 @@
         ATK: 0,
         DEF: 3,
         HP: 6,
-        MOV: 4,
+        MOV: 6,
         RNG: 1,
         MOR: 8
       },
@@ -2638,7 +2638,7 @@
         ATK: 0,
         DEF: 3,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 8
       },
@@ -2663,8 +2663,8 @@
         ATK: 12,
         DEF: 3,
         HP: 9,
-        MOV: 3,
-        RNG: 24,
+        MOV: 5,
+        RNG: 26,
         MOR: 7
       },
       special: [
@@ -2688,8 +2688,8 @@
         ATK: 9,
         DEF: 3,
         HP: 6,
-        MOV: 4,
-        RNG: 18,
+        MOV: 6,
+        RNG: 20,
         MOR: 7
       },
       special: ["Corruption", "Blast 2\"", "Corruption Spread", "Indirect Fire (may fire over obstacles and units)"]
@@ -2709,7 +2709,7 @@
         DEF: 3,
         HP: 9,
         MOV: 0,
-        RNG: 24,
+        RNG: 26,
         MOR: 7
       },
       special: ["Corruption", "Corruption Spread", "Predator Eyes (+1 ATK die vs targets in open; see in darkness)", "Immovable"]
@@ -2728,8 +2728,8 @@
         ATK: 15,
         DEF: 3,
         HP: 6,
-        MOV: 3,
-        RNG: 10,
+        MOV: 5,
+        RNG: 12,
         MOR: 7
       },
       special: ["Corruption", "Blast 3\"", "Corruption Spread", "Cone Attack (hits all units in a 3\"-wide cone from the cannon)"]
@@ -2748,8 +2748,8 @@
         ATK: 12,
         DEF: 3,
         HP: 6,
-        MOV: 4,
-        RNG: 20,
+        MOV: 6,
+        RNG: 22,
         MOR: 7
       },
       special: ["Corruption", "Corruption Spread", "Anti-Large (+2 ATK dice against War Machines and models with 5+ HP)", "Predator Eyes (crits on 5+; see in darkness)"]
@@ -2768,7 +2768,7 @@
         ATK: 3,
         DEF: 3,
         HP: 3,
-        MOV: 8,
+        MOV: 10,
         RNG: 1,
         MOR: 4
       },
@@ -2793,7 +2793,7 @@
         ATK: 6,
         DEF: 3,
         HP: 3,
-        MOV: 9,
+        MOV: 11,
         RNG: 1,
         MOR: 6
       },
@@ -2813,8 +2813,8 @@
         ATK: 6,
         DEF: 3,
         HP: 3,
-        MOV: 8,
-        RNG: 8,
+        MOV: 10,
+        RNG: 10,
         MOR: 5
       },
       special: ["Corruption", "Corruption Spread", "Blood Scent Scout (deploy 6\" ahead; wounded enemies within 12\" are revealed)", "Shadow Meld (invisible in darkness/terrain; attacking from meld applies 2 Corruption tokens)"]
@@ -2833,7 +2833,7 @@
         ATK: 3,
         DEF: 2,
         HP: 3,
-        MOV: 10,
+        MOV: 12,
         RNG: 1,
         MOR: 4
       },
@@ -2853,7 +2853,7 @@
         ATK: 9,
         DEF: 3,
         HP: 6,
-        MOV: 8,
+        MOV: 10,
         RNG: 1,
         MOR: 7
       },
@@ -2880,7 +2880,7 @@
         ATK: 6,
         DEF: 3,
         HP: 3,
-        MOV: 9,
+        MOV: 11,
         RNG: 1,
         MOR: 5
       },
@@ -2900,7 +2900,7 @@
         ATK: 15,
         DEF: 4,
         HP: 9,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 9
       },
@@ -2926,7 +2926,7 @@
         ATK: 15,
         DEF: 4,
         HP: 12,
-        MOV: 7,
+        MOV: 9,
         RNG: 1,
         MOR: 9
       },
@@ -2952,7 +2952,7 @@
         ATK: 6,
         DEF: 3,
         HP: 6,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 7
       },
@@ -2976,7 +2976,7 @@
         ATK: 15,
         DEF: 3,
         HP: 6,
-        MOV: 7,
+        MOV: 9,
         RNG: 1,
         MOR: 7
       },
@@ -3002,7 +3002,7 @@
         ATK: 12,
         DEF: 6,
         HP: 9,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 10
       },
@@ -3028,7 +3028,7 @@
         ATK: 12,
         DEF: 4,
         HP: 9,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 8
       },
@@ -3052,8 +3052,8 @@
         ATK: 0,
         DEF: 3,
         HP: 6,
-        MOV: 4,
-        RNG: 6,
+        MOV: 6,
+        RNG: 8,
         MOR: 8
       },
       special: [
@@ -3077,7 +3077,7 @@
         ATK: 21,
         DEF: 5,
         HP: 30,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 10
       },
@@ -3097,7 +3097,7 @@
         ATK: 24,
         DEF: 5,
         HP: 36,
-        MOV: 4,
+        MOV: 6,
         RNG: 1,
         MOR: 10
       },
@@ -3125,8 +3125,8 @@
         ATK: 18,
         DEF: 4,
         HP: 24,
-        MOV: 4,
-        RNG: 12,
+        MOV: 6,
+        RNG: 14,
         MOR: 10
       },
       special: [
@@ -3150,8 +3150,8 @@
         ATK: 15,
         DEF: 5,
         HP: 27,
-        MOV: 5,
-        RNG: 8,
+        MOV: 7,
+        RNG: 10,
         MOR: 10
       },
       special: [
@@ -3176,8 +3176,8 @@
         ATK: 24,
         DEF: 4,
         HP: 33,
-        MOV: 10,
-        RNG: 12,
+        MOV: 12,
+        RNG: 14,
         MOR: 10
       },
       special: [
@@ -3205,7 +3205,7 @@
         ATK: 18,
         DEF: 4,
         HP: 24,
-        MOV: 6,
+        MOV: 8,
         RNG: 1,
         MOR: 10
       },
@@ -3231,7 +3231,7 @@
         ATK: 18,
         DEF: 5,
         HP: 27,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 10
       },
@@ -3257,7 +3257,7 @@
         ATK: 21,
         DEF: 4,
         HP: 30,
-        MOV: 8,
+        MOV: 10,
         RNG: 1,
         MOR: 10
       },
@@ -3284,7 +3284,7 @@
         ATK: 12,
         DEF: 4,
         HP: 27,
-        MOV: 3,
+        MOV: 5,
         RNG: 1,
         MOR: 10
       },
@@ -3309,7 +3309,7 @@
         ATK: 27,
         DEF: 4,
         HP: 30,
-        MOV: 7,
+        MOV: 9,
         RNG: 1,
         MOR: 10
       },
@@ -3340,7 +3340,7 @@
         ATK: 27,
         DEF: 6,
         HP: 54,
-        MOV: 5,
+        MOV: 7,
         RNG: 1,
         MOR: 10
       },
