@@ -16,7 +16,7 @@ const gameData = {
     army_building: {
       overview:
         "Choose a Commander, then fill your roster with units up to your agreed points limit. Your Commander costs points (see Commander entries for their point cost). Each unit purchased represents a single model or base on the table — its stat line applies to that individual model.",
-      unit_definition: "Each unit entry represents a single model (or base/token) placed on the battlefield. When you purchase a unit, you place one model with that stat line. To field multiples, purchase the same unit entry multiple times (max 3 copies of any single unit type). War Machines are always single models.",
+      unit_definition: "Each unit entry represents a single model (or base/token) placed on the battlefield. When you purchase a unit, you place one model with that stat line. To field multiples, purchase the same unit entry multiple times (max 3 copies of any single unit type). War Machines are always single models. Your Commander counts as one unit for minimum/maximum unit count purposes.",
       battle_sizes: {
         skirmish: {
           points: "50–100",
@@ -82,7 +82,7 @@ const gameData = {
             "You may play any number of Command or Fragment cards (paying CP costs).",
             "Iron Dominion: Calculate Grid Cohesion bonuses for each unit based on nearby allies.",
             "Veilbound: Add each surviving friendly unit's Ritual Flow value to your Flow Pool. Check Flow thresholds.",
-            "Veilbound: Declare Stance changes for infantry and cavalry units (free action)."
+            "Veilbound: Declare Stance changes for infantry and cavalry units (free action, before any units move)."
           ],
         },
         {
@@ -102,12 +102,13 @@ const gameData = {
           name: "Combat Phase",
           description: "Resolve ranged and melee attacks.",
           actions: [
+            "The active player chooses the order in which their units attack — activate each attacking unit one at a time, resolving its attack completely (including damage and removal of destroyed targets) before activating the next.",
             "Ranged attacks resolve first. Each unit with RNG > 1 may attack one enemy within range and line of sight. Engaged units cannot make ranged attacks (including card-granted ranged attacks, unless the card explicitly says it ignores Engagement).",
             "Melee attacks follow. Each Engaged unit attacks one enemy unit it is Engaged with.",
             "Multiple friendly units may be Engaged with the same enemy — each attacks separately.",
             "Resolve each attack using the Combat Resolution system (see Combat section).",
             "The active player may play Combat-timing cards before or after rolling dice (paying CP costs). The defending player may play Reaction cards.",
-            "Units reduced to 0 HP are destroyed and removed immediately.",
+            "Units reduced to 0 HP are destroyed and removed immediately. A destroyed unit does NOT get to attack back (it was destroyed before its activation). Choose your activation order wisely.",
           ],
         },
         {
@@ -152,7 +153,7 @@ const gameData = {
           step: 4,
           name: "Critical Hits",
           description:
-            "Any natural 6 is a Critical Hit — it deals 2 damage instead of 1 and cannot be negated by normal defense cards.",
+            "Any natural 6 is a Critical Hit — it ALWAYS hits regardless of the target's DEF value (even DEF 7+), deals 2 damage instead of 1, and cannot be negated by normal defense cards. This is the only way to damage units with DEF 7 or higher.",
         },
         {
           step: 5,
@@ -183,7 +184,7 @@ const gameData = {
       iron_dominion: {
         grid_cohesion: {
           description:
-            "Iron Dominion units fight as nodes in a tactical Grid. When units maintain formation, they share bonuses. When isolated, they lose effectiveness. During the Command Phase, calculate Grid status for each unit by counting friendly units within 3\" (War Machines with Grid Anchor count as 2 units for this purpose).",
+            "Iron Dominion units fight as nodes in a tactical Grid. When units maintain formation, they share bonuses. When isolated, they lose effectiveness. During the Command Phase, calculate Grid status for each unit by counting friendly units within 3\" (War Machines with Grid Anchor count as 2 units for this purpose). Grid status is LOCKED for the rest of the turn once calculated — it does not change if units move apart during the Movement Phase. This rewards careful pre-movement positioning.",
           tiers: [
             { name: "Isolated", units_within_3_inches: 0, bonus: "−1 ATK die. Unit operates alone without Grid support." },
             { name: "Connected", units_within_3_inches: 1, bonus: "No bonus or penalty. Stable but unremarkable." },
@@ -223,7 +224,7 @@ const gameData = {
         },
         stance_system: {
           description:
-            "Veilbound infantry and cavalry units can switch stances at the start of the Movement Phase (free action, once per turn). War Machines and Support units cannot use stances. A unit's stance persists until changed.",
+            "Veilbound infantry and cavalry units can switch stances during the Command Phase (free action, declared before Movement begins). War Machines and Support units cannot use stances. A unit's stance persists until changed.",
           stances: [
             {
               name: "Honor Stance 🛡️",
@@ -506,7 +507,7 @@ const gameData = {
         {
           name: "Objective Control",
           description:
-            "Place 3 objective markers during setup (one at table center, one in each player's half at least 8\" from edges). At the end of the final turn, the player controlling more objectives wins. A unit controls an objective if it is the closest model to that marker with no enemy model closer."
+            "Place 3 objective markers during setup (one at table center, one in each player's half at least 8\" from edges). At the end of the final turn, the player controlling more objectives wins. A unit controls an objective if it is the closest model to that marker with no enemy model closer. If both players have a model equidistant from an objective, neither controls it — it is Contested."
         },
         {
           name: "Attrition",
@@ -516,7 +517,7 @@ const gameData = {
         {
           name: "King of the Hill",
           description:
-            'One objective in the center of the table. At the end of each turn (starting Turn 2), the player with the most total HP of units within 3\" of the objective scores 1 Victory Point. First to 5 VP wins. If the game ends in a tie, most remaining HP wins.'
+            'One objective in the center of the table. At the end of each turn (starting Turn 2), the player with the most total current HP (not maximum) of units within 3\" of the objective scores 1 Victory Point. First to 5 VP wins. If the game ends in a tie, most remaining HP wins.'
         }
       ],
     },
@@ -545,7 +546,7 @@ const gameData = {
       DEF: {
         name: "Defense",
         description:
-          "The target number an attacker must roll to score a hit. Higher = harder to damage. Range: 2-6.",
+          "The target number an attacker must roll to score a hit. Higher = harder to damage. Standard range: 2-6. Some legendary units and War Machines have DEF 7+ — these can only be damaged by Critical Hits (natural 6, which always hit regardless of DEF).",
       },
       HP: {
         name: "Hit Points",
@@ -607,7 +608,7 @@ const gameData = {
         {
           step: 6,
           name: "Roll for Initiative",
-          description: "Both players roll 1d6. Higher roll chooses whether to deploy first or second. The player who deploys second takes the first turn. Reroll ties."
+          description: "Both players roll 1d6. Higher roll chooses whether to deploy first or second. The player who deploys FIRST takes the first turn (compensating for revealing their positions). The player who deploys second has the information advantage but must react to the opponent's opening move. Reroll ties."
         },
         {
           step: 7,
@@ -622,7 +623,7 @@ const gameData = {
         {
           step: 9,
           name: "Begin the Game",
-          description: "The player who deployed second takes Turn 1. Play proceeds with alternating turns until the victory condition is met or the maximum turn count is reached."
+          description: "The player who deployed first takes Turn 1. Play proceeds with alternating turns until the victory condition is met or the maximum turn count is reached."
         }
       ]
     },
@@ -732,6 +733,7 @@ const gameData = {
         "A Challenge may be issued by a Specialist or Commander when they are Engaged with an enemy Specialist or Commander.",
         "Commanders may freely refuse a Challenge issued by a non-Commander (e.g. a Specialist) with no penalty. Only a Challenge from another Commander carries the refusal penalty. This prevents cheap expendable units from locking down expensive characters.",
         "If a Commander-vs-Commander Challenge is refused, the challenging Commander gains +2 ATK dice against the refusing Commander for the rest of the battle.",
+        "Specialists MUST accept Challenges from other Specialists or Commanders — they cannot refuse. Specialists are duelists by nature; the duel is their purpose.",
         "During a Challenge, both units attack each other simultaneously — both roll their ATK dice at the same time. Apply damage to both.",
         "Other units cannot target or assist either combatant in a Challenge for that combat round.",
         "A Challenge lasts one combat round. If both units survive, the Challenge ends and normal melee resumes.",
@@ -787,7 +789,9 @@ const gameData = {
         { name: "Double Strike", description: "May attack twice in a single Combat Phase. Both attacks may target the same or different enemies within range. Resolve each attack fully (including damage and morale checks) before starting the second attack." },
         { name: "Terror Aura", description: "Enemy units within 3\" suffer −1 MOR on Morale checks." },
         { name: "Guardian", description: "When attacked in melee, this unit counterattacks at full ATK before damage is applied." },
-        { name: "Ritual Flow", description: "This unit generates the stated amount of Ritual Flow for the Veilbound Flow Pool each Command Phase." }
+        { name: "Ritual Flow", description: "This unit generates the stated amount of Ritual Flow for the Veilbound Flow Pool each Command Phase." },
+        { name: "Blood Drain", description: "When this unit destroys an enemy model in melee, it heals 1 HP. Represents the vampiric feeding of the Nightfang Dominion." },
+        { name: "Anti-Air", description: "This unit's ranged attacks gain +1 ATK die against targets with the Fly keyword. Flying units suffer -1 DEF against this unit's ranged attacks." }
       ]
     },
 
@@ -981,7 +985,7 @@ const gameData = {
           applied: "Morale check result exceeds MOR by 3 or more.",
           removed: "N/A — unit is gone.",
           stacking: "N/A",
-          notes: "Routing represents complete collapse. The unit breaks and flees the battlefield. In campaign mode, Routed units survive but miss the next battle (recovering morale)."
+          notes: "Routing represents complete collapse. The unit breaks and flees the battlefield. In campaign mode, Routed units are NOT subject to the Injury Roll table — they automatically return at full stats next game (they fled, not died). However, a Routed unit cannot be fielded in the very next game (recovering morale — skip one game, then return)."
         },
         {
           name: "Engaged",
@@ -1083,7 +1087,7 @@ const gameData = {
       overview: "War Machines are the heaviest assets on the battlefield — siege engines, titans, golems, and mechanical monstrosities. They are powerful but slow, expensive, and subject to unique risks. This section consolidates all War Machine-specific rules.",
       core_rules: [
         "War Machines are always single models — you cannot buy duplicates of the same War Machine.",
-        "War Machines cannot be Engaged in melee by Infantry or Scout units — those units are too small to threaten them. Only Cavalry, Specialist, other War Machines, and Commanders can Engage a War Machine in melee.",
+        "War Machines cannot be Engaged in melee by Infantry or Scout units — those units are too small to threaten them. However, a War Machine CAN move into contact with Infantry/Scouts and attack them normally (it is stomping ants). The restriction is one-directional: Infantry cannot initiate Engagement with a War Machine, but the War Machine can initiate against them. Only Cavalry, Specialist, other War Machines, and Commanders can Engage a War Machine in melee from their side.",
         "War Machines with the Immobile keyword must choose: Move OR Attack each turn. Not both.",
         "War Machines cannot Charge (too slow to build momentum). They gain no Charge bonus.",
         "War Machines are Grid Anchors for Iron Dominion (count as 2 units for Grid adjacency).",
@@ -1399,11 +1403,11 @@ const gameData = {
       turn_summary: [
         "1. COMMAND PHASE — Generate CP (= Commander's Command stat; any CP from last turn is lost). Draw 2 cards (max hand 7). Play Command/Fragment cards. Unspent CP carries into opponent's turn for Reactions.",
         "2. MOVEMENT PHASE — Activate each unit. Move up to MOV stat in inches. Declare Charges (4\"+ straight = +1 ATK). Engaged units must Disengage (sacrifice turn) to leave.",
-        "3. COMBAT PHASE — Ranged first (RNG > 1, not Engaged). Then Melee (Engaged units). Roll d6 = ATK stat; hits on ≥ DEF; 6 = crit (2 dmg).",
+        "3. COMBAT PHASE — Activate attack units one at a time (you choose order). Ranged first (RNG > 1, not Engaged). Then Melee (Engaged units). Roll d6 = ATK stat; hits on ≥ DEF; 6 = crit (always hits, 2 dmg). Destroyed units don't attack back.",
         "4. END PHASE — Morale (damaged units roll 2d6 > MOR = Shaken; MOR+3 = Rout). Rally (Shaken + no dmg: 2d6 ≤ MOR). Fragment effects. Repair. Check victory. Discard to 7."
       ],
       combat_cheat_sheet: {
-        hit: "Roll d6 ≥ target's DEF",
+        hit: "Roll d6 ≥ target's DEF (6 always hits as crit even vs DEF 7+)",
         crit: "Natural 6 = 2 damage, unblockable",
         flanking: "+1 ATK die (from side)",
         rear: "+2 ATK dice (from behind)",
