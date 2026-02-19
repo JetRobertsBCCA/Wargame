@@ -28,6 +28,10 @@ If TTS is installed and the Saves directory exists, the generator will also auto
 
 | Component | Description | Count |
 |-----------|-------------|-------|
+| **Game Board** | Battlefield surface with faction-themed artwork | 1 |
+| **Map Variants Bag** | 6 swappable themed battle maps | 6 |
+| **Blast & Cone Templates** | AoE measurement overlays | 5 |
+| **Range Rings** | Distance indicator rings | 5 |
 | **Faction Bags** | One bag per faction containing all commanders, units, and fragments | 5 |
 | **Commander Tokens** | Figurine-style standing tokens with full stat blocks and skill trees | 65 |
 | **Unit Tokens** | Flat disc tokens with stats, specials, and abilities | 277 |
@@ -40,6 +44,7 @@ If TTS is installed and the Saves directory exists, the generator will also auto
 | **Terrain Tokens** | Forest, Ruins, Hill, River, Burning terrain pieces | 15 |
 | **VP Counters** | Click-adjustable victory point counters | 2 |
 | **Round Counter** | Track current game round | 1 |
+| **Ruler** | 12" measurement tool | 1 |
 | **Quick Reference** | Rules summary notecard | 1 |
 | **Deployment Zones** | Scripting zones for player deployment areas | 2 |
 
@@ -128,10 +133,21 @@ The scripted UI panel appears in the **top-right corner**:
 | **Next Phase ▶** | Advance to the next phase (or start game) |
 | **Next Turn ⟳** | Begin the next turn (resets phases, gains CP) |
 | **CP +/-** | Adjust Command Points for each player |
-| **Frags +/-** | Track Fragment charges for each player |
-| **🎲 Roll ATK** | Shows attack rolling instructions |
+| **F +/-** | Track Fragment charges for each player |
+| **VP +/-** | Track Victory Points for each player |
+| **⚔ Combat** | Opens the combat resolver panel (enter ATK dice & DEF) |
 | **🎲 Morale** | Auto-rolls 2d6 morale test |
-| **Minimize ▲** | Collapse/expand the panel |
+| **🎲 d6** | Generic d6 roll |
+| **⏱ Timer** | Toggle the phase/turn timer (warns after 3 min) |
+| **📋 Log** | Show last 5 combat results |
+| **▲ Min** | Collapse/expand the panel |
+
+### Combat Resolver Panel
+Clicking **⚔ Combat** opens a centered pop-up where you enter:
+- **ATK Dice**: Number of attack dice to roll (e.g., 6)
+- **vs DEF**: Target's DEF stat (e.g., 4)
+
+Click **⚔ RESOLVE** to auto-roll. Results appear in chat with hits, crits, and total damage.
 
 ---
 
@@ -144,7 +160,12 @@ Type these in the TTS chat box (press Enter):
 | `!atk <dice> vs <DEF>` | `!atk 6 vs 4` | Auto-rolls attack: 6 ATK dice vs DEF 4 |
 | `!morale <MOR>` | `!morale 8` | Morale test: rolls 2d6, pass if ≤ MOR |
 | `!roll XdY` | `!roll 3d6` | Generic dice roll |
-| `!phase` | `!phase` | Shows current turn/phase/CP |
+| `!army` | `!army` | **Validate army** — scans all units on the table, totals points, checks composition rules |
+| `!vp <player> <+/-N>` | `!vp white +2` | Adjust a player's Victory Points |
+| `!cp <player> <+/-N>` | `!cp red -3` | Adjust a player's Command Points |
+| `!scenario` | `!scenario` | Generate a random scenario/mission |
+| `!phase` | `!phase` | Shows current turn/phase/CP/VP |
+| `!reset` | `!reset` | Reset the game state back to Setup |
 | `!help` | `!help` | Lists all commands |
 
 ### Attack Resolution Example
@@ -254,6 +275,83 @@ Place 4–8 terrain pieces for a standard game. Agree on placement with your opp
 
 ---
 
+## Battle Maps
+
+The mod includes **6 procedurally generated themed battle maps** stored in the **🗺️ Map Variants** bag:
+
+| Map | Theme | Description |
+|-----|-------|-------------|
+| **Volcanic Wastes** | Emberclaw | Lava rivers, molten rock, ash fields |
+| **Dark Forest** | Thornweft | Dense canopy, twisted trees, creeping vines |
+| **Iron Fortress** | Iron Dominion | Metallic walls, factory floors, steam vents |
+| **Shadow Ruins** | Nightfang | Crumbling temples, purple fog, dark stone |
+| **Sacred Grounds** | Veilbound | Cherry blossom paths, spirit gates, shrine plazas |
+| **Open Plains** | Neutral | Grasslands, gentle hills, scattered rocks |
+
+### Switching Maps
+1. Open the **🗺️ Map Variants** bag
+2. Pull out the desired map
+3. Delete the current game board (right-click → Delete)
+4. Place the new map — it auto-locks in position
+
+### Custom Maps
+Generate new maps by editing `generate_maps.py` and running it:
+```bash
+python generate_maps.py
+```
+Maps output to `data/factions/Images/Maps/` as 2048×2048 PNGs.
+
+---
+
+## Templates & Range Rings
+
+### Blast & Cone Templates (📐 bag)
+| Template | Use |
+|----------|-----|
+| **Blast 3"** | Small AoE abilities (Fireburst, Acid Spray) |
+| **Blast 6"** | Large AoE abilities (Artillery barrages) |
+| **Cone 6"** | Short breath weapons, sprays |
+| **Cone 8"** | Medium breath weapons |
+| **Cone 10"** | Large breath weapons (Pyroclast Catapult) |
+
+Place the template centered on the target point. Any unit token touching the template is affected.
+
+### Range Rings (📏 bag)
+| Ring | Use |
+|------|-----|
+| **1"** | Melee engagement range |
+| **3"** | Short abilities, auras, claiming objectives |
+| **6"** | Medium range abilities |
+| **8"** | Long range attacks |
+| **10"** | Maximum artillery range |
+
+Drop a ring centered on a unit to check what's within range.
+
+---
+
+## Army Validation
+
+Type `!army` in chat to scan all units currently placed on the table. The system:
+- Counts all unit tokens and reads their Points cost from descriptions
+- Tallies commanders, units, war machines, and fragments
+- Determines battle size (Skirmish/Standard/Epic) based on total points
+- Validates composition rules (e.g., no War Machines in Skirmish, commander limits)
+- Reports ✅ VALID or ❌ INVALID with specific issues
+
+---
+
+## Scenarios
+
+Type `!scenario` to randomly generate a mission. Available scenarios:
+- **King of the Hill** — Control the center for 2 VP/turn
+- **Shardstorm** — Fragment tokens rain onto objectives each turn
+- **The Last Stand** — One player defends, the other attacks 3 objectives
+- **Total War** — Score VP for destroying enemy units (Commander kill = 5 VP)
+- **Supply Lines** — Control caches for bonus CP each turn
+- **Broken Ground** — Devastated battlefield with extra hazard terrain
+
+---
+
 ## Images
 
 Unit tokens for **Emberclaw Warpack** and **Iron Dominion** include artwork from the project's GitHub repo. Other factions display colored placeholder images. As new art is added to the repo and pushed to `main`, re-run `tts_generator.py` to update the image URLs.
@@ -297,6 +395,7 @@ This regenerates `Shardborne.json` with the latest stats, cards, and images.
 ```
 Wargame/
 ├── tts_generator.py          ← Run this to generate the TTS save
+├── generate_maps.py          ← Procedural map & template image generator
 ├── Shardborne.json           ← Generated TTS save file
 ├── TTS_GUIDE.md              ← This guide
 ├── data/
@@ -309,9 +408,11 @@ Wargame/
 │       ├── veilbound-shogunate.js
 │       └── Images/
 │           ├── Emberclaw/     ← Unit artwork (22 webp)
-│           └── IronDominion/  ← Unit artwork (35 webp)
+│           ├── IronDominion/  ← Unit artwork (35 webp)
+│           └── Maps/          ← Battle map images (6 × 2048px PNG)
+│               └── Templates/ ← Blast, cone, range ring images
 ```
 
 ---
 
-*Generated for Shardborne v0.9 — Tabletop Simulator Edition*
+*Generated for Shardborne v2.0 — Tabletop Simulator Edition*

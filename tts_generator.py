@@ -21,8 +21,10 @@ import hashlib
 
 # ─── Configuration ──────────────────────────────────────────────────────────────
 
-GITHUB_RAW = "https://raw.githubusercontent.com/NJRoberts-Cspire/Wargame/main"
+GITHUB_RAW = "https://raw.githubusercontent.com/JetRobertsBCCA/Wargame/main"
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data")
+MAPS_DIR = os.path.join(DATA_DIR, "factions", "Images", "Maps")
+TEMPLATES_DIR = os.path.join(MAPS_DIR, "Templates")
 
 # Faction image folder mapping
 FACTION_IMAGE_DIRS = {
@@ -704,22 +706,141 @@ def make_zone(name, x=0, y=0.5, z=0, scale_x=10, scale_z=10, color=None):
 
 # ─── Board Builder ───────────────────────────────────────────────────────────────
 
-def make_game_board():
-    """Create the main game board (48x48 for Standard)."""
+def make_game_board(map_name="OpenPlains", nickname="Shardborne Battlefield"):
+    """Create the main game board using a generated map image."""
+    map_file = os.path.join(MAPS_DIR, f"{map_name}.png")
+    if os.path.exists(map_file):
+        image_url = f"{GITHUB_RAW}/data/factions/Images/Maps/{map_name}.png"
+    else:
+        image_url = f"https://placehold.co/1024x1024/5a6b4a/3d4a32?text=Shardborne+Battlefield"
+    
     return {
         "GUID": make_guid(),
         "Name": "Custom_Board",
         "Transform": make_transform(0, 0.5, 0, scale=1.0),
-        "Nickname": "Shardborne Battlefield",
-        "Description": "Standard 48\" × 48\" battlefield. 1 TTS unit = 1 inch.",
-        "ColorDiffuse": {"r": 0.35, "g": 0.4, "b": 0.3},
+        "Nickname": nickname,
+        "Description": "Standard 48\" × 48\" battlefield. 1 TTS unit = 1 inch.\nGrid overlay shows 1\" squares.",
+        "ColorDiffuse": {"r": 1.0, "g": 1.0, "b": 1.0},
         "CustomImage": {
-            "ImageURL": f"https://placehold.co/1024x1024/5a6b4a/3d4a32?text=Shardborne+Battlefield",
+            "ImageURL": image_url,
             "WidthScale": 0.0,
         },
         "Locked": True,
         "Grid": True,
         "Tooltip": True,
+    }
+
+
+def make_map_variant_bag():
+    """Create a bag containing multiple map board variants for players to swap."""
+    map_variants = [
+        ("VolcanicWastes", "🌋 Volcanic Wastes", "Emberclaw homeland — lava flows and scorched rock"),
+        ("DarkForest", "🌲 Dark Forest", "Thornweft territory — dense canopy and undergrowth"),
+        ("IronFortress", "⚙️ Iron Fortress", "Iron Dominion stronghold — metal plating and industry"),
+        ("ShadowRuins", "🌙 Shadow Ruins", "Nightfang domain — moonlit ancient ruins"),
+        ("SacredGrounds", "⛩️ Sacred Grounds", "Veilbound temple — zen gardens and red accents"),
+        ("OpenPlains", "🌾 Open Plains", "Neutral terrain — grasslands and gentle hills"),
+    ]
+    
+    boards = []
+    for map_name, nickname, desc in map_variants:
+        board = make_game_board(map_name, nickname)
+        board["Description"] = desc + "\n\nTo use: drag this onto the table to replace the current board."
+        board["Locked"] = False  # Unlocked so they can be placed
+        boards.append(board)
+    
+    return make_bag("🗺️ Map Variants", x=-28, y=1.5, z=4,
+                    color={"r": 0.3, "g": 0.5, "b": 0.3},
+                    contents=boards)
+
+
+def make_blast_template(size_inches, x=0, y=1.5, z=0):
+    """Create a blast radius template token."""
+    template_file = os.path.join(TEMPLATES_DIR, f"Blast{size_inches}.png")
+    if os.path.exists(template_file):
+        image_url = f"{GITHUB_RAW}/data/factions/Images/Maps/Templates/Blast{size_inches}.png"
+    else:
+        image_url = f"https://placehold.co/256x256/ff3333/ffffff?text={size_inches}%22"
+    
+    return {
+        "GUID": make_guid(),
+        "Name": "Custom_Token",
+        "Transform": make_transform(x, y, z, scale=size_inches * 0.32),
+        "Nickname": f"💥 {size_inches}\" Blast Template",
+        "Description": f"Blast radius: {size_inches}\"\nPlace centered on target point.\nAll units within the circle are affected.",
+        "ColorDiffuse": {"r": 1.0, "g": 0.3, "b": 0.2},
+        "CustomImage": {
+            "ImageURL": image_url,
+            "CustomToken": {
+                "Thickness": 0.05,
+                "MergeDistancePixels": 15.0,
+                "StandUp": False,
+                "Stackable": False,
+            },
+        },
+        "Locked": False,
+        "Tooltip": True,
+        "Tags": ["template", "blast"],
+    }
+
+
+def make_cone_template(size_inches, x=0, y=1.5, z=0):
+    """Create a cone (breath weapon) template token."""
+    template_file = os.path.join(TEMPLATES_DIR, f"Cone{size_inches}.png")
+    if os.path.exists(template_file):
+        image_url = f"{GITHUB_RAW}/data/factions/Images/Maps/Templates/Cone{size_inches}.png"
+    else:
+        image_url = f"https://placehold.co/256x512/ff9922/ffffff?text=Cone+{size_inches}%22"
+    
+    return {
+        "GUID": make_guid(),
+        "Name": "Custom_Token",
+        "Transform": make_transform(x, y, z, scale=size_inches * 0.25),
+        "Nickname": f"🔥 {size_inches}\" Cone Template",
+        "Description": f"Cone length: {size_inches}\" (45° spread)\nPlace point at attacking unit.\nAll units within the cone are affected.\nRotate to aim.",
+        "ColorDiffuse": {"r": 1.0, "g": 0.6, "b": 0.2},
+        "CustomImage": {
+            "ImageURL": image_url,
+            "CustomToken": {
+                "Thickness": 0.05,
+                "MergeDistancePixels": 15.0,
+                "StandUp": False,
+                "Stackable": False,
+            },
+        },
+        "Locked": False,
+        "Tooltip": True,
+        "Tags": ["template", "cone"],
+    }
+
+
+def make_range_ring(radius_inches, x=0, y=1.5, z=0):
+    """Create a range indicator ring token."""
+    template_file = os.path.join(TEMPLATES_DIR, f"Range{radius_inches}.png")
+    if os.path.exists(template_file):
+        image_url = f"{GITHUB_RAW}/data/factions/Images/Maps/Templates/Range{radius_inches}.png"
+    else:
+        image_url = f"https://placehold.co/256x256/66aaff/ffffff?text={radius_inches}%22"
+    
+    return {
+        "GUID": make_guid(),
+        "Name": "Custom_Token",
+        "Transform": make_transform(x, y, z, scale=radius_inches * 0.32),
+        "Nickname": f"📏 {radius_inches}\" Range Ring",
+        "Description": f"Range indicator: {radius_inches}\"\nPlace centered on a unit to visualize its range/threat radius.\nTransparent — units visible through it.",
+        "ColorDiffuse": {"r": 0.4, "g": 0.7, "b": 1.0},
+        "CustomImage": {
+            "ImageURL": image_url,
+            "CustomToken": {
+                "Thickness": 0.03,
+                "MergeDistancePixels": 15.0,
+                "StandUp": False,
+                "Stackable": False,
+            },
+        },
+        "Locked": False,
+        "Tooltip": True,
+        "Tags": ["template", "range"],
     }
 
 
@@ -748,21 +869,20 @@ def build_lua_script():
     return r'''--[[
     ╔══════════════════════════════════════════════╗
     ║     SHARDBORNE — Tabletop Simulator Mod      ║
-    ║     Global Script v1.0                       ║
+    ║     Global Script v2.0                       ║
     ╚══════════════════════════════════════════════╝
     
-    Core Rules Engine:
+    Features:
     - Turn phase management (Command → Movement → Combat → End)
-    - Dice rolling with hit/crit calculation
+    - Auto-combat resolver (ATK dice vs DEF with crit tracking)
     - Morale testing (2d6 vs MOR)
     - Card draw mechanics (draw 2/turn, hand limit 7)
-    - CP tracking per player
-    - HP tracking via tokens
-    
-    Controls:
-    - UI buttons for phase advancement
-    - Right-click context menu on units for stat checks
-    - Dice auto-resolve on landing
+    - CP / Fragment tracking per player
+    - Army point validation (!army command)
+    - HP damage tracking via context menu buttons
+    - Round timer
+    - Unit stat lookup
+    - Scenario/objective management
 --]]
 
 -- ════════════════════════════════════════
@@ -778,11 +898,15 @@ GameState = {
     players = {"White", "Red"},
     player_cp = {White = 0, Red = 0},
     player_fragments = {White = 0, Red = 0},
+    player_vp = {White = 0, Red = 0},
     cards_drawn_this_turn = {White = 0, Red = 0},
     hand_limit = 7,
     draw_per_turn = 2,
     game_started = false,
     max_turns = 6,
+    combat_log = {},
+    timer_start = 0,
+    timer_enabled = false,
 }
 
 -- ════════════════════════════════════════
@@ -790,7 +914,6 @@ GameState = {
 -- ════════════════════════════════════════
 
 function onLoad(save_state)
-    -- Restore state if saved
     if save_state ~= "" then
         local loaded = JSON.decode(save_state)
         if loaded then
@@ -799,7 +922,7 @@ function onLoad(save_state)
     end
     
     createUI()
-    broadcastToAll("═══ SHARDBORNE ═══\nTabletop Simulator Edition\n\nWelcome, Commanders!", {1, 0.8, 0.2})
+    broadcastToAll("═══ SHARDBORNE v2.0 ═══\nTabletop Simulator Edition\n\nWelcome, Commanders!\nType !help for commands.", {1, 0.8, 0.2})
     printToAll("[Phase: " .. GameState.phase .. "] Turn " .. GameState.turn, {0.8, 0.8, 0.8})
 end
 
@@ -812,32 +935,34 @@ end
 -- ════════════════════════════════════════
 
 function createUI()
-    -- Clear existing UI
     UI.setXml("")
     
     Wait.time(function()
         local xml = [[
 <Defaults>
-    <Button fontSize="14" fontStyle="Bold" />
-    <Text fontSize="13" color="#FFFFFF" />
+    <Button fontSize="13" fontStyle="Bold" />
+    <Text fontSize="12" color="#FFFFFF" />
 </Defaults>
 
-<Panel position="0 0 -50" rotation="0 0 0" width="320" height="480" 
-       color="rgba(0,0,0,0.85)" padding="8" id="mainPanel"
-       anchorMin="1 1" anchorMax="1 1" offsetXY="-170 -10"
+<Panel position="0 0 -50" rotation="0 0 0" width="300" height="580" 
+       color="rgba(0,0,0,0.88)" padding="6" id="mainPanel"
+       anchorMin="1 1" anchorMax="1 1" offsetXY="-160 -10"
        active="true">
 
-    <VerticalLayout spacing="4" padding="6 6 6 6">
-        <Text id="titleText" fontSize="18" fontStyle="Bold" 
-              color="#FFD700" alignment="MiddleCenter">SHARDBORNE</Text>
+    <VerticalLayout spacing="3" padding="6 6 6 6">
+        <Text id="titleText" fontSize="17" fontStyle="Bold" 
+              color="#FFD700" alignment="MiddleCenter">⚔ SHARDBORNE ⚔</Text>
         
-        <Text id="turnText" fontSize="14" color="#AAAAAA" 
+        <Text id="turnText" fontSize="13" color="#AAAAAA" 
               alignment="MiddleCenter">Turn 0 — Setup</Text>
         
-        <Text id="phaseText" fontSize="16" fontStyle="Bold" 
+        <Text id="phaseText" fontSize="15" fontStyle="Bold" 
               color="#44FF44" alignment="MiddleCenter">Setup Phase</Text>
         
-        <HorizontalLayout spacing="4" preferredHeight="36">
+        <Text id="timerText" fontSize="11" color="#666666"
+              alignment="MiddleCenter">⏱ --:--</Text>
+        
+        <HorizontalLayout spacing="3" preferredHeight="32">
             <Button id="btnNextPhase" onClick="nextPhase" 
                     color="#335533" textColor="#FFFFFF"
                     tooltip="Advance to next phase">Next Phase ▶</Button>
@@ -846,50 +971,77 @@ function createUI()
                     tooltip="Start next turn">Next Turn ⟳</Button>
         </HorizontalLayout>
         
-        <Text fontSize="12" color="#888888" alignment="MiddleCenter">──── Player 1 (White) ────</Text>
-        <HorizontalLayout spacing="4" preferredHeight="30">
-            <Text id="cpWhite" fontSize="14" color="#FFDD44">CP: 0</Text>
-            <Button onClick="addCPWhite" color="#444422" 
-                    textColor="#FFFF00" preferredWidth="30">+</Button>
-            <Button onClick="subCPWhite" color="#442222" 
-                    textColor="#FF4444" preferredWidth="30">-</Button>
+        <Text fontSize="11" color="#555555" alignment="MiddleCenter">──── Player 1 (White) ────</Text>
+        <HorizontalLayout spacing="3" preferredHeight="28">
+            <Text id="cpWhite" fontSize="13" color="#FFDD44">CP: 0</Text>
+            <Button onClick="addCPWhite" color="#444422" textColor="#FFFF00" preferredWidth="28">+</Button>
+            <Button onClick="subCPWhite" color="#442222" textColor="#FF4444" preferredWidth="28">-</Button>
+            <Text preferredWidth="8"> </Text>
+            <Text id="fragWhite" fontSize="13" color="#BB66FF">F: 0</Text>
+            <Button onClick="addFragWhite" color="#332244" textColor="#BB66FF" preferredWidth="28">+</Button>
+            <Button onClick="subFragWhite" color="#442222" textColor="#FF4444" preferredWidth="28">-</Button>
         </HorizontalLayout>
-        <HorizontalLayout spacing="4" preferredHeight="30">
-            <Text id="fragWhite" fontSize="14" color="#BB66FF">Frags: 0</Text>
-            <Button onClick="addFragWhite" color="#332244" 
-                    textColor="#BB66FF" preferredWidth="30">+</Button>
-            <Button onClick="subFragWhite" color="#442222" 
-                    textColor="#FF4444" preferredWidth="30">-</Button>
-        </HorizontalLayout>
-        
-        <Text fontSize="12" color="#888888" alignment="MiddleCenter">──── Player 2 (Red) ────</Text>
-        <HorizontalLayout spacing="4" preferredHeight="30">
-            <Text id="cpRed" fontSize="14" color="#FFDD44">CP: 0</Text>
-            <Button onClick="addCPRed" color="#444422" 
-                    textColor="#FFFF00" preferredWidth="30">+</Button>
-            <Button onClick="subCPRed" color="#442222" 
-                    textColor="#FF4444" preferredWidth="30">-</Button>
-        </HorizontalLayout>
-        <HorizontalLayout spacing="4" preferredHeight="30">
-            <Text id="fragRed" fontSize="14" color="#BB66FF">Frags: 0</Text>
-            <Button onClick="addFragRed" color="#332244" 
-                    textColor="#BB66FF" preferredWidth="30">+</Button>
-            <Button onClick="subFragRed" color="#442222" 
-                    textColor="#FF4444" preferredWidth="30">-</Button>
+        <HorizontalLayout spacing="3" preferredHeight="28">
+            <Text id="vpWhite" fontSize="13" color="#44FF44">VP: 0</Text>
+            <Button onClick="addVPWhite" color="#224422" textColor="#44FF44" preferredWidth="28">+</Button>
+            <Button onClick="subVPWhite" color="#442222" textColor="#FF4444" preferredWidth="28">-</Button>
         </HorizontalLayout>
         
-        <Text fontSize="12" color="#888888" alignment="MiddleCenter">──── Dice Tools ────</Text>
-        <HorizontalLayout spacing="4" preferredHeight="36">
-            <Button onClick="rollAttack" color="#553322" 
-                    textColor="#FFFFFF" tooltip="Roll dice pool">🎲 Roll ATK</Button>
-            <Button onClick="rollMorale" color="#335555" 
-                    textColor="#FFFFFF" tooltip="Roll 2d6 morale">🎲 Morale</Button>
+        <Text fontSize="11" color="#555555" alignment="MiddleCenter">──── Player 2 (Red) ────</Text>
+        <HorizontalLayout spacing="3" preferredHeight="28">
+            <Text id="cpRed" fontSize="13" color="#FFDD44">CP: 0</Text>
+            <Button onClick="addCPRed" color="#444422" textColor="#FFFF00" preferredWidth="28">+</Button>
+            <Button onClick="subCPRed" color="#442222" textColor="#FF4444" preferredWidth="28">-</Button>
+            <Text preferredWidth="8"> </Text>
+            <Text id="fragRed" fontSize="13" color="#BB66FF">F: 0</Text>
+            <Button onClick="addFragRed" color="#332244" textColor="#BB66FF" preferredWidth="28">+</Button>
+            <Button onClick="subFragRed" color="#442222" textColor="#FF4444" preferredWidth="28">-</Button>
+        </HorizontalLayout>
+        <HorizontalLayout spacing="3" preferredHeight="28">
+            <Text id="vpRed" fontSize="13" color="#44FF44">VP: 0</Text>
+            <Button onClick="addVPRed" color="#224422" textColor="#44FF44" preferredWidth="28">+</Button>
+            <Button onClick="subVPRed" color="#442222" textColor="#FF4444" preferredWidth="28">-</Button>
         </HorizontalLayout>
         
-        <HorizontalLayout spacing="4" preferredHeight="36">
-            <Button onClick="togglePanel" color="#222222" 
-                    textColor="#888888">Minimize ▲</Button>
+        <Text fontSize="11" color="#555555" alignment="MiddleCenter">──── Combat Tools ────</Text>
+        <HorizontalLayout spacing="3" preferredHeight="32">
+            <Button onClick="rollAttack" color="#553322" textColor="#FFFFFF" 
+                    tooltip="Open combat resolver">⚔ Combat</Button>
+            <Button onClick="rollMorale" color="#335555" textColor="#FFFFFF"
+                    tooltip="Roll 2d6 morale">🎲 Morale</Button>
+            <Button onClick="rollGeneric" color="#333355" textColor="#FFFFFF"
+                    tooltip="Roll generic dice">🎲 d6</Button>
         </HorizontalLayout>
+        
+        <HorizontalLayout spacing="3" preferredHeight="32">
+            <Button onClick="toggleTimer" color="#444444" textColor="#AAAAAA"
+                    tooltip="Start/stop turn timer">⏱ Timer</Button>
+            <Button onClick="undoLastCombat" color="#442233" textColor="#AAAAAA"
+                    tooltip="Show last combat result">📋 Log</Button>
+            <Button onClick="togglePanel" color="#222222" textColor="#666666">▲ Min</Button>
+        </HorizontalLayout>
+    </VerticalLayout>
+</Panel>
+
+<Panel position="0 0 -50" rotation="0 0 0" width="280" height="160"
+       color="rgba(0,0,0,0.9)" padding="6" id="combatPanel"
+       anchorMin="0.5 0.5" anchorMax="0.5 0.5" offsetXY="0 0"
+       active="false">
+    <VerticalLayout spacing="3" padding="6 6 6 6">
+        <Text fontSize="15" fontStyle="Bold" color="#FF6644" alignment="MiddleCenter">⚔ COMBAT RESOLVER ⚔</Text>
+        <HorizontalLayout spacing="4" preferredHeight="30">
+            <Text fontSize="12" color="#AAAAAA" preferredWidth="80">ATK Dice:</Text>
+            <InputField id="atkInput" fontSize="14" color="#FFFFFF" preferredWidth="60"
+                        text="4" characterLimit="2" onEndEdit="onCombatInput"/>
+            <Text fontSize="12" color="#AAAAAA" preferredWidth="50">vs DEF:</Text>
+            <InputField id="defInput" fontSize="14" color="#FFFFFF" preferredWidth="60"
+                        text="4" characterLimit="2" onEndEdit="onCombatInput"/>
+        </HorizontalLayout>
+        <HorizontalLayout spacing="4" preferredHeight="34">
+            <Button onClick="resolveCombat" color="#663322" textColor="#FFFFFF">⚔ RESOLVE</Button>
+            <Button onClick="closeCombatPanel" color="#333333" textColor="#888888">Cancel</Button>
+        </HorizontalLayout>
+        <Text id="combatResult" fontSize="12" color="#FFAA44" alignment="MiddleCenter"> </Text>
     </VerticalLayout>
 </Panel>
         ]]
@@ -910,10 +1062,11 @@ function updateUI()
         UI.setAttribute("phaseText", "text", GameState.phase .. " Phase")
         UI.setAttribute("cpWhite", "text", "CP: " .. (GameState.player_cp.White or 0))
         UI.setAttribute("cpRed", "text", "CP: " .. (GameState.player_cp.Red or 0))
-        UI.setAttribute("fragWhite", "text", "Frags: " .. (GameState.player_fragments.White or 0))
-        UI.setAttribute("fragRed", "text", "Frags: " .. (GameState.player_fragments.Red or 0))
+        UI.setAttribute("fragWhite", "text", "F: " .. (GameState.player_fragments.White or 0))
+        UI.setAttribute("fragRed", "text", "F: " .. (GameState.player_fragments.Red or 0))
+        UI.setAttribute("vpWhite", "text", "VP: " .. (GameState.player_vp.White or 0))
+        UI.setAttribute("vpRed", "text", "VP: " .. (GameState.player_vp.Red or 0))
         
-        -- Color phase text
         local phase_colors = {
             Setup = "#888888",
             Command = "#FFD700",
@@ -922,7 +1075,25 @@ function updateUI()
             ["End"] = "#44FF44",
         }
         UI.setAttribute("phaseText", "color", phase_colors[GameState.phase] or "#FFFFFF")
+        
+        -- Timer update
+        if GameState.timer_enabled and GameState.timer_start > 0 then
+            local elapsed = os.time() - GameState.timer_start
+            local mins = math.floor(elapsed / 60)
+            local secs = elapsed % 60
+            UI.setAttribute("timerText", "text", string.format("⏱ %d:%02d", mins, secs))
+            UI.setAttribute("timerText", "color", elapsed > 180 and "#FF4444" or "#AAAAAA")
+        end
     end)
+end
+
+-- Timer coroutine
+function startTimerUpdate()
+    Wait.time(function()
+        if GameState.timer_enabled then
+            updateUI()
+        end
+    end, 1, -1)
 end
 
 -- ════════════════════════════════════════
@@ -938,7 +1109,6 @@ function nextPhase(player, value, id)
     GameState.phase_index = GameState.phase_index + 1
     
     if GameState.phase_index > #GameState.phases then
-        -- End of turn phases, wrap around
         nextTurn()
         return
     end
@@ -946,20 +1116,24 @@ function nextPhase(player, value, id)
     GameState.phase = GameState.phases[GameState.phase_index]
     
     local phase_desc = {
-        Command = "Play cards, activate abilities, spend CP",
-        Movement = "Move units up to their MOV stat",
-        Combat = "Declare attacks, roll dice, resolve damage",
-        ["End"] = "Check morale, score objectives, clean up",
+        Command = "Play cards, activate abilities, spend CP. Draw 2 cards (hand limit 7).",
+        Movement = "Move each unit up to its MOV stat. Difficult terrain = half speed.",
+        Combat = "Declare attacks, resolve dice, apply damage. Use !atk X vs Y.",
+        ["End"] = "Morale checks (half HP), score objectives, clean up effects.",
     }
     
     broadcastToAll("═══ " .. string.upper(GameState.phase) .. " PHASE ═══\n" .. 
                    (phase_desc[GameState.phase] or ""), {1, 0.8, 0.2})
     
-    -- Phase-specific triggers
     if GameState.phase == "Command" then
         onCommandPhase()
     elseif GameState.phase == "End" then
         onEndPhase()
+    end
+    
+    -- Reset timer for new phase
+    if GameState.timer_enabled then
+        GameState.timer_start = os.time()
     end
     
     updateUI()
@@ -972,13 +1146,24 @@ function nextTurn(player, value, id)
     GameState.cards_drawn_this_turn = {White = 0, Red = 0}
     
     if GameState.turn > GameState.max_turns then
-        broadcastToAll("═══ GAME OVER ═══\nFinal scoring!", {1, 0.2, 0.2})
+        local winner = "TIE"
+        local wVP = GameState.player_vp.White or 0
+        local rVP = GameState.player_vp.Red or 0
+        if wVP > rVP then winner = "Player 1 (White)" 
+        elseif rVP > wVP then winner = "Player 2 (Red)" end
+        
+        broadcastToAll("═══ GAME OVER ═══\nWhite VP: " .. wVP .. " | Red VP: " .. rVP ..
+                       "\n" .. (winner == "TIE" and "It's a TIE!" or winner .. " WINS!"), {1, 0.2, 0.2})
         GameState.phase = "Game Over"
         updateUI()
         return
     end
     
     broadcastToAll("═══════════════════════\n   TURN " .. GameState.turn .. " BEGINS\n═══════════════════════", {0.2, 1, 0.4})
+    
+    if GameState.timer_enabled then
+        GameState.timer_start = os.time()
+    end
     
     onCommandPhase()
     updateUI()
@@ -991,8 +1176,12 @@ function startGame()
     GameState.phase_index = 1
     GameState.player_cp = {White = 3, Red = 3}
     GameState.player_fragments = {White = 0, Red = 0}
+    GameState.player_vp = {White = 0, Red = 0}
     
-    broadcastToAll("═══════════════════════\n   SHARDBORNE BEGINS!\n   Turn 1 — Command Phase\n═══════════════════════\n\nBoth players start with 3 CP.\nDraw your starting hand of 5 cards.", {1, 0.8, 0.2})
+    broadcastToAll("═══════════════════════\n   SHARDBORNE BEGINS!\n   Turn 1 — Command Phase\n═══════════════════════\n\nBoth players start with 3 CP.\nDraw your starting hand of 5 cards.\n\nType !help for all commands.", {1, 0.8, 0.2})
+    if GameState.timer_enabled then
+        GameState.timer_start = os.time()
+    end
     updateUI()
 end
 
@@ -1001,25 +1190,24 @@ end
 -- ════════════════════════════════════════
 
 function onCommandPhase()
-    -- Each player gains CP based on their commander's Command stat
-    -- Default: +3 CP per turn (can be modified)
     local cp_gain = 3
-    
     for _, p in ipairs(GameState.players) do
         GameState.player_cp[p] = (GameState.player_cp[p] or 0) + cp_gain
     end
-    
     printToAll("⚡ Both players gain +" .. cp_gain .. " CP", {1, 0.85, 0.3})
-    printToAll("📋 Play Command cards, activate abilities, draw cards (2/turn, hand limit 7)", {0.7, 0.7, 0.7})
+    printToAll("📋 Play cards, activate abilities, draw 2 cards (hand limit 7)", {0.7, 0.7, 0.7})
 end
 
 function onEndPhase()
-    printToAll("🏁 End Phase: Check morale for units below half HP", {0.7, 0.7, 0.7})
-    printToAll("🏁 Score objectives, remove destroyed units, reset temporary effects", {0.7, 0.7, 0.7})
+    printToAll("🏁 End Phase Checklist:", {0.9, 0.9, 0.5})
+    printToAll("  ✓ Morale test for units at ≤ half HP (roll 2d6 ≤ MOR)", {0.7, 0.7, 0.7})
+    printToAll("  ✓ Score objectives (1 VP per controlled objective)", {0.7, 0.7, 0.7})
+    printToAll("  ✓ Remove destroyed units, discard temp effects", {0.7, 0.7, 0.7})
+    printToAll("  ✓ Check victory conditions", {0.7, 0.7, 0.7})
 end
 
 -- ════════════════════════════════════════
--- CP & FRAGMENT TRACKING
+-- CP, FRAGMENT & VP TRACKING
 -- ════════════════════════════════════════
 
 function addCPWhite()  GameState.player_cp.White = (GameState.player_cp.White or 0) + 1; updateUI() end
@@ -1030,24 +1218,120 @@ function addFragWhite() GameState.player_fragments.White = (GameState.player_fra
 function subFragWhite() GameState.player_fragments.White = math.max(0, (GameState.player_fragments.White or 0) - 1); updateUI() end
 function addFragRed()   GameState.player_fragments.Red = (GameState.player_fragments.Red or 0) + 1; updateUI() end
 function subFragRed()   GameState.player_fragments.Red = math.max(0, (GameState.player_fragments.Red or 0) - 1); updateUI() end
+function addVPWhite()   GameState.player_vp.White = (GameState.player_vp.White or 0) + 1; updateUI() end
+function subVPWhite()   GameState.player_vp.White = math.max(0, (GameState.player_vp.White or 0) - 1); updateUI() end
+function addVPRed()     GameState.player_vp.Red = (GameState.player_vp.Red or 0) + 1; updateUI() end
+function subVPRed()     GameState.player_vp.Red = math.max(0, (GameState.player_vp.Red or 0) - 1); updateUI() end
 
 -- ════════════════════════════════════════
--- DICE ROLLING
+-- COMBAT RESOLVER
 -- ════════════════════════════════════════
 
 function rollAttack(player)
-    -- Prompt: enter ATK dice count and target DEF
-    broadcastToAll("🎲 ATK Roll — Use the dice on the table!\nHit: die ≥ target DEF | Crit: roll 6 (2 damage)\n\nRight-click a unit token to see its stats.", {1, 0.7, 0.3})
+    -- Open the combat panel
+    UI.setAttribute("combatPanel", "active", "true")
+    UI.setAttribute("combatResult", "text", " ")
+end
+
+function closeCombatPanel(player)
+    UI.setAttribute("combatPanel", "active", "false")
+end
+
+function onCombatInput(player, value, id)
+    -- Just store the values, resolved when button clicked
+end
+
+function resolveCombat(player)
+    local atk_str = UI.getAttribute("atkInput", "text") or "4"
+    local def_str = UI.getAttribute("defInput", "text") or "4"
+    local atk = tonumber(atk_str) or 4
+    local def = tonumber(def_str) or 4
+    
+    atk = math.min(atk, 30)
+    
+    local hits = 0
+    local crits = 0
+    local results = {}
+    for i = 1, atk do
+        local r = math.random(1, 6)
+        table.insert(results, tostring(r))
+        if r == 6 then
+            crits = crits + 1
+            hits = hits + 1
+        elseif r >= def then
+            hits = hits + 1
+        end
+    end
+    local total_dmg = hits + crits
+    
+    local result_text = atk .. " dice vs DEF " .. def .. ": [" .. table.concat(results, ",") .. "]\n" ..
+                        hits .. " hits, " .. crits .. " crits → " .. total_dmg .. " total damage"
+    
+    UI.setAttribute("combatResult", "text", result_text)
+    
+    broadcastToAll("⚔️ COMBAT: " .. atk .. " ATK dice vs DEF " .. def ..
+                   "\nRolls: [" .. table.concat(results, ", ") .. "]" ..
+                   "\nHits: " .. hits .. " | Crits (6s): " .. crits ..
+                   " | Total Damage: " .. total_dmg, {1, 0.4, 0.3})
+    
+    -- Save to combat log
+    table.insert(GameState.combat_log, {
+        turn = GameState.turn,
+        phase = GameState.phase,
+        atk = atk, def = def,
+        hits = hits, crits = crits,
+        dmg = total_dmg,
+        rolls = table.concat(results, ",")
+    })
 end
 
 function rollMorale(player)
-    -- Roll 2d6 for morale test
     local d1 = math.random(1, 6)
     local d2 = math.random(1, 6)
     local total = d1 + d2
-    
-    broadcastToAll("🎲 Morale Test: " .. d1 .. " + " .. d2 .. " = " .. total .. 
+    broadcastToAll("🎲 Morale Test: " .. d1 .. " + " .. d2 .. " = " .. total ..
                    "\n(Unit passes if " .. total .. " ≤ its MOR stat)", {0.4, 0.8, 1})
+end
+
+function rollGeneric(player)
+    local r = math.random(1, 6)
+    broadcastToAll("🎲 " .. (player and player.steam_name or "Player") .. " rolls d6: " .. r, {0.8, 0.8, 1})
+end
+
+-- ════════════════════════════════════════
+-- TIMER
+-- ════════════════════════════════════════
+
+function toggleTimer(player)
+    GameState.timer_enabled = not GameState.timer_enabled
+    if GameState.timer_enabled then
+        GameState.timer_start = os.time()
+        broadcastToAll("⏱ Turn timer ENABLED", {0.7, 0.7, 0.7})
+        startTimerUpdate()
+    else
+        broadcastToAll("⏱ Turn timer DISABLED", {0.7, 0.7, 0.7})
+        UI.setAttribute("timerText", "text", "⏱ --:--")
+        UI.setAttribute("timerText", "color", "#666666")
+    end
+end
+
+-- ════════════════════════════════════════
+-- COMBAT LOG
+-- ════════════════════════════════════════
+
+function undoLastCombat(player)
+    if #GameState.combat_log == 0 then
+        printToAll("📋 No combat results logged yet.", {0.7, 0.7, 0.7})
+        return
+    end
+    
+    printToAll("═══ COMBAT LOG ═══", {1, 0.8, 0.3})
+    local start = math.max(1, #GameState.combat_log - 4)
+    for i = start, #GameState.combat_log do
+        local c = GameState.combat_log[i]
+        printToAll(string.format("  T%d %s: %dATK vs %dDEF → %d hits, %d crits, %d dmg [%s]",
+            c.turn, c.phase, c.atk, c.def, c.hits, c.crits, c.dmg, c.rolls), {0.8, 0.8, 0.8})
+    end
 end
 
 -- ════════════════════════════════════════
@@ -1060,30 +1344,108 @@ function togglePanel(player)
     panelMinimized = not panelMinimized
     if panelMinimized then
         UI.setAttribute("mainPanel", "height", "60")
-        UI.setAttribute("mainPanel", "offsetXY", "-170 -10")
     else
-        UI.setAttribute("mainPanel", "height", "480")
-        UI.setAttribute("mainPanel", "offsetXY", "-170 -10")
+        UI.setAttribute("mainPanel", "height", "580")
     end
 end
 
 -- ════════════════════════════════════════
--- OBJECT CONTEXT MENUS
+-- ARMY VALIDATION
 -- ════════════════════════════════════════
 
-function onObjectMenuAction(obj, player_color, index)
-    -- Custom right-click menu items are not auto-created;
-    -- this handles if users add custom menu items via scripting
-end
-
--- Tooltip enhancement: when hovering over tokens, show stat summary
-function onObjectHover(player_color, obj)
-    -- TTS shows Nickname + Description automatically
-    -- No additional action needed
+function validateArmy(player_color)
+    local all_objs = getAllObjects()
+    local total_points = 0
+    local commanders = 0
+    local units = 0
+    local war_machines = 0
+    local fragments = 0
+    local faction_counts = {}
+    
+    for _, obj in ipairs(all_objs) do
+        local tags = obj.getTags()
+        local desc = obj.getDescription() or ""
+        local name = obj.getName() or ""
+        
+        -- Check if object is on the table (not in bags)
+        local pos = obj.getPosition()
+        if pos.y > 0.5 and pos.y < 10 then
+            -- Parse points from description
+            local pts = desc:match("Points:%s*(%d+)")
+            if pts then
+                total_points = total_points + tonumber(pts)
+                
+                -- Count types
+                if name:match("⭐") then
+                    commanders = commanders + 1
+                elseif name:match("💎") then
+                    fragments = fragments + 1
+                else
+                    -- Check for unit types
+                    local utype = desc:match("Type:%s*(%w+)")
+                    if utype == "War" then
+                        war_machines = war_machines + 1
+                    end
+                    units = units + 1
+                end
+                
+                -- Track factions
+                for _, tag in ipairs(tags) do
+                    if tag:match("warpack") or tag:match("dominion") or tag:match("matriarchy") or tag:match("shogunate") then
+                        faction_counts[tag] = (faction_counts[tag] or 0) + 1
+                    end
+                end
+            end
+        end
+    end
+    
+    -- Determine battle size
+    local size = "Unknown"
+    local valid = true
+    local issues = {}
+    
+    if total_points <= 100 then
+        size = "Skirmish (50-100pts)"
+        if war_machines > 0 then table.insert(issues, "No War Machines in Skirmish!") ; valid = false end
+        if commanders > 1 then table.insert(issues, "Skirmish: max 1 commander") ; valid = false end
+    elseif total_points <= 300 then
+        size = "Standard (200-300pts)"
+        if war_machines > 2 then table.insert(issues, "Standard: max 2 War Machines") ; valid = false end
+        if commanders > 2 then table.insert(issues, "Standard: max 2 commanders") ; valid = false end
+    else
+        size = "Epic (500+pts)"
+        if war_machines > 4 then table.insert(issues, "Epic: max 4 War Machines") ; valid = false end
+    end
+    
+    if commanders == 0 then
+        table.insert(issues, "Must include at least 1 Commander!")
+        valid = false
+    end
+    
+    local result = "═══ ARMY VALIDATION ═══\n"
+    result = result .. "Total Points: " .. total_points .. "\n"
+    result = result .. "Battle Size: " .. size .. "\n"
+    result = result .. "Commanders: " .. commanders .. " | Units: " .. units .. "\n"
+    result = result .. "War Machines: " .. war_machines .. " | Fragments: " .. fragments .. "\n"
+    
+    for fac, count in pairs(faction_counts) do
+        result = result .. "  " .. fac .. ": " .. count .. " models\n"
+    end
+    
+    if valid then
+        result = result .. "\n✅ Army is VALID for " .. size
+    else
+        result = result .. "\n❌ INVALID:"
+        for _, issue in ipairs(issues) do
+            result = result .. "\n  • " .. issue
+        end
+    end
+    
+    printToAll(result, valid and {0.3, 1, 0.3} or {1, 0.3, 0.3})
 end
 
 -- ════════════════════════════════════════
--- COMBAT HELPER (chat commands)
+-- CHAT COMMANDS
 -- ════════════════════════════════════════
 
 function onChat(message, player)
@@ -1124,11 +1486,17 @@ function onChat(message, player)
                 hits = hits + 1
             end
         end
-        local total_dmg = hits + crits  -- crits deal 2 damage (1 hit + 1 bonus)
+        local total_dmg = hits + crits
         broadcastToAll("⚔️ ATTACK: " .. atk .. " dice vs DEF " .. def .. 
                        "\nRolls: [" .. table.concat(results, ", ") .. "]" ..
                        "\nHits: " .. hits .. " | Crits: " .. crits .. 
                        " | Total Damage: " .. total_dmg, {1, 0.4, 0.3})
+        
+        table.insert(GameState.combat_log, {
+            turn = GameState.turn, phase = GameState.phase,
+            atk = atk, def = def, hits = hits, crits = crits,
+            dmg = total_dmg, rolls = table.concat(results, ",")
+        })
         return false
     end
     
@@ -1146,27 +1514,128 @@ function onChat(message, player)
         return false
     end
     
-    -- !help
-    if msg:match("^!help") then
-        printToAll("═══ SHARDBORNE COMMANDS ═══\n" ..
-                   "!roll XdY — Roll X dice with Y sides\n" ..
-                   "!atk <dice> vs <DEF> — Attack roll (e.g. !atk 6 vs 4)\n" ..
-                   "!morale <MOR> — Morale test (e.g. !morale 8)\n" ..
-                   "!phase — Show current phase\n" ..
-                   "!help — Show this help", {0.8, 0.8, 0.2})
+    -- !army — validate army on table
+    if msg:match("^!army") then
+        validateArmy(player.color)
+        return false
+    end
+    
+    -- !vp <player> <amount> — set VP
+    local vp_player, vp_amount = msg:match("!vp%s+(%w+)%s+([+-]?%d+)")
+    if vp_player and vp_amount then
+        vp_amount = tonumber(vp_amount)
+        local key = vp_player:sub(1,1):upper() .. vp_player:sub(2):lower()
+        if GameState.player_vp[key] then
+            GameState.player_vp[key] = math.max(0, GameState.player_vp[key] + vp_amount)
+            printToAll("🏆 " .. key .. " VP: " .. GameState.player_vp[key], {0.4, 1, 0.4})
+            updateUI()
+        end
+        return false
+    end
+    
+    -- !cp <player> <amount> — set CP
+    local cp_player, cp_amount = msg:match("!cp%s+(%w+)%s+([+-]?%d+)")
+    if cp_player and cp_amount then
+        cp_amount = tonumber(cp_amount)
+        local key = cp_player:sub(1,1):upper() .. cp_player:sub(2):lower()
+        if GameState.player_cp[key] then
+            GameState.player_cp[key] = math.max(0, GameState.player_cp[key] + cp_amount)
+            printToAll("⚡ " .. key .. " CP: " .. GameState.player_cp[key], {1, 0.85, 0.3})
+            updateUI()
+        end
+        return false
+    end
+    
+    -- !scenario — generate random scenario
+    if msg:match("^!scenario") then
+        generateScenario()
+        return false
+    end
+    
+    -- !reset — reset game state
+    if msg:match("^!reset") then
+        GameState.game_started = false
+        GameState.turn = 0
+        GameState.phase = "Setup"
+        GameState.phase_index = 0
+        GameState.player_cp = {White = 0, Red = 0}
+        GameState.player_fragments = {White = 0, Red = 0}
+        GameState.player_vp = {White = 0, Red = 0}
+        GameState.combat_log = {}
+        broadcastToAll("🔄 Game state RESET. Press 'Next Phase' to start.", {1, 0.5, 0.2})
+        updateUI()
         return false
     end
     
     -- !phase
     if msg:match("^!phase") then
         printToAll("Turn " .. GameState.turn .. " — " .. GameState.phase .. " Phase\n" ..
-                   "Active: " .. GameState.active_player .. "\n" ..
-                   "White CP: " .. (GameState.player_cp.White or 0) .. " | Red CP: " .. (GameState.player_cp.Red or 0),
+                   "White: CP=" .. (GameState.player_cp.White or 0) .. " VP=" .. (GameState.player_vp.White or 0) ..
+                   " | Red: CP=" .. (GameState.player_cp.Red or 0) .. " VP=" .. (GameState.player_vp.Red or 0),
                    {0.8, 0.8, 0.2})
         return false
     end
     
+    -- !help
+    if msg:match("^!help") then
+        printToAll("═══ SHARDBORNE COMMANDS ═══\n" ..
+                   "!atk <dice> vs <DEF>  — Attack roll (e.g., !atk 6 vs 4)\n" ..
+                   "!morale <MOR>         — Morale test (e.g., !morale 8)\n" ..
+                   "!roll XdY             — Roll any dice (e.g., !roll 2d6)\n" ..
+                   "!army                 — Validate army points & composition\n" ..
+                   "!vp <player> <+/-N>   — Adjust VP (e.g., !vp white +2)\n" ..
+                   "!cp <player> <+/-N>   — Adjust CP (e.g., !cp red -3)\n" ..
+                   "!scenario             — Generate random scenario\n" ..
+                   "!phase                — Show current game state\n" ..
+                   "!reset                — Reset game to setup\n" ..
+                   "!help                 — Show this help", {0.8, 0.8, 0.2})
+        return false
+    end
+    
     return true
+end
+
+-- ════════════════════════════════════════
+-- SCENARIO GENERATOR
+-- ════════════════════════════════════════
+
+function generateScenario()
+    local scenarios = {
+        {
+            name = "King of the Hill",
+            desc = "Control the center objective for 2 VP per turn. Side objectives worth 1 VP each.",
+            objectives = "Center: 2 VP/turn, Sides: 1 VP/turn",
+        },
+        {
+            name = "Shardstorm",
+            desc = "Fragment shards rain from the sky! At the start of each turn, place a Fragment token on a random objective. Collect fragments for bonus VP.",
+            objectives = "Kill: 1 VP, Fragments collected: 2 VP each",
+        },
+        {
+            name = "The Last Stand",
+            desc = "Player 1 defends 3 objectives. Player 2 must capture 2 of 3 by Turn 5 to win.",
+            objectives = "Defender: hold 2+, Attacker: capture 2+",
+        },
+        {
+            name = "Total War",
+            desc = "All-out conflict. Score VP for destroying enemy units. Commander kill = 5 VP.",
+            objectives = "Unit kill: 1 VP, Commander kill: 5 VP",
+        },
+        {
+            name = "Supply Lines",
+            desc = "4 supply caches along the centerline. Each cache controlled = +1 CP per turn for controlling player.",
+            objectives = "Control caches for bonus CP, most VP wins",
+        },
+        {
+            name = "Broken Ground",
+            desc = "The battlefield is devastated. Place 2 additional hazard terrain tokens. Difficult terrain everywhere except roads.",
+            objectives = "5 objectives, 1 VP each per turn controlled",
+        },
+    }
+    
+    local scenario = scenarios[math.random(#scenarios)]
+    broadcastToAll("═══ SCENARIO: " .. scenario.name .. " ═══\n\n" ..
+                   scenario.desc .. "\n\nObjectives: " .. scenario.objectives, {1, 0.85, 0.3})
 end
 
 -- ════════════════════════════════════════
@@ -1302,9 +1771,35 @@ def main():
     
     all_objects = []
     
-    # --- Game Board ---
-    all_objects.append(make_game_board())
-    print("  ✓ Game board")
+    # --- Game Board (default: Open Plains) ---
+    all_objects.append(make_game_board("OpenPlains", "🗺️ Battlefield — Open Plains"))
+    print("  ✓ Game board (Open Plains)")
+    
+    # --- Map Variants Bag ---
+    all_objects.append(make_map_variant_bag())
+    print("  ✓ Map variants bag (6 themed battlefields)")
+    
+    # --- Blast & Cone Templates Bag ---
+    template_bag_contents = []
+    for size in [3, 6]:
+        template_bag_contents.append(make_blast_template(size))
+    for size in [6, 8, 10]:
+        template_bag_contents.append(make_cone_template(size))
+    template_bag = make_bag("📐 Blast & Cone Templates", x=-26, y=1.5, z=8,
+                            color={"r": 0.8, "g": 0.4, "b": 0.1},
+                            contents=template_bag_contents)
+    all_objects.append(template_bag)
+    print("  ✓ Templates bag (2 blasts + 3 cones)")
+    
+    # --- Range Rings Bag ---
+    range_bag_contents = []
+    for radius in [1, 3, 6, 8, 10]:
+        range_bag_contents.append(make_range_ring(radius))
+    range_bag = make_bag("📏 Range Rings", x=-26, y=1.5, z=14,
+                         color={"r": 0.2, "g": 0.6, "b": 0.8},
+                         contents=range_bag_contents)
+    all_objects.append(range_bag)
+    print("  ✓ Range rings bag (1\", 3\", 6\", 8\", 10\")")
     
     # --- Quick Reference ---
     all_objects.append(build_quick_reference())
@@ -1597,7 +2092,7 @@ def main():
         "Date": "",
         "Table": "Table_RPG",
         "Sky": "Sky_Museum",
-        "Note": "Shardborne — Tabletop Wargame\nv1.0 — Generated from game data\n\nUse !help in chat for commands.",
+        "Note": "Shardborne — Tabletop Wargame\nv2.0 — Enhanced with maps, templates & automation\n\nUse !help in chat for commands.",
         "Rules": "",
         "XmlUI": "",
         "LuaScript": build_lua_script(),
