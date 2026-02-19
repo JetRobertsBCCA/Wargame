@@ -73,7 +73,22 @@ If TTS is installed and the Saves directory exists, the generator will also auto
 
 ## How to Play
 
-### Setup
+### Guided Setup Wizard (New in v3.1)
+Click the green **⚙ SETUP GAME** button on the main panel to launch the guided setup wizard. It walks both players through every step:
+
+| Step | Action | Details |
+|------|--------|---------|
+| 1 | **Battle Size** | Choose Skirmish (50–100pts), Standard (200–300pts), or Epic (500+pts) |
+| 2 | **Map** | Pick from 6 themed maps or Random — the game board auto-swaps |
+| 3 | **Scenario** | Pick a scenario or Random — objectives are announced in chat |
+| 4 | **Player 1 Faction** | P1 chooses their faction — bag moves to P1's area |
+| 5 | **Player 2 Faction** | P2 chooses (P1's pick is disabled) — bag moves to P2's area |
+| 6 | **Army Building** | Pull units from faction bags. Use **🔄 Scan Points** to live-track point totals. Use **✅ Validate** to run full army checks. Both players click **Ready** when done. |
+| 7 | **Deployment** | Place units in deployment zones. Click **⚔ BEGIN GAME** to start Turn 1. |
+
+The wizard announces each choice in chat so all players stay informed. You can use **◀ Back** to revisit previous steps or **✖ Cancel** to close the wizard.
+
+### Manual Setup (Alternative)
 1. **Click "Next Phase"** in the UI panel to start the game (initializes Turn 1)
 2. Each player picks a faction bag and pulls it to their side
 3. Open the bag (hover + press `L` or click `Search`) to see contents
@@ -149,6 +164,7 @@ The scripted UI panel appears in the **top-right corner**:
 | **⏱ Timer** | Toggle the phase/turn timer (warns after 3 min) |
 | **📋 Log** | Show last 5 combat results |
 | **▲ Min** | Collapse/expand the panel |
+| **⚙ SETUP GAME** | Launch the guided setup wizard (v3.1) |
 
 ### Combat Resolver Panel
 Clicking **⚔ Combat** opens a centered pop-up where you enter:

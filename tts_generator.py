@@ -869,10 +869,11 @@ def build_lua_script():
     return r'''--[[
     ╔══════════════════════════════════════════════╗
     ║     SHARDBORNE — Tabletop Simulator Mod      ║
-    ║     Global Script v3.0                       ║
+    ║     Global Script v3.1                       ║
     ╚══════════════════════════════════════════════╝
     
     Features:
+    - Guided Setup Wizard (battle size → map → scenario → factions → army build → deploy)
     - Turn phase management (Command → Movement → Combat → End)
     - Auto-combat resolver with modifiers (charge/flank/rear/cover/stance)
     - Morale testing (2d6 vs MOR)
@@ -924,10 +925,34 @@ GameState = {
     },
     kills = {White = 0, Red = 0},   -- Kill counter per player
     unit_hp = {},                     -- HP tracking keyed by object GUID
+    -- Setup wizard state
+    setup = {
+        step = 0,               -- 0=not started, 1=battle_size, 2=map, 3=scenario, 4=p1_faction, 5=p2_faction, 6=army_build, 7=deploy
+        battle_size = "standard",  -- skirmish / standard / epic
+        points_limit = 250,
+        map_choice = "",
+        scenario_name = "",
+        p1_faction = "",
+        p2_faction = "",
+        p1_ready = false,
+        p2_ready = false,
+    },
 }
 
 -- Measurement tracking
 local lastPickedUp = {}
+
+-- Setup wizard step names
+local SETUP_STEPS = {
+    [0] = "Press Setup to Begin",
+    [1] = "Select Battle Size",
+    [2] = "Select Map",
+    [3] = "Select Scenario",
+    [4] = "Player 1: Choose Faction",
+    [5] = "Player 2: Choose Faction",
+    [6] = "Army Building",
+    [7] = "Deployment",
+}
 
 -- ════════════════════════════════════════
 -- INITIALIZATION
@@ -938,12 +963,15 @@ function onLoad(save_state)
         local loaded = JSON.decode(save_state)
         if loaded then
             GameState = loaded
-            -- Ensure new fields exist for saves from v2.0
+            -- Ensure new fields exist for saves from older versions
             if not GameState.faction_pools then
                 GameState.faction_pools = {heat=0, hunger=0, flow=0, fate_threads=0, anchors=0, fragment_charges=0, stance="none"}
             end
             if not GameState.kills then GameState.kills = {White=0, Red=0} end
             if not GameState.unit_hp then GameState.unit_hp = {} end
+            if not GameState.setup then
+                GameState.setup = {step=0, battle_size="standard", points_limit=250, map_choice="", scenario_name="", p1_faction="", p2_faction="", p1_ready=false, p2_ready=false}
+            end
         end
     end
     
@@ -956,7 +984,7 @@ function onLoad(save_state)
         end
     end, 1)
     
-    broadcastToAll("═══ SHARDBORNE v3.0 ═══\nTabletop Simulator Edition\n\nWelcome, Commanders!\nType !help for commands.\n\nFaction Mechanics: !heat !hunger !flow !fate !anchors !stance", {1, 0.8, 0.2})
+    broadcastToAll("═══ SHARDBORNE v3.1 ═══\nTabletop Simulator Edition\n\nWelcome, Commanders!\nClick ⚙ SETUP GAME to begin guided setup.\nOr type !help for manual commands.", {1, 0.8, 0.2})
     printToAll("[Phase: " .. GameState.phase .. "] Turn " .. GameState.turn, {0.8, 0.8, 0.8})
 end
 
@@ -1090,6 +1118,10 @@ function createUI()
                     tooltip="Show last combat result">📋 Log</Button>
             <Button onClick="togglePanel" color="#222222" textColor="#666666">▲ Min</Button>
         </HorizontalLayout>
+        
+        <Button id="btnSetup" onClick="openSetupWizard" color="#225522" textColor="#44FF88"
+                preferredHeight="36" fontSize="14" fontStyle="Bold"
+                tooltip="Launch guided game setup wizard">⚙ SETUP GAME</Button>
     </VerticalLayout>
 </Panel>
 
@@ -1112,6 +1144,151 @@ function createUI()
             <Button onClick="closeCombatPanel" color="#333333" textColor="#888888">Cancel</Button>
         </HorizontalLayout>
         <Text id="combatResult" fontSize="12" color="#FFAA44" alignment="MiddleCenter"> </Text>
+    </VerticalLayout>
+</Panel>
+
+<!-- ═══ SETUP WIZARD PANEL ═══ -->
+<Panel position="0 0 -50" rotation="0 0 0" width="380" height="520"
+       color="rgba(0,0,0,0.92)" padding="8" id="setupPanel"
+       anchorMin="0.5 0.5" anchorMax="0.5 0.5" offsetXY="0 20"
+       active="false">
+    <VerticalLayout spacing="4" padding="8 8 8 8">
+        <Text fontSize="18" fontStyle="Bold" color="#FFD700" alignment="MiddleCenter">⚙ GAME SETUP WIZARD ⚙</Text>
+        <Text id="setupStepText" fontSize="13" color="#88FF88" alignment="MiddleCenter">Step 1 of 7: Select Battle Size</Text>
+        <Text id="setupDesc" fontSize="11" color="#AAAAAA" alignment="MiddleCenter">Choose the scale of your battle.</Text>
+        
+        <!-- Step 1: Battle Size -->
+        <Panel id="setupStep1" active="true">
+            <VerticalLayout spacing="4" padding="4 4 4 4">
+                <Button onClick="setupSelectBattleSize" id="btnSkirmish"
+                        color="#334433" textColor="#88FF88" preferredHeight="48" fontSize="13">
+                    ⚔ SKIRMISH\n50-100 pts | 30x30 | 5 Turns | 1 Commander</Button>
+                <Button onClick="setupSelectBattleSize" id="btnStandard"
+                        color="#334455" textColor="#88BBFF" preferredHeight="48" fontSize="13">
+                    ⚔ STANDARD\n200-300 pts | 48x48 | 6 Turns | 1-2 Commanders</Button>
+                <Button onClick="setupSelectBattleSize" id="btnEpic"
+                        color="#553333" textColor="#FF8888" preferredHeight="48" fontSize="13">
+                    ⚔ EPIC\n500+ pts | 60x72 | 7 Turns | Unlimited</Button>
+            </VerticalLayout>
+        </Panel>
+        
+        <!-- Step 2: Map Selection -->
+        <Panel id="setupStep2" active="false">
+            <VerticalLayout spacing="3" padding="4 4 4 4">
+                <HorizontalLayout spacing="3" preferredHeight="40">
+                    <Button onClick="setupSelectMap" id="mapOpenPlains"
+                            color="#445533" textColor="#CCDDAA" fontSize="11">🌾 Open Plains</Button>
+                    <Button onClick="setupSelectMap" id="mapVolcanicWastes"
+                            color="#553322" textColor="#FFAA66" fontSize="11">🌋 Volcanic Wastes</Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="3" preferredHeight="40">
+                    <Button onClick="setupSelectMap" id="mapDarkForest"
+                            color="#223322" textColor="#66CC66" fontSize="11">🌲 Dark Forest</Button>
+                    <Button onClick="setupSelectMap" id="mapIronFortress"
+                            color="#333344" textColor="#AABBDD" fontSize="11">🏰 Iron Fortress</Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="3" preferredHeight="40">
+                    <Button onClick="setupSelectMap" id="mapShadowRuins"
+                            color="#332233" textColor="#BB88CC" fontSize="11">🏚 Shadow Ruins</Button>
+                    <Button onClick="setupSelectMap" id="mapSacredGrounds"
+                            color="#444422" textColor="#DDDDAA" fontSize="11">⛩ Sacred Grounds</Button>
+                </HorizontalLayout>
+                <Button onClick="setupSelectMap" id="mapRandom"
+                        color="#333333" textColor="#AAAAAA" preferredHeight="32" fontSize="11">🎲 Random Map</Button>
+            </VerticalLayout>
+        </Panel>
+        
+        <!-- Step 3: Scenario Selection -->
+        <Panel id="setupStep3" active="false">
+            <VerticalLayout spacing="3" padding="4 4 4 4">
+                <HorizontalLayout spacing="3" preferredHeight="36">
+                    <Button onClick="setupSelectScenario" id="scenKingOfTheHill"
+                            color="#444433" textColor="#FFDD88" fontSize="10">👑 King of the Hill</Button>
+                    <Button onClick="setupSelectScenario" id="scenShardstorm"
+                            color="#333344" textColor="#88CCFF" fontSize="10">💎 Shardstorm</Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="3" preferredHeight="36">
+                    <Button onClick="setupSelectScenario" id="scenTheLastStand"
+                            color="#443333" textColor="#FF8888" fontSize="10">🛡 The Last Stand</Button>
+                    <Button onClick="setupSelectScenario" id="scenTotalWar"
+                            color="#443322" textColor="#FF6644" fontSize="10">💀 Total War</Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="3" preferredHeight="36">
+                    <Button onClick="setupSelectScenario" id="scenSupplyLines"
+                            color="#334433" textColor="#88DD88" fontSize="10">📦 Supply Lines</Button>
+                    <Button onClick="setupSelectScenario" id="scenBrokenGround"
+                            color="#333333" textColor="#AAAAAA" fontSize="10">💥 Broken Ground</Button>
+                </HorizontalLayout>
+                <Button onClick="setupSelectScenario" id="scenRandom"
+                        color="#333333" textColor="#CCCCCC" preferredHeight="32" fontSize="11">🎲 Random Scenario</Button>
+            </VerticalLayout>
+        </Panel>
+        
+        <!-- Step 4 & 5: Faction Selection -->
+        <Panel id="setupStep4" active="false">
+            <VerticalLayout spacing="3" padding="4 4 4 4">
+                <Button onClick="setupSelectFaction" id="facEmberclaw"
+                        color="#442200" textColor="#FF8833" preferredHeight="38" fontSize="12">🔥 Emberclaw Warpack</Button>
+                <Button onClick="setupSelectFaction" id="facIronDominion"
+                        color="#222233" textColor="#8899BB" preferredHeight="38" fontSize="12">⚙ Iron Dominion</Button>
+                <Button onClick="setupSelectFaction" id="facNightfang"
+                        color="#330022" textColor="#CC4488" preferredHeight="38" fontSize="12">🦇 Nightfang Dominion</Button>
+                <Button onClick="setupSelectFaction" id="facThornweft"
+                        color="#223311" textColor="#77BB44" preferredHeight="38" fontSize="12">🌿 Thornweft Matriarchy</Button>
+                <Button onClick="setupSelectFaction" id="facVeilbound"
+                        color="#332244" textColor="#9977CC" preferredHeight="38" fontSize="12">👁 Veilbound Shogunate</Button>
+            </VerticalLayout>
+        </Panel>
+        
+        <!-- Step 6: Army Building -->
+        <Panel id="setupStep6" active="false">
+            <VerticalLayout spacing="4" padding="4 4 4 4">
+                <Text id="armyBuildTitle" fontSize="14" fontStyle="Bold" color="#FFD700" alignment="MiddleCenter">
+                    ARMY BUILDING PHASE</Text>
+                <Text id="armyBuildInfo" fontSize="12" color="#AAAAAA" alignment="MiddleCenter">
+                    Pull units from your faction bag.\nStay within your point budget.</Text>
+                <Text id="armyP1Status" fontSize="13" color="#FFFFFF" alignment="MiddleLeft">
+                    Player 1 (White): 0 / 250 pts</Text>
+                <Text id="armyP2Status" fontSize="13" color="#FF8888" alignment="MiddleLeft">
+                    Player 2 (Red): 0 / 250 pts</Text>
+                <HorizontalLayout spacing="4" preferredHeight="36">
+                    <Button onClick="setupScanArmy" color="#334455" textColor="#88BBFF" fontSize="12">
+                        🔄 Scan Points</Button>
+                    <Button onClick="setupValidateArmy" color="#334433" textColor="#88FF88" fontSize="12">
+                        ✅ Validate</Button>
+                </HorizontalLayout>
+                <HorizontalLayout spacing="4" preferredHeight="36">
+                    <Button onClick="setupPlayerReady" id="btnP1Ready"
+                            color="#335533" textColor="#44FF88" fontSize="12">P1 Ready ✔</Button>
+                    <Button onClick="setupPlayerReady" id="btnP2Ready"
+                            color="#553333" textColor="#FF8844" fontSize="12">P2 Ready ✔</Button>
+                </HorizontalLayout>
+            </VerticalLayout>
+        </Panel>
+        
+        <!-- Step 7: Deployment -->
+        <Panel id="setupStep7" active="false">
+            <VerticalLayout spacing="4" padding="4 4 4 4">
+                <Text fontSize="14" fontStyle="Bold" color="#FFD700" alignment="MiddleCenter">
+                    DEPLOYMENT PHASE</Text>
+                <Text fontSize="11" color="#AAAAAA" alignment="MiddleCenter">
+                    Place units in your deployment zone.\nAlternate placing 1 unit at a time.\nCommanders deploy last.</Text>
+                <Text id="deployStatus" fontSize="12" color="#88FF88" alignment="MiddleCenter">
+                    Both players deploying...</Text>
+                <Button onClick="setupBeginGame" color="#225522" textColor="#44FF88" 
+                        preferredHeight="42" fontSize="14" fontStyle="Bold">
+                    ⚔ BEGIN GAME ⚔</Button>
+            </VerticalLayout>
+        </Panel>
+        
+        <!-- Setup Summary (always visible at bottom) -->
+        <Text id="setupSummary" fontSize="10" color="#666666" alignment="MiddleCenter">
+            Size: -- | Map: -- | Scenario: --</Text>
+        
+        <HorizontalLayout spacing="4" preferredHeight="30">
+            <Button onClick="setupGoBack" color="#333333" textColor="#888888" fontSize="11">◀ Back</Button>
+            <Button onClick="closeSetupWizard" color="#442222" textColor="#FF6666" fontSize="11">✖ Cancel</Button>
+        </HorizontalLayout>
     </VerticalLayout>
 </Panel>
         ]]
@@ -1276,6 +1453,615 @@ function startGame()
         GameState.timer_start = os.time()
     end
     updateUI()
+end
+
+-- ════════════════════════════════════════
+-- SETUP WIZARD
+-- ════════════════════════════════════════
+
+-- Helper: find object by nickname
+function findObjectByName(name)
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.getName() == name then return obj end
+    end
+    return nil
+end
+
+-- Helper: find objects by tag
+function findObjectsByTag(tag)
+    local results = {}
+    for _, obj in ipairs(getAllObjects()) do
+        if obj.hasTag and obj.hasTag(tag) then
+            table.insert(results, obj)
+        end
+    end
+    return results
+end
+
+-- Map names available in the Map Variants bag
+local MAP_NAMES = {"OpenPlains", "VolcanicWastes", "DarkForest", "IronFortress", "ShadowRuins", "SacredGrounds"}
+
+local MAP_DISPLAY = {
+    OpenPlains = "🌾 Open Plains",
+    VolcanicWastes = "🌋 Volcanic Wastes",
+    DarkForest = "🌲 Dark Forest",
+    IronFortress = "🏰 Iron Fortress",
+    ShadowRuins = "🏚 Shadow Ruins",
+    SacredGrounds = "⛩ Sacred Grounds",
+}
+
+-- Faction IDs mapped to bag names and display names
+local SETUP_FACTIONS = {
+    {id = "emberclaw-warpack",    bag = "🏴 Emberclaw Warpack",    display = "🔥 Emberclaw Warpack"},
+    {id = "iron-dominion",        bag = "🏴 Iron Dominion",        display = "⚙ Iron Dominion"},
+    {id = "nightfang-dominion",   bag = "🏴 Nightfang Dominion",   display = "🦇 Nightfang Dominion"},
+    {id = "thornweft-matriarchy", bag = "🏴 Thornweft Matriarchy", display = "🌿 Thornweft Matriarchy"},
+    {id = "veilbound-shogunate",  bag = "🏴 Veilbound Shogunate",  display = "👁 Veilbound Shogunate"},
+}
+
+-- Scenario data for the wizard
+local SETUP_SCENARIOS = {
+    {id = "KingOfTheHill", name = "King of the Hill",  desc = "Control the center for 2 VP/turn."},
+    {id = "Shardstorm",    name = "Shardstorm",        desc = "Fragment shards rain each turn."},
+    {id = "TheLastStand",  name = "The Last Stand",    desc = "Defender holds, attacker captures."},
+    {id = "TotalWar",      name = "Total War",         desc = "All-out combat. Kill = VP."},
+    {id = "SupplyLines",   name = "Supply Lines",      desc = "Control supply caches for bonus CP."},
+    {id = "BrokenGround",  name = "Broken Ground",     desc = "Devastated field, 5 objectives."},
+}
+
+function openSetupWizard(player, value, id)
+    if GameState.game_started then
+        printToAll("⚠ Game already in progress! Use !reset to start over.", {1, 0.5, 0.2})
+        return
+    end
+    
+    GameState.setup.step = 1
+    GameState.setup.p1_ready = false
+    GameState.setup.p2_ready = false
+    
+    showSetupStep(1)
+    UI.setAttribute("setupPanel", "active", "true")
+    broadcastToAll("⚙ Setup Wizard started! Player 1 (White) leads the setup.\nAll players can see choices.", {0.5, 1, 0.5})
+end
+
+function closeSetupWizard(player, value, id)
+    UI.setAttribute("setupPanel", "active", "false")
+    GameState.setup.step = 0
+    printToAll("⚙ Setup Wizard closed.", {0.7, 0.7, 0.7})
+end
+
+function showSetupStep(step)
+    GameState.setup.step = step
+    
+    -- Hide all step panels
+    for i = 1, 7 do
+        local panelId = "setupStep" .. i
+        pcall(function() UI.setAttribute(panelId, "active", "false") end)
+    end
+    -- Also hide step 4 (used for both P1 and P2 faction)
+    
+    -- Show current step panel
+    local panel_map = {
+        [1] = "setupStep1",
+        [2] = "setupStep2",
+        [3] = "setupStep3",
+        [4] = "setupStep4",
+        [5] = "setupStep4",  -- Reuse faction panel for P2
+        [6] = "setupStep6",
+        [7] = "setupStep7",
+    }
+    
+    local activePanel = panel_map[step]
+    if activePanel then
+        UI.setAttribute(activePanel, "active", "true")
+    end
+    
+    -- Update step text and description
+    local step_titles = {
+        [1] = "Step 1 of 7: Select Battle Size",
+        [2] = "Step 2 of 7: Select Map",
+        [3] = "Step 3 of 7: Select Scenario",
+        [4] = "Step 4 of 7: Player 1 — Choose Faction",
+        [5] = "Step 5 of 7: Player 2 — Choose Faction",
+        [6] = "Step 6 of 7: Army Building",
+        [7] = "Step 7 of 7: Deployment",
+    }
+    
+    local step_descs = {
+        [1] = "Choose the scale of your battle.",
+        [2] = "Select the battlefield map.",
+        [3] = "Choose a scenario or pick randomly.",
+        [4] = "Player 1 (White): Choose your faction.",
+        [5] = "Player 2 (Red): Choose your faction.",
+        [6] = "Pull units from your faction bag. Stay within point budget.",
+        [7] = "Deploy units to your deployment zone, then begin!",
+    }
+    
+    UI.setAttribute("setupStepText", "text", step_titles[step] or ("Step " .. step))
+    UI.setAttribute("setupDesc", "text", step_descs[step] or "")
+    
+    -- Update summary bar
+    local s = GameState.setup
+    local size_str = s.battle_size and s.battle_size:sub(1,1):upper() .. s.battle_size:sub(2) or "--"
+    local map_str = s.map_choice ~= "" and s.map_choice or "--"
+    local scen_str = s.scenario_name ~= "" and s.scenario_name or "--"
+    UI.setAttribute("setupSummary", "text", 
+        "Size: " .. size_str .. " (" .. s.points_limit .. "pts) | Map: " .. map_str .. " | Scenario: " .. scen_str)
+    
+    -- If step 5, disable the faction P1 already picked
+    if step == 5 then
+        local faction_buttons = {
+            ["emberclaw-warpack"] = "facEmberclaw",
+            ["iron-dominion"] = "facIronDominion",
+            ["nightfang-dominion"] = "facNightfang",
+            ["thornweft-matriarchy"] = "facThornweft",
+            ["veilbound-shogunate"] = "facVeilbound",
+        }
+        -- Re-enable all first
+        for _, btnId in pairs(faction_buttons) do
+            UI.setAttribute(btnId, "interactable", "true")
+            UI.setAttribute(btnId, "color", UI.getAttribute(btnId, "color") or "#333333")
+        end
+        -- Disable the one P1 picked
+        local disableBtn = faction_buttons[s.p1_faction]
+        if disableBtn then
+            UI.setAttribute(disableBtn, "interactable", "false")
+            UI.setAttribute(disableBtn, "color", "#222222")
+        end
+    elseif step == 4 then
+        -- Re-enable all faction buttons for P1
+        local faction_buttons = {"facEmberclaw", "facIronDominion", "facNightfang", "facThornweft", "facVeilbound"}
+        for _, btnId in ipairs(faction_buttons) do
+            UI.setAttribute(btnId, "interactable", "true")
+        end
+    end
+    
+    -- If step 6, update point displays
+    if step == 6 then
+        updateArmyBuildDisplay()
+    end
+end
+
+function setupGoBack(player, value, id)
+    local step = GameState.setup.step
+    if step <= 1 then
+        closeSetupWizard()
+        return
+    end
+    showSetupStep(step - 1)
+end
+
+-- ── Step 1: Battle Size ──
+
+function setupSelectBattleSize(player, value, id)
+    local sizes = {
+        btnSkirmish = {name = "skirmish", points = 75,  max_turns = 5, desc = "Skirmish (50-100 pts)"},
+        btnStandard = {name = "standard", points = 250, max_turns = 6, desc = "Standard (200-300 pts)"},
+        btnEpic     = {name = "epic",     points = 500, max_turns = 7, desc = "Epic (500+ pts)"},
+    }
+    
+    local selected = sizes[id]
+    if not selected then return end
+    
+    GameState.setup.battle_size = selected.name
+    GameState.setup.points_limit = selected.points
+    GameState.max_turns = selected.max_turns
+    
+    broadcastToAll("⚙ Battle Size: " .. selected.desc .. "\nPoint Budget: " .. selected.points .. " pts | " .. selected.max_turns .. " turns", {0.5, 1, 0.5})
+    
+    showSetupStep(2)
+end
+
+-- ── Step 2: Map Selection ──
+
+function setupSelectMap(player, value, id)
+    local map_lookup = {
+        mapOpenPlains = "OpenPlains",
+        mapVolcanicWastes = "VolcanicWastes",
+        mapDarkForest = "DarkForest",
+        mapIronFortress = "IronFortress",
+        mapShadowRuins = "ShadowRuins",
+        mapSacredGrounds = "SacredGrounds",
+        mapRandom = "random",
+    }
+    
+    local mapName = map_lookup[id]
+    if not mapName then return end
+    
+    -- Handle random
+    if mapName == "random" then
+        mapName = MAP_NAMES[math.random(#MAP_NAMES)]
+        broadcastToAll("🎲 Random map selected!", {0.7, 0.7, 1})
+    end
+    
+    GameState.setup.map_choice = mapName
+    local display = MAP_DISPLAY[mapName] or mapName
+    broadcastToAll("⚙ Map: " .. display, {0.5, 1, 0.5})
+    
+    -- Attempt to swap the game board
+    swapGameBoard(mapName)
+    
+    showSetupStep(3)
+end
+
+function swapGameBoard(mapName)
+    local mapBag = findObjectByName("🗺️ Map Variants")
+    if not mapBag then
+        printToAll("⚠ Map Variants bag not found. Place map manually.", {1, 0.5, 0.2})
+        return
+    end
+    
+    -- Search inside the map bag for the map
+    local objects = mapBag.getObjects()
+    local targetIdx = nil
+    for i, entry in ipairs(objects) do
+        if entry.name == mapName or entry.nickname == mapName then
+            targetIdx = entry.index
+            break
+        end
+    end
+    
+    if not targetIdx then
+        -- Try partial match
+        for i, entry in ipairs(objects) do
+            if (entry.name and entry.name:find(mapName)) or (entry.nickname and entry.nickname:find(mapName)) then
+                targetIdx = entry.index
+                break
+            end
+        end
+    end
+    
+    if not targetIdx then
+        printToAll("⚠ Map '" .. mapName .. "' not found in Map Variants bag.", {1, 0.5, 0.2})
+        return
+    end
+    
+    -- Find and remove the current game board
+    local currentBoard = findObjectByName("Game Board")
+    if currentBoard then
+        currentBoard.destruct()
+    end
+    
+    -- Pull the new map from the bag
+    mapBag.takeObject({
+        index = targetIdx,
+        position = {0, 1, 0},
+        rotation = {0, 180, 0},
+        smooth = true,
+        callback_function = function(obj)
+            obj.setLock(true)
+            obj.setName("Game Board")
+            printToAll("🗺️ Map placed: " .. (MAP_DISPLAY[mapName] or mapName), {0.5, 1, 0.5})
+        end
+    })
+end
+
+-- ── Step 3: Scenario Selection ──
+
+function setupSelectScenario(player, value, id)
+    local scen_lookup = {
+        scenKingOfTheHill = "King of the Hill",
+        scenShardstorm = "Shardstorm",
+        scenTheLastStand = "The Last Stand",
+        scenTotalWar = "Total War",
+        scenSupplyLines = "Supply Lines",
+        scenBrokenGround = "Broken Ground",
+        scenRandom = "random",
+    }
+    
+    local scenName = scen_lookup[id]
+    if not scenName then return end
+    
+    if scenName == "random" then
+        local names = {"King of the Hill", "Shardstorm", "The Last Stand", "Total War", "Supply Lines", "Broken Ground"}
+        scenName = names[math.random(#names)]
+        broadcastToAll("🎲 Random scenario selected!", {0.7, 0.7, 1})
+    end
+    
+    GameState.setup.scenario_name = scenName
+    
+    -- Find and display scenario details
+    local scen_details = {
+        ["King of the Hill"] = "Control the center objective for 2 VP per turn. Side objectives worth 1 VP each.",
+        ["Shardstorm"] = "Fragment shards rain from the sky! Collect fragments for bonus VP.",
+        ["The Last Stand"] = "Player 1 defends 3 objectives. Player 2 must capture 2 of 3 by Turn 5.",
+        ["Total War"] = "All-out conflict. Unit kill = 1 VP, Commander kill = 5 VP.",
+        ["Supply Lines"] = "4 supply caches. Each controlled = +1 CP per turn.",
+        ["Broken Ground"] = "Devastated battlefield. 5 objectives, 1 VP each per turn controlled.",
+    }
+    
+    broadcastToAll("⚙ Scenario: " .. scenName .. "\n" .. (scen_details[scenName] or ""), {0.5, 1, 0.5})
+    
+    showSetupStep(4)
+end
+
+-- ── Step 4 & 5: Faction Selection ──
+
+function setupSelectFaction(player, value, id)
+    local fac_lookup = {
+        facEmberclaw = "emberclaw-warpack",
+        facIronDominion = "iron-dominion",
+        facNightfang = "nightfang-dominion",
+        facThornweft = "thornweft-matriarchy",
+        facVeilbound = "veilbound-shogunate",
+    }
+    
+    local fac_display_lookup = {
+        facEmberclaw = "Emberclaw Warpack",
+        facIronDominion = "Iron Dominion",
+        facNightfang = "Nightfang Dominion",
+        facThornweft = "Thornweft Matriarchy",
+        facVeilbound = "Veilbound Shogunate",
+    }
+    
+    local factionId = fac_lookup[id]
+    local factionDisplay = fac_display_lookup[id]
+    if not factionId then return end
+    
+    local step = GameState.setup.step
+    
+    if step == 4 then
+        -- Player 1 picks
+        GameState.setup.p1_faction = factionId
+        broadcastToAll("⚙ Player 1 (White): " .. factionDisplay, {0.5, 1, 0.5})
+        
+        -- Move faction bag to P1 side
+        moveFactionBagToPlayer(factionId, 1)
+        
+        showSetupStep(5)
+    elseif step == 5 then
+        -- Player 2 picks  
+        if factionId == GameState.setup.p1_faction then
+            printToAll("⚠ That faction is already taken by Player 1!", {1, 0.5, 0.2})
+            return
+        end
+        
+        GameState.setup.p2_faction = factionId
+        broadcastToAll("⚙ Player 2 (Red): " .. factionDisplay, {0.5, 1, 0.5})
+        
+        -- Move faction bag to P2 side
+        moveFactionBagToPlayer(factionId, 2)
+        
+        showSetupStep(6)
+    end
+end
+
+function moveFactionBagToPlayer(factionId, playerNum)
+    -- Find the faction bag by name
+    local fac_bag_names = {
+        ["emberclaw-warpack"] = "🏴 Emberclaw Warpack",
+        ["iron-dominion"] = "🏴 Iron Dominion",
+        ["nightfang-dominion"] = "🏴 Nightfang Dominion",
+        ["thornweft-matriarchy"] = "🏴 Thornweft Matriarchy",
+        ["veilbound-shogunate"] = "🏴 Veilbound Shogunate",
+    }
+    
+    local bagName = fac_bag_names[factionId]
+    if not bagName then return end
+    
+    local bag = findObjectByName(bagName)
+    if not bag then
+        printToAll("⚠ Faction bag '" .. bagName .. "' not found.", {1, 0.5, 0.2})
+        return
+    end
+    
+    -- Move to player side
+    local positions = {
+        [1] = {x = -15, y = 2, z = -15},   -- Player 1 (White) side
+        [2] = {x = 15, y = 2, z = -15},    -- Player 2 (Red) side
+    }
+    
+    local pos = positions[playerNum]
+    bag.setPositionSmooth(pos)
+    
+    printToAll("📦 " .. bagName .. " moved to Player " .. playerNum .. "'s area.", {0.5, 0.8, 1})
+end
+
+-- ── Step 6: Army Building ──
+
+function updateArmyBuildDisplay()
+    local limit = GameState.setup.points_limit
+    local p1pts, p2pts = scanPlayerPoints()
+    
+    local p1_color = p1pts > limit and "#FF4444" or "#88FF88"
+    local p2_color = p2pts > limit and "#FF4444" or "#FF8888"
+    
+    UI.setAttribute("armyP1Status", "text", "Player 1 (White): " .. p1pts .. " / " .. limit .. " pts")
+    UI.setAttribute("armyP1Status", "color", p1_color)
+    UI.setAttribute("armyP2Status", "text", "Player 2 (Red): " .. p2pts .. " / " .. limit .. " pts")
+    UI.setAttribute("armyP2Status", "color", p2_color)
+    
+    UI.setAttribute("armyBuildInfo", "text", 
+        "Pull units from your faction bag.\\nStay within " .. limit .. " point budget.")
+    
+    -- Update ready button states
+    if GameState.setup.p1_ready then
+        UI.setAttribute("btnP1Ready", "color", "#224422")
+        UI.setAttribute("btnP1Ready", "textColor", "#44AA44")
+    else
+        UI.setAttribute("btnP1Ready", "color", "#335533")
+        UI.setAttribute("btnP1Ready", "textColor", "#44FF88")
+    end
+    
+    if GameState.setup.p2_ready then
+        UI.setAttribute("btnP2Ready", "color", "#442222")
+        UI.setAttribute("btnP2Ready", "textColor", "#AA4444")
+    else
+        UI.setAttribute("btnP2Ready", "color", "#553333")
+        UI.setAttribute("btnP2Ready", "textColor", "#FF8844")
+    end
+end
+
+function scanPlayerPoints()
+    local p1_points = 0
+    local p2_points = 0
+    local p1_faction = GameState.setup.p1_faction
+    local p2_faction = GameState.setup.p2_faction
+    
+    for _, obj in ipairs(getAllObjects()) do
+        local desc = obj.getDescription() or ""
+        local tags = obj.getTags and obj.getTags() or {}
+        
+        -- Check if it's a game piece with points
+        local pts = desc:match("Points:%s*(%d+)")
+        if pts then
+            pts = tonumber(pts)
+            local obj_faction = ""
+            for _, tag in ipairs(tags) do
+                if tag:match("warpack") or tag:match("dominion") or tag:match("matriarchy") or tag:match("shogunate") then
+                    obj_faction = tag
+                end
+            end
+            
+            -- Determine which player owns it based on faction
+            if obj_faction == p1_faction then
+                p1_points = p1_points + pts
+            elseif obj_faction == p2_faction then
+                p2_points = p2_points + pts
+            end
+        end
+    end
+    
+    return p1_points, p2_points
+end
+
+function setupScanArmy(player, value, id)
+    updateArmyBuildDisplay()
+    
+    local limit = GameState.setup.points_limit
+    local p1pts, p2pts = scanPlayerPoints()
+    
+    printToAll("🔄 Army Point Scan:", {0.5, 0.8, 1})
+    printToAll("  Player 1: " .. p1pts .. " / " .. limit .. " pts" .. (p1pts > limit and " ⚠ OVER BUDGET!" or " ✅"), 
+              p1pts > limit and {1, 0.3, 0.3} or {0.3, 1, 0.3})
+    printToAll("  Player 2: " .. p2pts .. " / " .. limit .. " pts" .. (p2pts > limit and " ⚠ OVER BUDGET!" or " ✅"), 
+              p2pts > limit and {1, 0.3, 0.3} or {0.3, 1, 0.3})
+end
+
+function setupValidateArmy(player, value, id)
+    -- Trigger full army validation via the existing validate function
+    validateArmy()
+    updateArmyBuildDisplay()
+end
+
+function setupPlayerReady(player, value, id)
+    if id == "btnP1Ready" then
+        GameState.setup.p1_ready = not GameState.setup.p1_ready
+        local state = GameState.setup.p1_ready and "READY" or "NOT READY"
+        broadcastToAll("Player 1 (White): " .. state, {0.5, 1, 0.5})
+    elseif id == "btnP2Ready" then
+        GameState.setup.p2_ready = not GameState.setup.p2_ready
+        local state = GameState.setup.p2_ready and "READY" or "NOT READY"
+        broadcastToAll("Player 2 (Red): " .. state, {1, 0.5, 0.5})
+    end
+    
+    updateArmyBuildDisplay()
+    
+    -- If both ready, advance to deployment
+    if GameState.setup.p1_ready and GameState.setup.p2_ready then
+        local limit = GameState.setup.points_limit
+        local p1pts, p2pts = scanPlayerPoints()
+        
+        -- Warn but don't block if over budget
+        if p1pts > limit then
+            printToAll("⚠ Player 1 is over budget! (" .. p1pts .. "/" .. limit .. ")", {1, 0.5, 0.2})
+        end
+        if p2pts > limit then
+            printToAll("⚠ Player 2 is over budget! (" .. p2pts .. "/" .. limit .. ")", {1, 0.5, 0.2})
+        end
+        
+        broadcastToAll("✅ Both players ready! Moving to Deployment Phase.", {0.3, 1, 0.3})
+        showSetupStep(7)
+    end
+end
+
+-- ── Step 7: Deployment & Game Start ──
+
+function setupBeginGame(player, value, id)
+    -- Close setup panel
+    UI.setAttribute("setupPanel", "active", "false")
+    
+    -- Hide setup button on main panel
+    UI.setAttribute("btnSetup", "active", "false")
+    
+    -- Configure game state from setup choices
+    local s = GameState.setup
+    
+    -- Set faction-specific pools based on selected factions
+    initFactionPools(s.p1_faction, s.p2_faction)
+    
+    -- Start the game
+    GameState.game_started = true
+    GameState.turn = 1
+    GameState.phase = "Command"
+    GameState.phase_index = 1
+    GameState.player_cp = {White = 3, Red = 3}
+    GameState.player_fragments = {White = 0, Red = 0}
+    GameState.player_vp = {White = 0, Red = 0}
+    
+    local p1pts, p2pts = scanPlayerPoints()
+    
+    broadcastToAll(
+        "═══════════════════════════════════\n" ..
+        "    ⚔ SHARDBORNE BEGINS! ⚔\n" ..
+        "═══════════════════════════════════\n\n" ..
+        "Battle: " .. s.battle_size:sub(1,1):upper() .. s.battle_size:sub(2) .. " (" .. s.points_limit .. " pts)\n" ..
+        "Map: " .. (MAP_DISPLAY[s.map_choice] or s.map_choice) .. "\n" ..
+        "Scenario: " .. s.scenario_name .. "\n\n" ..
+        "P1 (" .. getFactionDisplayName(s.p1_faction) .. "): " .. p1pts .. " pts\n" ..
+        "P2 (" .. getFactionDisplayName(s.p2_faction) .. "): " .. p2pts .. " pts\n\n" ..
+        "Turn 1 — Command Phase\n" ..
+        "Both players start with 3 CP.\n" ..
+        "Draw your starting hand of 5 cards.\n\n" ..
+        "Type !help for all commands.",
+        {1, 0.8, 0.2})
+    
+    if GameState.timer_enabled then
+        GameState.timer_start = os.time()
+    end
+    updateUI()
+end
+
+function initFactionPools(p1_faction, p2_faction)
+    local fp = GameState.faction_pools
+    
+    -- Reset all pools
+    fp.heat = 0
+    fp.hunger = 0
+    fp.flow = 0
+    fp.fate_threads = 0
+    fp.anchors = 0
+    fp.fragment_charges = 0
+    fp.stance = "none"
+    
+    -- Initialize based on factions in play
+    local factions_in_play = {p1_faction, p2_faction}
+    for _, fac in ipairs(factions_in_play) do
+        if fac == "emberclaw-warpack" then
+            printToAll("🔥 Emberclaw: Heat pool initialized (0/15). Overheat at >15!", {1, 0.5, 0})
+        elseif fac == "nightfang-dominion" then
+            printToAll("🦇 Nightfang: Hunger pool initialized. Feed to empower!", {0.8, 0, 0.3})
+        elseif fac == "thornweft-matriarchy" then
+            fp.flow = 5
+            printToAll("🌿 Thornweft: Flow pool initialized at 5/40.", {0.3, 0.8, 0.2})
+        elseif fac == "veilbound-shogunate" then
+            fp.stance = "honor"
+            printToAll("👁 Veilbound: Stance set to Honor. Fate Threads: 0.", {0.6, 0.4, 0.8})
+        elseif fac == "iron-dominion" then
+            printToAll("⚙ Iron Dominion: Anchors and Fragment Charges ready.", {0.5, 0.6, 0.7})
+        end
+    end
+end
+
+function getFactionDisplayName(factionId)
+    local names = {
+        ["emberclaw-warpack"] = "Emberclaw Warpack",
+        ["iron-dominion"] = "Iron Dominion",
+        ["nightfang-dominion"] = "Nightfang Dominion",
+        ["thornweft-matriarchy"] = "Thornweft Matriarchy",
+        ["veilbound-shogunate"] = "Veilbound Shogunate",
+    }
+    return names[factionId] or factionId
 end
 
 -- ════════════════════════════════════════
