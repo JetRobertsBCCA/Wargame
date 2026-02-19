@@ -2973,7 +2973,7 @@
     {
       name: "Clockwork Titan",
       faction: "iron-dominion",
-      points_cost: 12,
+      points_cost: 90,
       role: "War Machine",
       fragment_interactions: "AoE melee; fragment boosts radius",
       flavor_text: "Massive humanoid construct, slow but devastating",
@@ -2990,7 +2990,7 @@
     {
       name: "Steam Colossus",
       faction: "iron-dominion",
-      points_cost: 10,
+      points_cost: 80,
       role: "War Machine",
       fragment_interactions: "Fragment enhances long-range damage",
       flavor_text: "Siege & artillery hybrid",
@@ -3007,7 +3007,7 @@
     {
       name: "Aether Cannon Walker",
       faction: "iron-dominion",
-      points_cost: 11,
+      points_cost: 85,
       role: "War Machine",
       fragment_interactions:
         "Fires massive fragment blasts; unstable terrain effects",
@@ -3025,7 +3025,7 @@
     {
       name: "Gear-Beast Construct",
       faction: "iron-dominion",
-      points_cost: 10,
+      points_cost: 80,
       role: "War Machine",
       fragment_interactions: "Fragment boosts melee; risk of malfunction",
       flavor_text: "Multi-legged mechanical war machine",
@@ -3043,7 +3043,7 @@
     {
       name: "Experimental Leviathan",
       faction: "iron-dominion",
-      points_cost: 15,
+      points_cost: 110,
       role: "War Machine",
       fragment_interactions:
         "Fragment may warp battlefield; extremely high risk",
@@ -3062,7 +3062,7 @@
     {
       name: "Overclocked Automaton",
       faction: "iron-dominion",
-      points_cost: 10,
+      points_cost: 80,
       role: "War Machine",
       fragment_interactions: "Fragment grants temporary double activation",
       flavor_text: "Fast mechanical unit with explosive attacks",
@@ -3079,7 +3079,7 @@
     {
       name: "Steam Gargoyle",
       faction: "iron-dominion",
-      points_cost: 12,
+      points_cost: 90,
       role: "War Machine",
       fragment_interactions: "Fragment adds unpredictable AoE attacks",
       flavor_text: "Flying mechanical scout/assault unit",
@@ -3096,7 +3096,7 @@
     {
       name: "Mechanized Siege Engine",
       faction: "iron-dominion",
-      points_cost: 10,
+      points_cost: 80,
       role: "War Machine",
       fragment_interactions: "Fragment can collapse terrain",
       flavor_text: "Slow, massive damage output",
@@ -3114,7 +3114,7 @@
     {
       name: "Arcane Steam Golem",
       faction: "iron-dominion",
-      points_cost: 11,
+      points_cost: 85,
       role: "War Machine",
       fragment_interactions: "Increases nearby unit effectiveness; unstable",
       flavor_text: "Fragment-powered giant construct",
@@ -3131,7 +3131,7 @@
     {
       name: "Chrono Walker",
       faction: "iron-dominion",
-      points_cost: 14,
+      points_cost: 100,
       role: "War Machine",
       fragment_interactions: "Fragment can reorder units; high instability",
       flavor_text: "Time-manipulation-themed war machine",
@@ -3253,7 +3253,7 @@
     {
       name: "Titan Engine Imperius",
       faction: "iron-dominion",
-      points_cost: 25,
+      points_cost: 180,
       role: "Legendary super-heavy war machine",
       fragment_interactions: "Grid Anchor; fragment-powered reactor core",
       flavor_text:

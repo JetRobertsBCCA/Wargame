@@ -2382,7 +2382,7 @@
     {
       name: "Shrine Dragon",
       faction: "veilbound-shogunate",
-      points_cost: 14,
+      points_cost: 100,
       role: "War Machine",
       fragment_interactions:
         "Reality-phase strikes; flame-based ritual attacks; Ritual Flow enhances AoE",
@@ -2401,7 +2401,7 @@
     {
       name: "Walking Torii Gate",
       faction: "veilbound-shogunate",
-      points_cost: 12,
+      points_cost: 90,
       role: "War Machine",
       fragment_interactions:
         "Warps battlefield geometry; boosts nearby bond generation",
@@ -2420,7 +2420,7 @@
     {
       name: "Komainu Guardian Colossus",
       faction: "veilbound-shogunate",
-      points_cost: 13,
+      points_cost: 95,
       role: "War Machine",
       fragment_interactions:
         "Defensive anchor; aura induces fear in enemies; Ritual Flow boosts counterattacks",
@@ -2438,7 +2438,7 @@
     {
       name: "Spirit Temple Walker",
       faction: "veilbound-shogunate",
-      points_cost: 11,
+      points_cost: 85,
       role: "War Machine",
       fragment_interactions:
         "Summons minor spirits; shields allies; creates terrain hazards",
@@ -2456,7 +2456,7 @@
     {
       name: "Hollow Ronin Construct",
       faction: "veilbound-shogunate",
-      points_cost: 12,
+      points_cost: 90,
       role: "War Machine",
       fragment_interactions:
         "Multi-target phasing strikes; temporary battlefield terror effect",
@@ -2475,7 +2475,7 @@
     {
       name: "Celestial Ink Dragon",
       faction: "veilbound-shogunate",
-      points_cost: 13,
+      points_cost: 95,
       role: "War Machine",
       fragment_interactions:
         "AoE ranged attacks; obscures enemy vision; temporarily disables units",
@@ -2494,7 +2494,7 @@
     {
       name: "Eclipse Manta Titan",
       faction: "veilbound-shogunate",
-      points_cost: 14,
+      points_cost: 100,
       role: "War Machine",
       fragment_interactions:
         "Gliding battlefield suppression; knockback waves; airborne disruption",
@@ -2514,7 +2514,7 @@
     {
       name: "Lotus Ascendant Monolith",
       faction: "veilbound-shogunate",
-      points_cost: 11,
+      points_cost: 85,
       role: "War Machine",
       fragment_interactions:
         "Buffs nearby units; blooms to release massive area attacks; amplifies Ritual Flow",
@@ -2534,7 +2534,7 @@
     {
       name: "Veilbound Oni Juggernaut",
       faction: "veilbound-shogunate",
-      points_cost: 15,
+      points_cost: 110,
       role: "War Machine",
       fragment_interactions:
         "Heavy shock role; devastating melee; causes fear aura in all adjacent units",
@@ -2553,7 +2553,7 @@
     {
       name: "Shrouded Throne Entity",
       faction: "veilbound-shogunate",
-      points_cost: 15,
+      points_cost: 110,
       role: "War Machine",
       fragment_interactions:
         "Battlefield-altering aura; reality distortions; amplifies all Ritual Flow-based abilities nearby",
@@ -3474,7 +3474,7 @@
     {
       name: "Celestial Shogun Construct",
       faction: "veilbound-shogunate",
-      points_cost: 25,
+      points_cost: 180,
       role: "Legendary spirit war machine",
       fragment_interactions: "Stance; Ritual Flow amplifier; supreme spirit construct",
       flavor_text:

@@ -49,11 +49,11 @@ function updateCampaignUI() {
 
   // Update level and XP
   document.getElementById("commander-level").textContent = campaignState.level;
-  const xpToLevel = campaignState.level * 100;
-  document.getElementById("xp-to-level").textContent = xpToLevel;
+  const xpToLevel = getXPForNextLevel(campaignState.level);
+  document.getElementById("xp-to-level").textContent = campaignState.level >= 10 ? 'MAX' : xpToLevel;
   document.getElementById("current-xp").textContent = campaignState.xp;
-  document.getElementById("xp-bar-fill").style.width =
-    (campaignState.xp / xpToLevel) * 100 + "%";
+  const xpProgress = campaignState.level >= 10 ? 100 : (campaignState.xp / xpToLevel) * 100;
+  document.getElementById("xp-bar-fill").style.width = xpProgress + "%";
 
   // Update battle stats
   const victories = campaignState.battles.filter(
@@ -78,6 +78,11 @@ function updateCampaignUI() {
 
   // Update path tendency
   updatePathTendency();
+
+  // Update between-games panel
+  const resupplyEl = document.getElementById('total-resupply');
+  if (resupplyEl) resupplyEl.textContent = getResupplyTotal();
+  updateInjuryLog();
 }
 
 function updateSkillTreeDisplay() {
@@ -264,19 +269,24 @@ function determineEvolution() {
   );
 }
 
+// Cumulative XP thresholds from rules data
+const XP_THRESHOLDS = [0, 0, 50, 120, 200, 300, 420, 560, 720, 900, 1100];
+
+function getXPForNextLevel(level) {
+  if (level >= 10) return Infinity;
+  return XP_THRESHOLDS[level + 1] || Infinity;
+}
+
 function addXP(amount) {
   campaignState.xp += amount;
-  const xpToLevel = campaignState.level * 100;
 
-  while (campaignState.xp >= xpToLevel && campaignState.level < 10) {
-    campaignState.xp -= xpToLevel;
+  while (campaignState.level < 10 && campaignState.xp >= getXPForNextLevel(campaignState.level)) {
     campaignState.level++;
     showLevelUpModal(campaignState.level);
   }
 
   if (campaignState.level >= 10) {
     campaignState.level = 10;
-    campaignState.xp = 0;
   }
 
   updateCampaignUI();
@@ -385,7 +395,7 @@ function closeLevelUpModal() {
 }
 
 function recordBattle(result) {
-  const xpRewards = { victory: 100, defeat: 25, draw: 50 };
+  const xpRewards = { victory: 50, defeat: 25, draw: 35 };
   const xp = xpRewards[result];
 
   campaignState.battles.push({
@@ -458,6 +468,8 @@ function newCampaign() {
       battles: [],
       fragments: [],
       persistentUnits: [],
+      injuryLog: [],
+      commanderInjuries: [],
     };
 
     document.getElementById("campaign-commander-select").value = "";
@@ -480,6 +492,156 @@ function openFragmentSelector() {
   } else if (fragment) {
     alert("Fragment not found. Please enter a valid fragment name.");
   }
+}
+
+// ==========================================
+// BETWEEN GAMES — Injury, Commander Injury,
+//   Resupply, Fragment Discovery
+// ==========================================
+
+function rollD6() {
+  return Math.floor(Math.random() * 6) + 1;
+}
+
+function rollInjury() {
+  const nameInput = document.getElementById('injury-unit-name');
+  const resultEl = document.getElementById('injury-result');
+  const unitName = nameInput ? nameInput.value.trim() : '';
+  if (!unitName) {
+    resultEl.innerHTML = '<span style="color: #f44336;">Enter a unit name first.</span>';
+    return;
+  }
+
+  const roll = rollD6();
+  let outcome, color;
+  if (roll === 1) {
+    outcome = `💀 Rolled ${roll} — <strong>Killed Permanently!</strong> ${unitName} is removed from your roster.`;
+    color = '#f44336';
+  } else if (roll === 2) {
+    outcome = `🩹 Rolled ${roll} — <strong>Crippled.</strong> ${unitName} has −1 HP and −1 ATK next game, then recovers.`;
+    color = '#ff9800';
+  } else if (roll <= 4) {
+    outcome = `🤕 Rolled ${roll} — <strong>Walking Wounded.</strong> ${unitName} starts next game at −1 HP, then fully heals.`;
+    color = '#ffeb3b';
+  } else {
+    outcome = `✅ Rolled ${roll} — <strong>Full Recovery!</strong> ${unitName} returns at full stats.`;
+    color = '#4caf50';
+  }
+
+  resultEl.innerHTML = `<span style="color: ${color};">${outcome}</span>`;
+
+  // Log the injury result
+  if (!campaignState.injuryLog) campaignState.injuryLog = [];
+  campaignState.injuryLog.push({
+    unit: unitName,
+    roll,
+    outcome: roll === 1 ? 'killed' : roll === 2 ? 'crippled' : roll <= 4 ? 'wounded' : 'recovered',
+    date: new Date().toLocaleDateString()
+  });
+
+  // Update persistent unit status if tracked
+  const trackedUnit = campaignState.persistentUnits.find(
+    u => u.name.toLowerCase() === unitName.toLowerCase()
+  );
+  if (trackedUnit) {
+    if (roll === 1) {
+      trackedUnit.status = 'killed';
+    } else if (roll === 2) {
+      trackedUnit.status = 'crippled';
+    } else if (roll <= 4) {
+      trackedUnit.status = 'wounded';
+    } else {
+      trackedUnit.status = 'healthy';
+    }
+  }
+
+  updateInjuryLog();
+  saveCampaign();
+  nameInput.value = '';
+}
+
+function rollCommanderInjury() {
+  const resultEl = document.getElementById('commander-injury-result');
+  if (!campaignState.commander) {
+    resultEl.innerHTML = '<span style="color: #f44336;">Select a commander first.</span>';
+    return;
+  }
+
+  const roll = rollD6();
+  let outcome, color;
+  if (roll === 1) {
+    outcome = `💀 Rolled ${roll} — <strong>Grievous Injury!</strong> ${campaignState.commander.name} misses the next game. A Level 1 substitute (Command 3, no skills) leads your army.`;
+    color = '#f44336';
+  } else if (roll <= 3) {
+    outcome = `😰 Rolled ${roll} — <strong>Shaken Confidence.</strong> ${campaignState.commander.name} starts next game at −1 Command.`;
+    color = '#ff9800';
+  } else {
+    outcome = `💪 Rolled ${roll} — <strong>Battle-Hardened!</strong> ${campaignState.commander.name} recovers fully and starts next game at +1 HP (doesn't stack).`;
+    color = '#4caf50';
+  }
+
+  resultEl.innerHTML = `<span style="color: ${color};">${outcome}</span>`;
+
+  if (!campaignState.commanderInjuries) campaignState.commanderInjuries = [];
+  campaignState.commanderInjuries.push({
+    roll,
+    outcome: roll === 1 ? 'grievous' : roll <= 3 ? 'shaken' : 'hardened',
+    date: new Date().toLocaleDateString()
+  });
+
+  saveCampaign();
+}
+
+function rollFragmentDiscovery() {
+  const resultEl = document.getElementById('fragment-discovery-result');
+  const roleSelect = document.getElementById('fragment-battle-result');
+  const isWinner = roleSelect ? roleSelect.value === 'winner' : true;
+
+  const roll = rollD6();
+  if (roll >= 5) {
+    if (isWinner) {
+      // Winner chooses — open fragment selector
+      resultEl.innerHTML = `<span style="color: #a78bfa;">🎲 Rolled ${roll} — <strong>Fragment Discovered!</strong> As the winner, choose your fragment:</span>`;
+      openFragmentSelector();
+    } else {
+      // Loser draws randomly
+      if (gameData.fragments && gameData.fragments.length > 0) {
+        const randomFrag = gameData.fragments[Math.floor(Math.random() * gameData.fragments.length)];
+        campaignState.fragments.push(randomFrag.name);
+        resultEl.innerHTML = `<span style="color: #a78bfa;">🎲 Rolled ${roll} — <strong>Fragment Discovered!</strong> Random draw: <strong>${randomFrag.name}</strong></span>`;
+        updateCampaignUI();
+        saveCampaign();
+      } else {
+        resultEl.innerHTML = `<span style="color: #a78bfa;">🎲 Rolled ${roll} — <strong>Fragment Discovered!</strong> (No fragment data available to draw from.)</span>`;
+      }
+    }
+  } else {
+    resultEl.innerHTML = `<span style="color: #888;">🎲 Rolled ${roll} — No fragment discovered this time. (Need 5+)</span>`;
+  }
+}
+
+function updateInjuryLog() {
+  const container = document.getElementById('injury-log');
+  if (!container || !campaignState.injuryLog || campaignState.injuryLog.length === 0) return;
+
+  const statusColors = { killed: '#f44336', crippled: '#ff9800', wounded: '#ffeb3b', recovered: '#4caf50' };
+  const statusIcons = { killed: '💀', crippled: '🩹', wounded: '🤕', recovered: '✅' };
+
+  container.innerHTML = `
+    <h4 style="margin: 0 0 0.5rem 0; color: #ccc;">Injury History</h4>
+    ${campaignState.injuryLog.slice().reverse().map(entry => `
+      <div style="display: flex; justify-content: space-between; padding: 0.3rem 0.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem;">
+        <span>${statusIcons[entry.outcome]} <strong>${entry.unit}</strong> — <span style="color: ${statusColors[entry.outcome]};">${entry.outcome}</span></span>
+        <span style="color: #666;">${entry.date}</span>
+      </div>
+    `).join('')}
+  `;
+}
+
+function getResupplyTotal() {
+  if (!campaignState.battles) return 0;
+  const resupplyValues = { victory: 10, defeat: 15, draw: 12 };
+  return campaignState.battles.reduce((sum, b) => sum + (resupplyValues[b.result] || 0), 0);
 }
 
 function addPersistentUnit() {

@@ -20,4 +20,6 @@ let campaignState = {
   battles: [],
   fragments: [],
   persistentUnits: [],
+  injuryLog: [],
+  commanderInjuries: [],
 };

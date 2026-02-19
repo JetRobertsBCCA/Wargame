@@ -77,7 +77,7 @@ const gameData = {
           name: "Command Phase",
           description: "Generate resources, draw cards, and play support cards.",
           actions: [
-            "Generate Command Points (CP) equal to your Commander's Command stat. Unspent CP from previous turns is lost.",
+            "Generate Command Points (CP) equal to your Commander's Command stat. Any CP remaining from your previous turn is lost (including unspent CP held for Reactions).",
             "Draw 2 cards from your deck (max hand size: 7; discard extras).",
             "You may play any number of Command or Fragment cards (paying CP costs).",
             "Iron Dominion: Calculate Grid Cohesion bonuses for each unit based on nearby allies.",
@@ -102,7 +102,7 @@ const gameData = {
           name: "Combat Phase",
           description: "Resolve ranged and melee attacks.",
           actions: [
-            "Ranged attacks resolve first. Each unit with RNG > 1 may attack one enemy within range and line of sight. Engaged units cannot make ranged attacks.",
+            "Ranged attacks resolve first. Each unit with RNG > 1 may attack one enemy within range and line of sight. Engaged units cannot make ranged attacks (including card-granted ranged attacks, unless the card explicitly says it ignores Engagement).",
             "Melee attacks follow. Each Engaged unit attacks one enemy unit it is Engaged with.",
             "Multiple friendly units may be Engaged with the same enemy — each attacks separately.",
             "Resolve each attack using the Combat Resolution system (see Combat section).",
@@ -120,7 +120,7 @@ const gameData = {
             "Iron Dominion: Support units with Repair adjacent to damaged friendly units may restore 1 HP.",
             "Veilbound: Check if Ritual Flow Pool has crossed any new thresholds.",
             "Check victory conditions.",
-            "Discard down to max hand size (7) if needed. All unspent CP is lost."
+            "Discard down to max hand size (7) if needed. Unspent CP carries into your opponent's turn (for Reaction Cards) but is lost at the start of your next Command Phase."
           ],
         },
       ],
@@ -128,7 +128,7 @@ const gameData = {
 
     combat_resolution: {
       overview:
-        "When a unit attacks, roll dice equal to its ATK stat. Each die that meets or exceeds the defender's DEF value scores a hit. Each hit deals 1 damage (reduces HP by 1). Commander cards can modify any step of this process.",
+        "When a unit attacks, roll dice equal to its ATK stat. Each die that meets or exceeds the defender's DEF value scores a hit. Each hit deals 1 damage (reduces HP by 1). Commander cards can modify any step of this process. The defending player may spend CP (retained from their last turn) and RP to play defensive cards during the attacker's combat.",
       steps: [
         {
           step: 1,
@@ -183,14 +183,14 @@ const gameData = {
       iron_dominion: {
         grid_cohesion: {
           description:
-            "Iron Dominion units fight as nodes in a tactical Grid. When units maintain formation, they share bonuses. When isolated, they lose effectiveness. During the Command Phase, calculate Grid status for each unit by counting friendly non-War Machine units within 3\".",
+            "Iron Dominion units fight as nodes in a tactical Grid. When units maintain formation, they share bonuses. When isolated, they lose effectiveness. During the Command Phase, calculate Grid status for each unit by counting friendly units within 3\" (War Machines with Grid Anchor count as 2 units for this purpose).",
           tiers: [
             { name: "Isolated", units_within_3_inches: 0, bonus: "−1 ATK die. Unit operates alone without Grid support." },
             { name: "Connected", units_within_3_inches: 1, bonus: "No bonus or penalty. Stable but unremarkable." },
             { name: "Grid Active", units_within_3_inches: 2, bonus: "+1 ATK die on all attacks. The Grid feeds tactical data." },
             { name: "Grid Fortified", units_within_3_inches: 3, bonus: "+1 ATK die and +1 DEF. Requires at least 1 Support unit among adjacent allies." }
           ],
-          war_machine_rule: "War Machines are Grid Anchors: they count as 2 units for Grid adjacency purposes."
+          war_machine_rule: "War Machines with the Grid Anchor keyword count as 2 units for Grid Cohesion adjacency calculations. A War Machine adjacent to just 1 other unit counts as if that unit has 2 allies nearby."
         },
         fragment_charges: {
           description:
@@ -315,7 +315,7 @@ const gameData = {
           },
           pool_rules: [
             "Heat Pool starts at 0. Maximum capacity is 15 before Overheat triggers.",
-            "Heat does NOT carry between turns automatically — lose 3 Heat at the start of each Command Phase (the forges cool).",
+            "Heat does NOT carry between turns automatically — at the start of each Command Phase, FIRST lose 3 Heat (the forges cool), THEN generate Heat from all sources. This order matters.",
             "If your Commander is destroyed, lose 5 Heat immediately (loss of coordination).",
             "Heat cannot go below 0."
           ]
@@ -325,7 +325,7 @@ const gameData = {
             "Emberclaw riders and their drakes fight as bonded pairs — two bodies, one soul. Drake Bond pairs activate together, share wounds, and become more dangerous when separated by tragedy.",
           rules: [
             "During army building, you may designate up to 3 Drake Bond pairs. Each pair consists of one Rider unit and one Drake unit. Both must be purchased separately.",
-            "Bonded pairs activate simultaneously during the Movement and Combat Phases — move and attack as a single activation, in any order.",
+            "Bonded pairs activate simultaneously during the Movement and Combat Phases — they use a single activation slot. Move and/or attack both units in any order during that shared activation.",
             "Bonded pairs within 6\" of each other share a wound pool: when one takes damage, the controlling player chooses which unit loses HP.",
             "If one half of a Bond is destroyed, the survivor gains Vengeful: +2 ATK dice, Fearless, and +2\" MOV for the rest of the game. This is permanent and powerful.",
             "Bonded units may use each other's special abilities while within 6\" (e.g., a Rider can use the Drake's Breath Weapon).",
@@ -673,6 +673,7 @@ const gameData = {
           "A unit cannot Charge if it starts its Movement Phase already Engaged.",
           "A Charge must be declared at the start of the unit's activation during the Movement Phase.",
           "If the charging unit cannot reach within 1\" of the target, the Charge fails — the unit moves its full MOV toward the target but gains no Charge bonus.",
+          "Note: A unit already within 1-3\" of an enemy cannot Charge (it cannot cover 4\" of straight-line distance). It simply moves into Engagement normally without the Charge bonus. This 'dead zone' is intentional — charges represent a running start.",
           "Units with Fly may Charge from any direction, ignoring intervening terrain and models."
         ]
       },
@@ -714,7 +715,7 @@ const gameData = {
       rules: [
         "A unit becomes Engaged when it moves within 1\" of an enemy model, or when an enemy moves within 1\" of it.",
         "Engaged units MUST direct their melee attacks at units they are Engaged with.",
-        "Engaged units cannot make ranged attacks.",
+        "Engaged units cannot make ranged attacks (including card-granted ranged attacks, unless the card explicitly states it ignores Engagement).",
         "Multiple friendly units can Engage a single enemy. Each attacks separately during the Combat Phase.",
         "A unit Engaged with multiple enemies must choose one to attack. It does not split attacks.",
         "To Disengage: during your Movement Phase, declare a Disengage. The unit cannot attack this turn and uses its full movement to move away. It must move at least 1\" away from all enemy models.",
@@ -729,7 +730,8 @@ const gameData = {
       overview: "Some units and cards can issue Challenges — formal one-on-one duels that temporarily separate two combatants from the surrounding melee.",
       rules: [
         "A Challenge may be issued by a Specialist or Commander when they are Engaged with an enemy Specialist or Commander.",
-        "The challenged unit must accept unless a card allows refusal. If refused, the challenging unit gains +2 ATK dice against the refusing unit for the rest of the battle.",
+        "Commanders may freely refuse a Challenge issued by a non-Commander (e.g. a Specialist) with no penalty. Only a Challenge from another Commander carries the refusal penalty. This prevents cheap expendable units from locking down expensive characters.",
+        "If a Commander-vs-Commander Challenge is refused, the challenging Commander gains +2 ATK dice against the refusing Commander for the rest of the battle.",
         "During a Challenge, both units attack each other simultaneously — both roll their ATK dice at the same time. Apply damage to both.",
         "Other units cannot target or assist either combatant in a Challenge for that combat round.",
         "A Challenge lasts one combat round. If both units survive, the Challenge ends and normal melee resumes.",
@@ -782,7 +784,7 @@ const gameData = {
         { name: "Heal", description: "During the End Phase, restore 1 HP to an adjacent friendly unit (organic version of Repair)." },
         { name: "All-Terrain", description: "Ignores Difficult Terrain penalties." },
         { name: "Sharpshot", description: "Critical hits occur on rolls of 5+ instead of only on 6." },
-        { name: "Double Strike", description: "May attack twice in a single Combat Phase." },
+        { name: "Double Strike", description: "May attack twice in a single Combat Phase. Both attacks may target the same or different enemies within range. Resolve each attack fully (including damage and morale checks) before starting the second attack." },
         { name: "Terror Aura", description: "Enemy units within 3\" suffer −1 MOR on Morale checks." },
         { name: "Guardian", description: "When attacked in melee, this unit counterattacks at full ATK before damage is applied." },
         { name: "Ritual Flow", description: "This unit generates the stated amount of Ritual Flow for the Veilbound Flow Pool each Command Phase." }
@@ -871,7 +873,7 @@ const gameData = {
         nightfang_dominion: {
           resource: "Hunger Pool kills",
           generation: "The Hunger Pool grows from enemy kills. Fragments feed on death.",
-          activation: "Fragments activate for free once Hunger Pool thresholds are reached (5/10/15). Each threshold unlocks 1 free fragment activation that turn.",
+          activation: "Fragments activate for free once Hunger Pool thresholds are reached (5/10/15). Each threshold permanently unlocks 1 free fragment activation per Command Phase for the rest of the game (e.g., at 15+ kills, you get 3 free activations every turn).",
           instability: "Nightfang fragments always apply 1 Corruption token to the nearest friendly unit when activated (the Blight hungers for all flesh).",
           flavor: "Nightfang don't choose when to use fragments — the fragments awaken when enough blood has been spilled."
         },
@@ -934,9 +936,9 @@ const gameData = {
         },
         {
           name: "Play a Reaction Card",
-          cost: "1 RP + card's CP cost",
+          cost: "1 RP + card's CP cost (paid from CP retained from your last turn)",
           trigger: "As specified on the card (cards with 'Any Phase' or 'Reaction' timing).",
-          effect: "Play a card from your hand during your opponent's turn. You must still pay the card's CP cost from your remaining CP pool.",
+          effect: "Play a card from your hand during your opponent's turn. You must pay the card's CP cost from CP you retained from your last turn (CP carries through your opponent's turn and is only lost at the start of your next Command Phase).",
           restriction: "You must have both RP and CP available. Maximum 2 Reaction Cards per opponent turn."
         },
         {
@@ -1395,7 +1397,7 @@ const gameData = {
     // ==========================================
     quick_reference: {
       turn_summary: [
-        "1. COMMAND PHASE — Generate CP (= Commander's Command stat). Draw 2 cards (max hand 7). Play Command/Fragment cards.",
+        "1. COMMAND PHASE — Generate CP (= Commander's Command stat; any CP from last turn is lost). Draw 2 cards (max hand 7). Play Command/Fragment cards. Unspent CP carries into opponent's turn for Reactions.",
         "2. MOVEMENT PHASE — Activate each unit. Move up to MOV stat in inches. Declare Charges (4\"+ straight = +1 ATK). Engaged units must Disengage (sacrifice turn) to leave.",
         "3. COMBAT PHASE — Ranged first (RNG > 1, not Engaged). Then Melee (Engaged units). Roll d6 = ATK stat; hits on ≥ DEF; 6 = crit (2 dmg).",
         "4. END PHASE — Morale (damaged units roll 2d6 > MOR = Shaken; MOR+3 = Rout). Rally (Shaken + no dmg: 2d6 ≤ MOR). Fragment effects. Repair. Check victory. Discard to 7."

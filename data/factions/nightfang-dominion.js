@@ -3066,7 +3066,7 @@
     {
       name: "Crimson Behemoth",
       faction: "nightfang-dominion",
-      points_cost: 14,
+      points_cost: 100,
       role: "Massive melee war beast",
       fragment_interactions: "Corruption Aura 3\"; Blood Drain; Hunger Pool anchor",
       flavor_text: "A Stage 3 tiger of immense size — 20 feet at the shoulder, armored in plates of hardened Blight. It devours entire regiments.",
@@ -3086,7 +3086,7 @@
     {
       name: "Plague Titan",
       faction: "nightfang-dominion",
-      points_cost: 15,
+      points_cost: 110,
       role: "Walking corruption engine",
       fragment_interactions: "Maximum Corruption Aura; plague saturation; siege breaker",
       flavor_text: "The largest creature in the Nightfang arsenal — a Blight-mutated colossus whose every footstep spreads corruption and whose roar liquefies morale.",
@@ -3114,7 +3114,7 @@
     {
       name: "Blood Engine",
       faction: "nightfang-dominion",
-      points_cost: 13,
+      points_cost: 95,
       role: "Blood-powered war machine",
       fragment_interactions: "Blood Tithe multiplier; powered by sacrificed HP",
       flavor_text: "A pulsing heart-like construct of corrupted flesh and bone, fed by blood sacrificed from nearby units. The more it feeds, the more devastating its attacks.",
@@ -3139,7 +3139,7 @@
     {
       name: "Corruption Colossus",
       faction: "nightfang-dominion",
-      points_cost: 14,
+      points_cost: 100,
       role: "Mobile corruption factory",
       fragment_interactions: "Creates Corruption Zones; area denial on legs",
       flavor_text: "A walking factory of plague — it trails corruption in its wake and can projectile-infect entire areas of the battlefield.",
@@ -3165,7 +3165,7 @@
     {
       name: "Nightfang Dragon",
       faction: "nightfang-dominion",
-      points_cost: 15,
+      points_cost: 110,
       role: "Flying apex war beast",
       fragment_interactions: "Fly; Corruption Breath; apex predator of the sky",
       flavor_text: "A primordial dragon corrupted by the Blight over millennia. Its breath is concentrated Blight-fire and its shadow causes panic.",
@@ -3193,7 +3193,7 @@
     {
       name: "Bile Wurm",
       faction: "nightfang-dominion",
-      points_cost: 12,
+      points_cost: 90,
       role: "Burrowing war beast",
       fragment_interactions: "Ambush from underground; terrain manipulation",
       flavor_text: "A massive corrupted worm that burrows beneath the battlefield and erupts among enemy formations, spewing bile and corruption.",
@@ -3219,7 +3219,7 @@
     {
       name: "Blood Harvester Juggernaut",
       faction: "nightfang-dominion",
-      points_cost: 13,
+      points_cost: 95,
       role: "Armored assault war machine",
       fragment_interactions: "Blood Drain on kill; Hunger Pool anchor; siege unit",
       flavor_text: "A massive armored beast bristling with bone-blades and draining tubes. It harvests blood from everything it tramples.",
@@ -3245,7 +3245,7 @@
     {
       name: "Elder Tiger Horror",
       faction: "nightfang-dominion",
-      points_cost: 14,
+      points_cost: 100,
       role: "Ancient apex predator",
       fragment_interactions: "Corruption Aura 3\"; Pack Tactics for all tigers within 6\"",
       flavor_text: "An ancient vampiric tiger, possibly older than the Dominion itself. Its roar commands every tiger on the battlefield.",
@@ -3272,7 +3272,7 @@
     {
       name: "Plague Broodmother",
       faction: "nightfang-dominion",
-      points_cost: 13,
+      points_cost: 95,
       role: "Thrall spawner",
       fragment_interactions: "Generates free Thrall units; sustains attrition warfare",
       flavor_text: "A horrifying brood-beast that births new thralls directly onto the battlefield. It is both war machine and factory.",
@@ -3297,7 +3297,7 @@
     {
       name: "Shadow Leviathan",
       faction: "nightfang-dominion",
-      points_cost: 15,
+      points_cost: 110,
       role: "Supreme apex war beast",
       fragment_interactions: "Stealth war machine; Corruption Aura; devastating ambush",
       flavor_text: "The apex predator of the Nightfang — a shadow-cloaked leviathan that phases in and out of visibility. When it strikes, it is already too late.",
@@ -3328,7 +3328,7 @@
     {
       name: "The Patriarch's Avatar",
       faction: "nightfang-dominion",
-      points_cost: 25,
+      points_cost: 180,
       role: "Legendary apex horror",
       fragment_interactions: "Corruption Aura; Hunger Pool apex; supreme corruption engine",
       flavor_text: "A fragment of the Patriarch's own will given monstrous, corporeal form — a towering amalgamation of every corruption strain.",

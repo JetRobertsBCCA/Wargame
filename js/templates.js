@@ -315,6 +315,59 @@ const pageTemplates = {
     </div>
     <div class="card"><h3>Skill Tree Progression</h3><div id="skill-tree-display" class="skill-tree"><p style="color: #888; text-align: center;">Select a commander to view their skill tree.</p></div></div>
     <div class="card"><h3>Battle Log</h3><div style="margin-bottom: 1rem;"><button class="btn" onclick="recordBattle('victory')">🏆 Record Victory</button><button class="btn btn-secondary" onclick="recordBattle('defeat')">💀 Record Defeat</button><button class="btn btn-secondary" onclick="recordBattle('draw')">🤝 Record Draw</button></div><div id="battle-log" class="battle-log"><p style="color: #888; text-align: center;">No battles recorded yet. Start your campaign!</p></div></div>
+    <div class="card"><h3>⚔️ Between Games</h3><p style="color: #888; font-size: 0.9rem;">After each battle, resolve these steps in order. This handles injuries, resupply, and fragment discovery.</p>
+      <div id="between-games-panel">
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px; border-left: 3px solid #f44336;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #f44336;">Step 1 — Injury Rolls</h4>
+            <p style="font-size: 0.85rem; color: #aaa; margin: 0 0 0.5rem 0;">Each destroyed unit rolls 1d6:</p>
+            <ul style="font-size: 0.8rem; color: #ccc; margin: 0; padding-left: 1.2rem;">
+              <li><strong>1:</strong> Killed permanently (removed from roster)</li>
+              <li><strong>2:</strong> Crippled (−1 HP & −1 ATK next game)</li>
+              <li><strong>3-4:</strong> Walking Wounded (−1 HP next game)</li>
+              <li><strong>5-6:</strong> Full Recovery</li>
+            </ul>
+            <div style="margin-top: 0.75rem;"><input id="injury-unit-name" type="text" placeholder="Destroyed unit name..." style="width: 60%; padding: 0.3rem; background: #1a1a2e; border: 1px solid #333; color: #fff; border-radius: 4px;"><button class="btn btn-secondary" onclick="rollInjury()" style="font-size: 0.8rem; margin-left: 0.5rem;">🎲 Roll Injury</button></div>
+            <div id="injury-result" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px; border-left: 3px solid #ff9800;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #ff9800;">Step 2 — Commander Injury</h4>
+            <p style="font-size: 0.85rem; color: #aaa; margin: 0 0 0.5rem 0;">If your Commander was destroyed, roll 1d6:</p>
+            <ul style="font-size: 0.8rem; color: #ccc; margin: 0; padding-left: 1.2rem;">
+              <li><strong>1:</strong> Grievous — misses next game (substitute leads)</li>
+              <li><strong>2-3:</strong> Shaken — starts next game at −1 Command</li>
+              <li><strong>4-6:</strong> Battle-hardened — full recovery, +1 HP next game</li>
+            </ul>
+            <div style="margin-top: 0.75rem;"><button class="btn btn-secondary" onclick="rollCommanderInjury()" style="font-size: 0.8rem;">🎲 Roll Commander Injury</button></div>
+            <div id="commander-injury-result" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px; border-left: 3px solid #4caf50;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #4caf50;">Step 3 — Resupply Points</h4>
+            <p style="font-size: 0.85rem; color: #aaa; margin: 0 0 0.5rem 0;">Earn points to rebuild your roster (1 RP = 1 army-building point):</p>
+            <ul style="font-size: 0.8rem; color: #ccc; margin: 0; padding-left: 1.2rem;">
+              <li><strong>Win:</strong> 10 Resupply Points</li>
+              <li><strong>Loss:</strong> 15 Resupply Points (catch-up)</li>
+              <li><strong>Draw:</strong> 12 Resupply Points</li>
+            </ul>
+            <div style="margin-top: 0.75rem;">
+              <span style="font-size: 0.85rem; color: #ccc;">Total Resupply Earned: <strong id="total-resupply" style="color: #4caf50;">0</strong> RP</span>
+            </div>
+          </div>
+          <div style="background: rgba(255,255,255,0.03); padding: 1rem; border-radius: 6px; border-left: 3px solid #a78bfa;">
+            <h4 style="margin: 0 0 0.5rem 0; color: #a78bfa;">Step 4 — Fragment Discovery</h4>
+            <p style="font-size: 0.85rem; color: #aaa; margin: 0 0 0.5rem 0;">Roll 1d6 after each game. On 5-6, discover a new fragment. Winner chooses; loser draws randomly.</p>
+            <div style="margin-top: 0.75rem;">
+              <select id="fragment-battle-result" style="padding: 0.3rem; background: #1a1a2e; border: 1px solid #333; color: #fff; border-radius: 4px; margin-right: 0.5rem;"><option value="winner">Winner</option><option value="loser">Loser</option></select>
+              <button class="btn btn-secondary" onclick="rollFragmentDiscovery()" style="font-size: 0.8rem;">🎲 Roll Discovery</button>
+            </div>
+            <div id="fragment-discovery-result" style="margin-top: 0.5rem; font-size: 0.85rem;"></div>
+          </div>
+        </div>
+        <div id="injury-log" style="margin-top: 1rem;"></div>
+      </div>
+    </div>
     <div class="card"><h3>Unit Persistence Tracker</h3><p style="color: #888; font-size: 0.9rem;">Track damage, buffs, and mutations that persist across battles.</p><div id="persistent-units"><table style="width: 100%; border-collapse: collapse;"><thead><tr style="border-bottom: 2px solid #0f3460;"><th style="text-align: left; padding: 0.5rem;">Unit Name</th><th style="text-align: center; padding: 0.5rem;">Status</th><th style="text-align: center; padding: 0.5rem;">Buffs</th><th style="text-align: center; padding: 0.5rem;">Mutations</th><th style="text-align: center; padding: 0.5rem;">Actions</th></tr></thead><tbody id="unit-tracker-body"><tr><td colspan="5" style="text-align: center; padding: 1rem; color: #888;">Add units to track their campaign progression</td></tr></tbody></table></div><div style="margin-top: 1rem;"><button class="btn btn-secondary" onclick="addPersistentUnit()">+ Add Unit to Tracker</button></div></div>
     <div id="levelup-modal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; align-items: center; justify-content: center;"><div class="card" style="max-width: 600px; margin: 2rem;"><h3>🎉 Level Up!</h3><p>Your commander has reached a new level! Choose your skill upgrade:</p><div id="levelup-choices" class="evolution-grid"></div></div></div>
 </div>`,
