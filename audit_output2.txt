@@ -1,0 +1,1069 @@
+﻿====================================================================================================
+SHARDBORNE COMPREHENSIVE BALANCE AUDIT
+====================================================================================================
+
+## 1. FACTION UNIT & COMMANDER COUNTS
+
+  Emberclaw        Units:  50  Commanders: 13  [Artillery:3, Cavalry:5, Infantry:15, Scout:3, Specialist:5, Support:8, War Machine:11]
+  Iron Dom.        Units:  56  Commanders: 13  [Artillery:3, Cavalry:5, Infantry:20, Scout:3, Specialist:5, Support:9, War Machine:11]
+  Nightfang        Units:  61  Commanders: 13  [Artillery:5, Cavalry:6, Infantry:18, Scout:6, Specialist:7, Support:8, War Machine:11]
+  Thornweft        Units:  50  Commanders: 13  [Artillery:3, Cavalry:5, Infantry:15, Scout:3, Specialist:5, Support:8, War Machine:11]
+  Veilbound        Units:  60  Commanders: 13  [Artillery:4, Cavalry:10, Infantry:16, Scout:4, Specialist:8, Support:7, War Machine:11]
+
+  Total units: 277   Total commanders: 65
+
+## 2. COST-TO-STATS EFFICIENCY BY TYPE
+
+  Artillery       (18 units) avg_eff= 11.02  range=[8.12 - 15.00]
+    Name                                 Faction         Pts    Eff  ATK  DEF   HP  MOV  RNG  MOR Total #Sp
+    Aether Blasters                      Iron Dom.         3  15.00    9    3    6    4   16    7    45   2
+    Plague Ballista Crew                 Nightfang         4  13.00   12    3    6    4   20    7    52   4
+    Dreampiercer Archers                 Veilbound         4  12.50    9    3    6    5   20    7    50   2
+    Gearwright Artillery                 Iron Dom.         5  12.20   15    3    9    3   24    7    61   4
+    Void Bolt Crossbowmen                Veilbound         4  12.00   12    3    6    4   16    7    48   2
+    Blood Mortar Team                    Nightfang         4  11.75    9    3    6    4   18    7    47   4
+    Ember Ballista                       Emberclaw         5  11.60   12    3    9    3   24    7    58   2
+    Plague Catapult Crew                 Nightfang         5  11.60   12    3    9    3   24    7    58   5
+    Steam Artillery Crew                 Iron Dom.         5  11.00   12    3    6    3   24    7    55   3
+    Celestial Slingers                   Veilbound         4  11.00    9    3    6    5   14    7    44   2
+    Pyroclast Catapult                   Emberclaw         6  10.67   18    3    9    3   24    7    64   3
+    Shadow Marksmen                      Veilbound         5  10.60    9    3    6    5   22    8    53   3
+    Fragment Launcher                    Emberclaw         7  10.43   21    3    9    3   30    7    73   3
+    Corruption Spire Battery             Nightfang         6   9.67   15    3    9    0   24    7    58   4
+    Silk Catapult                        Thornweft         6   9.67   12    3    9    3   24    7    58   3
+    Bile Cannon Crew                     Nightfang         5   8.80   15    3    6    3   10    7    44   4
+    Venom Mortar                         Thornweft         7   8.71   15    3    9    3   24    7    61   3
+    Fate-Loom Siege Engine               Thornweft         8   8.12    9    3   12    3   30    8    65   2
+
+  Cavalry         (31 units) avg_eff=  8.60  range=[6.50 - 18.50]
+    Name                                 Faction         Pts    Eff  ATK  DEF   HP  MOV  RNG  MOR Total #Sp
+    Spiderling Scouts                    Thornweft         2  18.50    9    2    6   10    4    6    37   3
+    Ashrider Scouts                      Emberclaw         3  14.67   12    3    6   12    4    7    44   2
+    Swift Talon Outriders                Emberclaw         4  11.75   12    3    6   14    4    8    47   3
+    Steam Lancers                        Iron Dom.         3  11.67    9    3    6    9    1    7    35   2
+    Thrall Riders                        Nightfang         3  10.67    9    3    6    8    1    5    32   3
+    Skytalon Lancers                     Emberclaw         5   9.60   15    4    9   10    2    8    48   3
+    Silk-Rider Lancers                   Thornweft         5   9.20   15    4    9    8    2    8    46   3
+    Clockwork Cavalry                    Iron Dom.         4   9.00    9    4    6    9    1    7    36   3
+    Aether Dragoons                      Iron Dom.         6   8.83   12    3    9    9   12    8    53   3
+    Gear-Rider Hussars                   Iron Dom.         5   8.40   12    4    9    8    1    8    42   3
+    Tiger Chargers                       Nightfang         5   8.00   12    4    6    9    1    8    40   5
+    Plague Runners                       Nightfang         4   8.00    6    3    6   10    1    6    32   3
+    Phase-Silk Cavalry                   Thornweft         6   8.00   12    3    9   12    4    8    48   3
+    Blood Fanged Riders                  Nightfang         6   7.83   15    4    9    9    1    9    47   4
+    Star Serpent Lancers                 Veilbound         5   7.80   12    4    6    9    1    7    39   2
+    Shrine Lion Riders                   Veilbound         5   7.80    9    4    9    8    1    8    39   3
+    Shadow Pounce Cavalry                Nightfang         5   7.60   12    3    6    9    1    7    38   5
+    Spirit Wolf Hunters                  Veilbound         5   7.60    9    3    9    9    1    7    38   2
+    Crimson Oni Riders                   Veilbound         6   7.50   15    4    9    8    1    8    45   3
+    Lunar Kitsune Riders                 Veilbound         5   7.40    9    4    6    9    1    8    37   2
+    Spirit Dragon Cohort                 Veilbound         5   7.40    9    4    6    9    1    8    37   3
+    Eclipse Manta Riders                 Veilbound         6   7.33   12    3    6   10    6    7    44   3
+    Thunder Kirin Cavalry                Veilbound         5   7.20    9    4    6    9    1    7    36   2
+    Void Crane Riders                    Veilbound         6   7.17   12    4    9   10    1    7    43   3
+    Emberknight Riders                   Emberclaw         8   7.00   18    5   12   10    2    9    56   3
+    Iron Stampede                        Iron Dom.         7   7.00   15    5   12    7    1    9    49   4
+    Matriarch Riders                     Thornweft         8   7.00   18    5   12    8    4    9    56   4
+    Nightstalker Cavalry                 Nightfang         7   6.86   15    4    9   10    1    9    48   5
+    Dreambound Riders                    Veilbound         7   6.71   12    4   12   10    1    8    47   3
+    Scorchcaller Elites                  Emberclaw        10   6.50   21    6   15   10    3   10    65   4
+    Queen-Spawn War-mount                Thornweft        10   6.50   21    6   15    7    6   10    65   4
+
+  Infantry        (84 units) avg_eff= 11.51  range=[6.75 - 25.00]
+    Name                                 Faction         Pts    Eff  ATK  DEF   HP  MOV  RNG  MOR Total #Sp
+    Inkblade Initiates                   Veilbound         1  25.00    6    3    3    6    1    6    25   2
+    Ashborn Infantry                     Emberclaw         1  24.00    6    3    3    5    1    6    24   1
+    Infantry Regiment                    Iron Dom.         1  24.00    6    3    3    5    1    6    24   1
+    Thread-Warden Infantry               Thornweft         1  24.00    6    3    3    5    1    6    24   2
+    Veiled Ashigaru                      Veilbound         1  24.00    6    3    3    5    1    6    24   2
+    Shuttle-Consort Militia              Thornweft         1  22.00    6    2    3    5    1    5    22   2
+    Thrall Conscripts                    Nightfang         1  19.00    3    3    3    5    1    4    19   3
+    Plague Horde                         Nightfang         1  18.00    3    2    3    5    1    4    18   4
+    Silk-Shot Skirmishers                Thornweft         2  17.00    9    2    3    6    8    6    34   2
+    Ashwalker Skirmishers                Emberclaw         2  15.00    6    2    3    7    6    6    30   2
+    Aether Marksmen                      Iron Dom.         3  15.00    9    3    3    5   18    7    45   2
+    Arcane Steam Marksmen                Iron Dom.         3  14.67    6    3    3    5   20    7    44   3
+    Gear Infused Infantry                Iron Dom.         2  14.50    6    4    6    5    1    7    29   1
+    Shrine Wardens                       Veilbound         2  14.50    6    4    6    5    1    7    29   2
+    Emberclaw Warriors                   Emberclaw         2  14.00    6    3    3    5    4    7    28   2
+    Silk-Warden Regulars                 Thornweft         2  14.00    9    3    3    5    1    7    28   3
+    Steam-Powered Sharpshooters          Iron Dom.         3  13.67    6    3    3    5   18    6    41   2
+    Clockwork Grenadiers                 Iron Dom.         3  13.33    9    3    6    5   10    7    40   2
+    Infected Archers                     Nightfang         3  13.33    9    3    3    5   14    6    40   3
+    Blood Thralls                        Nightfang         2  13.00    6    3    6    5    1    5    26   2
+    Blightspitter Thralls                Nightfang         2  13.00    6    2    3    5    6    4    26   6
+    Steam Grenadiers                     Iron Dom.         3  12.67    9    3    6    5    8    7    38   2
+    Spirit Javelin Skirmishers           Veilbound         3  12.67    6    3    6    6   10    7    38   3
+    Web-Spinner Sappers                  Thornweft         2  12.50    6    3    3    5    1    7    25   2
+    Unbonded Berserkers                  Emberclaw         3  12.33   15    2    3    6    1   10    37   2
+    Gossamer Guard                       Thornweft         3  12.33   12    5    6    5    1    8    37   3
+    Flameborn Guard                      Emberclaw         3  12.00   12    4    6    5    1    8    36   3
+    Faithful Guard                       Emberclaw         3  11.67    9    4    6    5    1   10    35   2
+    Corrupted Militia                    Nightfang         2  11.50    6    4    3    4    1    5    23   3
+    Mask Bearers                         Veilbound         2  11.50    0    3    6    5    1    8    23   4
+    Pyromancer Adepts                    Emberclaw         3  11.33    9    2    3    5    8    7    34   2
+    Hatchery Guard                       Emberclaw         3  11.33    9    5    6    4    1    9    34   2
+    Anchor Guard                         Thornweft         3  11.33    9    5    6    4    1    9    34   3
+    Moonlit Duelists                     Veilbound         3  11.33    9    4    6    6    1    8    34   3
+    Temple Defenders                     Veilbound         3  11.00    6    5    9    4    1    8    33   3
+    Clockwork Infantry                   Iron Dom.         3  10.67    6    4    6    5    1   10    32   2
+    Aether Infused Soldiers              Iron Dom.         3  10.67    9    3    6    6    1    7    32   2
+    Mechanized Infantry                  Iron Dom.         3  10.67    9    4    6    5    1    7    32   1
+    Venom Dancers                        Thornweft         3  10.67   12    2    3    7    1    7    32   3
+    Moonlit Wanderers                    Veilbound         3  10.67    9    3    6    6    1    7    32   3
+    Fragment Swarm Units                 Iron Dom.         4  10.50   15    2    6    6    3   10    42   3
+    Fang Guard                           Nightfang         3  10.33    9    3    6    5    1    7    31   4
+    Shadow Claw Infantry                 Nightfang         3  10.33    9    3    6    5    1    7    31   3
+    Cocoon Wardens                       Thornweft         3  10.33    9    4    6    4    1    7    31   2
+    Emberforged Blades                   Emberclaw         4  10.00   15    4    6    6    1    8    40   2
+    Immolation Infantry                  Emberclaw         4  10.00   12    3    3    6    6   10    40   2
+    Experimental Construct               Iron Dom.         4  10.00   12    3    9    5    1   10    40   2
+    Silk-Blade Duelists                  Thornweft         4   9.75   15    3    6    6    1    8    39   3
+    Crimson Spearmen                     Nightfang         3   9.67    6    4    6    5    1    7    29   3
+    Gear-Linked Infantry                 Iron Dom.         3   9.33    6    3    6    5    1    7    28   2
+    Clockwork Vanguard                   Iron Dom.         4   9.25    9    4    9    5    1    9    37   2
+    Corruption Guard                     Nightfang         4   9.25    9    5    9    4    1    9    37   3
+    Elite Vanguard                       Iron Dom.         4   9.00   12    4    6    5    1    8    36   2
+    Nightfang Warriors                   Nightfang         4   9.00   12    3    6    6    1    8    36   3
+    Phase-Silk Infiltrators              Thornweft         4   9.00   15    2    3    7    1    8    36   3
+    Thread-Seer Acolytes                 Thornweft         4   9.00    6    3    6    5    8    8    36   2
+    Starblade Samurai                    Veilbound         4   9.00   12    4    6    5    1    8    36   2
+    Oni Mask Executioners                Veilbound         4   9.00   12    3    6    6    1    8    36   3
+    Scorched Veterans                    Emberclaw         5   8.80   15    5    9    5    1    9    44   3
+    Fang Guard Elite                     Thornweft         5   8.80   15    5    9    5    1    9    44   4
+    Fate-Blessed Veterans                Thornweft         5   8.80   15    5    9    5    1    9    44   4
+    Siege Infantry                       Iron Dom.         4   8.75    9    4    9    4    1    8    35   3
+    Gearstorm Infantry                   Iron Dom.         4   8.75   12    3    6    6    1    7    35   2
+    Steam Shock Infantry                 Iron Dom.         4   8.75   12    3    6    6    1    7    35   2
+    Blood Reavers                        Nightfang         4   8.75   12    3    6    6    1    7    35   3
+    Kintsugi Blademasters                Veilbound         5   8.60   12    4   12    5    1    9    43   3
+    Steam Heavy Guards                   Iron Dom.         4   8.25    6    5    9    4    1    8    33   2
+    Fear-Weavers                         Thornweft         4   8.25    9    3    6    5    1    9    33   2
+    Lotus Ascetics                       Veilbound         4   8.25    9    4    6    5    1    8    33   2
+    Spirit Wolf Packs                    Veilbound         4   8.25    9    3    6    7    1    7    33   3
+    Void Serpent Harriers                Veilbound         4   8.25    9    3    6    7    1    7    33   3
+    Ember Council Honor Guard            Emberclaw         6   8.17   18    6    9    5    1   10    49   3
+    Reborn Phalanx                       Emberclaw         5   8.00   12    5    9    4    1    9    40   2
+    Forge Acolytes                       Emberclaw         3   8.00    6    3    3    4    1    7    24   2
+    Steam Sentinels                      Iron Dom.         4   8.00    6    5    9    3    1    8    32   3
+    Tiger Berserkers                     Nightfang         5   8.00   15    3    6    6    1    9    40   4
+    Crimson Halberdiers                  Nightfang         4   8.00    9    4    6    5    1    7    32   3
+    Inkblade Masters                     Veilbound         5   7.80   12    4    9    5    1    8    39   5
+    Bloodsworn Templars                  Nightfang         5   7.40    9    5    9    4    1    9    37   4
+    Tiger Fang Elite                     Nightfang         6   7.33   15    4    9    6    1    9    44   4
+    Plague Knights                       Nightfang         5   7.20    9    5    9    4    1    8    36   5
+    Hollow Lord Phalanx                  Veilbound         6   7.17   12    4   12    5    1    9    43   3
+    Blight Reapers                       Nightfang         5   7.00   12    3    6    5    1    8    35   3
+    Fragment Artillery Crew              Emberclaw         4   6.75    6    3    6    4    1    7    27   2
+
+  Scout           (19 units) avg_eff= 12.00  range=[8.50 - 23.00]
+    Name                                 Faction         Pts    Eff  ATK  DEF   HP  MOV  RNG  MOR Total #Sp
+    Blood Runners                        Nightfang         1  23.00    3    2    3   10    1    4    23   5
+    Thermal Trackers                     Emberclaw         2  15.50    6    2    3    6    8    6    31   2
+    Silent Wing Scouts                   Emberclaw         3  14.00    9    2    6   12    6    7    42   4
+    Scouts / Recon                       Iron Dom.         2  14.00    3    3    3    8    6    5    28   2
+    Silk-Shadow Scouts                   Thornweft         3  13.33    9    2    6   10    6    7    40   4
+    Mechanized Scouts                    Iron Dom.         3  12.67    6    3    6    8    8    7    38   2
+    Ink Messengers                       Veilbound         2  12.50    3    2    3   10    1    6    25   4
+    Sky Watchers                         Emberclaw         4  12.00    9    3    6   10   12    8    48   3
+    Tremor Sentinels                     Thornweft         2  12.00    6    2    3    5    1    7    24   3
+    Shadow Stalkers                      Nightfang         2  11.00    3    3    3    8    1    4    22   5
+    Corruption Scouts                    Nightfang         3  11.00    6    3    3    8    8    5    33   5
+    Thread-Reader Outriders              Thornweft         4  10.75    9    3    6    9    8    8    43   3
+    Spirit Tracker Pack                  Veilbound         3  10.33    6    3    6    8    1    7    31   4
+    Steam Recon Flyers                   Iron Dom.         4  10.00    6    3    6   10    8    7    40   2
+    Ink Dragon Scouts                    Veilbound         4   9.75    6    3    6    9    8    7    39   3
+    Tiger Scout Pack                     Nightfang         3   9.33    6    3    3    9    1    6    28   5
+    Ink Shadow Scouts                    Veilbound         3   9.33    6    3    3    8    1    7    28   4
+    Blight Hound Pack                    Nightfang         3   9.00    6    3    3    9    1    5    27   5
+    Nightveil Infiltrators               Nightfang         4   8.50    9    3    6    8    1    7    34   7
+
+  Specialist      (30 units) avg_eff=  8.72  range=[5.50 - 18.00]
+    Name                                 Faction         Pts    Eff  ATK  DEF   HP  MOV  RNG  MOR Total #Sp
+    Aether Hackers                       Iron Dom.         2  18.00    3    3    6    5   12    7    36   2
+    Fledgling Swarm                      Emberclaw         2  14.00    6    2    3   10    1    6    28   3
+    Spiderling Swarm                     Thornweft         2  13.50    9    1    3    8    1    5    27   4
+    Immolation Bombers                   Emberclaw         4  11.50   18    2    3   12    1   10    46   3
+    Aether Infiltrators                  Iron Dom.         3  10.00    6    3    6    7    1    7    30   2
+    Midnight Assassin                    Nightfang         4   9.75   15    3    6    7    1    7    39   5
+    Cocoon Bombers                       Thornweft         4   9.75    9    3    6    6    8    7    39   2
+    Flame Prophets                       Emberclaw         5   8.80    9    2    6    5   12   10    44   3
+    Blood Champion                       Nightfang         5   8.80   15    4    9    6    1    9    44   5
+    Thread-Cutter Assassins              Thornweft         5   8.80   18    2    6    8    1    9    44   3
+    Fragment-Blade Assassins             Emberclaw         5   8.60   18    3    6    7    1    8    43   3
+    Specialist Hero                      Iron Dom.         4   8.50    9    4    6    6    1    8    34   2
+    Arcane Tinkerers                     Iron Dom.         3   8.33    3    3    6    5    1    7    25   3
+    Arcane Tinker Battalion              Iron Dom.         3   8.33    3    3    6    5    1    7    25   2
+    Silent Ink Assassins                 Veilbound         4   8.25    9    3    6    7    1    7    33   3
+    Tiger Alpha                          Nightfang         6   8.00   15    4   12    7    1    9    48   5
+    Feral Skinchanger                    Nightfang         5   8.00   12    4    9    6    1    8    40   3
+    Shrouded Shogun Vassals              Veilbound         6   8.00   15    5   12    5    1   10    48   4
+    Masked Lord Retinue                  Veilbound         5   8.00   12    4    9    5    1    9    40   3
+    Silk Wraiths                         Thornweft         5   7.80   15    1    6    8    1    8    39   3
+    Lotus Phantom Assassins              Veilbound         5   7.40   12    3    6    7    1    8    37   3
+    Hollow Shrine Guardians              Veilbound         5   7.20    9    4    9    4    1    9    36   4
+    Plague Doctor                        Nightfang         4   7.00    6    3    6    5    1    7    28   3
+    Veilbound Sigil Bearers              Veilbound         4   7.00    6    3    6    5    1    7    28   2
+    Phoenix Guard                        Emberclaw         6   6.83   15    4    6    5    1   10    41   3
+    Ritual Captains                      Veilbound         5   6.80    6    4    9    5    1    9    34   4
+    Blood Hierophant                     Nightfang         4   6.75    0    3    6    4    6    8    27   4
+    Reality Weavers                      Thornweft         6   6.50    9    3    6    5    8    8    39   3
+    Spirit Monolith                      Veilbound         6   5.83    0    6   18    0    1   10    35   5
+    Hunger Wraith                        Nightfang         8   5.50   12    6    9    6    1   10    44   5
+
+  Support         (40 units) avg_eff=  9.21  range=[5.50 - 13.00]
+    Name                                 Faction         Pts    Eff  ATK  DEF   HP  MOV  RNG  MOR Total #Sp
+    Corruption Spreaders                 Nightfang         2  13.00    0    3    6    5    6    6    26   4
+    Gearwright Engineers                 Iron Dom.         2  12.50    3    3    6    5    1    7    25   3
+    Clockwork Pioneers                   Iron Dom.         2  12.50    3    3    6    5    1    7    25   4
+    Overclocked Engineers                Iron Dom.         2  12.50    3    3    6    5    1    7    25   2
+    Clockwork Engineers                  Iron Dom.         2  12.50    3    3    6    5    1    7    25   2
+    Thrall Masters                       Nightfang         2  12.50    3    3    6    5    1    7    25   4
+    Ink Sigil Crafters                   Veilbound         3  12.00    3    3    6    5   12    7    36   4
+    Banner of Silent Prayer              Veilbound         2  11.50    0    3    6    5    1    8    23   5
+    Lantern Bearers                      Veilbound         2  11.50    3    3    3    5    1    8    23   2
+    Bonfire Keepers                      Emberclaw         3  10.67    6    3    6    4    6    7    32   2
+    Steam Reclaimers                     Iron Dom.         2  10.50    3    3    3    5    1    6    21   2
+    Silk Surgeons                        Thornweft         3  10.33    6    3    6    5    4    7    31   2
+    Smoke Weavers                        Emberclaw         3  10.00    6    2    3    5    8    6    30   2
+    Vibration Drummers                   Thornweft         3   9.67    6    3    6    5    1    8    29   2
+    Steam Miners                         Iron Dom.         2   9.50    3    3    3    4    1    5    19   2
+    Steam Medic Corps                    Iron Dom.         2   9.50    0    3    3    5    1    7    19   3
+    Drake Handlers                       Emberclaw         3   9.33    6    3    6    5    1    7    28   2
+    Mechanical Sappers                   Iron Dom.         3   9.33    6    3    6    5    1    7    28   3
+    Spider Handlers                      Thornweft         3   9.33    6    3    6    5    1    7    28   3
+    Flameheart Clerics                   Emberclaw         4   8.50    6    3    6    5    6    8    34   2
+    Blood Collectors                     Nightfang         2   8.50    0    3    3    5    1    5    17   4
+    Venom Alchemists                     Thornweft         4   8.50    6    2    6    5    8    7    34   2
+    Aether Engineers                     Iron Dom.         3   8.33    3    3    6    5    1    7    25   3
+    Blood Shamans                        Nightfang         3   8.33    3    3    6    5    1    7    25   3
+    Flow Adepts                          Veilbound         3   8.33    3    3    6    5    1    7    25   3
+    Shrine Artificers                    Veilbound         3   8.33    3    3    6    5    1    7    25   3
+    Pyromancer Circle                    Emberclaw         5   8.20    9    2    6    5   12    7    41   3
+    Gossamer Trap Layers                 Thornweft         3   8.00    6    3    3    5    1    6    24   2
+    Fate-Thread Weavers                  Thornweft         5   7.80    6    2    6    5   12    8    39   3
+    Crimson Chanters                     Nightfang         3   7.67    0    3    6    5    1    8    23   5
+    Spirit Healer Monks                  Veilbound         3   7.67    0    3    6    5    1    8    23   4
+    Divine Acolytes                      Emberclaw         4   7.50    6    3    6    5    1    9    30   2
+    Plague Apothecaries                  Nightfang         3   7.33    0    3    6    5    1    7    22   3
+    Hunger Priests                       Nightfang         3   7.33    0    3    6    4    1    8    22   3
+    Embersmith Apprentices               Emberclaw         4   7.00    6    4    6    4    1    7    28   2
+    Web-Anchor Engineers                 Thornweft         4   7.00    6    3    6    5    1    7    28   3
+    Cocoon Processors                    Thornweft         4   7.00    6    4    6    4    1    7    28   2
+    Fragment Shapers                     Emberclaw         4   6.75    6    3    6    4    1    7    27   2
+    Phantom Ward Constructs              Veilbound         5   6.20    0    5   15    0    1   10    31   4
+    Blight Weavers                       Nightfang         4   5.50    0    3    6    4    1    8    22   4
+
+  War Machine     (55 units) avg_eff=  0.81  range=[0.57 - 1.06]
+    Name                                 Faction         Pts    Eff  ATK  DEF   HP  MOV  RNG  MOR Total #Sp
+    Venom Engine                         Thornweft        70   1.06   18    5   24    5   12   10    74   3
+    Steam Colossus                       Iron Dom.        80   1.05   18    5   24    3   24   10    84   4
+    Crawler Siege Engine                 Thornweft        65   1.05   18    5   21    6    8   10    68   3
+    Young War Drake                      Emberclaw        60   1.03   18    4   18   12    2    8    62   3
+    Fate-Loom Engine                     Thornweft        85   1.02   12    5   27    3   30   10    87   3
+    Mechanized Siege Engine              Iron Dom.        80   1.01   18    5   27    3   18   10    81   5
+    Cinder Golem                         Emberclaw        70   1.00   21    6   27    5    1   10    70   3
+    Cocoon Harvester                     Thornweft        60   1.00   15    5   21    5    4   10    60   3
+    Aether Cannon Walker                 Iron Dom.        85   0.98   21    4   24    4   20   10    83   4
+    Fire Colossus                        Emberclaw        90   0.90   24    6   30    5    6   10    81   3
+    Web-Fortress                         Thornweft        80   0.90   12    8   30    0   12   10    72   4
+    Phase-Silk Wraith Spider             Thornweft        70   0.90   18    3   18   10    4   10    63   4
+    Mature War Drake                     Emberclaw        80   0.89   21    5   24   10    2    9    71   4
+    Magma Titan                          Emberclaw        95   0.88   24    5   33    4    8   10    84   3
+    Silk Colossus                        Thornweft       100   0.88   24    7   36    5    6   10    88   4
+    Celestial Ink Dragon                 Veilbound        95   0.87   18    4   27    8   16   10    83   4
+    Scorched Titan                       Emberclaw       100   0.86   27    7   36    4    2   10    86   4
+    Brood-Mother Spider                  Thornweft        90   0.86   21    6   30    6    4   10    77   4
+    Gossamer Titan                       Thornweft       110   0.85   27    6   39    4    8   10    94   4
+    Shrine Dragon                        Veilbound       100   0.85   21    4   30    8   12   10    85   4
+    Nightfang Dragon                     Nightfang       110   0.85   24    4   33   10   12   10    93   8
+    Gear-Beast Construct                 Iron Dom.        80   0.82   21    4   24    6    1   10    66   5
+    Steam Gargoyle                       Iron Dom.        90   0.82   18    4   24   10    8   10    74   4
+    Flame Engine                         Emberclaw        65   0.82   12    5   21    4    1   10    53   3
+    Drake Nest Mobile                    Emberclaw        70   0.80   12    6   24    3    1   10    56   3
+    Grounded Wyrm                        Emberclaw       110   0.79   27    7   36    4    3   10    87   3
+    Clockwork Titan                      Iron Dom.        90   0.79   21    5   30    4    1   10    71   4
+    Eclipse Manta Titan                  Veilbound       100   0.78   18    4   30   10    6   10    78   4
+    Chrono Walker                        Iron Dom.       100   0.77   15    5   30    5   12   10    77   5
+    Arcane Steam Golem                   Iron Dom.        85   0.76   18    5   27    4    1   10    65   4
+    Overclocked Automaton                Iron Dom.        80   0.76   18    4   21    7    1   10    61   4
+    Blood Engine                         Nightfang        95   0.76   18    4   24    4   12   10    72   4
+    Titan Engine Imperius                Iron Dom.       180   0.76   30    8   60    4   24   10   136   7
+    Veilbound Oni Juggernaut             Veilbound       110   0.75   27    4   36    5    1   10    83   4
+    Trap-Layer Construct                 Thornweft        60   0.75    9    4   15    6    1   10    45   3
+    Experimental Leviathan               Iron Dom.       110   0.75   24    5   36    4    3   10    82   6
+    Obsidax (Unique Wyrm)                Emberclaw       200   0.74   42    9   72   10    6   10   149   5
+    Pyrathax (Unique Ancient)            Emberclaw       150   0.74   30    7   48   12    4   10   111   4
+    Elder Tiger Horror                   Nightfang       100   0.74   21    4   30    8    1   10    74   7
+    Skithari (Unique Queen-Spawn)        Thornweft       180   0.73   36    8   60    8   10   10   132   5
+    Hollow Ronin Construct               Veilbound        90   0.73   21    4   24    6    1   10    66   4
+    Crimson Behemoth                     Nightfang       100   0.73   21    5   30    6    1   10    73   6
+    Plague Titan                         Nightfang       110   0.73   24    5   36    4    1   10    80   7
+    Komainu Guardian Colossus            Veilbound        95   0.73   18    5   30    5    1   10    69   3
+    Shadow Leviathan                     Nightfang       110   0.72   27    4   30    7    1   10    79   8
+    Corruption Colossus                  Nightfang       100   0.70   15    5   27    5    8   10    70   5
+    Bile Wurm                            Nightfang        90   0.70   18    4   24    6    1   10    63   5
+    Blood Harvester Juggernaut           Nightfang        95   0.69   18    5   27    5    1   10    66   5
+    Shrouded Throne Entity               Veilbound       110   0.67   15    5   36    0    8   10    74   4
+    Spirit Temple Walker                 Veilbound        85   0.66   12    5   24    4    1   10    56   4
+    Walking Torii Gate                   Veilbound        90   0.66   12    5   27    4    1   10    59   4
+    Celestial Shogun Construct           Veilbound       180   0.61   27    7   54    5    6   10   109   8
+    Plague Broodmother                   Nightfang        95   0.60   12    4   27    3    1   10    57   4
+    Lotus Ascendant Monolith             Veilbound        85   0.58    9    5   24    0    1   10    49   5
+    The Patriarch                        Nightfang       180   0.57   27    6   54    5    1   10   103  10
+
+
+## 3. FACTION AVERAGE EFFICIENCY (non-WM units)
+
+  Emberclaw        avg_eff= 10.58  avg_pts= 4.10  n= 39  ##########
+  Iron Dom.        avg_eff= 11.12  avg_pts= 3.29  n= 45  ###########
+  Nightfang        avg_eff=  9.79  avg_pts= 3.80  n= 50  #########
+  Thornweft        avg_eff= 10.60  avg_pts= 4.05  n= 39  ##########
+  Veilbound        avg_eff=  9.65  avg_pts= 4.06  n= 49  #########
+
+
+## 4. WITHIN-FACTION COST CURVE ISSUES
+  (Cheaper units that strictly dominate more expensive ones in same faction)
+
+  Emberclaw Warriors (2pts) strictly dominates Forge Acolytes (3pts) in Emberclaw
+    Cheaper: ATK=6 DEF=3 HP=3 MOV=5 RNG=4 MOR=7
+    Costlier: ATK=6 DEF=3 HP=3 MOV=4 RNG=1 MOR=7
+  Flameborn Guard (3pts) strictly dominates Fragment Artillery Crew (4pts) in Emberclaw
+    Cheaper: ATK=12 DEF=4 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Flameborn Guard (3pts) strictly dominates Fragment Shapers (4pts) in Emberclaw
+    Cheaper: ATK=12 DEF=4 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Flameborn Guard (3pts) strictly dominates Embersmith Apprentices (4pts) in Emberclaw
+    Cheaper: ATK=12 DEF=4 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=6 DEF=4 HP=6 MOV=4 RNG=1 MOR=7
+  Hatchery Guard (3pts) strictly dominates Fragment Artillery Crew (4pts) in Emberclaw
+    Cheaper: ATK=9 DEF=5 HP=6 MOV=4 RNG=1 MOR=9
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Hatchery Guard (3pts) strictly dominates Fragment Shapers (4pts) in Emberclaw
+    Cheaper: ATK=9 DEF=5 HP=6 MOV=4 RNG=1 MOR=9
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Hatchery Guard (3pts) strictly dominates Embersmith Apprentices (4pts) in Emberclaw
+    Cheaper: ATK=9 DEF=5 HP=6 MOV=4 RNG=1 MOR=9
+    Costlier: ATK=6 DEF=4 HP=6 MOV=4 RNG=1 MOR=7
+  Faithful Guard (3pts) strictly dominates Fragment Artillery Crew (4pts) in Emberclaw
+    Cheaper: ATK=9 DEF=4 HP=6 MOV=5 RNG=1 MOR=10
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Ashrider Scouts (3pts) strictly dominates Fragment Artillery Crew (4pts) in Emberclaw
+    Cheaper: ATK=12 DEF=3 HP=6 MOV=12 RNG=4 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Drake Handlers (3pts) strictly dominates Fragment Artillery Crew (4pts) in Emberclaw
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Bonfire Keepers (3pts) strictly dominates Fragment Artillery Crew (4pts) in Emberclaw
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=4 RNG=6 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Faithful Guard (3pts) strictly dominates Fragment Shapers (4pts) in Emberclaw
+    Cheaper: ATK=9 DEF=4 HP=6 MOV=5 RNG=1 MOR=10
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Faithful Guard (3pts) strictly dominates Embersmith Apprentices (4pts) in Emberclaw
+    Cheaper: ATK=9 DEF=4 HP=6 MOV=5 RNG=1 MOR=10
+    Costlier: ATK=6 DEF=4 HP=6 MOV=4 RNG=1 MOR=7
+  Faithful Guard (3pts) strictly dominates Divine Acolytes (4pts) in Emberclaw
+    Cheaper: ATK=9 DEF=4 HP=6 MOV=5 RNG=1 MOR=10
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=9
+  Ashrider Scouts (3pts) strictly dominates Fragment Shapers (4pts) in Emberclaw
+    Cheaper: ATK=12 DEF=3 HP=6 MOV=12 RNG=4 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Sky Watchers (4pts) strictly dominates Pyromancer Circle (5pts) in Emberclaw
+    Cheaper: ATK=9 DEF=3 HP=6 MOV=10 RNG=12 MOR=8
+    Costlier: ATK=9 DEF=2 HP=6 MOV=5 RNG=12 MOR=7
+  Drake Handlers (3pts) strictly dominates Fragment Shapers (4pts) in Emberclaw
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Bonfire Keepers (3pts) strictly dominates Fragment Shapers (4pts) in Emberclaw
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=4 RNG=6 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Thermal Trackers (2pts) strictly dominates Smoke Weavers (3pts) in Emberclaw
+    Cheaper: ATK=6 DEF=2 HP=3 MOV=6 RNG=8 MOR=6
+    Costlier: ATK=6 DEF=2 HP=3 MOV=5 RNG=8 MOR=6
+  Infantry Regiment (1pts) strictly dominates Steam Miners (2pts) in Iron Dom.
+    Cheaper: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+    Costlier: ATK=3 DEF=3 HP=3 MOV=4 RNG=1 MOR=5
+  Infantry Regiment (1pts) strictly dominates Steam Reclaimers (2pts) in Iron Dom.
+    Cheaper: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+    Costlier: ATK=3 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+  Gearwright Engineers (2pts) strictly dominates Arcane Tinkerers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Gearwright Engineers (2pts) strictly dominates Aether Engineers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Gearwright Engineers (2pts) strictly dominates Arcane Tinker Battalion (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Clockwork Pioneers (2pts) strictly dominates Arcane Tinkerers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Clockwork Pioneers (2pts) strictly dominates Aether Engineers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Clockwork Pioneers (2pts) strictly dominates Arcane Tinker Battalion (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Aether Hackers (2pts) strictly dominates Arcane Tinkerers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=12 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Aether Hackers (2pts) strictly dominates Aether Engineers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=12 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Aether Hackers (2pts) strictly dominates Arcane Tinker Battalion (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=12 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Overclocked Engineers (2pts) strictly dominates Arcane Tinkerers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Clockwork Engineers (2pts) strictly dominates Arcane Tinkerers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Gear Infused Infantry (2pts) strictly dominates Arcane Tinkerers (3pts) in Iron Dom.
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Gear Infused Infantry (2pts) strictly dominates Gear-Linked Infantry (3pts) in Iron Dom.
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Gear Infused Infantry (2pts) strictly dominates Mechanical Sappers (3pts) in Iron Dom.
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Overclocked Engineers (2pts) strictly dominates Aether Engineers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Overclocked Engineers (2pts) strictly dominates Arcane Tinker Battalion (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Clockwork Engineers (2pts) strictly dominates Aether Engineers (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Clockwork Engineers (2pts) strictly dominates Arcane Tinker Battalion (3pts) in Iron Dom.
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Gear Infused Infantry (2pts) strictly dominates Aether Engineers (3pts) in Iron Dom.
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Gear Infused Infantry (2pts) strictly dominates Arcane Tinker Battalion (3pts) in Iron Dom.
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Fang Guard (3pts) strictly dominates Plague Doctor (4pts) in Nightfang
+    Cheaper: ATK=9 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Crimson Spearmen (3pts) strictly dominates Plague Doctor (4pts) in Nightfang
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Nightfang Warriors (4pts) strictly dominates Blight Reapers (5pts) in Nightfang
+    Cheaper: ATK=12 DEF=3 HP=6 MOV=6 RNG=1 MOR=8
+    Costlier: ATK=12 DEF=3 HP=6 MOV=5 RNG=1 MOR=8
+  Corruption Guard (4pts) strictly dominates Plague Knights (5pts) in Nightfang
+    Cheaper: ATK=9 DEF=5 HP=9 MOV=4 RNG=1 MOR=9
+    Costlier: ATK=9 DEF=5 HP=9 MOV=4 RNG=1 MOR=8
+  Shadow Claw Infantry (3pts) strictly dominates Plague Doctor (4pts) in Nightfang
+    Cheaper: ATK=9 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Corruption Guard (4pts) strictly dominates Bloodsworn Templars (5pts) in Nightfang
+    Cheaper: ATK=9 DEF=5 HP=9 MOV=4 RNG=1 MOR=9
+    Costlier: ATK=9 DEF=5 HP=9 MOV=4 RNG=1 MOR=9
+  Blood Champion (5pts) strictly dominates Tiger Fang Elite (6pts) in Nightfang
+    Cheaper: ATK=15 DEF=4 HP=9 MOV=6 RNG=1 MOR=9
+    Costlier: ATK=15 DEF=4 HP=9 MOV=6 RNG=1 MOR=9
+  Thrall Masters (2pts) strictly dominates Blood Shamans (3pts) in Nightfang
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Thrall Masters (2pts) strictly dominates Plague Apothecaries (3pts) in Nightfang
+    Cheaper: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=0 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Hunger Priests (3pts) strictly dominates Blight Weavers (4pts) in Nightfang
+    Cheaper: ATK=0 DEF=3 HP=6 MOV=4 RNG=1 MOR=8
+    Costlier: ATK=0 DEF=3 HP=6 MOV=4 RNG=1 MOR=8
+  Crimson Chanters (3pts) strictly dominates Blight Weavers (4pts) in Nightfang
+    Cheaper: ATK=0 DEF=3 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=0 DEF=3 HP=6 MOV=4 RNG=1 MOR=8
+  Thread-Warden Infantry (1pts) strictly dominates Gossamer Trap Layers (3pts) in Thornweft
+    Cheaper: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+    Costlier: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+  Silk-Warden Regulars (2pts) strictly dominates Gossamer Trap Layers (3pts) in Thornweft
+    Cheaper: ATK=9 DEF=3 HP=3 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+  Gossamer Guard (3pts) strictly dominates Web-Anchor Engineers (4pts) in Thornweft
+    Cheaper: ATK=12 DEF=5 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Gossamer Guard (3pts) strictly dominates Cocoon Processors (4pts) in Thornweft
+    Cheaper: ATK=12 DEF=5 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=6 DEF=4 HP=6 MOV=4 RNG=1 MOR=7
+  Web-Spinner Sappers (2pts) strictly dominates Gossamer Trap Layers (3pts) in Thornweft
+    Cheaper: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+  Cocoon Wardens (3pts) strictly dominates Cocoon Processors (4pts) in Thornweft
+    Cheaper: ATK=9 DEF=4 HP=6 MOV=4 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=4 HP=6 MOV=4 RNG=1 MOR=7
+  Anchor Guard (3pts) strictly dominates Cocoon Processors (4pts) in Thornweft
+    Cheaper: ATK=9 DEF=5 HP=6 MOV=4 RNG=1 MOR=9
+    Costlier: ATK=6 DEF=4 HP=6 MOV=4 RNG=1 MOR=7
+  Silk Surgeons (3pts) strictly dominates Web-Anchor Engineers (4pts) in Thornweft
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=5 RNG=4 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Vibration Drummers (3pts) strictly dominates Web-Anchor Engineers (4pts) in Thornweft
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Spider Handlers (3pts) strictly dominates Web-Anchor Engineers (4pts) in Thornweft
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Thread-Reader Outriders (4pts) strictly dominates Reality Weavers (6pts) in Thornweft
+    Cheaper: ATK=9 DEF=3 HP=6 MOV=9 RNG=8 MOR=8
+    Costlier: ATK=9 DEF=3 HP=6 MOV=5 RNG=8 MOR=8
+  Shrine Wardens (2pts) strictly dominates Flow Adepts (3pts) in Veilbound
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Shrine Wardens (2pts) strictly dominates Shrine Artificers (3pts) in Veilbound
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=3 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Shrine Wardens (2pts) strictly dominates Veilbound Sigil Bearers (4pts) in Veilbound
+    Cheaper: ATK=6 DEF=4 HP=6 MOV=5 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Mask Bearers (2pts) strictly dominates Spirit Healer Monks (3pts) in Veilbound
+    Cheaper: ATK=0 DEF=3 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=0 DEF=3 HP=6 MOV=5 RNG=1 MOR=8
+  Banner of Silent Prayer (2pts) strictly dominates Spirit Healer Monks (3pts) in Veilbound
+    Cheaper: ATK=0 DEF=3 HP=6 MOV=5 RNG=1 MOR=8
+    Costlier: ATK=0 DEF=3 HP=6 MOV=5 RNG=1 MOR=8
+  Moonlit Duelists (3pts) strictly dominates Lotus Ascetics (4pts) in Veilbound
+    Cheaper: ATK=9 DEF=4 HP=6 MOV=6 RNG=1 MOR=8
+    Costlier: ATK=9 DEF=4 HP=6 MOV=5 RNG=1 MOR=8
+  Moonlit Duelists (3pts) strictly dominates Veilbound Sigil Bearers (4pts) in Veilbound
+    Cheaper: ATK=9 DEF=4 HP=6 MOV=6 RNG=1 MOR=8
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Kintsugi Blademasters (5pts) strictly dominates Hollow Lord Phalanx (6pts) in Veilbound
+    Cheaper: ATK=12 DEF=4 HP=12 MOV=5 RNG=1 MOR=9
+    Costlier: ATK=12 DEF=4 HP=12 MOV=5 RNG=1 MOR=9
+  Spirit Javelin Skirmishers (3pts) strictly dominates Veilbound Sigil Bearers (4pts) in Veilbound
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=6 RNG=10 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Moonlit Wanderers (3pts) strictly dominates Veilbound Sigil Bearers (4pts) in Veilbound
+    Cheaper: ATK=9 DEF=3 HP=6 MOV=6 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+  Spirit Tracker Pack (3pts) strictly dominates Veilbound Sigil Bearers (4pts) in Veilbound
+    Cheaper: ATK=6 DEF=3 HP=6 MOV=8 RNG=1 MOR=7
+    Costlier: ATK=6 DEF=3 HP=6 MOV=5 RNG=1 MOR=7
+
+  Total cost curve violations: 74
+
+
+## 5. CROSS-FACTION ROLE PARITY
+  (Same role across factions ù largest efficiency gaps)
+
+  Role 'defensive' ù Efficiency gap: 14.50 vs 6.20 (2.3x)
+    Shrine Wardens                       Veilbound        2pts  eff=14.50
+    Temple Defenders                     Veilbound        3pts  eff=11.00
+    Steam Heavy Guards                   Iron Dom.        4pts  eff=8.25
+    Phantom Ward Constructs              Veilbound        5pts  eff=6.20
+  Role 'fast cavalry' ù Efficiency gap: 11.75 vs 8.00 (1.5x)
+    Swift Talon Outriders                Emberclaw        4pts  eff=11.75
+    Phase-Silk Cavalry                   Thornweft        6pts  eff=8.00
+  Role 'morale support' ù Efficiency gap: 11.67 vs 7.50 (1.6x)
+    Faithful Guard                       Emberclaw        3pts  eff=11.67
+    Lantern Bearers                      Veilbound        2pts  eff=11.50
+    Vibration Drummers                   Thornweft        3pts  eff=9.67
+    Crimson Chanters                     Nightfang        3pts  eff=7.67
+    Divine Acolytes                      Emberclaw        4pts  eff=7.50
+  Role 'shock troops' ù Efficiency gap: 12.33 vs 8.75 (1.4x)
+    Unbonded Berserkers                  Emberclaw        3pts  eff=12.33
+    Gearstorm Infantry                   Iron Dom.        4pts  eff=8.75
+  Role 'support' ù Efficiency gap: 12.50 vs 9.50 (1.3x)
+    Gearwright Engineers                 Iron Dom.        2pts  eff=12.50
+    Mask Bearers                         Veilbound        2pts  eff=11.50
+    Banner of Silent Prayer              Veilbound        2pts  eff=11.50
+    Steam Reclaimers                     Iron Dom.        2pts  eff=10.50
+    Steam Medic Corps                    Iron Dom.        2pts  eff=9.50
+
+
+## 6. WAR MACHINE COMPARISON
+
+  Name                                 Faction         Pts  ATK  DEF    HP  MOV  RNG  MOR Total     Eff
+  --------------------------------------------------------------------------------------------------
+  Venom Engine                         Thornweft        70   18    5    24    5   12   10    74    1.06
+  Steam Colossus                       Iron Dom.        80   18    5    24    3   24   10    84    1.05
+  Crawler Siege Engine                 Thornweft        65   18    5    21    6    8   10    68    1.05
+  Young War Drake                      Emberclaw        60   18    4    18   12    2    8    62    1.03
+  Fate-Loom Engine                     Thornweft        85   12    5    27    3   30   10    87    1.02
+  Mechanized Siege Engine              Iron Dom.        80   18    5    27    3   18   10    81    1.01
+  Cinder Golem                         Emberclaw        70   21    6    27    5    1   10    70    1.00
+  Cocoon Harvester                     Thornweft        60   15    5    21    5    4   10    60    1.00
+  Aether Cannon Walker                 Iron Dom.        85   21    4    24    4   20   10    83    0.98
+  Fire Colossus                        Emberclaw        90   24    6    30    5    6   10    81    0.90
+  Web-Fortress                         Thornweft        80   12    8    30    0   12   10    72    0.90
+  Phase-Silk Wraith Spider             Thornweft        70   18    3    18   10    4   10    63    0.90
+  Mature War Drake                     Emberclaw        80   21    5    24   10    2    9    71    0.89
+  Magma Titan                          Emberclaw        95   24    5    33    4    8   10    84    0.88
+  Silk Colossus                        Thornweft       100   24    7    36    5    6   10    88    0.88
+  Celestial Ink Dragon                 Veilbound        95   18    4    27    8   16   10    83    0.87
+  Scorched Titan                       Emberclaw       100   27    7    36    4    2   10    86    0.86
+  Brood-Mother Spider                  Thornweft        90   21    6    30    6    4   10    77    0.86
+  Gossamer Titan                       Thornweft       110   27    6    39    4    8   10    94    0.85
+  Shrine Dragon                        Veilbound       100   21    4    30    8   12   10    85    0.85
+  Nightfang Dragon                     Nightfang       110   24    4    33   10   12   10    93    0.85
+  Gear-Beast Construct                 Iron Dom.        80   21    4    24    6    1   10    66    0.82
+  Steam Gargoyle                       Iron Dom.        90   18    4    24   10    8   10    74    0.82
+  Flame Engine                         Emberclaw        65   12    5    21    4    1   10    53    0.82
+  Drake Nest Mobile                    Emberclaw        70   12    6    24    3    1   10    56    0.80
+  Grounded Wyrm                        Emberclaw       110   27    7    36    4    3   10    87    0.79
+  Clockwork Titan                      Iron Dom.        90   21    5    30    4    1   10    71    0.79
+  Eclipse Manta Titan                  Veilbound       100   18    4    30   10    6   10    78    0.78
+  Chrono Walker                        Iron Dom.       100   15    5    30    5   12   10    77    0.77
+  Arcane Steam Golem                   Iron Dom.        85   18    5    27    4    1   10    65    0.76
+  Overclocked Automaton                Iron Dom.        80   18    4    21    7    1   10    61    0.76
+  Blood Engine                         Nightfang        95   18    4    24    4   12   10    72    0.76
+  Titan Engine Imperius                Iron Dom.       180   30    8    60    4   24   10   136    0.76
+  Veilbound Oni Juggernaut             Veilbound       110   27    4    36    5    1   10    83    0.75
+  Trap-Layer Construct                 Thornweft        60    9    4    15    6    1   10    45    0.75
+  Experimental Leviathan               Iron Dom.       110   24    5    36    4    3   10    82    0.75
+  Obsidax (Unique Wyrm)                Emberclaw       200   42    9    72   10    6   10   149    0.74
+  Pyrathax (Unique Ancient)            Emberclaw       150   30    7    48   12    4   10   111    0.74
+  Elder Tiger Horror                   Nightfang       100   21    4    30    8    1   10    74    0.74
+  Skithari (Unique Queen-Spawn)        Thornweft       180   36    8    60    8   10   10   132    0.73
+  Hollow Ronin Construct               Veilbound        90   21    4    24    6    1   10    66    0.73
+  Crimson Behemoth                     Nightfang       100   21    5    30    6    1   10    73    0.73
+  Plague Titan                         Nightfang       110   24    5    36    4    1   10    80    0.73
+  Komainu Guardian Colossus            Veilbound        95   18    5    30    5    1   10    69    0.73
+  Shadow Leviathan                     Nightfang       110   27    4    30    7    1   10    79    0.72
+  Corruption Colossus                  Nightfang       100   15    5    27    5    8   10    70    0.70
+  Bile Wurm                            Nightfang        90   18    4    24    6    1   10    63    0.70
+  Blood Harvester Juggernaut           Nightfang        95   18    5    27    5    1   10    66    0.69
+  Shrouded Throne Entity               Veilbound       110   15    5    36    0    8   10    74    0.67
+  Spirit Temple Walker                 Veilbound        85   12    5    24    4    1   10    56    0.66
+  Walking Torii Gate                   Veilbound        90   12    5    27    4    1   10    59    0.66
+  Celestial Shogun Construct           Veilbound       180   27    7    54    5    6   10   109    0.61
+  Plague Broodmother                   Nightfang        95   12    4    27    3    1   10    57    0.60
+  Lotus Ascendant Monolith             Veilbound        85    9    5    24    0    1   10    49    0.58
+  The Patriarch                        Nightfang       180   27    6    54    5    1   10   103    0.57
+
+  Faction         Avg WM Eff Avg WM Pts WM Count
+  Emberclaw             0.86       99.1       11
+  Iron Dom.             0.84       96.4       11
+  Nightfang             0.71      107.7       11
+  Thornweft             0.91       88.2       11
+  Veilbound             0.72      103.6       11
+
+
+## 7. COMMANDER COMPARISON
+
+  Name                                 Faction         Pts  ATK  DEF    HP  MOV  RNG  MOR Total     Eff
+  --------------------------------------------------------------------------------------------------
+  Pyroclaw Drenna                      Emberclaw        21   24    4    36    7    1   10    82    3.90
+  Skywatcher Orin                      Emberclaw        17   12    3    24   10    8    8    65    3.82
+  Ashborn Ryx                          Emberclaw        18   15    4    27    5   10    7    68    3.78
+  Archmagister Gearbane                Iron Dom.        17   12    3    27    6    6    9    63    3.71
+  Cinderfist Brok                      Emberclaw        23   21    6    39    5    2    9    82    3.57
+  Lady Aetheris                        Iron Dom.        19   15    3    27    7    6    9    67    3.53
+  Commander Kagero                     Veilbound        19   18    3    24   10    3    9    67    3.53
+  Skullcrusher Threx                   Emberclaw        24   24    5    36    8    1   10    84    3.50
+  Cocoon-Keeper Rathis                 Thornweft        18   12    4    27    6    6    8    63    3.50
+  Spindle-Knight Varek                 Thornweft        23   15    7    42    5    1   10    80    3.48
+  Ritual Captain Akikaze               Veilbound        19   15    3    27    5    6   10    66    3.47
+  Clutchmaster Vayne                   Emberclaw        20   15    5    30    6    4    9    69    3.45
+  Silk-Marshal Draven                  Thornweft        20   15    4    27    7    8    8    69    3.45
+  Skydancer Lyss                       Emberclaw        19   15    3    21   14    4    8    65    3.42
+  Lady Brassveil                       Iron Dom.        19   15    3    24    8    6    9    65    3.42
+  Web-Walker Ithris                    Thornweft        20   15    2    21   16    6    8    68    3.40
+  Commander Hoshikami                  Veilbound        19   12    3    27    7    6    9    64    3.37
+  Silk-Warden Morthis                  Thornweft        20    9    6    33    4    6    9    67    3.35
+  Ritual Captain Tsukihana             Veilbound        20   15    4    27    6    6    9    67    3.35
+  Tidescar the Exiled                  Emberclaw        21   15    3    27    8   10    7    70    3.33
+  Elite Commander Rengoku              Veilbound        22   15    4    33    8    3   10    73    3.32
+  Thread-Cutter Nyx                    Thornweft        19   21    2    18    9    4    9    63    3.32
+  Lord Piston                          Iron Dom.        20   15    4    30    4    3   10    66    3.30
+  Lord Calculon                        Iron Dom.        21   15    4    30    5    6    9    69    3.29
+  High Engineer Vortan                 Iron Dom.        21   15    4    30    5    6    9    69    3.29
+  Commander Hisame                     Veilbound        20   12    3    27    8    6    9    65    3.25
+  Lady Cogsworth                       Iron Dom.        21   15    4    27    9    3   10    68    3.24
+  Engineer Brassforge                  Iron Dom.        21   15    4    27    7    6    9    68    3.24
+  Lady Mechana                         Iron Dom.        21   15    4    30    6    3   10    68    3.24
+  Lord Gearheart                       Iron Dom.        21   15    4    30    7    3    9    68    3.24
+  Commander Tsuyukusa                  Veilbound        21   15    4    27    7    6    9    68    3.24
+  Elite Commander Asagiri              Veilbound        22   15    4    27   10    6    9    71    3.23
+  Elite Commander Yukimaru             Veilbound        22   15    4    30    9    3   10    71    3.23
+  Scorchcaller Vex                     Emberclaw        24   18    5    33   10    2    9    77    3.21
+  Flamewarden Kora                     Emberclaw        20   12    3    24    6    8   10    63    3.15
+  The Shrouded Shogun                  Veilbound        29   18    5    45    7    6   10    91    3.14
+  Thread-Seer Kythara                  Thornweft        22   15    3    24    7   12    8    69    3.14
+  Fang-Rider Kaelyx                    Thornweft        22   18    4    27   10    2    8    69    3.14
+  Elite Commander Hoshimaru            Veilbound        23   15    5    33    6    3   10    72    3.13
+  Silk-Mender Yalith                   Thornweft        18    9    5    24    5    4    9    56    3.11
+  Countess Nyxara                      Nightfang        20   12    3    27    5    6    9    62    3.10
+  Plague Herald Mortivex               Nightfang        20   12    3    27    6    6    8    62    3.10
+  Loom-Shaper Quileth                  Thornweft        20   12    4    24    5    8    9    62    3.10
+  The Crimson Prophet                  Nightfang        21    9    4    30    4    8   10    65    3.10
+  Captain Ironclad                     Iron Dom.        25   15    5    39    5    3   10    77    3.08
+  Thrallmaster Gh√l                    Nightfang        17    9    3    24    5    3    8    52    3.06
+  Flameheart Syrax                     Emberclaw        22    9    4    27    5   12   10    67    3.05
+  Commander Ironweld                   Iron Dom.        24   18    5    33    4    3   10    73    3.04
+  General Steamjaw                     Iron Dom.        25   18    5    36    6    1   10    76    3.04
+  Embersmith Torvan                    Emberclaw        22   12    5    30    4    6    9    66    3.00
+  Masked Lord Kurohane                 Veilbound        26   18    5    36    6    3   10    78    3.00
+  Lady Hemora                          Nightfang        22   12    4    30    4    6    9    65    2.95
+  Commander Midorikaze                 Veilbound        22    9    4    30    6    6   10    65    2.95
+  Brood-Warden Thessari                Thornweft        21    9    5    30    5    4    9    62    2.95
+  Lord Sanguinar                       Nightfang        25   18    4    33    5    3   10    73    2.92
+  Loom-Mother Vethiss                  Thornweft        24   12    5    30    6    8    9    70    2.92
+  Blood Duchess Lysara                 Nightfang        23   15    4    27    5    6   10    67    2.91
+  Loom-Mother Silivex                  Thornweft        22    9    3    24    7   12    9    64    2.91
+  Nightclaw Vex                        Nightfang        25   21    3    30    8    1    9    72    2.88
+  Fang General Zharak                  Nightfang        23   15    4    30    5    3    9    66    2.87
+  Wyrmlord Tzarak                      Emberclaw        35   27    7    45    8    3   10   100    2.86
+  Shadowfang Kreev                     Nightfang        22   18    3    24    7    1    9    62    2.82
+  Warlord Rathka                       Nightfang        25   15    5    33    4    3   10    70    2.80
+  The Hollow King                      Nightfang        26   12    6    39    3    1   10    71    2.73
+  Grand Fang Voraxis                   Nightfang        29   21    5    36    6    1   10    79    2.72
+
+  Faction         Avg Cmd Eff Avg Cmd Pts  Cmds
+  Emberclaw              3.39        22.0    13
+  Iron Dom.              3.28        21.2    13
+  Nightfang              2.92        22.9    13
+  Thornweft              3.21        20.7    13
+  Veilbound              3.25        21.8    13
+
+
+## 8. COMMANDER BASE STATS COMPARISON
+
+  Faction         Avg Command Avg Knowledge Avg Leadership Avg Agility Avg Health
+  Emberclaw               7.1           7.6            7.5         6.6        277
+  Iron Dom.               7.2           7.3            7.5         6.1        297
+  Nightfang               7.5           7.8            8.2         6.7        347
+  Thornweft               7.5           8.5            7.3         6.7        242
+  Veilbound               7.3           7.9            7.8         7.3        297
+
+
+## 9. SUPPORT UNIT ANALYSIS
+
+  Name                                 Faction         Pts  ATK  DEF   HP  MOV  RNG  MOR Total    Eff Combat?
+  -------------------------------------------------------------------------------------------------------
+  Corruption Spreaders                 Nightfang         2    0    3    6    5    6    6    26  13.00      No
+  Gearwright Engineers                 Iron Dom.         2    3    3    6    5    1    7    25  12.50     Yes
+  Clockwork Pioneers                   Iron Dom.         2    3    3    6    5    1    7    25  12.50     Yes
+  Overclocked Engineers                Iron Dom.         2    3    3    6    5    1    7    25  12.50     Yes
+  Clockwork Engineers                  Iron Dom.         2    3    3    6    5    1    7    25  12.50     Yes
+  Thrall Masters                       Nightfang         2    3    3    6    5    1    7    25  12.50     Yes
+  Ink Sigil Crafters                   Veilbound         3    3    3    6    5   12    7    36  12.00     Yes
+  Banner of Silent Prayer              Veilbound         2    0    3    6    5    1    8    23  11.50      No
+  Lantern Bearers                      Veilbound         2    3    3    3    5    1    8    23  11.50     Yes
+  Bonfire Keepers                      Emberclaw         3    6    3    6    4    6    7    32  10.67     Yes
+  Steam Reclaimers                     Iron Dom.         2    3    3    3    5    1    6    21  10.50     Yes
+  Silk Surgeons                        Thornweft         3    6    3    6    5    4    7    31  10.33     Yes
+  Smoke Weavers                        Emberclaw         3    6    2    3    5    8    6    30  10.00     Yes
+  Vibration Drummers                   Thornweft         3    6    3    6    5    1    8    29   9.67     Yes
+  Steam Miners                         Iron Dom.         2    3    3    3    4    1    5    19   9.50     Yes
+  Steam Medic Corps                    Iron Dom.         2    0    3    3    5    1    7    19   9.50      No
+  Drake Handlers                       Emberclaw         3    6    3    6    5    1    7    28   9.33     Yes
+  Mechanical Sappers                   Iron Dom.         3    6    3    6    5    1    7    28   9.33     Yes
+  Spider Handlers                      Thornweft         3    6    3    6    5    1    7    28   9.33     Yes
+  Flameheart Clerics                   Emberclaw         4    6    3    6    5    6    8    34   8.50     Yes
+  Blood Collectors                     Nightfang         2    0    3    3    5    1    5    17   8.50      No
+  Venom Alchemists                     Thornweft         4    6    2    6    5    8    7    34   8.50     Yes
+  Aether Engineers                     Iron Dom.         3    3    3    6    5    1    7    25   8.33     Yes
+  Blood Shamans                        Nightfang         3    3    3    6    5    1    7    25   8.33     Yes
+  Flow Adepts                          Veilbound         3    3    3    6    5    1    7    25   8.33     Yes
+  Shrine Artificers                    Veilbound         3    3    3    6    5    1    7    25   8.33     Yes
+  Pyromancer Circle                    Emberclaw         5    9    2    6    5   12    7    41   8.20     Yes
+  Gossamer Trap Layers                 Thornweft         3    6    3    3    5    1    6    24   8.00     Yes
+  Fate-Thread Weavers                  Thornweft         5    6    2    6    5   12    8    39   7.80     Yes
+  Crimson Chanters                     Nightfang         3    0    3    6    5    1    8    23   7.67      No
+  Spirit Healer Monks                  Veilbound         3    0    3    6    5    1    8    23   7.67      No
+  Divine Acolytes                      Emberclaw         4    6    3    6    5    1    9    30   7.50     Yes
+  Plague Apothecaries                  Nightfang         3    0    3    6    5    1    7    22   7.33      No
+  Hunger Priests                       Nightfang         3    0    3    6    4    1    8    22   7.33      No
+  Embersmith Apprentices               Emberclaw         4    6    4    6    4    1    7    28   7.00     Yes
+  Web-Anchor Engineers                 Thornweft         4    6    3    6    5    1    7    28   7.00     Yes
+  Cocoon Processors                    Thornweft         4    6    4    6    4    1    7    28   7.00     Yes
+  Fragment Shapers                     Emberclaw         4    6    3    6    4    1    7    27   6.75     Yes
+  Phantom Ward Constructs              Veilbound         5    0    5   15    0    1   10    31   6.20      No
+  Blight Weavers                       Nightfang         4    0    3    6    4    1    8    22   5.50      No
+
+
+## 10. ARTILLERY COMPARISON
+
+  Name                                 Faction         Pts  ATK  DEF   HP  MOV  RNG  MOR Total    Eff
+  -----------------------------------------------------------------------------------------------
+  Aether Blasters                      Iron Dom.         3    9    3    6    4   16    7    45  15.00
+  Plague Ballista Crew                 Nightfang         4   12    3    6    4   20    7    52  13.00
+  Dreampiercer Archers                 Veilbound         4    9    3    6    5   20    7    50  12.50
+  Gearwright Artillery                 Iron Dom.         5   15    3    9    3   24    7    61  12.20
+  Void Bolt Crossbowmen                Veilbound         4   12    3    6    4   16    7    48  12.00
+  Blood Mortar Team                    Nightfang         4    9    3    6    4   18    7    47  11.75
+  Ember Ballista                       Emberclaw         5   12    3    9    3   24    7    58  11.60
+  Plague Catapult Crew                 Nightfang         5   12    3    9    3   24    7    58  11.60
+  Steam Artillery Crew                 Iron Dom.         5   12    3    6    3   24    7    55  11.00
+  Celestial Slingers                   Veilbound         4    9    3    6    5   14    7    44  11.00
+  Pyroclast Catapult                   Emberclaw         6   18    3    9    3   24    7    64  10.67
+  Shadow Marksmen                      Veilbound         5    9    3    6    5   22    8    53  10.60
+  Fragment Launcher                    Emberclaw         7   21    3    9    3   30    7    73  10.43
+  Corruption Spire Battery             Nightfang         6   15    3    9    0   24    7    58   9.67
+  Silk Catapult                        Thornweft         6   12    3    9    3   24    7    58   9.67
+  Bile Cannon Crew                     Nightfang         5   15    3    6    3   10    7    44   8.80
+  Venom Mortar                         Thornweft         7   15    3    9    3   24    7    61   8.71
+  Fate-Loom Siege Engine               Thornweft         8    9    3   12    3   30    8    65   8.12
+
+
+## 11. SPECIALIST COMPARISON
+
+  Name                                 Faction         Pts  ATK  DEF   HP  MOV  RNG  MOR Total    Eff #Sp
+  ---------------------------------------------------------------------------------------------------
+  Aether Hackers                       Iron Dom.         2    3    3    6    5   12    7    36  18.00   2
+  Fledgling Swarm                      Emberclaw         2    6    2    3   10    1    6    28  14.00   3
+  Spiderling Swarm                     Thornweft         2    9    1    3    8    1    5    27  13.50   4
+  Immolation Bombers                   Emberclaw         4   18    2    3   12    1   10    46  11.50   3
+  Aether Infiltrators                  Iron Dom.         3    6    3    6    7    1    7    30  10.00   2
+  Midnight Assassin                    Nightfang         4   15    3    6    7    1    7    39   9.75   5
+  Cocoon Bombers                       Thornweft         4    9    3    6    6    8    7    39   9.75   2
+  Flame Prophets                       Emberclaw         5    9    2    6    5   12   10    44   8.80   3
+  Blood Champion                       Nightfang         5   15    4    9    6    1    9    44   8.80   5
+  Thread-Cutter Assassins              Thornweft         5   18    2    6    8    1    9    44   8.80   3
+  Fragment-Blade Assassins             Emberclaw         5   18    3    6    7    1    8    43   8.60   3
+  Specialist Hero                      Iron Dom.         4    9    4    6    6    1    8    34   8.50   2
+  Arcane Tinkerers                     Iron Dom.         3    3    3    6    5    1    7    25   8.33   3
+  Arcane Tinker Battalion              Iron Dom.         3    3    3    6    5    1    7    25   8.33   2
+  Silent Ink Assassins                 Veilbound         4    9    3    6    7    1    7    33   8.25   3
+  Tiger Alpha                          Nightfang         6   15    4   12    7    1    9    48   8.00   5
+  Feral Skinchanger                    Nightfang         5   12    4    9    6    1    8    40   8.00   3
+  Shrouded Shogun Vassals              Veilbound         6   15    5   12    5    1   10    48   8.00   4
+  Masked Lord Retinue                  Veilbound         5   12    4    9    5    1    9    40   8.00   3
+  Silk Wraiths                         Thornweft         5   15    1    6    8    1    8    39   7.80   3
+  Lotus Phantom Assassins              Veilbound         5   12    3    6    7    1    8    37   7.40   3
+  Hollow Shrine Guardians              Veilbound         5    9    4    9    4    1    9    36   7.20   4
+  Plague Doctor                        Nightfang         4    6    3    6    5    1    7    28   7.00   3
+  Veilbound Sigil Bearers              Veilbound         4    6    3    6    5    1    7    28   7.00   2
+  Phoenix Guard                        Emberclaw         6   15    4    6    5    1   10    41   6.83   3
+  Ritual Captains                      Veilbound         5    6    4    9    5    1    9    34   6.80   4
+  Blood Hierophant                     Nightfang         4    0    3    6    4    6    8    27   6.75   4
+  Reality Weavers                      Thornweft         6    9    3    6    5    8    8    39   6.50   3
+  Spirit Monolith                      Veilbound         6    0    6   18    0    1   10    35   5.83   5
+  Hunger Wraith                        Nightfang         8   12    6    9    6    1   10    44   5.50   5
+
+
+## 12. EXTREME OUTLIERS
+
+No 0-cost units found.
+
+### Top 10 Most Efficient Non-War-Machine Units:
+  Inkblade Initiates                   Veilbound        1pts  eff=25.00  total=25
+  Ashborn Infantry                     Emberclaw        1pts  eff=24.00  total=24
+  Infantry Regiment                    Iron Dom.        1pts  eff=24.00  total=24
+  Thread-Warden Infantry               Thornweft        1pts  eff=24.00  total=24
+  Veiled Ashigaru                      Veilbound        1pts  eff=24.00  total=24
+  Blood Runners                        Nightfang        1pts  eff=23.00  total=23
+  Shuttle-Consort Militia              Thornweft        1pts  eff=22.00  total=22
+  Thrall Conscripts                    Nightfang        1pts  eff=19.00  total=19
+  Spiderling Scouts                    Thornweft        2pts  eff=18.50  total=37
+  Aether Hackers                       Iron Dom.        2pts  eff=18.00  total=36
+
+### Top 10 Least Efficient Non-War-Machine Units:
+  Blight Weavers                       Nightfang        4pts  eff=5.50  total=22
+  Hunger Wraith                        Nightfang        8pts  eff=5.50  total=44
+  Spirit Monolith                      Veilbound        6pts  eff=5.83  total=35
+  Phantom Ward Constructs              Veilbound        5pts  eff=6.20  total=31
+  Scorchcaller Elites                  Emberclaw       10pts  eff=6.50  total=65
+  Queen-Spawn War-mount                Thornweft       10pts  eff=6.50  total=65
+  Reality Weavers                      Thornweft        6pts  eff=6.50  total=39
+  Dreambound Riders                    Veilbound        7pts  eff=6.71  total=47
+  Fragment Artillery Crew              Emberclaw        4pts  eff=6.75  total=27
+  Fragment Shapers                     Emberclaw        4pts  eff=6.75  total=27
+
+
+====================================================================================================
+## TOP BALANCE ISSUES (RANKED BY SEVERITY)
+====================================================================================================
+
+--- Issue #1 (Severity: 117) ---
+  Type: UNDERCOSTED
+  Inkblade Initiates (Veilbound) has efficiency 25.00 vs type 'Infantry' avg 11.51 (117% above average)
+  Stats: ATK=6 DEF=3 HP=3 MOV=6 RNG=1 MOR=6
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #2 (Severity: 115) ---
+  Type: UNDERCOSTED
+  Spiderling Scouts (Thornweft) has efficiency 18.50 vs type 'Cavalry' avg 8.60 (115% above average)
+  Stats: ATK=9 DEF=2 HP=6 MOV=10 RNG=4 MOR=6
+  Points: 2
+  Suggested Fix: Increase cost from 2 to ~4 pts
+
+--- Issue #3 (Severity: 108) ---
+  Type: UNDERCOSTED
+  Ashborn Infantry (Emberclaw) has efficiency 24.00 vs type 'Infantry' avg 11.51 (109% above average)
+  Stats: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #4 (Severity: 108) ---
+  Type: UNDERCOSTED
+  Infantry Regiment (Iron Dom.) has efficiency 24.00 vs type 'Infantry' avg 11.51 (109% above average)
+  Stats: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #5 (Severity: 108) ---
+  Type: UNDERCOSTED
+  Thread-Warden Infantry (Thornweft) has efficiency 24.00 vs type 'Infantry' avg 11.51 (109% above average)
+  Stats: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #6 (Severity: 108) ---
+  Type: UNDERCOSTED
+  Veiled Ashigaru (Veilbound) has efficiency 24.00 vs type 'Infantry' avg 11.51 (109% above average)
+  Stats: ATK=6 DEF=3 HP=3 MOV=5 RNG=1 MOR=6
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #7 (Severity: 106) ---
+  Type: UNDERCOSTED
+  Aether Hackers (Iron Dom.) has efficiency 18.00 vs type 'Specialist' avg 8.72 (106% above average)
+  Stats: ATK=3 DEF=3 HP=6 MOV=5 RNG=12 MOR=7
+  Points: 2
+  Suggested Fix: Increase cost from 2 to ~4 pts
+
+--- Issue #8 (Severity: 91) ---
+  Type: UNDERCOSTED
+  Blood Runners (Nightfang) has efficiency 23.00 vs type 'Scout' avg 12.00 (92% above average)
+  Stats: ATK=3 DEF=2 HP=3 MOV=10 RNG=1 MOR=4
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #9 (Severity: 91) ---
+  Type: UNDERCOSTED
+  Shuttle-Consort Militia (Thornweft) has efficiency 22.00 vs type 'Infantry' avg 11.51 (91% above average)
+  Stats: ATK=6 DEF=2 HP=3 MOV=5 RNG=1 MOR=5
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #10 (Severity: 70) ---
+  Type: UNDERCOSTED
+  Ashrider Scouts (Emberclaw) has efficiency 14.67 vs type 'Cavalry' avg 8.60 (71% above average)
+  Stats: ATK=12 DEF=3 HP=6 MOV=12 RNG=4 MOR=7
+  Points: 3
+  Suggested Fix: Increase cost from 3 to ~5 pts
+
+--- Issue #11 (Severity: 65) ---
+  Type: UNDERCOSTED
+  Thrall Conscripts (Nightfang) has efficiency 19.00 vs type 'Infantry' avg 11.51 (65% above average)
+  Stats: ATK=3 DEF=3 HP=3 MOV=5 RNG=1 MOR=4
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #12 (Severity: 60) ---
+  Type: UNDERCOSTED
+  Fledgling Swarm (Emberclaw) has efficiency 14.00 vs type 'Specialist' avg 8.72 (61% above average)
+  Stats: ATK=6 DEF=2 HP=3 MOV=10 RNG=1 MOR=6
+  Points: 2
+  Suggested Fix: Increase cost from 2 to ~3 pts
+
+--- Issue #13 (Severity: 56) ---
+  Type: UNDERCOSTED
+  Plague Horde (Nightfang) has efficiency 18.00 vs type 'Infantry' avg 11.51 (56% above average)
+  Stats: ATK=3 DEF=2 HP=3 MOV=5 RNG=1 MOR=4
+  Points: 1
+  Suggested Fix: Increase cost from 1 to ~2 pts
+
+--- Issue #14 (Severity: 54) ---
+  Type: UNDERCOSTED
+  Spiderling Swarm (Thornweft) has efficiency 13.50 vs type 'Specialist' avg 8.72 (55% above average)
+  Stats: ATK=9 DEF=1 HP=3 MOV=8 RNG=1 MOR=5
+  Points: 2
+  Suggested Fix: Increase cost from 2 to ~3 pts
+
+--- Issue #15 (Severity: 47) ---
+  Type: UNDERCOSTED
+  Silk-Shot Skirmishers (Thornweft) has efficiency 17.00 vs type 'Infantry' avg 11.51 (48% above average)
+  Stats: ATK=9 DEF=2 HP=3 MOV=6 RNG=8 MOR=6
+  Points: 2
+  Suggested Fix: Increase cost from 2 to ~3 pts
+
+--- Issue #16 (Severity: 41) ---
+  Type: OVERCOSTED
+  Fragment Artillery Crew (Emberclaw) has efficiency 6.75 vs type 'Infantry' avg 11.51 (41% below average)
+  Stats: ATK=6 DEF=3 HP=6 MOV=4 RNG=1 MOR=7
+  Points: 4
+  Suggested Fix: Decrease cost from 4 to ~2 pts, or boost stats
+
+--- Issue #17 (Severity: 41) ---
+  Type: UNDERCOSTED
+  Corruption Spreaders (Nightfang) has efficiency 13.00 vs type 'Support' avg 9.21 (41% above average)
+  Stats: ATK=0 DEF=3 HP=6 MOV=5 RNG=6 MOR=6
+  Points: 2
+  Suggested Fix: Increase cost from 2 to ~3 pts
+
+--- Issue #18 (Severity: 40) ---
+  Type: OVERCOSTED
+  Blight Weavers (Nightfang) has efficiency 5.50 vs type 'Support' avg 9.21 (40% below average)
+  Stats: ATK=0 DEF=3 HP=6 MOV=4 RNG=1 MOR=8
+  Points: 4
+  Suggested Fix: Decrease cost from 4 to ~2 pts, or boost stats
+
+--- Issue #19 (Severity: 39) ---
+  Type: OVERCOSTED
+  Blight Reapers (Nightfang) has efficiency 7.00 vs type 'Infantry' avg 11.51 (39% below average)
+  Stats: ATK=12 DEF=3 HP=6 MOV=5 RNG=1 MOR=8
+  Points: 5
+  Suggested Fix: Decrease cost from 5 to ~3 pts, or boost stats
+
+--- Issue #20 (Severity: 37) ---
+  Type: OVERCOSTED
+  Plague Knights (Nightfang) has efficiency 7.20 vs type 'Infantry' avg 11.51 (37% below average)
+  Stats: ATK=9 DEF=5 HP=9 MOV=4 RNG=1 MOR=8
+  Points: 5
+  Suggested Fix: Decrease cost from 5 to ~3 pts, or boost stats
+
+
+====================================================================================================
+## SYSTEMIC PATTERNS
+====================================================================================================
+
+### Faction Average Efficiency (non-WM units):
+  Iron Dom.        11.12  ###########
+  Thornweft        10.60  ##########
+  Emberclaw        10.58  ##########
+  Nightfang         9.79  #########
+  Veilbound         9.65  #########
+
+### Faction Average Commander Efficiency:
+  Emberclaw        3.39  ###
+  Iron Dom.        3.28  ###
+  Veilbound        3.25  ###
+  Thornweft        3.21  ###
+  Nightfang        2.92  ##
+
+### Faction Point Cost Distribution (non-WM units):
+  Emberclaw        min= 1 max=10 avg=4.1 median= 4
+  Iron Dom.        min= 1 max= 7 avg=3.3 median= 3
+  Nightfang        min= 1 max= 8 avg=3.8 median= 4
+  Thornweft        min= 1 max=10 avg=4.1 median= 4
+  Veilbound        min= 1 max= 7 avg=4.1 median= 4
+
+### Faction Type Coverage:
+  Faction         Artiller  Cavalry Infantry    Scout Speciali  Support War Mach
+  Emberclaw              3        5       15        3        5        8       11
+  Iron Dom.              3        5       20        3        5        9       11
+  Nightfang              5        6       18        6        7        8       11
+  Thornweft              3        5       15        3        5        8       11
+  Veilbound              4       10       16        4        8        7       11
+
+### Special Ability Count Distribution:
+  Emberclaw        avg_specials=2.5  max=4  min=1
+  Iron Dom.        avg_specials=2.4  max=4  min=1
+  Nightfang        avg_specials=4.0  max=7  min=2
+  Thornweft        avg_specials=2.8  max=4  min=2
+  Veilbound        avg_specials=3.0  max=5  min=2
+
+### Faction Type Gaps:
+
+### Faction Average Stats (non-WM units, weighted by count):
+  Faction            ATK    DEF     HP    MOV    RNG    MOR
+  Emberclaw         10.9    3.3    6.1    6.3    5.3    7.9
+  Iron Dom.          7.4    3.3    6.1    5.6    4.8    7.3
+  Nightfang          8.1    3.3    6.1    5.8    3.5    6.9
+  Thornweft         10.2    3.1    6.2    5.9    4.9    7.5
+  Veilbound          7.8    3.5    7.2    6.1    3.0    7.7
+
+
+Audit complete.

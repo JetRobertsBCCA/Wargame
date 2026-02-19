@@ -791,7 +791,53 @@ const gameData = {
         { name: "Guardian", description: "When attacked in melee, this unit counterattacks at full ATK before damage is applied." },
         { name: "Ritual Flow", description: "This unit generates the stated amount of Ritual Flow for the Veilbound Flow Pool each Command Phase." },
         { name: "Blood Drain", description: "When this unit destroys an enemy model in melee, it heals 1 HP. Represents the vampiric feeding of the Nightfang Dominion." },
-        { name: "Anti-Air", description: "This unit's ranged attacks gain +1 ATK die against targets with the Fly keyword. Flying units suffer -1 DEF against this unit's ranged attacks." }
+        { name: "Anti-Air", description: "This unit's ranged attacks gain +1 ATK die against targets with the Fly keyword. Targets with Fly suffer -1 DEF against this unit's ranged attacks." },
+        { name: "Fire", description: "This unit's attacks have the Fire type. Fire attacks generate 1 Heat for Emberclaw armies, can create Burning Terrain, and deal +1 damage to targets in flammable terrain." },
+        { name: "Breath Weapon", description: "This unit can make a special attack using a cone template (2\" wide at origin, 4\" wide at 6\" range). Breath attacks ignore cover and hit all units (friend and foe) in the area. Can only be used once per turn unless Heat is spent (Emberclaw) or a card allows additional uses." },
+        { name: "Corruption Spread", description: "This unit applies Corruption tokens to enemies hit in melee. The number of tokens applied equals the unit's corruption_spread stat (typically 1-4). See Corruption system for threshold effects." },
+        { name: "Thrall", description: "This unit is a mindless undead servant of the Nightfang Dominion. Thralls are immune to Morale effects (they have no will to break) but cannot benefit from Commander Aura bonuses. Cards referencing 'Thrall' affect these units." },
+        { name: "Expendable", description: "When this unit is destroyed, it does not count toward Hunger Pool kills for the enemy. The unit was considered disposable by its own army. No Injury Roll in campaign mode." },
+        { name: "Web-Spinner", description: "This Support unit may place 1 additional Web-Anchor token per turn within 3\" of itself as a free action during the Movement Phase. Thornweft Matriarchy only." },
+        { name: "Transport", description: "This War Machine can carry Infantry units. It has a Transport Capacity (usually 3-5). Infantry may embark/disembark during Movement Phase. Embarked units cannot act but are protected. If the Transport is destroyed, embarked units take 1 damage each." },
+        { name: "Mobile Fire", description: "This unit may Attack and then Move (reversing the normal activation order). Useful for shoot-and-scoot tactics." },
+        { name: "Non-Combatant", description: "This unit has ATK 0 and cannot make attacks. It cannot be forced to attack in melee. If Engaged by an enemy, it may Disengage freely without sacrificing its activation (it offers no meaningful resistance). Non-Combatants exist to provide support abilities, not to fight." },
+        { name: "Massive", description: "This unit is enormous. It counts as Towering (can be seen and targeted from anywhere on the table). It cannot benefit from cover. It blocks line of sight for smaller units behind it." },
+        { name: "Legendary", description: "Only one unit with this keyword may be included in your army. Legendary units represent unique, lore-defining war machines that are the pinnacle of their faction's power." },
+        { name: "Corruption Aura", description: "All enemy units within the stated radius gain 1 Corruption token at the start of each of this unit's activations. Nightfang Dominion only." },
+        { name: "Terrifying", description: "Enemy units within 3\" must pass a Morale check (2d6 vs MOR) at the start of their activation or suffer -1 ATK die this turn. Functionally similar to Terror Aura but triggers a check rather than a passive penalty." },
+        { name: "Immovable", description: "This unit cannot move. It is placed during deployment and remains stationary for the entire game. Unlike Immobile (which allows choosing move OR attack), Immovable units can never move at all. They should have MOV: 0. They CAN still attack and use abilities normally if they have ATK > 0." },
+        { name: "Void Resolve", description: "This unit automatically passes all Morale checks (same as Fearless). Additionally, the controlling player may spend 1 Ritual Flow to grant Void Resolve to one adjacent friendly unit for 1 turn. Veilbound Shogunate only." },
+        { name: "Indirect Fire", description: "This unit can fire over intervening models and terrain (it does not need direct line of sight). The attack follows a high arc. Cannot target units in melee engagement." },
+        { name: "Armor Piercing", description: "This unit's attacks ignore 1 point of the target's DEF. Stacks with other DEF-reducing effects." },
+        { name: "Swarm", description: "Multiple models count as 1 unit for game purposes. Swarm units cannot be targeted by Blast effects (they disperse). They always take only 1 damage from any single source (they reform around losses). Their ATK represents collective attacks from many small creatures." },
+        { name: "Heavy Armor", description: "This unit has reinforced protection. It reduces all incoming damage by 1 (minimum 1). However, it suffers -1 MOV penalty due to the weight." },
+        { name: "Devastating Charge", description: "When this unit Charges (moves 4\"+ in a straight line into melee), it gains +2 ATK dice instead of the normal +1 from Charge. If the charge attack destroys the target, this unit may make a free 3\" follow-up move." },
+        { name: "Veteran", description: "This unit may reroll one failed ATK die per attack. Represents combat experience and superior training." },
+        { name: "Skirmish", description: "This unit may shoot and then move (reversing the normal sequence). After attacking, it may move up to half its MOV value. The unit cannot use Skirmish and Charge in the same turn." },
+        { name: "Terror", description: "Enemy units must pass a Morale check when this unit Charges them. If failed, the target unit suffers -1 ATK die for this combat round. Different from Terror Aura (passive aura) and Terrifying (activation-triggered check)." },
+        { name: "Fire Resistant", description: "This unit takes half damage (rounded down, minimum 1) from Fire-type attacks and ignores Burning Terrain penalties. It does not generate Heat for the enemy when hit by Fire attacks." },
+        { name: "Fire Immune", description: "This unit takes no damage from Fire-type attacks and is completely unaffected by Burning Terrain. Stronger than Fire Resistant — total immunity to all fire effects." },
+        { name: "Stubborn", description: "This unit may reroll failed Morale checks once. If the reroll also fails, the unit is Routed as normal." },
+        { name: "Drake Bond", description: "This unit is bonded to a drake. When one member of the bonded pair activates, the other may activate immediately afterward (shared activation). If the bonded partner is destroyed, this unit suffers -1 to all stats for the rest of the game. Emberclaw Warpack only." },
+        { name: "Pack Tactics", description: "When 2 or more friendly units with Pack Tactics attack the same enemy unit in the same Combat Phase, each gains +1 ATK die. Nightfang Dominion only." },
+        { name: "Corruption", description: "This unit interacts with the Corruption token system. It can apply, benefit from, or trigger Corruption threshold effects. See Corruption system rules for token thresholds (3: -1 MOV, 6: -1 ATK, 9: -1 DEF, 12: unit destroyed). Nightfang Dominion faction keyword." },
+        { name: "Shadow Meld", description: "This unit gains Stealth while in terrain or shadow areas. When attacking from Shadow Meld, the attack applies 1 additional Corruption token to the target. Nightfang Dominion only." },
+        { name: "Frenzy", description: "This unit must Charge the nearest enemy if possible. While in Frenzy, it gains +2 ATK dice but cannot disengage voluntarily. A Commander within 6\" can suppress Frenzy for one turn." },
+        { name: "Venom Strike", description: "This unit's melee attacks apply Venom tokens to the target. Venom token thresholds: 3 tokens = -1 MOV, 5 tokens = -1 ATK, 7 tokens = target takes 1 damage per End Phase. Venom tokens are removed by Heal/Repair or at a rate of 1 per End Phase. Thornweft Matriarchy only." },
+        { name: "Web-Walk", description: "This unit ignores movement penalties from Web terrain and Web-Anchor effects. It treats all Web-covered areas as open ground. Thornweft Matriarchy only." },
+        { name: "Wall-Climber", description: "This unit can move vertically up walls and cliff faces at normal speed. It does not need to go around terrain obstacles. Does not grant Fly — the unit still follows surfaces." },
+        { name: "Silk-Anchored", description: "While within 3\" of a friendly Web-Anchor, this unit gains +1 DEF and +1 MOR. The web network provides stability and confidence. Thornweft Matriarchy only." },
+        { name: "Fate-Bound", description: "This unit automatically passes all Morale checks (similar to Fearless). Narratively, the Fate-Weavers have seen this unit's thread in the Great Web and know its destiny is not to flee. Thornweft Matriarchy only." },
+        { name: "Overcharge", description: "This unit may spend 1 Fragment Charge to gain +2 ATK dice for one attack. After the attack, roll d6: on 1-2, the unit suffers 1 damage from mechanical stress. Iron Dominion only." },
+        { name: "Stance", description: "Veilbound infantry and cavalry units can switch between combat stances during the Command Phase (free action, before movement). Each stance provides a different stat trade-off. See Veilbound faction rules for available stances. War Machines and Support units cannot use stances." },
+        { name: "Commander Bond", description: "This unit gains +1 ATK or +1 DEF (chosen when deployed) while within 6\" of its faction's Commander. The bonus is lost if the Commander is destroyed." },
+        { name: "Brace", description: "As a reaction to being Charged, this unit may Brace. A Bracing unit gains +1 DEF against the charging attack but cannot move on its next activation." },
+        { name: "Hold Ground", description: "This unit gains +1 DEF when it does not move during its activation. The bonus lasts until the start of its next activation." },
+        { name: "Detect Hidden Units", description: "This unit reveals enemy Stealth units within 6\" at the start of each Command Phase. Revealed units lose Stealth until they re-enter concealment conditions." },
+        { name: "Relay Commands", description: "Friendly units within 6\" of this unit are considered within the Commander's Aura range, even if the Commander is farther away. Extends effective command range." },
+        { name: "Fragment User", description: "This unit can activate Fragments as if it were a Commander (normally only Commanders can activate Fragments). It still costs the normal Fragment Charge." },
+        { name: "Dodge", description: "When this unit is hit by a melee attack, roll d6: on 5+, the attack misses entirely. Only one Dodge roll per attack." },
+        { name: "Unyielding", description: "This unit cannot be pushed, displaced, or moved by enemy abilities or effects. It holds its ground against all forced movement but can still move normally on its own activation." }
       ]
     },
 
@@ -2579,7 +2625,7 @@ const gameData = {
       timing: "Command Phase",
       effect: "All beast units within 12\" of your commander gain Fearless until End Phase. Enemy units within 6\" of any beast unit must make an immediate MOR check at -1."
     },
-    "Siege Command": {
+    "Nightfang Siege Command": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
@@ -2663,13 +2709,13 @@ const gameData = {
       timing: "Command Phase",
       effect: "Select up to 3 elite units (4+ pts) within 12\" of your commander. Each may reroll all missed attack dice on their next attack this turn. On a successful hit, the target gains 1 Corruption token."
     },
-    "Silent Kill": {
+    "Nightfang Silent Kill": {
       type: "command",
       cp: 2,
       timing: "Command Phase",
       effect: "Your commander or 1 Stealth unit within 12\" may make an immediate melee attack against an adjacent enemy. If attacking from Stealth, gain +3 ATK for this attack. If the target is destroyed, the attacker re-enters Stealth."
     },
-    "Fragment Surge": {
+    "Nightfang Fragment Surge": {
       type: "command",
       cp: 3,
       timing: "Command Phase",
@@ -2963,7 +3009,7 @@ const gameData = {
       timing: "Action Phase",
       effect: "Your commander or 1 War Machine within 12\" makes an attack with +2 ATK. If the attack deals 3+ damage, the target is Staggered: -2 MOV and -1 ATK until End Phase."
     },
-    "Precision Strike": {
+    "Nightfang Precision Strike": {
       type: "tactical",
       cp: 2,
       timing: "Action Phase",
@@ -4004,6 +4050,44 @@ const gameData = {
       cp: 2,
       timing: "Command Phase",
       effect: "Activate a growth fragment: all friendly Spiderling and Swarm units within 8\" gain +1 ATK die and +2 HP permanently. One Spiderling within range grows into a Spider Warrior (gains +2 ATK, +1 DEF)."
+    },
+
+    // --- Additional Veilbound Shogunate cards ---
+    "Veil Command": {
+      type: "command",
+      cp: 3,
+      timing: "Command Phase",
+      effect: "Issue a supreme command through the Veil: up to 3 friendly units within 12\" of your commander may immediately change Stance (free action) and gain +1 ATK die this turn. Generate +2 Ritual Flow."
+    },
+    "Spirit Link": {
+      type: "tech",
+      cp: 2,
+      timing: "Command Phase",
+      effect: "Link your commander's spirit to up to 2 friendly units within 8\". Linked units share Ritual Flow generation (+1 each) and gain +1 DEF until End Phase. If a linked unit would be destroyed, the commander may spend 3 Flow to reduce the damage to 0 (once per turn)."
+    },
+    "Decisive Strike": {
+      type: "tactical",
+      cp: 2,
+      timing: "Combat Phase",
+      effect: "Your commander or 1 friendly unit within 6\" makes an attack with +2 ATK that cannot be reacted to. If the attack destroys the target, generate +3 Ritual Flow."
+    },
+    "Inkstep": {
+      type: "tech",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Your commander or 1 friendly unit within 6\" may teleport up to 4\" in any direction, ignoring terrain and intervening models. The unit may still act normally after teleporting. Veilbound Shogunate only."
+    },
+    "Inkwave": {
+      type: "command",
+      cp: 3,
+      timing: "Combat Phase",
+      effect: "Your commander unleashes a wave of spirit ink in a 6\" cone. All enemy units in the area suffer -1 ATK die and -1 MOV until End Phase. Friendly units in the area generate +1 Ritual Flow. Veilbound Shogunate only."
+    },
+    "Repositioning": {
+      type: "tactical",
+      cp: 2,
+      timing: "Movement Phase",
+      effect: "Move up to 3 friendly units within 8\" of your commander up to 3\" each out of sequence. These units may not charge this turn but may shoot normally. Veilbound Shogunate only."
     },
 
   },

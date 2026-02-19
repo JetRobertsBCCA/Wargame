@@ -2371,7 +2371,7 @@
     {
       name: "Infantry Regiment",
       faction: "iron-dominion",
-      points_cost: 1,
+      points_cost: 2,
       role: "Core combat",
       fragment_interactions: "Minor fragment buffs optional",
       flavor_text: "Standard human troops; disciplined formation",
@@ -2550,7 +2550,7 @@
       flavor_text: "Build barricades, traps, and battlefield improvements",
       description: "These forward-deployed engineers specialize in preparing the battlefield before the main force arrives. They construct barricades to channel enemy movement and plant hidden traps that punish reckless advances. Their work transforms open ground into a killing field of the Dominion's design.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 4, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         'Construct Barricade (place Light Cover within 2")',
@@ -2560,7 +2560,7 @@
     {
       name: "Aether Hackers",
       faction: "iron-dominion",
-      points_cost: 2,
+      points_cost: 4,
       role: "Tech / Specialist",
       fragment_interactions: "Can manipulate enemy mechanical units",
       flavor_text: "Fragment boosts hacking success",
@@ -2597,7 +2597,7 @@
       flavor_text: "Engineers who harness fragments creatively",
       description: "These eccentric specialists carry portable fragment amplifiers that boost the combat effectiveness of all friendly units within close proximity. However, the unstable aura they generate can ripple unpredictably, sometimes affecting allies as much as enemies. Their power is undeniable, but their presence demands careful positioning.",
       type: "Specialist",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 4, RNG: 1, MOR: 8 },
       special: [
         'Fragment Amplifier (friendly units within 3" gain +1 to fragment activation rolls)',
         'Unstable Aura (if fragment backfires within 3", this unit takes 1 extra damage)',
@@ -2653,11 +2653,11 @@
       flavor_text: "Heal or repair units and constructs",
       description: "Equipped with field repair kits and medical steam-injectors, these non-combatant support units keep the Dominion's forces fighting. They mend flesh and machine alike, sealing wounds and replacing shattered gears under fire. They carry no weapons, trusting that the soldiers they save will be weapon enough.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 0, DEF: 3, HP: 3, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Heal (restore 1 HP to adjacent friendly unit, once per turn)",
-        "Non-combatant (cannot attack)",
+        "Non-Combatant",
       ],
     },
     {
@@ -2699,7 +2699,7 @@
       flavor_text: "Rapid repair at risk of accidental hazards",
       description: "Pushing their repair rigs beyond safe operational limits, these engineers can restore two hit points to damaged units in a single action. The risk is real—their overclocked equipment can backfire, damaging the engineers themselves. They are the desperate remedy for desperate situations.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 9, MOV: 5, RNG: 1, MOR: 7 },
       special: [
         "Grid Node",
         "Rapid Repair (restore 2 HP instead of 1 to adjacent War Machine, but roll d6: on 1, deal 1 damage to self)",
@@ -2817,10 +2817,11 @@
       flavor_text: "Repair and fortify units",
       description: "The standard field repair units of the Iron Dominion, these engineers keep the war machine grinding forward. Armed with wrenches, solder-guns, and replacement parts, they restore damaged constructs and vehicles to fighting condition. They are unsung, essential, and never far from the front.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 6, RNG: 1, MOR: 6 },
       special: [
         "Grid Node",
         "Repair (restore 1 HP to adjacent friendly unit, End Phase)",
+        "Mobile Workshop (can Repair even if this unit moved this turn)",
       ],
     },
     {
@@ -2836,7 +2837,7 @@
       special: [
         "Grid Node",
         'Shield Wall (friendly units within 2" gain +1 DEF vs ranged attacks)',
-        "Immovable (cannot be pushed or displaced by enemy abilities)",
+        "Unyielding (cannot be pushed or displaced by enemy abilities)",
       ],
     },
     {
@@ -2920,7 +2921,7 @@
       flavor_text: "Manipulate battlefield hazards",
       description: "Masters of battlefield manipulation, these engineers deploy fragment-powered traps and remotely detonated charges to control enemy movement. They can trigger their devices from a safe distance, turning prepared ground into a death zone at the moment of their choosing. The battlefield is their weapon, and they wield it with cruel precision.",
       type: "Support",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 4, HP: 6, MOV: 4, RNG: 6, MOR: 8 },
       special: [
         "Grid Node",
         'Trap Layer (place trap token within 3": 1 damage on trigger)',
@@ -2963,7 +2964,7 @@
       flavor_text: "Small group that enhances fragment effects",
       description: "These specialist teams carry fragment amplifiers and portable fragment batteries, creating zones of enhanced aetheric energy on the battlefield. Friendly units within their influence deal amplified fragment damage, making them force multipliers of the highest order. They are the spark that ignites the Dominion's most devastating offensives.",
       type: "Specialist",
-      stats: { ATK: 3, DEF: 3, HP: 6, MOV: 5, RNG: 1, MOR: 7 },
+      stats: { ATK: 3, DEF: 4, HP: 9, MOV: 4, RNG: 1, MOR: 8 },
       special: [
         'Fragment Amplifier (+1 to fragment activation rolls within 3")',
         "Fragment Battery (generate 2 Fragment Charges per turn instead of 1 when near a source)",

@@ -384,6 +384,14 @@ function showCommander(name) {
                 : ""
             }
             
+            ${typeof renderUniversalSkillTreeReference === 'function' ? `
+            <h3 style="cursor: pointer; user-select: none;" onclick="const el = document.getElementById('commander-universal-ref'); el.style.display = el.style.display === 'none' ? 'block' : 'none'; this.querySelector('.toggle-arrow').textContent = el.style.display === 'none' ? '▶' : '▼';">
+                <span class="toggle-arrow">▶</span> Universal Skill Descriptions
+            </h3>
+            <p style="font-size: 0.85rem; color: #888;">Full descriptions for all campaign skills available to every commander.</p>
+            <div id="commander-universal-ref" style="display: none; margin-top: 0.5rem;">${renderUniversalSkillTreeReference()}</div>
+            ` : ''}
+
             ${
               !hasDetailedTree
                 ? `

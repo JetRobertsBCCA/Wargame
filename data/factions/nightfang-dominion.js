@@ -1049,7 +1049,7 @@
       },
       points_cost: 22,
       level_1_deck: {
-        command: ["Shadow Step", "Silent Kill"],
+        command: ["Shadow Step", "Nightfang Silent Kill"],
         tech: ["Venom Claws", "Night Vision"],
         fragment: ["Shadow Fragment"],
         tactical: ["Assassination Strike"]
@@ -1161,7 +1161,7 @@
       },
       points_cost: 21,
       level_1_deck: {
-        command: ["Prophecy of Blood", "Fragment Surge"],
+        command: ["Prophecy of Blood", "Nightfang Fragment Surge"],
         tech: ["Blight Channeling", "Wellspring Link"],
         fragment: ["Crimson Revelation", "Fragment Overcharge"],
         tactical: ["Prophetic Strike"]
@@ -1392,7 +1392,7 @@
         command: ["Noble Command", "Aristocratic Precision"],
         tech: ["Elite Enhancement", "Blood Refinement"],
         fragment: ["Crimson Elegance"],
-        tactical: ["Precision Strike"]
+        tactical: ["Nightfang Precision Strike"]
       },
       skill_tree: {
         level_2: {
@@ -1620,7 +1620,7 @@
         command: ["Tactical Advance", "Combined Arms"],
         tech: ["Battle Formation", "Iron Discipline"],
         fragment: ["Tactical Corruption"],
-        tactical: ["Precision Strike"]
+        tactical: ["Nightfang Precision Strike"]
       },
       skill_tree: {
         level_2: {
@@ -1938,7 +1938,7 @@
     {
       name: "Thrall Conscripts",
       faction: "nightfang-dominion",
-      points_cost: 1,
+      points_cost: 2,
       role: "Expendable screen",
       fragment_interactions: "Hunger Pool +1 on death; absorbs hits for elites",
       flavor_text: "Mindless infected humans driven forward by the Blight's hunger. They fight with crude weapons and bare hands.",
@@ -1962,7 +1962,7 @@
     {
       name: "Plague Horde",
       faction: "nightfang-dominion",
-      points_cost: 1,
+      points_cost: 2,
       role: "Tarpit screen",
       fragment_interactions: "Hunger Pool +1 on death; pins enemies in melee",
       flavor_text: "A seething mass of infected wretches that pin enemies in place through sheer weight of rotting flesh.",
@@ -2114,7 +2114,7 @@
     {
       name: "Plague Knights",
       faction: "nightfang-dominion",
-      points_cost: 5,
+      points_cost: 4,
       role: "Heavy assault infantry",
       fragment_interactions: "Corruption Aura 2\"; Blood Tithe",
       flavor_text: "Heavily armored in Blight-forged plate, these warriors are walking corruption engines. Every step leaves infected ground.",
@@ -2208,7 +2208,7 @@
     {
       name: "Blight Reapers",
       faction: "nightfang-dominion",
-      points_cost: 5,
+      points_cost: 4,
       role: "Anti-elite infantry",
       fragment_interactions: "Extra Corruption on corrupted targets; Blood Tithe",
       flavor_text: "Specialist hunters who target already-corrupted enemies. Their scythe-claws harvest weakened prey with terrifying efficiency.",
@@ -2276,9 +2276,9 @@
       type: "Infantry",
       corruption_spread: 3,
       stats: {
-        ATK: 15,
+        ATK: 18,
         DEF: 4,
-        HP: 9,
+        HP: 12,
         MOV: 6,
         RNG: 1,
         MOR: 9
@@ -2318,7 +2318,7 @@
       stats: {
         ATK: 9,
         DEF: 5,
-        HP: 9,
+        HP: 12,
         MOV: 4,
         RNG: 1,
         MOR: 9
@@ -2468,7 +2468,7 @@
       stats: {
         ATK: 3,
         DEF: 3,
-        HP: 6,
+        HP: 9,
         MOV: 5,
         RNG: 1,
         MOR: 7
@@ -2482,7 +2482,7 @@
     {
       name: "Corruption Spreaders",
       faction: "nightfang-dominion",
-      points_cost: 2,
+      points_cost: 3,
       role: "Ranged corruption applicator",
       fragment_interactions: "Applies Corruption tokens at range; weakens enemies",
       flavor_text: "Plague censer-bearers who swing braziers of burning Blight-matter, sending clouds of corruption drifting across the battlefield.",
@@ -2514,7 +2514,7 @@
       type: "Support",
       corruption_spread: 1,
       stats: {
-        ATK: 3,
+        ATK: 0,
         DEF: 3,
         HP: 6,
         MOV: 5,
@@ -2603,7 +2603,7 @@
     {
       name: "Blight Weavers",
       faction: "nightfang-dominion",
-      points_cost: 4,
+      points_cost: 3,
       role: "Terrain manipulation support",
       fragment_interactions: "Creates Corruption Zones; area denial",
       flavor_text: "Powerful Blight-sorcerers who can seed corruption into the very ground, creating hazardous zones that weaken and infect all who enter.",
@@ -2611,7 +2611,7 @@
       type: "Support",
       corruption_spread: 2,
       stats: {
-        ATK: 3,
+        ATK: 0,
         DEF: 3,
         HP: 6,
         MOV: 4,
@@ -2708,11 +2708,11 @@
         ATK: 15,
         DEF: 3,
         HP: 9,
-        MOV: 3,
+        MOV: 0,
         RNG: 24,
         MOR: 7
       },
-      special: ["Corruption", "Corruption Spread", "Predator Eyes (+1 ATK die vs targets in open; see in darkness)", "Immobile"]
+      special: ["Corruption", "Corruption Spread", "Predator Eyes (+1 ATK die vs targets in open; see in darkness)", "Immovable"]
     },
     {
       name: "Bile Cannon Crew",
@@ -2822,7 +2822,7 @@
     {
       name: "Blood Runners",
       faction: "nightfang-dominion",
-      points_cost: 1,
+      points_cost: 2,
       role: "Ultra-fast disposable scouts",
       fragment_interactions: "Fastest unit in faction; objective grabbing",
       flavor_text: "Thralls mutated for pure speed — elongated limbs and stripped muscle. They run until they drop.",
@@ -2941,7 +2941,7 @@
     {
       name: "Plague Doctor",
       faction: "nightfang-dominion",
-      points_cost: 4,
+      points_cost: 3,
       role: "Versatile corruption specialist",
       fragment_interactions: "Can cure or intensify corruption; flexible support",
       flavor_text: "A twisted healer who wields the Blight as both weapon and medicine. To allies, they bring restoration. To enemies, only the Quickening.",
@@ -2991,7 +2991,7 @@
     {
       name: "Hunger Wraith",
       faction: "nightfang-dominion",
-      points_cost: 8,
+      points_cost: 6,
       role: "Ethereal damage specialist",
       fragment_interactions: "Phase; Hunger Pool interaction; hard to kill",
       flavor_text: "A manifestation of pure Blight-hunger that has taken physical form. It passes through walls, armor, and flesh alike.",
@@ -3049,7 +3049,7 @@
       type: "Specialist",
       corruption_spread: 1,
       stats: {
-        ATK: 6,
+        ATK: 0,
         DEF: 3,
         HP: 6,
         MOV: 4,
@@ -3066,7 +3066,7 @@
     {
       name: "Crimson Behemoth",
       faction: "nightfang-dominion",
-      points_cost: 100,
+      points_cost: 85,
       role: "Massive melee war beast",
       fragment_interactions: "Corruption Aura 3\"; Blood Drain; Hunger Pool anchor",
       flavor_text: "A Stage 3 tiger of immense size — 20 feet at the shoulder, armored in plates of hardened Blight. It devours entire regiments.",
@@ -3086,7 +3086,7 @@
     {
       name: "Plague Titan",
       faction: "nightfang-dominion",
-      points_cost: 110,
+      points_cost: 95,
       role: "Walking corruption engine",
       fragment_interactions: "Maximum Corruption Aura; plague saturation; siege breaker",
       flavor_text: "The largest creature in the Nightfang arsenal — a Blight-mutated colossus whose every footstep spreads corruption and whose roar liquefies morale.",
@@ -3114,7 +3114,7 @@
     {
       name: "Blood Engine",
       faction: "nightfang-dominion",
-      points_cost: 95,
+      points_cost: 80,
       role: "Blood-powered war machine",
       fragment_interactions: "Blood Tithe multiplier; powered by sacrificed HP",
       flavor_text: "A pulsing heart-like construct of corrupted flesh and bone, fed by blood sacrificed from nearby units. The more it feeds, the more devastating its attacks.",
@@ -3139,7 +3139,7 @@
     {
       name: "Corruption Colossus",
       faction: "nightfang-dominion",
-      points_cost: 100,
+      points_cost: 85,
       role: "Mobile corruption factory",
       fragment_interactions: "Creates Corruption Zones; area denial on legs",
       flavor_text: "A walking factory of plague — it trails corruption in its wake and can projectile-infect entire areas of the battlefield.",
@@ -3165,7 +3165,7 @@
     {
       name: "Nightfang Dragon",
       faction: "nightfang-dominion",
-      points_cost: 110,
+      points_cost: 100,
       role: "Flying apex war beast",
       fragment_interactions: "Fly; Corruption Breath; apex predator of the sky",
       flavor_text: "A primordial dragon corrupted by the Blight over millennia. Its breath is concentrated Blight-fire and its shadow causes panic.",
@@ -3182,7 +3182,8 @@
       },
       special: [
         "Corruption",
-        "Bat-Wing Flight (silent flight; land in enemy rear arcs without triggering reactions)",
+        "Fly",
+        "Silent Approach (land in enemy rear arcs without triggering Reactions)",
         "Corruption Breath (ranged attack applies 2 Corruption tokens to all targets hit)",
         "Blast 3\"",
         "Towering",
@@ -3193,7 +3194,7 @@
     {
       name: "Bile Wurm",
       faction: "nightfang-dominion",
-      points_cost: 90,
+      points_cost: 75,
       role: "Burrowing war beast",
       fragment_interactions: "Ambush from underground; terrain manipulation",
       flavor_text: "A massive corrupted worm that burrows beneath the battlefield and erupts among enemy formations, spewing bile and corruption.",
@@ -3219,7 +3220,7 @@
     {
       name: "Blood Harvester Juggernaut",
       faction: "nightfang-dominion",
-      points_cost: 95,
+      points_cost: 80,
       role: "Armored assault war machine",
       fragment_interactions: "Blood Drain on kill; Hunger Pool anchor; siege unit",
       flavor_text: "A massive armored beast bristling with bone-blades and draining tubes. It harvests blood from everything it tramples.",
@@ -3245,7 +3246,7 @@
     {
       name: "Elder Tiger Horror",
       faction: "nightfang-dominion",
-      points_cost: 100,
+      points_cost: 85,
       role: "Ancient apex predator",
       fragment_interactions: "Corruption Aura 3\"; Pack Tactics for all tigers within 6\"",
       flavor_text: "An ancient vampiric tiger, possibly older than the Dominion itself. Its roar commands every tiger on the battlefield.",
@@ -3272,7 +3273,7 @@
     {
       name: "Plague Broodmother",
       faction: "nightfang-dominion",
-      points_cost: 95,
+      points_cost: 80,
       role: "Thrall spawner",
       fragment_interactions: "Generates free Thrall units; sustains attrition warfare",
       flavor_text: "A horrifying brood-beast that births new thralls directly onto the battlefield. It is both war machine and factory.",
@@ -3297,7 +3298,7 @@
     {
       name: "Shadow Leviathan",
       faction: "nightfang-dominion",
-      points_cost: 110,
+      points_cost: 95,
       role: "Supreme apex war beast",
       fragment_interactions: "Stealth war machine; Corruption Aura; devastating ambush",
       flavor_text: "The apex predator of the Nightfang — a shadow-cloaked leviathan that phases in and out of visibility. When it strikes, it is already too late.",
@@ -3328,7 +3329,7 @@
     {
       name: "The Patriarch's Avatar",
       faction: "nightfang-dominion",
-      points_cost: 180,
+      points_cost: 150,
       role: "Legendary apex horror",
       fragment_interactions: "Corruption Aura; Hunger Pool apex; supreme corruption engine",
       flavor_text: "A fragment of the Patriarch's own will given monstrous, corporeal form — a towering amalgamation of every corruption strain.",
