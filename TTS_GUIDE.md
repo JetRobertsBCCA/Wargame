@@ -135,7 +135,15 @@ The scripted UI panel appears in the **top-right corner**:
 | **CP +/-** | Adjust Command Points for each player |
 | **F +/-** | Track Fragment charges for each player |
 | **VP +/-** | Track Victory Points for each player |
-| **⚔ Combat** | Opens the combat resolver panel (enter ATK dice & DEF) |
+| **Heat +/-** | Emberclaw Heat Pool (max 15, Overheat at 16+) |
+| **Hunger +** | Nightfang Hunger Pool (kill tracker) |
+| **Flow +/-** | Veilbound Ritual Flow (max 40, tier thresholds) |
+| **Fate -** | Thornweft Fate-Threads (spend only, finite) |
+| **Anchors +/-** | Thornweft Web-Anchor counter |
+| **F.Charges +** | Iron Dominion Fragment Charges |
+| **Honor / Revel.** | Toggle Veilbound stance (Honor/Revelation/None) |
+| **W/R Kills +** | Track kills per player |
+| **⚔ Combat** | Opens the combat resolver panel |
 | **🎲 Morale** | Auto-rolls 2d6 morale test |
 | **🎲 d6** | Generic d6 roll |
 | **⏱ Timer** | Toggle the phase/turn timer (warns after 3 min) |
@@ -155,18 +163,71 @@ Click **⚔ RESOLVE** to auto-roll. Results appear in chat with hits, crits, and
 
 Type these in the TTS chat box (press Enter):
 
+### Combat & Dice
 | Command | Example | Description |
 |---------|---------|-------------|
-| `!atk <dice> vs <DEF>` | `!atk 6 vs 4` | Auto-rolls attack: 6 ATK dice vs DEF 4 |
+| `!atk <dice> vs <DEF> [mods]` | `!atk 6 vs 4 charge flank` | Attack roll with optional modifiers |
 | `!morale <MOR>` | `!morale 8` | Morale test: rolls 2d6, pass if ≤ MOR |
 | `!roll XdY` | `!roll 3d6` | Generic dice roll |
-| `!army` | `!army` | **Validate army** — scans all units on the table, totals points, checks composition rules |
-| `!vp <player> <+/-N>` | `!vp white +2` | Adjust a player's Victory Points |
-| `!cp <player> <+/-N>` | `!cp red -3` | Adjust a player's Command Points |
+| `!breath <dice>` | `!breath 4` | Breath Weapon attack (ignores cover, auto +2 Heat) |
+| `!measure` | `!measure` | Distance between last 2 picked-up objects |
+
+**Combat Modifiers** — append any of these to `!atk`:
+| Modifier | Effect | Example |
+|----------|--------|---------|
+| `charge` | +1 ATK (5"+ straight charge) | `!atk 6 vs 4 charge` |
+| `flank` | +1 ATK | `!atk 6 vs 4 flank` |
+| `rear` | +2 ATK | `!atk 6 vs 4 rear` |
+| `cover` | +1 DEF | `!atk 6 vs 3 cover` |
+| `heavy_cover` | +2 DEF | `!atk 6 vs 3 heavy_cover` |
+| `elevated` | +1 ATK (ranged) | `!atk 5 vs 4 elevated` |
+| `dive` | +2 ATK (Diving Charge) | `!atk 4 vs 4 dive` |
+| `honor` | +1 DEF, -1 ATK (Veilbound) | `!atk 6 vs 4 honor` |
+| `revelation` | +1 ATK, -1 DEF (Veilbound) | `!atk 6 vs 4 revelation` |
+| `grid_active` | +1 ATK (Iron Dominion) | `!atk 5 vs 4 grid_active` |
+| `grid_fortified` | +1 ATK, +1 DEF (Iron Dominion) | `!atk 5 vs 3 grid_fortified` |
+| `isolated` | -1 ATK (Iron Dominion) | `!atk 5 vs 4 isolated` |
+| `superheated` | +1 dmg per hit (Emberclaw) | `!atk 6 vs 4 superheated` |
+
+Modifiers stack: `!atk 6 vs 4 charge flank elevated`
+
+### Faction Mechanics
+| Command | Example | Description |
+|---------|---------|-------------|
+| `!heat <+/-N>` | `!heat +3` | Adjust Emberclaw Heat Pool (max 15, Overheat at 16+) |
+| `!hunger <+/-N>` | `!hunger +1` | Adjust Nightfang Hunger Pool (kill tracker) |
+| `!flow <+/-N>` | `!flow +4` | Adjust Veilbound Ritual Flow (max 40) |
+| `!fate <+/-N>` | `!fate -1` | Adjust Thornweft Fate-Threads (finite, no regen) |
+| `!anchors <+/-N>` | `!anchors +1` | Adjust Thornweft Web-Anchor count |
+| `!charges <+/-N>` | `!charges +2` | Adjust Iron Dominion Fragment Charges |
+| `!stance <type>` | `!stance honor` | Set Veilbound stance (honor/revelation/none) |
+| `!instability [thresh]` | `!instability 3` | Roll Iron Dominion fragment instability check |
+| `!corruption <tokens>` | `!corruption 6` | Check Corruption effect at token count |
+| `!pools` | `!pools` | Display all faction mechanic pools |
+| `!breath <dice>` | `!breath 4` | Breath Weapon (ignores cover, +2 Heat auto) |
+
+### Tracking
+| Command | Example | Description |
+|---------|---------|-------------|
+| `!kill <white/red>` | `!kill red` | Record a kill for a player |
+| `!vp <player> <+/-N>` | `!vp white +2` | Adjust Victory Points |
+| `!cp <player> <+/-N>` | `!cp red -3` | Adjust Command Points |
+| `!army` | `!army` | Validate army composition on table |
+
+### Game
+| Command | Example | Description |
+|---------|---------|-------------|
 | `!scenario` | `!scenario` | Generate a random scenario/mission |
-| `!phase` | `!phase` | Shows current turn/phase/CP/VP |
-| `!reset` | `!reset` | Reset the game state back to Setup |
+| `!phase` | `!phase` | Show current turn/phase/all pools |
+| `!reset` | `!reset` | Reset game state (all pools, kills, HP cleared) |
 | `!help` | `!help` | Lists all commands |
+
+### Right-Click Unit Context Menu
+Right-click any unit token with HP stats to access:
+- **Deal 1/2/3 Damage** — Subtract HP, announces when at half HP or destroyed
+- **Heal 1/2 HP** — Restore HP up to maximum
+- **Show HP** — Display current HP with visual health bar
+- **Blood Tithe** — Sacrifice 1 HP for +1 ATK die (Nightfang mechanic)
 
 ### Attack Resolution Example
 ```
@@ -415,4 +476,4 @@ Wargame/
 
 ---
 
-*Generated for Shardborne v2.0 — Tabletop Simulator Edition*
+*Generated for Shardborne v3.0 — Tabletop Simulator Edition*

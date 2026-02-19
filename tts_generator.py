@@ -869,19 +869,24 @@ def build_lua_script():
     return r'''--[[
     ╔══════════════════════════════════════════════╗
     ║     SHARDBORNE — Tabletop Simulator Mod      ║
-    ║     Global Script v2.0                       ║
+    ║     Global Script v3.0                       ║
     ╚══════════════════════════════════════════════╝
     
     Features:
     - Turn phase management (Command → Movement → Combat → End)
-    - Auto-combat resolver (ATK dice vs DEF with crit tracking)
+    - Auto-combat resolver with modifiers (charge/flank/rear/cover/stance)
     - Morale testing (2d6 vs MOR)
     - Card draw mechanics (draw 2/turn, hand limit 7)
-    - CP / Fragment tracking per player
+    - CP / Fragment / VP tracking per player
+    - Faction mechanic pools: Heat, Hunger, Flow, Fate-Threads, Anchors, Fragment Charges
+    - Veilbound Stance tracking (Honor / Revelation)
+    - HP damage tracking via right-click context menus
+    - Kill counter per player (feeds Hunger Pool)
+    - Distance measurement between objects
+    - Faction-specific phase reminders & auto-triggers
     - Army point validation (!army command)
-    - HP damage tracking via context menu buttons
-    - Round timer
-    - Unit stat lookup
+    - Overheat / Flow threshold / Hunger threshold auto-detection
+    - Round timer & combat log
     - Scenario/objective management
 --]]
 
@@ -907,7 +912,22 @@ GameState = {
     combat_log = {},
     timer_start = 0,
     timer_enabled = false,
+    -- Faction mechanic pools
+    faction_pools = {
+        heat = 0,              -- Emberclaw Heat Pool (max 15, overheat triggers above)
+        hunger = 0,            -- Nightfang Hunger Pool (kill counter -> thresholds)
+        flow = 0,              -- Veilbound Ritual Flow (max 40)
+        fate_threads = 0,      -- Thornweft Fate-Thread Pool (finite, no regen)
+        anchors = 0,           -- Thornweft Web-Anchors placed
+        fragment_charges = 0,  -- Iron Dominion Fragment Charges
+        stance = "none",       -- Veilbound stance: none / honor / revelation
+    },
+    kills = {White = 0, Red = 0},   -- Kill counter per player
+    unit_hp = {},                     -- HP tracking keyed by object GUID
 }
+
+-- Measurement tracking
+local lastPickedUp = {}
 
 -- ════════════════════════════════════════
 -- INITIALIZATION
@@ -918,11 +938,25 @@ function onLoad(save_state)
         local loaded = JSON.decode(save_state)
         if loaded then
             GameState = loaded
+            -- Ensure new fields exist for saves from v2.0
+            if not GameState.faction_pools then
+                GameState.faction_pools = {heat=0, hunger=0, flow=0, fate_threads=0, anchors=0, fragment_charges=0, stance="none"}
+            end
+            if not GameState.kills then GameState.kills = {White=0, Red=0} end
+            if not GameState.unit_hp then GameState.unit_hp = {} end
         end
     end
     
     createUI()
-    broadcastToAll("═══ SHARDBORNE v2.0 ═══\nTabletop Simulator Edition\n\nWelcome, Commanders!\nType !help for commands.", {1, 0.8, 0.2})
+    
+    -- Add context menus to all existing objects
+    Wait.time(function()
+        for _, obj in ipairs(getAllObjects()) do
+            addHPContextMenu(obj)
+        end
+    end, 1)
+    
+    broadcastToAll("═══ SHARDBORNE v3.0 ═══\nTabletop Simulator Edition\n\nWelcome, Commanders!\nType !help for commands.\n\nFaction Mechanics: !heat !hunger !flow !fate !anchors !stance", {1, 0.8, 0.2})
     printToAll("[Phase: " .. GameState.phase .. "] Turn " .. GameState.turn, {0.8, 0.8, 0.8})
 end
 
@@ -944,7 +978,7 @@ function createUI()
     <Text fontSize="12" color="#FFFFFF" />
 </Defaults>
 
-<Panel position="0 0 -50" rotation="0 0 0" width="300" height="580" 
+<Panel position="0 0 -50" rotation="0 0 0" width="300" height="780" 
        color="rgba(0,0,0,0.88)" padding="6" id="mainPanel"
        anchorMin="1 1" anchorMax="1 1" offsetXY="-160 -10"
        active="true">
@@ -1001,6 +1035,42 @@ function createUI()
             <Text id="vpRed" fontSize="13" color="#44FF44">VP: 0</Text>
             <Button onClick="addVPRed" color="#224422" textColor="#44FF44" preferredWidth="28">+</Button>
             <Button onClick="subVPRed" color="#442222" textColor="#FF4444" preferredWidth="28">-</Button>
+        </HorizontalLayout>
+        
+        <Text fontSize="11" color="#555555" alignment="MiddleCenter">──── Faction Mechanics ────</Text>
+        <HorizontalLayout spacing="2" preferredHeight="26">
+            <Text id="poolHeat" fontSize="11" color="#FF6600" preferredWidth="90">Heat: 0/15</Text>
+            <Button onClick="addHeat" color="#442200" textColor="#FF6600" preferredWidth="25">+</Button>
+            <Button onClick="subHeat" color="#332200" textColor="#AA4400" preferredWidth="25">-</Button>
+            <Text id="poolHunger" fontSize="11" color="#CC0000" preferredWidth="85">Hunger: 0</Text>
+            <Button onClick="addHunger" color="#440000" textColor="#CC0000" preferredWidth="25">+</Button>
+        </HorizontalLayout>
+        <HorizontalLayout spacing="2" preferredHeight="26">
+            <Text id="poolFlow" fontSize="11" color="#6699FF" preferredWidth="90">Flow: 0/40</Text>
+            <Button onClick="addFlow" color="#222244" textColor="#6699FF" preferredWidth="25">+</Button>
+            <Button onClick="subFlow" color="#222233" textColor="#4466AA" preferredWidth="25">-</Button>
+            <Text id="poolFate" fontSize="11" color="#44DDAA" preferredWidth="85">Fate: 0</Text>
+            <Button onClick="subFate" color="#223333" textColor="#44DDAA" preferredWidth="25">-</Button>
+        </HorizontalLayout>
+        <HorizontalLayout spacing="2" preferredHeight="26">
+            <Text id="poolAnchors" fontSize="11" color="#33CC88" preferredWidth="90">Anchors: 0</Text>
+            <Button onClick="addAnchors" color="#223322" textColor="#33CC88" preferredWidth="25">+</Button>
+            <Button onClick="subAnchors" color="#222222" textColor="#228855" preferredWidth="25">-</Button>
+            <Text id="poolFragCharges" fontSize="11" color="#8888FF" preferredWidth="85">F.Charges: 0</Text>
+            <Button onClick="addFragCharges" color="#222244" textColor="#8888FF" preferredWidth="25">+</Button>
+        </HorizontalLayout>
+        <HorizontalLayout spacing="2" preferredHeight="26">
+            <Text id="stanceText" fontSize="11" color="#AAAAAA" preferredWidth="110">Stance: None</Text>
+            <Button onClick="setStanceHonor" color="#334455" textColor="#66AADD" preferredWidth="55">Honor</Button>
+            <Button onClick="setStanceRevelation" color="#553322" textColor="#FF8844" preferredWidth="55">Revel.</Button>
+        </HorizontalLayout>
+        
+        <Text fontSize="11" color="#555555" alignment="MiddleCenter">──── Kill Tracker ────</Text>
+        <HorizontalLayout spacing="3" preferredHeight="26">
+            <Text id="killsWhite" fontSize="11" color="#CCCCCC" preferredWidth="90">W Kills: 0</Text>
+            <Button onClick="addKillWhite" color="#333333" textColor="#CCCCCC" preferredWidth="25">+</Button>
+            <Text id="killsRed" fontSize="11" color="#FF8888" preferredWidth="85">R Kills: 0</Text>
+            <Button onClick="addKillRed" color="#442222" textColor="#FF8888" preferredWidth="25">+</Button>
         </HorizontalLayout>
         
         <Text fontSize="11" color="#555555" alignment="MiddleCenter">──── Combat Tools ────</Text>
@@ -1066,6 +1136,29 @@ function updateUI()
         UI.setAttribute("fragRed", "text", "F: " .. (GameState.player_fragments.Red or 0))
         UI.setAttribute("vpWhite", "text", "VP: " .. (GameState.player_vp.White or 0))
         UI.setAttribute("vpRed", "text", "VP: " .. (GameState.player_vp.Red or 0))
+        
+        -- Faction pools
+        local fp = GameState.faction_pools or {}
+        local heat = fp.heat or 0
+        local heat_color = heat > 12 and "#FF0000" or (heat > 8 and "#FF6600" or "#FF6600")
+        UI.setAttribute("poolHeat", "text", "Heat: " .. heat .. "/15")
+        UI.setAttribute("poolHeat", "color", heat_color)
+        UI.setAttribute("poolHunger", "text", "Hunger: " .. (fp.hunger or 0))
+        UI.setAttribute("poolFlow", "text", "Flow: " .. (fp.flow or 0) .. "/40")
+        UI.setAttribute("poolFate", "text", "Fate: " .. (fp.fate_threads or 0))
+        UI.setAttribute("poolAnchors", "text", "Anchors: " .. (fp.anchors or 0))
+        UI.setAttribute("poolFragCharges", "text", "F.Charges: " .. (fp.fragment_charges or 0))
+        
+        -- Stance display
+        local stance = fp.stance or "none"
+        local stance_labels = {none = "None", honor = "Honor (+1 DEF, -1 ATK)", revelation = "Revelation (+1 ATK, -1 DEF)"}
+        local stance_colors = {none = "#AAAAAA", honor = "#66AADD", revelation = "#FF8844"}
+        UI.setAttribute("stanceText", "text", "Stance: " .. (stance_labels[stance] or "None"))
+        UI.setAttribute("stanceText", "color", stance_colors[stance] or "#AAAAAA")
+        
+        -- Kill tracker
+        UI.setAttribute("killsWhite", "text", "W Kills: " .. (GameState.kills and GameState.kills.White or 0))
+        UI.setAttribute("killsRed", "text", "R Kills: " .. (GameState.kills and GameState.kills.Red or 0))
         
         local phase_colors = {
             Setup = "#888888",
@@ -1196,14 +1289,72 @@ function onCommandPhase()
     end
     printToAll("⚡ Both players gain +" .. cp_gain .. " CP", {1, 0.85, 0.3})
     printToAll("📋 Play cards, activate abilities, draw 2 cards (hand limit 7)", {0.7, 0.7, 0.7})
+    
+    -- Faction-specific Command Phase triggers
+    local fp = GameState.faction_pools
+    
+    -- Emberclaw: Heat cools then generates
+    if fp.heat > 0 then
+        local old_heat = fp.heat
+        fp.heat = math.max(0, fp.heat - 3)
+        printToAll("🔥 Emberclaw: Heat cools -3 (" .. old_heat .. " → " .. fp.heat .. ")", {1, 0.5, 0})
+        printToAll("   Generate Heat: +1 per Fire unit, +2 per Breath Weapon, +1 per Drake Bond pair within 8\"", {0.7, 0.5, 0.3})
+    end
+    
+    -- Veilbound: Flow generation + stance reminder
+    if fp.flow > 0 or fp.stance ~= "none" then
+        printToAll("🌀 Veilbound: Generate Ritual Flow from units. Switch stances now (free action).", {0.4, 0.6, 1})
+        local flow_tier = "Below Stirring"
+        if fp.flow >= 30 then flow_tier = "ASCENDANT"
+        elseif fp.flow >= 20 then flow_tier = "Overflowing"
+        elseif fp.flow >= 12 then flow_tier = "Surging"
+        elseif fp.flow >= 5 then flow_tier = "Stirring" end
+        printToAll("   Flow Pool: " .. fp.flow .. "/40 (" .. flow_tier .. ")", {0.4, 0.5, 0.8})
+    end
+    
+    -- Thornweft: Web-Anchor placement
+    if fp.anchors > 0 or fp.fate_threads > 0 then
+        printToAll("🕸 Thornweft: Place 1 Web-Anchor within 8\" of a friendly unit. Anchors: " .. fp.anchors, {0.3, 0.8, 0.6})
+        printToAll("   Fate-Threads remaining: " .. fp.fate_threads .. " | Web-Spinners may place 1 extra Anchor", {0.3, 0.6, 0.5})
+    end
+    
+    -- Iron Dominion: Grid Cohesion + Fragment Charges
+    if fp.fragment_charges > 0 then
+        printToAll("⚙ Iron Dominion: Calculate Grid Cohesion (count allies within 4\" of each unit).", {0.6, 0.6, 0.8})
+        printToAll("   Fragment Charges: " .. fp.fragment_charges .. " | Generate +1 per unit within 8\" of War Machine", {0.5, 0.5, 0.7})
+    end
+    
+    -- Nightfang: Hunger Pool status
+    if fp.hunger > 0 then
+        local hunger_tier = "Below Peckish"
+        if fp.hunger >= 15 then hunger_tier = "GORGED"
+        elseif fp.hunger >= 10 then hunger_tier = "Ravenous"
+        elseif fp.hunger >= 5 then hunger_tier = "Peckish" end
+        printToAll("🩸 Nightfang Hunger: " .. fp.hunger .. " kills (" .. hunger_tier .. ")", {0.7, 0, 0})
+    end
 end
 
 function onEndPhase()
     printToAll("🏁 End Phase Checklist:", {0.9, 0.9, 0.5})
-    printToAll("  ✓ Morale test for units at ≤ half HP (roll 2d6 ≤ MOR)", {0.7, 0.7, 0.7})
+    printToAll("  ✓ Morale test for units at half HP or below (roll 2d6, pass if ≤ MOR)", {0.7, 0.7, 0.7})
     printToAll("  ✓ Score objectives (1 VP per controlled objective)", {0.7, 0.7, 0.7})
     printToAll("  ✓ Remove destroyed units, discard temp effects", {0.7, 0.7, 0.7})
     printToAll("  ✓ Check victory conditions", {0.7, 0.7, 0.7})
+    
+    -- Faction-specific End Phase reminders
+    local fp = GameState.faction_pools
+    
+    if fp.heat > 0 then
+        printToAll("  🔥 Emberclaw: Check for Overheat if Heat > 15", {1, 0.5, 0})
+    end
+    
+    if fp.hunger > 0 then
+        printToAll("  🩸 Nightfang: Non-NF units with Corruption that were NOT damaged remove 1 token (Natural Resistance)", {0.7, 0, 0})
+    end
+    
+    if fp.anchors > 0 then
+        printToAll("  🕸 Thornweft: Check Web-Anchor proximity. Severed units (0 Anchors within 8\") get -1 ATK, -1 MOR", {0.3, 0.8, 0.6})
+    end
 end
 
 -- ════════════════════════════════════════
@@ -1345,7 +1496,285 @@ function togglePanel(player)
     if panelMinimized then
         UI.setAttribute("mainPanel", "height", "60")
     else
-        UI.setAttribute("mainPanel", "height", "580")
+        UI.setAttribute("mainPanel", "height", "780")
+    end
+end
+
+-- ════════════════════════════════════════
+-- FACTION MECHANIC POOLS
+-- ════════════════════════════════════════
+
+-- Heat Pool (Emberclaw) — max 15, overheat if exceeds
+function addHeat()
+    local fp = GameState.faction_pools
+    fp.heat = fp.heat + 1
+    checkOverheat()
+    updateUI()
+end
+function subHeat()
+    local fp = GameState.faction_pools
+    fp.heat = math.max(0, fp.heat - 1)
+    updateUI()
+end
+
+-- Hunger Pool (Nightfang) — grows from kills, never decreases
+function addHunger()
+    local fp = GameState.faction_pools
+    fp.hunger = fp.hunger + 1
+    checkHungerThresholds()
+    updateUI()
+end
+
+-- Ritual Flow (Veilbound) — max 40
+function addFlow()
+    local fp = GameState.faction_pools
+    fp.flow = math.min(40, fp.flow + 1)
+    checkFlowThresholds()
+    updateUI()
+end
+function subFlow()
+    local fp = GameState.faction_pools
+    fp.flow = math.max(0, fp.flow - 1)
+    updateUI()
+end
+
+-- Fate-Threads (Thornweft) — finite, no regen
+function subFate()
+    local fp = GameState.faction_pools
+    fp.fate_threads = math.max(0, fp.fate_threads - 1)
+    printToAll("🕸 Fate-Thread spent! Remaining: " .. fp.fate_threads, {0.3, 0.8, 0.6})
+    updateUI()
+end
+
+-- Web-Anchors (Thornweft)
+function addAnchors()
+    local fp = GameState.faction_pools
+    fp.anchors = fp.anchors + 1
+    printToAll("🕸 Web-Anchor placed! Total: " .. fp.anchors, {0.3, 0.8, 0.6})
+    updateUI()
+end
+function subAnchors()
+    local fp = GameState.faction_pools
+    fp.anchors = math.max(0, fp.anchors - 1)
+    printToAll("🕸 Web-Anchor removed! Total: " .. fp.anchors, {0.8, 0.3, 0.3})
+    updateUI()
+end
+
+-- Fragment Charges (Iron Dominion)
+function addFragCharges()
+    local fp = GameState.faction_pools
+    fp.fragment_charges = fp.fragment_charges + 1
+    updateUI()
+end
+
+-- Veilbound Stances
+function setStanceHonor()
+    local fp = GameState.faction_pools
+    if fp.stance == "honor" then
+        fp.stance = "none"
+        broadcastToAll("⚔ Stance cleared", {0.7, 0.7, 0.7})
+    else
+        fp.stance = "honor"
+        broadcastToAll("🛡 HONOR STANCE activated\n+1 DEF, -1 ATK die, cannot be flanked", {0.4, 0.7, 0.9})
+    end
+    updateUI()
+end
+
+function setStanceRevelation()
+    local fp = GameState.faction_pools
+    if fp.stance == "revelation" then
+        fp.stance = "none"
+        broadcastToAll("⚔ Stance cleared", {0.7, 0.7, 0.7})
+    else
+        fp.stance = "revelation"
+        broadcastToAll("⚔ REVELATION STANCE activated\n+1 ATK die, -1 DEF, +1 Ritual Flow this turn", {1, 0.5, 0.2})
+    end
+    updateUI()
+end
+
+-- Kill Counter
+function addKillWhite()
+    GameState.kills.White = GameState.kills.White + 1
+    printToAll("⚰ White records a kill! Total: " .. GameState.kills.White, {0.8, 0.8, 0.8})
+    updateUI()
+end
+function addKillRed()
+    GameState.kills.Red = GameState.kills.Red + 1
+    printToAll("⚰ Red records a kill! Total: " .. GameState.kills.Red, {1, 0.5, 0.5})
+    updateUI()
+end
+
+-- ════════════════════════════════════════
+-- FACTION THRESHOLD CHECKS
+-- ════════════════════════════════════════
+
+function checkOverheat()
+    local fp = GameState.faction_pools
+    if fp.heat > 15 then
+        fp.heat = 10
+        broadcastToAll("💥🔥 OVERHEAT! Heat exceeds 15!\n• Heat reduced to 10\n• All Emberclaw units suffer 1 damage\n• No Fragment cards next turn\n• Fire attacks deal +1 damage next turn", {1, 0.2, 0})
+    elseif fp.heat >= 13 then
+        printToAll("⚠ Heat at " .. fp.heat .. "/15 — Overheat danger!", {1, 0.5, 0})
+    end
+end
+
+function checkHungerThresholds()
+    local h = GameState.faction_pools.hunger
+    -- Standard battle size thresholds (most common)
+    if h == 5 then
+        broadcastToAll("🩸 PECKISH (5 kills)\nAll Nightfang units gain +1 MOV!\nThe hunt begins...", {0.8, 0, 0})
+    elseif h == 10 then
+        broadcastToAll("🩸 RAVENOUS (10 kills)\nAll Nightfang units gain +1 ATK die!\nBlood frenzy spreads!", {0.8, 0, 0})
+    elseif h == 15 then
+        broadcastToAll("🩸 GORGED (15 kills)\nCommander heals 3 HP!\nAll units gain Blood Drain!", {0.8, 0, 0})
+    end
+end
+
+function checkFlowThresholds()
+    local f = GameState.faction_pools.flow
+    if f == 5 then
+        broadcastToAll("🌀 STIRRING (Flow: 5)\nTier 1 Flow abilities unlocked!", {0.4, 0.6, 1})
+    elseif f == 12 then
+        broadcastToAll("🌀 SURGING (Flow: 12)\nTier 2 unlocked! All Veilbound +1 MOR!", {0.4, 0.6, 1})
+    elseif f == 20 then
+        broadcastToAll("🌀 OVERFLOWING (Flow: 20)\nTier 3 unlocked! Commander plays 1 free card/turn!", {0.4, 0.6, 1})
+    elseif f == 30 then
+        broadcastToAll("🌀 ASCENDANT (Flow: 30)\nTier 4 unlocked! All Veilbound +1 ATK! Transformations!", {0.4, 0.6, 1})
+    end
+end
+
+-- ════════════════════════════════════════
+-- HP TRACKING (Right-Click Context Menus)
+-- ════════════════════════════════════════
+
+function onObjectSpawn(obj)
+    Wait.frames(function()
+        addHPContextMenu(obj)
+    end, 3)
+end
+
+function addHPContextMenu(obj)
+    if obj == nil then return end
+    local desc = obj.getDescription() or ""
+    local hp_str = desc:match("HP:%s*(%d+)")
+    if not hp_str then return end
+    
+    local guid = obj.getGUID()
+    local hp = tonumber(hp_str)
+    
+    -- Initialize HP tracking if not already tracked
+    if not GameState.unit_hp[guid] then
+        GameState.unit_hp[guid] = {
+            max_hp = hp,
+            current_hp = hp,
+            name = obj.getName() or "Unknown"
+        }
+    end
+    
+    -- Add right-click context menu items
+    obj.addContextMenuItem("Deal 1 Damage", function(pc) dealDamage(obj, 1) end)
+    obj.addContextMenuItem("Deal 2 Damage", function(pc) dealDamage(obj, 2) end)
+    obj.addContextMenuItem("Deal 3 Damage", function(pc) dealDamage(obj, 3) end)
+    obj.addContextMenuItem("Heal 1 HP", function(pc) healUnit(obj, 1) end)
+    obj.addContextMenuItem("Heal 2 HP", function(pc) healUnit(obj, 2) end)
+    obj.addContextMenuItem("Show HP", function(pc) showHP(obj) end)
+    obj.addContextMenuItem("Blood Tithe (-1HP +1ATK)", function(pc) bloodTithe(obj) end)
+end
+
+function dealDamage(obj, amount)
+    local guid = obj.getGUID()
+    if not GameState.unit_hp[guid] then
+        local desc = obj.getDescription() or ""
+        local hp = tonumber(desc:match("HP:%s*(%d+)")) or 1
+        GameState.unit_hp[guid] = {max_hp = hp, current_hp = hp, name = obj.getName() or "Unknown"}
+    end
+    
+    local unit = GameState.unit_hp[guid]
+    unit.current_hp = math.max(0, unit.current_hp - amount)
+    local name = unit.name or obj.getName() or "Unit"
+    
+    broadcastToAll("💥 " .. name .. " takes " .. amount .. " damage! (" ..
+                    unit.current_hp .. "/" .. unit.max_hp .. " HP)", {1, 0.4, 0.3})
+    
+    if unit.current_hp <= 0 then
+        broadcastToAll("💀 " .. name .. " is DESTROYED!", {1, 0, 0})
+        printToAll("   Use kill tracker (+) buttons to record kills", {0.6, 0.6, 0.6})
+    elseif unit.current_hp <= math.floor(unit.max_hp / 2) then
+        broadcastToAll("⚠ " .. name .. " at half HP or below — morale test required in End Phase!", {1, 0.7, 0.2})
+    end
+end
+
+function healUnit(obj, amount)
+    local guid = obj.getGUID()
+    if not GameState.unit_hp[guid] then return end
+    
+    local unit = GameState.unit_hp[guid]
+    unit.current_hp = math.min(unit.max_hp, unit.current_hp + amount)
+    broadcastToAll("💚 " .. (unit.name or obj.getName()) .. " heals " .. amount ..
+                    " HP! (" .. unit.current_hp .. "/" .. unit.max_hp .. " HP)", {0.3, 1, 0.3})
+end
+
+function showHP(obj)
+    local guid = obj.getGUID()
+    if not GameState.unit_hp[guid] then
+        printToAll("No HP tracked for this object.", {0.7, 0.7, 0.7})
+        return
+    end
+    local unit = GameState.unit_hp[guid]
+    local pct = math.floor((unit.current_hp / unit.max_hp) * 100)
+    local bar = ""
+    local filled = math.floor(pct / 10)
+    for i = 1, 10 do
+        bar = bar .. (i <= filled and "█" or "░")
+    end
+    printToAll("❤ " .. (unit.name or "Unit") .. ": " .. unit.current_hp .. "/" .. unit.max_hp .. " HP [" .. bar .. "] " .. pct .. "%", {0.8, 0.8, 0.8})
+end
+
+function bloodTithe(obj)
+    local guid = obj.getGUID()
+    if not GameState.unit_hp[guid] then return end
+    local unit = GameState.unit_hp[guid]
+    if unit.current_hp <= 1 then
+        printToAll("Cannot Blood Tithe — unit must have HP to spare (cannot drop below 1).", {1, 0.3, 0.3})
+        return
+    end
+    unit.current_hp = unit.current_hp - 1
+    broadcastToAll("🩸 BLOOD TITHE: " .. (unit.name or "Unit") .. " sacrifices 1 HP (" ..
+                    unit.current_hp .. "/" .. unit.max_hp .. ")\n→ Gains +1 ATK die for next attack this turn!", {0.7, 0, 0.3})
+end
+
+-- ════════════════════════════════════════
+-- DISTANCE MEASUREMENT
+-- ════════════════════════════════════════
+
+function onObjectPickUp(color, obj)
+    table.insert(lastPickedUp, {obj = obj, pos = obj.getPosition(), name = obj.getName() or "Object"})
+    if #lastPickedUp > 2 then
+        table.remove(lastPickedUp, 1)
+    end
+end
+
+function measureDistance()
+    if #lastPickedUp < 2 then
+        printToAll("📏 Pick up 2 objects first, then use !measure", {0.7, 0.7, 0.7})
+        return
+    end
+    local a = lastPickedUp[#lastPickedUp - 1]
+    local b = lastPickedUp[#lastPickedUp]
+    local p1 = a.obj.getPosition()
+    local p2 = b.obj.getPosition()
+    local dx = p2.x - p1.x
+    local dz = p2.z - p1.z
+    local dist = math.sqrt(dx*dx + dz*dz)
+    broadcastToAll(string.format("📏 Distance: %.1f\" between %s and %s", dist, a.name, b.name), {0.5, 0.8, 1})
+    
+    -- Check common ranges
+    if dist <= 1 then
+        printToAll("   → Within melee / engagement range (1\")", {0.7, 0.7, 0.7})
+    elseif dist <= 4 then
+        printToAll("   → Within Grid Cohesion range (4\") / Web-Anchor range (4\")", {0.7, 0.7, 0.7})
+    elseif dist <= 8 then
+        printToAll("   → Within Commander Aura (8\") / Drake Bond range (8\")", {0.7, 0.7, 0.7})
     end
 end
 
@@ -1468,11 +1897,70 @@ function onChat(message, player)
         return false
     end
     
-    -- !atk <ATK_dice> vs <DEF>
-    local atk, def = msg:match("!atk%s+(%d+)%s+vs%s+(%d+)")
-    if atk and def then
-        atk = tonumber(atk)
-        def = tonumber(def)
+    -- !atk <ATK_dice> vs <DEF> [modifiers: charge flank rear cover heavy_cover elevated honor revelation]
+    local atk_match, def_match, mods_match = msg:match("!atk%s+(%d+)%s+vs%s+(%d+)(.*)")
+    if atk_match and def_match then
+        atk = tonumber(atk_match)
+        def = tonumber(def_match)
+        local mod_text = {}
+        
+        -- Apply combat modifiers
+        if mods_match then
+            if mods_match:match("charge") then 
+                atk = atk + 1
+                table.insert(mod_text, "+1 ATK (Charge)")
+            end
+            if mods_match:match("flank") then
+                atk = atk + 1
+                table.insert(mod_text, "+1 ATK (Flank)")
+            end
+            if mods_match:match("rear") then
+                atk = atk + 2
+                table.insert(mod_text, "+2 ATK (Rear)")
+            end
+            if mods_match:match("elevated") then
+                atk = atk + 1
+                table.insert(mod_text, "+1 ATK (Elevated)")
+            end
+            if mods_match:match("dive") then
+                atk = atk + 2
+                table.insert(mod_text, "+2 ATK (Diving Charge)")
+            end
+            if mods_match:match("heavy_cover") then
+                def = def + 2
+                table.insert(mod_text, "+2 DEF (Heavy Cover)")
+            elseif mods_match:match("cover") then
+                def = def + 1
+                table.insert(mod_text, "+1 DEF (Cover)")
+            end
+            if mods_match:match("honor") then
+                def = def + 1
+                atk = math.max(1, atk - 1)
+                table.insert(mod_text, "Honor: +1 DEF, -1 ATK")
+            end
+            if mods_match:match("revelation") then
+                atk = atk + 1
+                def = math.max(1, def - 1)
+                table.insert(mod_text, "Revelation: +1 ATK, -1 DEF")
+            end
+            if mods_match:match("grid_active") then
+                atk = atk + 1
+                table.insert(mod_text, "+1 ATK (Grid Active)")
+            end
+            if mods_match:match("grid_fortified") then
+                atk = atk + 1
+                def = def + 1
+                table.insert(mod_text, "+1 ATK +1 DEF (Grid Fortified)")
+            end
+            if mods_match:match("isolated") then
+                atk = math.max(1, atk - 1)
+                table.insert(mod_text, "-1 ATK (Isolated)")
+            end
+            if mods_match:match("superheated") then
+                table.insert(mod_text, "+1 dmg per hit (Superheated Strikes)")
+            end
+        end
+        
         local hits = 0
         local crits = 0
         local results = {}
@@ -1487,9 +1975,21 @@ function onChat(message, player)
             end
         end
         local total_dmg = hits + crits
-        broadcastToAll("⚔️ ATTACK: " .. atk .. " dice vs DEF " .. def .. 
+        
+        -- Superheated adds +1 per hit
+        local superheated = mods_match and mods_match:match("superheated")
+        if superheated then
+            total_dmg = total_dmg + hits  -- +1 per hit (crits already counted in hits)
+        end
+        
+        local mod_str = ""
+        if #mod_text > 0 then
+            mod_str = "\nModifiers: " .. table.concat(mod_text, ", ")
+        end
+        
+        broadcastToAll("⚔️ ATTACK: " .. atk .. " dice vs DEF " .. def .. mod_str ..
                        "\nRolls: [" .. table.concat(results, ", ") .. "]" ..
-                       "\nHits: " .. hits .. " | Crits: " .. crits .. 
+                       "\nHits: " .. hits .. " | Crits (6s): " .. crits ..
                        " | Total Damage: " .. total_dmg, {1, 0.4, 0.3})
         
         table.insert(GameState.combat_log, {
@@ -1552,6 +2052,169 @@ function onChat(message, player)
         return false
     end
     
+    -- !measure — distance between last 2 picked-up objects
+    if msg:match("^!measure") then
+        measureDistance()
+        return false
+    end
+    
+    -- !heat <+/-N> — adjust Heat Pool
+    local heat_adj = msg:match("!heat%s+([+-]?%d+)")
+    if heat_adj then
+        heat_adj = tonumber(heat_adj)
+        GameState.faction_pools.heat = math.max(0, GameState.faction_pools.heat + heat_adj)
+        if heat_adj > 0 then checkOverheat() end
+        printToAll("🔥 Heat Pool: " .. GameState.faction_pools.heat .. "/15", {1, 0.5, 0})
+        updateUI()
+        return false
+    end
+    
+    -- !hunger <+/-N> — adjust Hunger Pool
+    local hunger_adj = msg:match("!hunger%s+([+-]?%d+)")
+    if hunger_adj then
+        hunger_adj = tonumber(hunger_adj)
+        GameState.faction_pools.hunger = math.max(0, GameState.faction_pools.hunger + hunger_adj)
+        if hunger_adj > 0 then checkHungerThresholds() end
+        printToAll("🩸 Hunger Pool: " .. GameState.faction_pools.hunger, {0.7, 0, 0})
+        updateUI()
+        return false
+    end
+    
+    -- !flow <+/-N> — adjust Ritual Flow
+    local flow_adj = msg:match("!flow%s+([+-]?%d+)")
+    if flow_adj then
+        flow_adj = tonumber(flow_adj)
+        GameState.faction_pools.flow = math.max(0, math.min(40, GameState.faction_pools.flow + flow_adj))
+        if flow_adj > 0 then checkFlowThresholds() end
+        printToAll("🌀 Ritual Flow: " .. GameState.faction_pools.flow .. "/40", {0.4, 0.6, 1})
+        updateUI()
+        return false
+    end
+    
+    -- !fate <+/-N> — adjust Fate-Threads (usually negative; set positive at game start)
+    local fate_adj = msg:match("!fate%s+([+-]?%d+)")
+    if fate_adj then
+        fate_adj = tonumber(fate_adj)
+        GameState.faction_pools.fate_threads = math.max(0, GameState.faction_pools.fate_threads + fate_adj)
+        printToAll("🕸 Fate-Threads: " .. GameState.faction_pools.fate_threads, {0.3, 0.8, 0.6})
+        updateUI()
+        return false
+    end
+    
+    -- !anchors <+/-N> — adjust Web-Anchors
+    local anchor_adj = msg:match("!anchors%s+([+-]?%d+)")
+    if anchor_adj then
+        anchor_adj = tonumber(anchor_adj)
+        GameState.faction_pools.anchors = math.max(0, GameState.faction_pools.anchors + anchor_adj)
+        printToAll("🕸 Web-Anchors: " .. GameState.faction_pools.anchors, {0.3, 0.8, 0.6})
+        updateUI()
+        return false
+    end
+    
+    -- !charges <+/-N> — adjust Fragment Charges (Iron Dominion)
+    local charge_adj = msg:match("!charges%s+([+-]?%d+)")
+    if charge_adj then
+        charge_adj = tonumber(charge_adj)
+        GameState.faction_pools.fragment_charges = math.max(0, GameState.faction_pools.fragment_charges + charge_adj)
+        printToAll("⚙ Fragment Charges: " .. GameState.faction_pools.fragment_charges, {0.6, 0.6, 0.8})
+        updateUI()
+        return false
+    end
+    
+    -- !stance <honor/revelation/none> — set Veilbound stance
+    local stance_val = msg:match("!stance%s+(%w+)")
+    if stance_val then
+        if stance_val == "honor" then
+            setStanceHonor()
+        elseif stance_val == "revelation" or stance_val == "revel" then
+            setStanceRevelation()
+        else
+            GameState.faction_pools.stance = "none"
+            broadcastToAll("⚔ Stance cleared", {0.7, 0.7, 0.7})
+            updateUI()
+        end
+        return false
+    end
+    
+    -- !kill <white/red> — record a kill
+    local kill_player = msg:match("!kill%s+(%w+)")
+    if kill_player then
+        local key = kill_player:sub(1,1):upper() .. kill_player:sub(2):lower()
+        if GameState.kills[key] then
+            GameState.kills[key] = GameState.kills[key] + 1
+            printToAll("⚰ " .. key .. " records a kill! Total: " .. GameState.kills[key], {0.8, 0.8, 0.8})
+            updateUI()
+        end
+        return false
+    end
+    
+    -- !instability — roll d6 for Iron Dominion fragment instability
+    local instab_thresh = msg:match("!instability%s*(%d*)")
+    if msg:match("^!instability") then
+        local threshold = tonumber(instab_thresh) or 2
+        local r = math.random(1, 6)
+        local backfire = r <= threshold
+        if backfire then
+            broadcastToAll("⚙💥 INSTABILITY BACKFIRE! Rolled " .. r .. " (threshold: ≤" .. threshold .. ")\n→ Deal 1 damage to activating unit and all units within 2\"!", {1, 0.3, 0})
+        else
+            broadcastToAll("⚙✓ Instability check PASSED. Rolled " .. r .. " (threshold: ≤" .. threshold .. ")", {0.4, 0.8, 0.4})
+        end
+        return false
+    end
+    
+    -- !corruption <amount> — roll to see corruption token effects
+    local corrupt_tokens = msg:match("!corruption%s+(%d+)")
+    if corrupt_tokens then
+        corrupt_tokens = tonumber(corrupt_tokens)
+        local effect = "Clean — no effects"
+        if corrupt_tokens >= 9 then
+            local r = math.random(1, 6)
+            local can_act = r > 2
+            effect = "CONSUMED (-3 ATK, -2 DEF, -3 MOR)" ..
+                     "\nRolled " .. r .. " → " .. (can_act and "Unit CAN act" or "Unit CANNOT act this turn!")
+        elseif corrupt_tokens >= 6 then
+            effect = "Corrupted (-2 ATK, -1 DEF, -2 MOR)"
+        elseif corrupt_tokens >= 3 then
+            effect = "Tainted (-1 ATK, -1 MOR)"
+        end
+        broadcastToAll("☠ Corruption (" .. corrupt_tokens .. " tokens): " .. effect, {0.5, 0, 0.3})
+        return false
+    end
+    
+    -- !breath <dice> — Breath Weapon attack (hits all in cone, ignores cover)
+    local breath_dice = msg:match("!breath%s+(%d+)")
+    if breath_dice then
+        breath_dice = tonumber(breath_dice)
+        local hits = 0
+        local results = {}
+        for i = 1, math.min(breath_dice, 20) do
+            local r = math.random(1, 6)
+            table.insert(results, r)
+            if r >= 4 then hits = hits + 1 end  -- DEF 4 baseline, ignores cover
+        end
+        broadcastToAll("🔥 BREATH WEAPON: " .. breath_dice .. " dice (ignores cover, DEF 4)\nRolls: [" .. 
+                       table.concat(results, ", ") .. "]\nHits: " .. hits .. " | Generates +2 Heat", {1, 0.5, 0})
+        GameState.faction_pools.heat = GameState.faction_pools.heat + 2
+        checkOverheat()
+        updateUI()
+        return false
+    end
+    
+    -- !pools — show all faction mechanic pools
+    if msg:match("^!pools") then
+        local fp = GameState.faction_pools
+        printToAll("═══ FACTION MECHANIC POOLS ═══", {1, 0.8, 0.3})
+        printToAll("  🔥 Heat Pool (Emberclaw): " .. fp.heat .. "/15", {1, 0.5, 0})
+        printToAll("  🩸 Hunger Pool (Nightfang): " .. fp.hunger, {0.7, 0, 0})
+        printToAll("  🌀 Ritual Flow (Veilbound): " .. fp.flow .. "/40", {0.4, 0.6, 1})
+        printToAll("  🕸 Fate-Threads (Thornweft): " .. fp.fate_threads, {0.3, 0.8, 0.6})
+        printToAll("  🕸 Web-Anchors (Thornweft): " .. fp.anchors, {0.3, 0.8, 0.6})
+        printToAll("  ⚙ Fragment Charges (Iron Dominion): " .. fp.fragment_charges, {0.6, 0.6, 0.8})
+        printToAll("  ⚔ Stance (Veilbound): " .. (fp.stance or "none"), {0.8, 0.8, 0.8})
+        printToAll("  ⚰ Kills — White: " .. (GameState.kills.White or 0) .. " | Red: " .. (GameState.kills.Red or 0), {0.8, 0.8, 0.8})
+        return false
+    end
+    
     -- !reset — reset game state
     if msg:match("^!reset") then
         GameState.game_started = false
@@ -1562,33 +2225,61 @@ function onChat(message, player)
         GameState.player_fragments = {White = 0, Red = 0}
         GameState.player_vp = {White = 0, Red = 0}
         GameState.combat_log = {}
-        broadcastToAll("🔄 Game state RESET. Press 'Next Phase' to start.", {1, 0.5, 0.2})
+        GameState.kills = {White = 0, Red = 0}
+        GameState.faction_pools = {heat=0, hunger=0, flow=0, fate_threads=0, anchors=0, fragment_charges=0, stance="none"}
+        GameState.unit_hp = {}
+        broadcastToAll("🔄 Game state RESET (all pools, kills, HP cleared).\nPress 'Next Phase' to start.", {1, 0.5, 0.2})
         updateUI()
         return false
     end
     
     -- !phase
     if msg:match("^!phase") then
+        local fp = GameState.faction_pools
         printToAll("Turn " .. GameState.turn .. " — " .. GameState.phase .. " Phase\n" ..
                    "White: CP=" .. (GameState.player_cp.White or 0) .. " VP=" .. (GameState.player_vp.White or 0) ..
-                   " | Red: CP=" .. (GameState.player_cp.Red or 0) .. " VP=" .. (GameState.player_vp.Red or 0),
+                   " Kills=" .. (GameState.kills.White or 0) ..
+                   " | Red: CP=" .. (GameState.player_cp.Red or 0) .. " VP=" .. (GameState.player_vp.Red or 0) ..
+                   " Kills=" .. (GameState.kills.Red or 0) ..
+                   "\nPools: Heat=" .. fp.heat .. " Hunger=" .. fp.hunger ..
+                   " Flow=" .. fp.flow .. " Fate=" .. fp.fate_threads ..
+                   " Anchors=" .. fp.anchors .. " Charges=" .. fp.fragment_charges,
                    {0.8, 0.8, 0.2})
         return false
     end
     
     -- !help
     if msg:match("^!help") then
-        printToAll("═══ SHARDBORNE COMMANDS ═══\n" ..
-                   "!atk <dice> vs <DEF>  — Attack roll (e.g., !atk 6 vs 4)\n" ..
-                   "!morale <MOR>         — Morale test (e.g., !morale 8)\n" ..
-                   "!roll XdY             — Roll any dice (e.g., !roll 2d6)\n" ..
-                   "!army                 — Validate army points & composition\n" ..
-                   "!vp <player> <+/-N>   — Adjust VP (e.g., !vp white +2)\n" ..
-                   "!cp <player> <+/-N>   — Adjust CP (e.g., !cp red -3)\n" ..
-                   "!scenario             — Generate random scenario\n" ..
-                   "!phase                — Show current game state\n" ..
-                   "!reset                — Reset game to setup\n" ..
-                   "!help                 — Show this help", {0.8, 0.8, 0.2})
+        printToAll("═══ SHARDBORNE v3.0 COMMANDS ═══", {1, 0.8, 0.3})
+        printToAll("── Combat ──", {0.8, 0.6, 0.3})
+        printToAll("  !atk <dice> vs <DEF> [mods]  — Attack roll with optional modifiers", {0.8, 0.8, 0.2})
+        printToAll("    Modifiers: charge flank rear cover heavy_cover elevated", {0.6, 0.6, 0.6})
+        printToAll("    Stances: honor revelation | Grid: grid_active grid_fortified isolated", {0.6, 0.6, 0.6})
+        printToAll("    Example: !atk 6 vs 4 charge flank", {0.5, 0.5, 0.5})
+        printToAll("  !morale <MOR>         — Morale test (e.g., !morale 8)", {0.8, 0.8, 0.2})
+        printToAll("  !roll XdY             — Roll any dice (e.g., !roll 2d6)", {0.8, 0.8, 0.2})
+        printToAll("  !breath <dice>        — Breath Weapon attack (ignores cover, +2 Heat)", {0.8, 0.8, 0.2})
+        printToAll("  !measure              — Distance between last 2 picked-up objects", {0.8, 0.8, 0.2})
+        printToAll("── Faction Mechanics ──", {0.8, 0.6, 0.3})
+        printToAll("  !heat <+/-N>          — Adjust Emberclaw Heat Pool", {0.8, 0.8, 0.2})
+        printToAll("  !hunger <+/-N>        — Adjust Nightfang Hunger Pool", {0.8, 0.8, 0.2})
+        printToAll("  !flow <+/-N>          — Adjust Veilbound Ritual Flow", {0.8, 0.8, 0.2})
+        printToAll("  !fate <+/-N>          — Adjust Thornweft Fate-Threads", {0.8, 0.8, 0.2})
+        printToAll("  !anchors <+/-N>       — Adjust Thornweft Web-Anchors", {0.8, 0.8, 0.2})
+        printToAll("  !charges <+/-N>       — Adjust Iron Dominion Fragment Charges", {0.8, 0.8, 0.2})
+        printToAll("  !stance <type>        — Set Veilbound stance (honor/revelation/none)", {0.8, 0.8, 0.2})
+        printToAll("  !instability [thresh] — Roll Iron Dominion instability (default thresh 2)", {0.8, 0.8, 0.2})
+        printToAll("  !corruption <tokens>  — Check Corruption effect for token count", {0.8, 0.8, 0.2})
+        printToAll("  !pools                — Show all faction mechanic pools", {0.8, 0.8, 0.2})
+        printToAll("── Tracking ──", {0.8, 0.6, 0.3})
+        printToAll("  !kill <white/red>     — Record a kill for a player", {0.8, 0.8, 0.2})
+        printToAll("  !vp <player> <+/-N>   — Adjust VP (e.g., !vp white +2)", {0.8, 0.8, 0.2})
+        printToAll("  !cp <player> <+/-N>   — Adjust CP (e.g., !cp red -3)", {0.8, 0.8, 0.2})
+        printToAll("  !army                 — Validate army composition", {0.8, 0.8, 0.2})
+        printToAll("── Game ──", {0.8, 0.6, 0.3})
+        printToAll("  !scenario  !phase  !reset  !help", {0.8, 0.8, 0.2})
+        printToAll("── Right-Click Units ──", {0.8, 0.6, 0.3})
+        printToAll("  Deal 1/2/3 Damage | Heal 1/2 HP | Show HP | Blood Tithe", {0.8, 0.8, 0.2})
         return false
     end
     
@@ -1655,54 +2346,71 @@ end
 def build_quick_reference():
     """Create a notecard with the full quick reference rules."""
     return make_notecard(
-        "📖 SHARDBORNE QUICK REFERENCE",
+        "📖 SHARDBORNE QUICK REFERENCE v3.0",
         """═══ TURN STRUCTURE ═══
 1. COMMAND PHASE
    • Gain CP (3 + Commander's Command bonus)
    • Draw 2 cards (hand limit 7)
    • Play Command/Tech cards (spend CP)
    • Activate Fragment abilities
+   • Faction: Generate Heat/Flow/Charges, place Anchors, switch Stances
 
 2. MOVEMENT PHASE
    • Move each unit up to its MOV stat (inches)
    • Terrain: Difficult = half speed, Impassable = blocked
    • Fly: ignore terrain
    • Engagement: within 1" of enemy = engaged (no free movement)
+   • Charge: 5"+ straight move into melee = +1 ATK
 
 3. COMBAT PHASE
    • Declare attacks (check RNG stat for range)
-   • Roll ATK dice: each die ≥ target's DEF = 1 hit
+   • Roll ATK dice: each die >= target's DEF = 1 hit
    • Roll of 6 = CRIT (2 damage instead of 1)
-   • Apply damage to HP
-   • Play Tactical cards during combat
+   • Apply damage to HP (right-click units to track!)
+   • Modifiers: charge/flank/rear/cover/elevated/stance
 
 4. END PHASE
-   • Morale test for units at half HP or below: roll 2d6 ≤ MOR to pass
-   • Failed morale = unit flees (remove or retreat)
-   • Score objectives
-   • Discard temporary effects
+   • Morale test for units at half HP or below: 2d6 <= MOR
+   • Score objectives, remove destroyed, clean up effects
+   • Corruption: undamaged units remove 1 token (Natural Resistance)
+
+═══ COMBAT MODIFIERS ═══
+Charge (+5" straight): +1 ATK | Flank: +1 ATK | Rear: +2 ATK
+Cover: +1 DEF | Heavy Cover: +2 DEF | Elevated: +1 ATK ranged
+Diving Charge: +2 ATK | Superheated: +1 dmg/hit
+Honor Stance: +1 DEF, -1 ATK | Revelation: +1 ATK, -1 DEF
+Grid Active (2+ allies in 4"): +1 ATK | Grid Fortified: +1 ATK +1 DEF
+Isolated (0 allies in 4"): -1 ATK
+Usage: !atk 6 vs 4 charge flank
+
+═══ FACTION MECHANICS ═══
+Emberclaw: Heat Pool (max 15, Overheat at 16+, -3/turn start)
+  !heat +N | Spend Heat for abilities | !breath <dice>
+Nightfang: Hunger Pool (kills track; 5/10/15 thresholds)
+  !hunger +N | Blood Tithe: right-click unit | !corruption <tokens>
+Veilbound: Ritual Flow (max 40; 5/12/20/30 thresholds)
+  !flow +N | !stance honor/revelation/none
+Thornweft: Fate-Threads (finite) + Web-Anchors
+  !fate -1 | !anchors +1 | Teleport within 4" of Anchors
+Iron Dominion: Grid Cohesion + Fragment Charges
+  !charges +N | !instability [threshold]
 
 ═══ CHAT COMMANDS ═══
-!atk <dice> vs <DEF>  — Auto-resolve attack
-!morale <MOR>         — Auto-resolve morale test
-!roll XdY             — Roll any dice
-!phase                — Show current phase
-!help                 — Show all commands
+!atk <dice> vs <DEF> [mods] — Attack with modifiers
+!morale <MOR>  !roll XdY  !breath <dice>  !measure
+!heat/!hunger/!flow/!fate/!anchors/!charges <+/-N>
+!stance <type>  !instability  !corruption <tokens>
+!kill <white/red>  !pools  !vp/!cp <player> <+/-N>
+!army  !scenario  !phase  !reset  !help
 
-═══ CARD TYPES ═══
-[CMD]  Command  (green)  — Movement & army-wide orders
-[TECH] Tech     (blue)   — Equipment & upgrades
-[FRAG] Fragment (purple) — Powerful but risky abilities
-[TAC]  Tactical (orange) — Combat tricks & reactions
+═══ RIGHT-CLICK UNITS ═══
+Deal 1/2/3 Damage | Heal 1/2 HP | Show HP | Blood Tithe
 
 ═══ KEY RULES ═══
 • Commander death = no more cards for that player
-• Cards can only be played within Commander's range
+• Cards played within Commander's 8" aura (+1 MOR)
 • War Machines: huge, powerful, limited per army
-• Fragments: powerful items with instability risk
-• Cover: +1 DEF
-• Elevated: +2 RNG
-• Flanking: ignore 1 DEF""",
+• Fragments: powerful items with instability risk""",
         x=-28, y=1.5, z=-12,
         color={"r": 0.95, "g": 0.9, "b": 0.7}
     )
