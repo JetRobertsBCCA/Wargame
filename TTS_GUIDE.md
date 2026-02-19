@@ -41,7 +41,7 @@ If TTS is installed and the Saves directory exists, the generator will also auto
 | **Morale Dice** | Red d6 dice for morale tests | 2 |
 | **Damage Tokens** | Red stackable tokens (1-damage and 5-damage) | 40 |
 | **Objective Markers** | Gold tokens for scoring objectives | 5 |
-| **Terrain Tokens** | Forest, Ruins, Hill, River, Burning terrain pieces | 15 |
+| **Terrain System** | 3D structures, area tiles, faction terrain (3 sub-bags) | 70 |
 | **VP Counters** | Click-adjustable victory point counters | 2 |
 | **Round Counter** | Track current game round | 1 |
 | **Ruler** | 12" measurement tool | 1 |
@@ -336,19 +336,54 @@ A unit with 9 HP takes 7 damage:
 
 ---
 
-## Terrain
+## Terrain System
 
-Pull terrain tokens from the **🗺️ Terrain** bag and place before the game starts:
+The **🗺️ Terrain** bag contains 3 organized sub-bags with 70 terrain pieces total.
 
-| Terrain | Effect |
-|---------|--------|
-| 🌲 **Forest** | Half movement. +1 DEF (cover). |
-| 🏚️ **Ruins** | +1 DEF (cover). Wall sections block Line of Sight. |
-| ⛰️ **Hill** | +2 RNG for units on top. Cover for units behind. |
-| 🌊 **River** | Half movement. No cover. |
-| 🔥 **Burning** | 1 damage to non-Fire-Immune units entering. Emberclaw ignores. |
+### 🌍 Area Terrain (13 tiles)
+Large flat tiles representing terrain zones. Drag onto the battlefield.
 
-Place 4–8 terrain pieces for a standard game. Agree on placement with your opponent.
+| Piece | Qty | Type | Effect |
+|-------|-----|------|--------|
+| 🌲 **Forest** | 4 | Difficult + Light Cover | Half movement. +1 DEF vs ranged. Partial LoS block. |
+| 🟤 **Swamp** | 3 | Difficult | Half movement. No combat modifiers. |
+| ☢ **Dangerous Ground** | 2 | Dangerous | Enter/start turn: roll 1d6, on 1 take 1 damage. |
+| 💥 **Crater** | 2 | Difficult + Light Cover | Half movement. +1 DEF vs ranged. |
+| 🟩 **Open Ground** | 2 | Open | No modifiers. Use to mark designated clear zones. |
+
+### 🏗️ Structures & Blocks (23 pieces)
+3D terrain models — hills, walls, buildings, and barriers.
+
+| Piece | Qty | Type | Effect |
+|-------|-----|------|--------|
+| ⛰️ **Hill** | 3 | Elevated | +1 ATK die ranged down. +1 DEF vs melee from below. |
+| 🏔️ **Tall Hill** | 2 | Elevated + Difficult | Same as hill, but difficult to climb. |
+| 🏚️ **Ruins** | 3 | Heavy Cover | +2 DEF vs ranged. Blocks LoS when fully behind. |
+| 🏢 **Building** | 2 | Impassable | Cannot enter (non-Fly). Blocks LoS completely. |
+| 🧱 **Wall Section** | 4 | Heavy Cover | +2 DEF vs ranged. Blocks LoS. ~6" long. |
+| 🪵 **Barricade** | 4 | Light Cover | +1 DEF vs ranged. Does NOT block LoS. ~4" long. |
+| 🪨 **Rock Outcrop** | 3 | Light Cover | +1 DEF vs ranged. Climbable (difficult). |
+| 🌉 **Bridge** | 1 | Open (Elevated) | Passage over rivers/chasms. +1 ATK down. |
+| 🗼 **Watchtower** | 1 | Impassable + Elevated | Blocks LoS. Adjacent units gain Light Cover. |
+
+### ⚔ Faction Terrain (34 markers)
+Faction-specific terrain and special tokens.
+
+| Marker | Qty | Faction | Purpose |
+|--------|-----|---------|----------|
+| 🔥 **Burning Terrain** | 6 | Emberclaw | Non-Emberclaw: 1 dmg + -1 MOV. Emberclaw: Open + 1 Heat. Blocks Stealth. 2 turn duration. |
+| 🕸️ **Web-Anchor** | 10 | Thornweft | Teleport network node. Proximity buffs: Severed/Threaded/Woven/Enthroned. |
+| 🪤 **Gossamer Trap** | 8 | Thornweft | 4" zone — Impassable to enemies, Open to Thornweft (+1 DEF inside). |
+| 🌑 **Shadow Zone** | 4 | Nightfang | Nightfang +1 DEF. Counts as cover for Stealth. Enemies -1 RNG through. |
+| 💎 **Fragment Deposit** | 3 | Neutral | Iron Dominion: +1 Fragment Charge/turn within 4". Veilbound: Difficult. |
+| 🌀 **Spirit Well** | 3 | Neutral | Veilbound: +2 Ritual Flow/turn within 4". Iron Dominion: Dangerous. |
+
+### Terrain Placement Guide
+- **Recommended:** 6–10 terrain pieces for a standard game
+- Players alternate placing terrain, starting with the player who has fewer army points
+- Each piece must be classified by type (hover to read the tooltip)
+- Right-click → **Lock** pieces after placement so they don't get bumped
+- Use the Setup Wizard (Step 2) for map selection — maps have pre-suggested terrain layouts
 
 ---
 

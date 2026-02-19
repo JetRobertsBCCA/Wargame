@@ -3477,48 +3477,297 @@ def main():
     all_objects.append(obj_bag)
     print("  ✓ Objective markers (5)")
     
-    # --- Terrain Tokens ---
-    terrain_types = [
-        ("Forest (Difficult)", "🌲", "4a6b2a", "Difficult terrain: half movement. Provides cover (+1 DEF)."),
-        ("Ruins (Cover)", "🏚️", "6b6b6b", "Provides cover (+1 DEF). Blocks LoS if wall section."),
-        ("Hill (Elevated)", "⛰️", "8b7b5b", "Elevated: +2 RNG for units on top. Provides cover to units behind."),
-        ("River (Difficult)", "🌊", "2a4a6b", "Difficult terrain: half movement. No cover."),
-        ("Burning (Hazard)", "🔥", "8b2a1a", "Hazardous: 1 damage to non-Fire-Immune units entering. Emberclaw units ignore."),
-    ]
-    terrain_bag_contents = []
-    for tname, icon, hex_color, tdesc in terrain_types:
-        for copy in range(3):
-            terrain_token = {
-                "GUID": make_guid(),
-                "Name": "Custom_Token",
-                "Transform": make_transform(0, 1 + copy * 0.2, 0, scale=2.0),
-                "Nickname": f"{icon} {tname}",
-                "Description": tdesc,
-                "ColorDiffuse": {
-                    "r": int(hex_color[0:2], 16) / 255,
-                    "g": int(hex_color[2:4], 16) / 255,
-                    "b": int(hex_color[4:6], 16) / 255,
-                },
-                "CustomImage": {
-                    "ImageURL": f"https://placehold.co/256x256/{hex_color}/white?text={icon}",
-                    "CustomToken": {
-                        "Thickness": 0.1,
-                        "MergeDistancePixels": 15.0,
-                        "StandUp": False,
-                        "Stackable": True,
-                    },
-                },
-                "Locked": False,
-                "Tooltip": True,
-                "Tags": ["terrain"],
-            }
-            terrain_bag_contents.append(terrain_token)
+    # ─── TERRAIN SYSTEM ─────────────────────────────────────────────────────────
+    # Comprehensive terrain pieces with 3D blocks, area tiles, and faction markers
     
-    terrain_bag = make_bag("🗺️ Terrain", x=26, y=1.5, z=16,
-                          color={"r": 0.4, "g": 0.5, "b": 0.3},
-                          contents=terrain_bag_contents)
-    all_objects.append(terrain_bag)
-    print(f"  ✓ Terrain tokens ({len(terrain_bag_contents)})")
+    # --- Helper: Create a 3D terrain block (TTS BlockSquare) ---
+    def make_terrain_block(name, desc, hex_color, sx=4.0, sy=1.0, sz=4.0, tags=None):
+        """Create a 3D block terrain piece."""
+        return {
+            "GUID": make_guid(),
+            "Name": "BlockSquare",
+            "Transform": make_transform(0, 1, 0, scale=1.0),
+            "Nickname": name,
+            "Description": desc,
+            "ColorDiffuse": {
+                "r": int(hex_color[0:2], 16) / 255,
+                "g": int(hex_color[2:4], 16) / 255,
+                "b": int(hex_color[4:6], 16) / 255,
+            },
+            "Locked": False,
+            "Tooltip": True,
+            "Tags": tags or ["terrain"],
+            "Transform": {
+                "posX": 0, "posY": 1, "posZ": 0,
+                "rotX": 0, "rotY": 0, "rotZ": 0,
+                "scaleX": sx, "scaleY": sy, "scaleZ": sz,
+            },
+        }
+    
+    # --- Helper: Create a rectangular wall/barricade block ---
+    def make_terrain_wall(name, desc, hex_color, sx=6.0, sy=2.0, sz=0.5, tags=None):
+        """Create a wall/barricade terrain piece."""
+        return {
+            "GUID": make_guid(),
+            "Name": "BlockRectangle",
+            "Transform": {
+                "posX": 0, "posY": 1, "posZ": 0,
+                "rotX": 0, "rotY": 0, "rotZ": 0,
+                "scaleX": sx, "scaleY": sy, "scaleZ": sz,
+            },
+            "Nickname": name,
+            "Description": desc,
+            "ColorDiffuse": {
+                "r": int(hex_color[0:2], 16) / 255,
+                "g": int(hex_color[2:4], 16) / 255,
+                "b": int(hex_color[4:6], 16) / 255,
+            },
+            "Locked": False,
+            "Tooltip": True,
+            "Tags": tags or ["terrain"],
+        }
+    
+    # --- Helper: Create area terrain tile ---
+    def make_terrain_tile(name, desc, hex_color, icon, tile_scale=3.0, tags=None):
+        """Create a flat area terrain tile (Custom_Tile)."""
+        return {
+            "GUID": make_guid(),
+            "Name": "Custom_Tile",
+            "Transform": {
+                "posX": 0, "posY": 1, "posZ": 0,
+                "rotX": 0, "rotY": 0, "rotZ": 0,
+                "scaleX": tile_scale, "scaleY": 1.0, "scaleZ": tile_scale,
+            },
+            "Nickname": name,
+            "Description": desc,
+            "ColorDiffuse": {
+                "r": int(hex_color[0:2], 16) / 255,
+                "g": int(hex_color[2:4], 16) / 255,
+                "b": int(hex_color[4:6], 16) / 255,
+            },
+            "CustomImage": {
+                "ImageURL": f"https://placehold.co/400x400/{hex_color}/ffffff?text={icon}",
+                "ImageSecondaryURL": "",
+                "WidthScale": 0.0,
+                "CustomTile": {
+                    "Type": 0,  # Square tile
+                    "Thickness": 0.05,
+                    "Stackable": False,
+                },
+            },
+            "Locked": False,
+            "Tooltip": True,
+            "Tags": tags or ["terrain"],
+        }
+    
+    # --- Helper: Create a faction terrain marker (smaller token) ---
+    def make_faction_terrain_marker(name, desc, hex_color, icon, tags=None):
+        """Create a small faction-specific terrain marker."""
+        return {
+            "GUID": make_guid(),
+            "Name": "Custom_Token",
+            "Transform": make_transform(0, 1, 0, scale=1.5),
+            "Nickname": name,
+            "Description": desc,
+            "ColorDiffuse": {
+                "r": int(hex_color[0:2], 16) / 255,
+                "g": int(hex_color[2:4], 16) / 255,
+                "b": int(hex_color[4:6], 16) / 255,
+            },
+            "CustomImage": {
+                "ImageURL": f"https://placehold.co/200x200/{hex_color}/ffffff?text={icon}",
+                "CustomToken": {
+                    "Thickness": 0.1,
+                    "MergeDistancePixels": 15.0,
+                    "StandUp": False,
+                    "Stackable": True,
+                },
+            },
+            "Locked": False,
+            "Tooltip": True,
+            "Tags": tags or ["terrain"],
+        }
+    
+    terrain_all = []
+    
+    # ══════════════════════════════════════════
+    # AREA TERRAIN — Large flat tiles (4" zones)
+    # ══════════════════════════════════════════
+    
+    # Forest (Difficult + Light Cover)
+    for i in range(4):
+        terrain_all.append(make_terrain_tile(
+            "🌲 Forest", 
+            "DIFFICULT TERRAIN + LIGHT COVER\n─────────────────\nMovement: Costs 2\" per 1\" moved\nDefense: +1 DEF vs ranged attacks\nBlocks LoS through center\n─────────────────\n4\" area zone",
+            "2d5a1f", "🌲+Forest", tile_scale=3.5))
+    
+    # Swamp / Mud (Difficult Terrain)
+    for i in range(3):
+        terrain_all.append(make_terrain_tile(
+            "🟤 Swamp",
+            "DIFFICULT TERRAIN\n─────────────────\nMovement: Costs 2\" per 1\" moved\nNo combat modifiers\n─────────────────\n4\" area zone",
+            "4a3a2a", "🟤+Swamp", tile_scale=3.0))
+    
+    # Dangerous Ground (lava, toxic waste)
+    for i in range(2):
+        terrain_all.append(make_terrain_tile(
+            "☢ Dangerous Ground",
+            "DANGEROUS TERRAIN\n─────────────────\nAny unit entering or starting its turn here\nrolls 1d6: on a 1, takes 1 damage\n─────────────────\n4\" area zone",
+            "6b2a1a", "☢+Danger", tile_scale=2.5))
+    
+    # Crater / Rubble (Light Cover + Difficult)
+    for i in range(2):
+        terrain_all.append(make_terrain_tile(
+            "💥 Crater",
+            "DIFFICULT TERRAIN + LIGHT COVER\n─────────────────\nMovement: Costs 2\" per 1\" moved\nDefense: +1 DEF vs ranged\nGood as impact sites or ruined areas\n─────────────────\n3\" area zone",
+            "5a5550", "💥+Crater", tile_scale=2.5))
+    
+    # Open Ground marker (reference only)
+    for i in range(2):
+        terrain_all.append(make_terrain_tile(
+            "🟩 Open Ground",
+            "OPEN GROUND\n─────────────────\nNo modifiers. Full movement.\nUse to mark designated open areas\n─────────────────\n4\" area zone",
+            "557744", "🟩+Open", tile_scale=3.0))
+    
+    # ══════════════════════════════════════════
+    # 3D TERRAIN — Blocks and structures
+    # ══════════════════════════════════════════
+    
+    # Hills (Elevated Ground) — wide flat platforms
+    for i in range(3):
+        terrain_all.append(make_terrain_block(
+            "⛰️ Hill",
+            "ELEVATED GROUND\n─────────────────\n+1 ATK die for ranged attacks targeting lower ground\n+1 DEF vs melee from units on lower ground\nPlace units on top\n─────────────────\nPlatform: ~4\"×4\"",
+            "8b7b5b", sx=4.0, sy=0.6, sz=4.0))
+    
+    # Tall Hill / Mesa — steeper, smaller
+    for i in range(2):
+        terrain_all.append(make_terrain_block(
+            "🏔️ Tall Hill",
+            "ELEVATED GROUND (STEEP)\n─────────────────\n+1 ATK die for ranged attacks at lower ground\n+1 DEF vs melee from below\nDifficult Terrain to climb\n─────────────────\nPlatform: ~3\"×3\", ~1.5\" tall",
+            "7a6a4a", sx=3.0, sy=1.5, sz=3.0))
+    
+    # Ruins (Heavy Cover) — broken walls
+    for i in range(3):
+        terrain_all.append(make_terrain_block(
+            "🏚️ Ruins",
+            "HEAVY COVER\n─────────────────\n+2 DEF vs ranged attacks\nBlocks LoS for models fully behind it\nNormal movement through\n─────────────────\nRuined structure ~4\"×3\"",
+            "6b6b6b", sx=4.0, sy=1.8, sz=3.0))
+    
+    # Building (Impassable) — solid block
+    for i in range(2):
+        terrain_all.append(make_terrain_block(
+            "🏢 Building",
+            "IMPASSABLE TERRAIN\n─────────────────\nCannot be entered by non-Fly units\nBlocks line of sight completely\n─────────────────\nSolid structure ~3\"×3\"",
+            "555566", sx=3.0, sy=2.5, sz=3.0))
+    
+    # Wall Section (Heavy Cover, blocks LoS)
+    for i in range(4):
+        terrain_all.append(make_terrain_wall(
+            "🧱 Wall Section",
+            "HEAVY COVER\n─────────────────\n+2 DEF vs ranged attacks\nBlocks LoS completely\nUnits can be placed behind for cover\n─────────────────\nWall: ~6\" long, ~2\" tall",
+            "7a6a5a", sx=6.0, sy=2.0, sz=0.4))
+    
+    # Barricade (Light Cover)
+    for i in range(4):
+        terrain_all.append(make_terrain_wall(
+            "🪵 Barricade",
+            "LIGHT COVER\n─────────────────\n+1 DEF vs ranged attacks\nDoes NOT block LoS\nQuick deployable cover\n─────────────────\nBarricade: ~4\" long, ~1\" tall",
+            "6b5533", sx=4.0, sy=1.0, sz=0.3))
+    
+    # Rock Outcrop (Light Cover + Elevated edge)
+    for i in range(3):
+        terrain_all.append(make_terrain_block(
+            "🪨 Rock Outcrop",
+            "LIGHT COVER\n─────────────────\n+1 DEF vs ranged attacks\nPartially blocks LoS\nClimbable (Difficult Terrain to mount)\n─────────────────\nRocky formation ~2\"×2\"",
+            "6a6a6a", sx=2.0, sy=1.2, sz=2.0))
+    
+    # Bridge (Open Ground, elevated passage)
+    terrain_all.append(make_terrain_wall(
+        "🌉 Bridge",
+        "OPEN GROUND (ELEVATED)\n─────────────────\nNormal movement across\nProvides passage over Rivers/Chasms\n+1 ATK die ranged vs lower ground\n─────────────────\nBridge: ~8\" long, ~2\" wide",
+        "8a7a5a", sx=8.0, sy=0.8, sz=2.0))
+    
+    # Tower / Watchtower (Impassable, elevated)
+    terrain_all.append(make_terrain_block(
+        "🗼 Watchtower",
+        "IMPASSABLE + ELEVATED\n─────────────────\nCannot be entered (garrison inside abstracted)\nBlocks LoS completely\nUnits adjacent gain Light Cover\n─────────────────\nTower: ~2\"×2\", ~3\" tall",
+        "776655", sx=2.0, sy=3.0, sz=2.0))
+    
+    # ══════════════════════════════════════════
+    # FACTION-SPECIFIC TERRAIN MARKERS
+    # ══════════════════════════════════════════
+    
+    faction_terrain = []
+    
+    # 🔥 Emberclaw — Burning Terrain (max 6 in rules)
+    for i in range(6):
+        faction_terrain.append(make_faction_terrain_marker(
+            "🔥 Burning Terrain",
+            "EMBERCLAW — BURNING TERRAIN\n─────────────────\nCreated by Breath Weapons, Firestorm, or abilities\nLasts 2 turns, then burns out\n• Non-Emberclaw: 1 damage + -1 MOV on enter/start\n• Emberclaw: Open Ground, +1 Heat\n• Blocks Stealth\n─────────────────\nMax 6 on table. Oldest removed if 7th placed.",
+            "cc3300", "🔥", tags=["terrain", "emberclaw-warpack", "burning"]))
+    
+    # 🌿 Thornweft — Web-Anchors (max up to 10 in Epic)
+    for i in range(10):
+        faction_terrain.append(make_faction_terrain_marker(
+            "🕸️ Web-Anchor",
+            "THORNWEFT — WEB-ANCHOR\n─────────────────\nPlaced during deployment (2 starting) or Command Phase\nTeleport: Thornweft units within 4\" can teleport to another Anchor\nNetwork bonuses by proximity:\n• Severed (0 nearby): -1 ATK, -1 MOR\n• Threaded (1): No bonus\n• Woven (2): +1 DEF\n• Enthroned (3+): +1 DEF, +1 ATK\n─────────────────\nEnemy can spend full activation adjacent to remove.\nMax: 4 Skirmish / 6 Standard / 10 Epic",
+            "44aa44", "🕸️", tags=["terrain", "thornweft-matriarchy", "web-anchor"]))
+    
+    # 🌿 Thornweft — Gossamer Traps (max 8 in Epic)
+    for i in range(8):
+        faction_terrain.append(make_faction_terrain_marker(
+            "🪤 Gossamer Trap",
+            "THORNWEFT — GOSSAMER TRAP\n─────────────────\n4\" radius terrain zone\n• Enemies: Impassable Terrain (cannot enter)\n• Thornweft: Open Ground + 1 DEF (Silk Shroud)\n• Enemies within 1\" of edge: -2\" MOV\n─────────────────\nEnemy can spend full activation to destroy.\nMax: 3 Skirmish / 5 Standard / 8 Epic",
+            "33bb55", "🪤", tags=["terrain", "thornweft-matriarchy", "gossamer-trap"]))
+    
+    # 🦇 Nightfang — Shadow Zones
+    for i in range(4):
+        faction_terrain.append(make_faction_terrain_marker(
+            "🌑 Shadow Zone",
+            "NIGHTFANG — SHADOW ZONE\n─────────────────\nCreated by abilities or nightfall effects\n• Nightfang units in shadow: +1 DEF (Shadow Dominion)\n• Counts as cover for Stealth purposes\n• Non-Nightfang: -1 RNG for ranged attacks through\n─────────────────\n4\" radius zone",
+            "220033", "🌑", tags=["terrain", "nightfang-dominion", "shadow"]))
+    
+    # ⚙ Iron Dominion — Fragment Deposits
+    for i in range(3):
+        faction_terrain.append(make_faction_terrain_marker(
+            "💎 Fragment Deposit",
+            "FRAGMENT DEPOSIT\n─────────────────\nIron Dominion units within 4\" generate\n+1 Fragment Charge per turn\nVeilbound units treat as Difficult Terrain\n─────────────────\nNeutral terrain (place during setup)",
+            "2255aa", "💎", tags=["terrain", "fragment-deposit"]))
+    
+    # 👁 Veilbound — Spirit Wells
+    for i in range(3):
+        faction_terrain.append(make_faction_terrain_marker(
+            "🌀 Spirit Well",
+            "SPIRIT WELL\n─────────────────\nVeilbound units within 4\" generate\n+2 Ritual Flow per turn\nIron Dominion units treat as Dangerous Terrain\n─────────────────\nNeutral terrain (place during setup)",
+            "7733bb", "🌀", tags=["terrain", "spirit-well"]))
+    
+    # ══════════════════════════════════════════
+    # PACK INTO BAGS
+    # ══════════════════════════════════════════
+    
+    # Main terrain bag with sub-bags for organization
+    area_terrain = [t for t in terrain_all if t["Name"] == "Custom_Tile"]
+    block_terrain = [t for t in terrain_all if t["Name"] in ("BlockSquare", "BlockRectangle")]
+    
+    area_bag = make_bag("🌍 Area Terrain", x=0, y=1, z=0,
+                       color={"r": 0.3, "g": 0.5, "b": 0.2},
+                       contents=area_terrain)
+    
+    structures_bag = make_bag("🏗️ Structures & Blocks", x=0, y=1, z=0,
+                             color={"r": 0.5, "g": 0.5, "b": 0.5},
+                             contents=block_terrain)
+    
+    faction_bag = make_bag("⚔ Faction Terrain", x=0, y=1, z=0,
+                          color={"r": 0.6, "g": 0.3, "b": 0.3},
+                          contents=faction_terrain)
+    
+    terrain_master_bag = make_bag("🗺️ Terrain", x=26, y=1.5, z=16,
+                                color={"r": 0.4, "g": 0.5, "b": 0.3},
+                                contents=[area_bag, structures_bag, faction_bag])
+    all_objects.append(terrain_master_bag)
+    
+    print(f"  ✓ Terrain system: {len(area_terrain)} area tiles, {len(block_terrain)} structures, {len(faction_terrain)} faction markers")
     
     # --- HP/Damage Tokens ---
     hp_bag_contents = []
