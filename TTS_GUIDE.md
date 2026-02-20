@@ -55,20 +55,26 @@ If TTS is installed and the Saves directory exists, the generator will also auto
 ## Table Layout
 
 ```
-         Player 2 (Red) Side
-  ┌──────────────────────────────┐
-  │  [Deploy Zone 2]             │
-  │                              │
-  │     ★ Objective Markers      │   ← Terrain Bag
-  │        on battlefield        │   ← Damage Tokens
-  │                              │   ← Dice Bag
-  │  [Deploy Zone 1]             │   ← Counters
-  └──────────────────────────────┘
-         Player 1 (White) Side
+              Player 2 (Red) Side
+  ┌─────────────────────────────────────────┐
+  │   [Faction Bags — z=38]                 │
+  │                                         │
+  │   [Deploy Zone 2 — z=28]               │
+  │                                         │
+  │         ★ Battlefield (64x64)           │   ← Terrain Bag
+  │           Objective Markers             │   ← Damage Tokens
+  │                                         │   ← Dice Bag
+  │   [Deploy Zone 1 — z=-28]              │   ← Counters
+  │                                         │
+  │   📥 Discard Piles (z=-45)             │
+  └─────────────────────────────────────────┘
+              Player 1 (White) Side
 
-  Left side: Faction Bags, Card Library
-  Right side: Dice, Counters, Tokens
-  Far left: Quick Reference, Ruler
+  Left side (x=-45): Card Library, Templates, Range Rings,
+                     Status Tokens, Quick Reference, Ruler
+  Right side (x=45): Dice, VP/Round Counters, Objectives,
+                     Terrain, Damage Tokens
+  Board: scaled 2x (64 TTS units wide) for spacious play
 ```
 
 ---

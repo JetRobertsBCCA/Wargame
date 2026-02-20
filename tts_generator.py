@@ -717,9 +717,9 @@ def make_game_board(map_name="OpenPlains", nickname="Shardborne Battlefield"):
     return {
         "GUID": make_guid(),
         "Name": "Custom_Board",
-        "Transform": make_transform(0, 0.5, 0, scale=1.0),
+        "Transform": make_transform(0, 0.5, 0, scale=2.0),
         "Nickname": nickname,
-        "Description": "Standard 48\" × 48\" battlefield. 1 TTS unit = 1 inch.\nGrid overlay shows 1\" squares.",
+        "Description": "Large 64\" × 64\" battlefield. 1 TTS unit = 1 inch.\nGrid overlay shows 1\" squares.\nScaled 2x for comfortable play.",
         "ColorDiffuse": {"r": 1.0, "g": 1.0, "b": 1.0},
         "CustomImage": {
             "ImageURL": image_url,
@@ -749,7 +749,7 @@ def make_map_variant_bag():
         board["Locked"] = False  # Unlocked so they can be placed
         boards.append(board)
     
-    return make_bag("🗺️ Map Variants", x=-28, y=1.5, z=4,
+    return make_bag("🗺️ Map Variants", x=-45, y=1.5, z=4,
                     color={"r": 0.3, "g": 0.5, "b": 0.3},
                     contents=boards)
 
@@ -857,7 +857,7 @@ def make_ruler():
         "  Medium: 10-14\"\n"
         "  Long: 22-32\"\n"
         "  Artillery: up to 32\"",
-        x=-28, y=1.5, z=0,
+        x=-45, y=1.5, z=0,
         color={"r": 0.9, "g": 0.9, "b": 0.5}
     )
 
@@ -1814,6 +1814,7 @@ function swapGameBoard(mapName)
         callback_function = function(obj)
             obj.setLock(true)
             obj.setName("Game Board")
+            obj.setScale({2.0, 1.0, 2.0})
             printToAll("🗺️ Map placed: " .. (MAP_DISPLAY[mapName] or mapName), {0.5, 1, 0.5})
         end
     })
@@ -1930,8 +1931,8 @@ function moveFactionBagToPlayer(factionId, playerNum)
     
     -- Move to player side
     local positions = {
-        [1] = {x = -15, y = 2, z = -15},   -- Player 1 (White) side
-        [2] = {x = 15, y = 2, z = -15},    -- Player 2 (Red) side
+        [1] = {x = -25, y = 2, z = -35},   -- Player 1 (White) side
+        [2] = {x = 25, y = 2, z = -35},    -- Player 2 (Red) side
     }
     
     local pos = positions[playerNum]
@@ -3471,7 +3472,7 @@ Morale Test (auto-reads MOR) | Show Full Stats
 • Cards played within Commander's 8" aura (+1 MOR)
 • War Machines: huge, powerful, limited per army
 • Fragments: powerful items with instability risk""",
-        x=-28, y=1.5, z=-12,
+        x=-45, y=1.5, z=-20,
         color={"r": 0.95, "g": 0.9, "b": 0.7}
     )
 
@@ -3553,7 +3554,7 @@ def main():
         template_bag_contents.append(make_blast_template(size))
     for size in [6, 8, 10]:
         template_bag_contents.append(make_cone_template(size))
-    template_bag = make_bag("📐 Blast & Cone Templates", x=-26, y=1.5, z=8,
+    template_bag = make_bag("📐 Blast & Cone Templates", x=-45, y=1.5, z=12,
                             color={"r": 0.8, "g": 0.4, "b": 0.1},
                             contents=template_bag_contents)
     all_objects.append(template_bag)
@@ -3563,7 +3564,7 @@ def main():
     range_bag_contents = []
     for radius in [1, 3, 6, 8, 10]:
         range_bag_contents.append(make_range_ring(radius))
-    range_bag = make_bag("📏 Range Rings", x=-26, y=1.5, z=14,
+    range_bag = make_bag("📏 Range Rings", x=-45, y=1.5, z=20,
                          color={"r": 0.2, "g": 0.6, "b": 0.8},
                          contents=range_bag_contents)
     all_objects.append(range_bag)
@@ -3587,16 +3588,16 @@ def main():
     morale_d2["Description"] = "Roll 2d6 ≤ MOR to pass morale test"
     dice_bag_contents.append(morale_d2)
     
-    dice_bag = make_bag("🎲 Dice", x=26, y=1.5, z=0, 
+    dice_bag = make_bag("🎲 Dice", x=45, y=1.5, z=0, 
                         color={"r": 0.8, "g": 0.8, "b": 0.8},
                         contents=dice_bag_contents)
     all_objects.append(dice_bag)
     print(f"  ✓ Dice bag (10 combat + 2 morale)")
     
     # --- Counters ---
-    all_objects.append(make_counter("VP Player 1", x=26, y=1.5, z=-8, color={"r": 0.9, "g": 0.9, "b": 0.2}))
-    all_objects.append(make_counter("VP Player 2", x=26, y=1.5, z=-12, color={"r": 0.9, "g": 0.2, "b": 0.2}))
-    all_objects.append(make_counter("Round Counter", x=26, y=1.5, z=-16, color={"r": 0.4, "g": 0.7, "b": 0.4}))
+    all_objects.append(make_counter("VP Player 1", x=45, y=1.5, z=-10, color={"r": 0.9, "g": 0.9, "b": 0.2}))
+    all_objects.append(make_counter("VP Player 2", x=45, y=1.5, z=-16, color={"r": 0.9, "g": 0.2, "b": 0.2}))
+    all_objects.append(make_counter("Round Counter", x=45, y=1.5, z=-22, color={"r": 0.4, "g": 0.7, "b": 0.4}))
     print("  ✓ Counters (VP x2, Round)")
     
     # --- Card Library Deck ---
@@ -3610,8 +3611,8 @@ def main():
         else:
             card_objects_by_type["command"].append(card_obj)
     
-    card_deck_x = -26
-    card_deck_z = -20
+    card_deck_x = -45
+    card_deck_z = -10
     card_bag_contents = []
     for ctype, cards in card_objects_by_type.items():
         if cards:
@@ -3623,7 +3624,7 @@ def main():
                 card_bag_contents.append(deck)
             card_deck_z += 5
     
-    card_bag = make_bag("📋 Card Library", x=-26, y=1.5, z=-20,
+    card_bag = make_bag("📋 Card Library", x=-45, y=1.5, z=-10,
                         color={"r": 0.3, "g": 0.3, "b": 0.6},
                         contents=card_bag_contents)
     all_objects.append(card_bag)
@@ -3631,7 +3632,7 @@ def main():
     
     # --- Faction Bags (one per faction) ---
     factions_processed = set()
-    faction_x_start = -20
+    faction_x_start = -30
     
     for faction_idx, faction_id in enumerate(FACTION_COLORS.keys()):
         fname = FACTION_NAMES.get(faction_id, faction_id)
@@ -3702,8 +3703,8 @@ def main():
         faction_contents.append(roster_card)
         
         # Main faction bag
-        bag_x = faction_x_start + (faction_idx * 10)
-        faction_bag = make_bag(f"🏴 {fname}", x=bag_x, y=1.5, z=20,
+        bag_x = faction_x_start + (faction_idx * 15)
+        faction_bag = make_bag(f"🏴 {fname}", x=bag_x, y=1.5, z=38,
                               color=f_color, contents=faction_contents)
         all_objects.append(faction_bag)
         
@@ -3711,16 +3712,16 @@ def main():
               f"{len(f_fragments)} fragments → faction bag")
     
     # --- Deployment Zones ---
-    all_objects.append(make_zone("Player 1 Deploy Zone", x=0, y=0.5, z=-20, 
-                                scale_x=48, scale_z=8,
+    all_objects.append(make_zone("Player 1 Deploy Zone", x=0, y=0.5, z=-28, 
+                                scale_x=70, scale_z=12,
                                 color={"r": 0.2, "g": 0.4, "b": 0.8}))
-    all_objects.append(make_zone("Player 2 Deploy Zone", x=0, y=0.5, z=20, 
-                                scale_x=48, scale_z=8,
+    all_objects.append(make_zone("Player 2 Deploy Zone", x=0, y=0.5, z=28, 
+                                scale_x=70, scale_z=12,
                                 color={"r": 0.8, "g": 0.2, "b": 0.2}))
     print("  ✓ Deployment zones")
     
     # --- Objective Markers (5) ---
-    obj_positions = [(0, 0), (-12, -8), (12, -8), (-12, 8), (12, 8)]
+    obj_positions = [(0, 0), (-18, -12), (18, -12), (-18, 12), (18, 12)]
     obj_bag_contents = []
     for oi, (ox, oz) in enumerate(obj_positions):
         obj_marker = {
@@ -3745,7 +3746,7 @@ def main():
         }
         obj_bag_contents.append(obj_marker)
     
-    obj_bag = make_bag("🎯 Objective Markers", x=26, y=1.5, z=8,
+    obj_bag = make_bag("🎯 Objective Markers", x=45, y=1.5, z=10,
                        color={"r": 1.0, "g": 0.85, "b": 0.0},
                        contents=obj_bag_contents)
     all_objects.append(obj_bag)
@@ -4036,7 +4037,7 @@ def main():
                           color={"r": 0.6, "g": 0.3, "b": 0.3},
                           contents=faction_terrain)
     
-    terrain_master_bag = make_bag("🗺️ Terrain", x=26, y=1.5, z=16,
+    terrain_master_bag = make_bag("🗺️ Terrain", x=45, y=1.5, z=22,
                                 color={"r": 0.4, "g": 0.5, "b": 0.3},
                                 contents=[area_bag, structures_bag, faction_bag])
     all_objects.append(terrain_master_bag)
@@ -4092,7 +4093,7 @@ def main():
         }
         hp_bag_contents.append(hp5_token)
     
-    hp_bag = make_bag("❤️ Damage Tokens", x=26, y=1.5, z=20,
+    hp_bag = make_bag("❤️ Damage Tokens", x=45, y=1.5, z=30,
                       color={"r": 0.7, "g": 0.1, "b": 0.1},
                       contents=hp_bag_contents)
     all_objects.append(hp_bag)
@@ -4190,7 +4191,7 @@ def main():
             "ACTIVATED\n─────────────────\nThis unit has already acted this turn.\nPlace after unit completes its activation.\nRemove all at start of next turn.\nHelps track which units have gone.",
             "555555", "✓Done"))
     
-    status_bag = make_bag("🏷️ Status Tokens", x=-26, y=1.5, z=16,
+    status_bag = make_bag("🏷️ Status Tokens", x=-45, y=1.5, z=28,
                          color={"r": 0.7, "g": 0.6, "b": 0.2},
                          contents=status_tokens)
     all_objects.append(status_bag)
@@ -4202,7 +4203,7 @@ def main():
         "GUID": make_guid(),
         "Name": "Custom_Tile",
         "Transform": {
-            "posX": -15, "posY": 1.01, "posZ": -25,
+            "posX": -24, "posY": 1.01, "posZ": -45,
             "rotX": 0, "rotY": 0, "rotZ": 0,
             "scaleX": 3.0, "scaleY": 1.0, "scaleZ": 4.0,
         },
@@ -4230,7 +4231,7 @@ def main():
         "GUID": make_guid(),
         "Name": "Custom_Tile",
         "Transform": {
-            "posX": 15, "posY": 1.01, "posZ": -25,
+            "posX": 24, "posY": 1.01, "posZ": -45,
             "rotX": 0, "rotY": 0, "rotZ": 0,
             "scaleX": 3.0, "scaleY": 1.0, "scaleZ": 4.0,
         },
@@ -4304,17 +4305,17 @@ def main():
                 {
                     "Color": "White",
                     "Transform": {
-                        "posX": 0, "posY": 5, "posZ": -30,
+                        "posX": 0, "posY": 5, "posZ": -50,
                         "rotX": 0, "rotY": 0, "rotZ": 0,
-                        "scaleX": 12, "scaleY": 5, "scaleZ": 5,
+                        "scaleX": 18, "scaleY": 5, "scaleZ": 8,
                     },
                 },
                 {
                     "Color": "Red",
                     "Transform": {
-                        "posX": 0, "posY": 5, "posZ": 30,
+                        "posX": 0, "posY": 5, "posZ": 50,
                         "rotX": 0, "rotY": 180, "rotZ": 0,
-                        "scaleX": 12, "scaleY": 5, "scaleZ": 5,
+                        "scaleX": 18, "scaleY": 5, "scaleZ": 8,
                     },
                 },
             ],
