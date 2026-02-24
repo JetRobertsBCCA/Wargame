@@ -1,0 +1,94 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Shardborne/1.0.0": {
+        "dependencies": {
+          "GodotSharp": "4.6.1",
+          "GodotSharpEditor": "4.6.1",
+          "Jint": "3.1.0"
+        },
+        "runtime": {
+          "Shardborne.dll": {}
+        }
+      },
+      "Esprima/3.0.5": {
+        "runtime": {
+          "lib/netstandard2.1/Esprima.dll": {
+            "assemblyVersion": "3.0.5.0",
+            "fileVersion": "3.0.5.0"
+          }
+        }
+      },
+      "GodotSharp/4.6.1": {
+        "runtime": {
+          "lib/net8.0/GodotSharp.dll": {
+            "assemblyVersion": "4.6.1.0",
+            "fileVersion": "4.6.1.0"
+          }
+        }
+      },
+      "GodotSharpEditor/4.6.1": {
+        "dependencies": {
+          "GodotSharp": "4.6.1"
+        },
+        "runtime": {
+          "lib/net8.0/GodotSharpEditor.dll": {
+            "assemblyVersion": "4.6.1.0",
+            "fileVersion": "4.6.1.0"
+          }
+        }
+      },
+      "Jint/3.1.0": {
+        "dependencies": {
+          "Esprima": "3.0.5"
+        },
+        "runtime": {
+          "lib/net8.0/Jint.dll": {
+            "assemblyVersion": "3.1.0.0",
+            "fileVersion": "3.1.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Shardborne/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Esprima/3.0.5": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-yJrbImpXdJAwKoa0FOgK3JV4wuOPHhKI1vWmNepJD5U/t6ENwEr0FX6gl06rIxxKbVGrKCd8JMmm7rieT/4dIw==",
+      "path": "esprima/3.0.5",
+      "hashPath": "esprima.3.0.5.nupkg.sha512"
+    },
+    "GodotSharp/4.6.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-FQc5iM5ftSAIegboeP7CsOeNtG0GLgjkqNshUHISZhnc8secWLwZqmCPFHGYshVPIqqJFCfQQ5ttjdmNKLKKEw==",
+      "path": "godotsharp/4.6.1",
+      "hashPath": "godotsharp.4.6.1.nupkg.sha512"
+    },
+    "GodotSharpEditor/4.6.1": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-WtUHTHUegXO3OwHXa2pW2a6UIBV3TcVui2lbQ6eQt4RuKSZwuzNGdBy3GYIDJ3pkqJZEjqvM9zA32ARxhUygTQ==",
+      "path": "godotsharpeditor/4.6.1",
+      "hashPath": "godotsharpeditor.4.6.1.nupkg.sha512"
+    },
+    "Jint/3.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-UcE23/gNRXJ1QimArnLep/fspCxThIqjT4gswqFoeu7H0rpprt6s00AiK4d5tuSBekzPpVAt+gwOD7fBb1HGag==",
+      "path": "jint/3.1.0",
+      "hashPath": "jint.3.1.0.nupkg.sha512"
+    }
+  }
+}

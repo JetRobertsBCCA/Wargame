@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shardborne-godot", "shardborne-godot", "{F35DC53F-52B7-FEBC-31CC-37D22E3B7CD6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shardborne", "shardborne-godot\Shardborne.csproj", "{D306DF8C-3192-9202-6D83-202C3798ACC0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D306DF8C-3192-9202-6D83-202C3798ACC0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D306DF8C-3192-9202-6D83-202C3798ACC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D306DF8C-3192-9202-6D83-202C3798ACC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D306DF8C-3192-9202-6D83-202C3798ACC0}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D306DF8C-3192-9202-6D83-202C3798ACC0} = {F35DC53F-52B7-FEBC-31CC-37D22E3B7CD6}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {9204A9BC-8EE4-41D8-B8F1-101C989A7182}
+	EndGlobalSection
+EndGlobal

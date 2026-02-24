@@ -1,0 +1,13 @@
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\bin\Debug\Shardborne.deps.json
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\bin\Debug\Shardborne.dll
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\bin\Debug\Shardborne.pdb
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\Shardborne.csproj.AssemblyReference.cache
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\Shardborne.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\Shardborne.AssemblyInfoInputs.cache
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\Shardborne.AssemblyInfo.cs
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\Shardborne.csproj.CoreCompileInputs.cache
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\Shardborne.sourcelink.json
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\Shardborne.dll
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\refint\Shardborne.dll
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\Shardborne.pdb
+C:\Users\jetin\Coding\Wargame-main\Wargame\shardborne-godot\.godot\mono\temp\obj\Debug\ref\Shardborne.dll
