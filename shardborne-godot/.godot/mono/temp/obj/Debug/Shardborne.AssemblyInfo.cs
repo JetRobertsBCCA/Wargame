@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Shardborne")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+08403ce9ccb0ecd51dc42e40d4d131031064e174")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d13387c5f4f724ffb1a5d6b8d841558783711988")]
 [assembly: System.Reflection.AssemblyProductAttribute("Shardborne")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Shardborne")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

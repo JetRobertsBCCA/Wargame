@@ -7,6 +7,11 @@ namespace Shardborne
 {
     public partial class Main : Control
     {
+        // ── Menu UI ──
+        private VBoxContainer? _menuPanel;
+
+        // ── Faction Browser UI ──
+        private VBoxContainer? _browserPanel;
         private Label? _status;
         private RichTextLabel? _pools;
         private RichTextLabel? _log;
@@ -18,112 +23,167 @@ namespace Shardborne
 
         public override void _Ready()
         {
-            _status = GetNode<Label>("Margin/VBox/Status");
-            _pools = GetNode<RichTextLabel>("Margin/VBox/Pools");
-            _log = GetNode<RichTextLabel>("Margin/VBox/Log");
-            _factionList = GetNode<ItemList>("Margin/VBox/FactionRow/FactionList");
-            _factionDetail = GetNode<RichTextLabel>("Margin/VBox/FactionRow/FactionDetail");
-
-            GetNode<Button>("Margin/VBox/Buttons/NextPhaseButton").Pressed += OnNextPhase;
-            GetNode<Button>("Margin/VBox/Buttons/NextTurnButton").Pressed += OnNextTurn;
-            GetNode<Button>("Margin/VBox/Buttons/AutoResolveButton").Pressed += OnAutoResolve;
-            if (_factionList != null)
-            {
-                _factionList.ItemSelected += OnFactionSelected;
-            }
-
-            LoadData();
-            AppendLog("UI initialized.");
-            UpdateUI();
-            PopulateFactionList();
-        }
-
-        private void LoadData()
-        {
             var projectRoot = ProjectSettings.GlobalizePath("res://");
             var repoRoot = Path.GetFullPath(Path.Combine(projectRoot, ".."));
             _definition = DataLoader.LoadFromRepo(repoRoot);
-            AppendLog($"Loaded rules: {_definition.Rules.Version}");
-            AppendLog($"Factions loaded: {_definition.Factions.Count}");
+
+            BuildMenuUI();
+            BuildBrowserUI();
+            ShowMenu();
         }
 
-        private void OnNextPhase()
+        // ═══════════════════════════════════════════
+        //  MAIN MENU
+        // ═══════════════════════════════════════════
+
+        private void BuildMenuUI()
         {
-            _state.NextPhase();
-            AppendLog($"Phase → {_state.Phase}");
-            UpdateUI();
+            _menuPanel = new VBoxContainer();
+            _menuPanel.SetAnchorsPreset(LayoutPreset.Center);
+            _menuPanel.Position = new Vector2(350, 150);
+            _menuPanel.AddThemeConstantOverride("separation", 16);
+            AddChild(_menuPanel);
+
+            var title = new Label { Text = "SHARDBORNE" };
+            title.AddThemeFontSizeOverride("font_size", 36);
+            title.HorizontalAlignment = HorizontalAlignment.Center;
+            _menuPanel.AddChild(title);
+
+            var subtitle = new Label { Text = "A Tabletop Wargame — Digital Edition" };
+            subtitle.AddThemeFontSizeOverride("font_size", 14);
+            subtitle.HorizontalAlignment = HorizontalAlignment.Center;
+            _menuPanel.AddChild(subtitle);
+
+            var spacer = new Control();
+            spacer.CustomMinimumSize = new Vector2(0, 20);
+            _menuPanel.AddChild(spacer);
+
+            // Data loaded info
+            var infoLabel = new Label();
+            infoLabel.Text = $"{_definition.Factions.Count} factions • {_definition.Commanders.Count} commanders • {_definition.UnitTemplates.Count} units";
+            infoLabel.AddThemeFontSizeOverride("font_size", 12);
+            infoLabel.HorizontalAlignment = HorizontalAlignment.Center;
+            infoLabel.AddThemeColorOverride("font_color", new Color(0.6f, 0.6f, 0.6f));
+            _menuPanel.AddChild(infoLabel);
+
+            var spacer2 = new Control();
+            spacer2.CustomMinimumSize = new Vector2(0, 10);
+            _menuPanel.AddChild(spacer2);
+
+            var vsAiBtn = new Button { Text = "Play vs AI" };
+            vsAiBtn.CustomMinimumSize = new Vector2(300, 52);
+            vsAiBtn.Pressed += () => StartGame(GameMode.VsAI);
+            _menuPanel.AddChild(vsAiBtn);
+
+            var vsFriendBtn = new Button { Text = "Play vs Friend (Hotseat)" };
+            vsFriendBtn.CustomMinimumSize = new Vector2(300, 52);
+            vsFriendBtn.Pressed += () => StartGame(GameMode.VsFriend);
+            _menuPanel.AddChild(vsFriendBtn);
+
+            var browseBtn = new Button { Text = "Browse Factions & Units" };
+            browseBtn.CustomMinimumSize = new Vector2(300, 44);
+            browseBtn.Pressed += ShowBrowser;
+            _menuPanel.AddChild(browseBtn);
+
+            var quitBtn = new Button { Text = "Quit" };
+            quitBtn.CustomMinimumSize = new Vector2(300, 40);
+            quitBtn.Pressed += () => GetTree().Quit();
+            _menuPanel.AddChild(quitBtn);
         }
 
-        private void OnNextTurn()
+        private void StartGame(GameMode mode)
         {
-            _state.NextTurn();
-            AppendLog($"Turn → {_state.Turn}");
-            UpdateUI();
+            // Load the game scene and set mode
+            var gameScene = GD.Load<PackedScene>("res://Scenes/Game.tscn");
+            var instance = gameScene.Instantiate<GameScene>();
+            instance.SetGameMode(mode);
+            GetTree().Root.AddChild(instance);
+            QueueFree(); // Remove menu
         }
 
-        private void OnAutoResolve()
+        private void ShowMenu()
         {
-            // Simple placeholder combat roll: 6 dice vs DEF 4.
-            var atk = 6;
-            var def = 4;
-            var hits = 0;
-            var crits = 0;
-            for (var i = 0; i < atk; i++)
-            {
-                var roll = _rng.Next(1, 7);
-                if (roll == 6)
-                {
-                    crits++;
-                    hits++;
-                }
-                else if (roll >= def)
-                {
-                    hits++;
-                }
-            }
-            var dmg = hits + crits;
-            AppendLog($"Auto-resolve: {atk} ATK vs DEF {def} → {hits} hits, {crits} crits, {dmg} dmg");
-            UpdateUI();
+            if (_menuPanel != null) _menuPanel.Visible = true;
+            if (_browserPanel != null) _browserPanel.Visible = false;
         }
 
-        private void UpdateUI()
+        // ═══════════════════════════════════════════
+        //  FACTION BROWSER (existing functionality)
+        // ═══════════════════════════════════════════
+
+        private void BuildBrowserUI()
         {
-            if (_status != null)
-            {
-                _status.Text = $"Turn {_state.Turn} • {_state.Phase} • Active: {_state.ActivePlayer} | CP W:{_state.White.CommandPoints} R:{_state.Red.CommandPoints} | VP W:{_state.White.VictoryPoints} R:{_state.Red.VictoryPoints}";
-            }
+            _browserPanel = new VBoxContainer();
+            _browserPanel.SetAnchorsPreset(LayoutPreset.FullRect);
+            _browserPanel.AddThemeConstantOverride("separation", 8);
+            _browserPanel.Visible = false;
 
-            if (_pools != null)
-            {
-                _pools.Text =
-                    $"Heat: {_state.Pools.Heat}/15  |  Hunger: {_state.Pools.Hunger}  |  Flow: {_state.Pools.Flow}/40\n" +
-                    $"Fate Threads: {_state.Pools.FateThreads}  |  Anchors: {_state.Pools.Anchors}  |  Fragment Charges: {_state.Pools.FragmentCharges}  |  Stance: {_state.Pools.Stance}";
-            }
+            var margin = new MarginContainer();
+            margin.SetAnchorsPreset(LayoutPreset.FullRect);
+            margin.AddThemeConstantOverride("margin_left", 16);
+            margin.AddThemeConstantOverride("margin_top", 16);
+            margin.AddThemeConstantOverride("margin_right", 16);
+            margin.AddThemeConstantOverride("margin_bottom", 16);
+            AddChild(margin);
+            margin.AddChild(_browserPanel);
 
-            if (_log != null)
-            {
-                _log.Text = "[b]Log[/b]\n" + string.Join("\n", _state.Log);
-            }
+            // Header + back button
+            var headerRow = new HBoxContainer();
+            headerRow.AddThemeConstantOverride("separation", 16);
+            _browserPanel.AddChild(headerRow);
+
+            var backBtn = new Button { Text = "← Back to Menu" };
+            backBtn.Pressed += ShowMenu;
+            headerRow.AddChild(backBtn);
+
+            var header = new Label { Text = "Faction & Unit Browser" };
+            header.AddThemeFontSizeOverride("font_size", 20);
+            headerRow.AddChild(header);
+
+            _status = new Label { Text = $"Loaded: {_definition.Factions.Count} factions, {_definition.Commanders.Count} commanders, {_definition.UnitTemplates.Count} units" };
+            _browserPanel.AddChild(_status);
+
+            // Faction row
+            var factionRow = new HBoxContainer();
+            factionRow.CustomMinimumSize = new Vector2(0, 400);
+            factionRow.SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand;
+            factionRow.SizeFlagsVertical = SizeFlags.Fill | SizeFlags.Expand;
+            _browserPanel.AddChild(factionRow);
+
+            _factionList = new ItemList();
+            _factionList.CustomMinimumSize = new Vector2(280, 0);
+            _factionList.SizeFlagsVertical = SizeFlags.Fill | SizeFlags.Expand;
+            _factionList.ItemSelected += OnFactionSelected;
+            factionRow.AddChild(_factionList);
+
+            _factionDetail = new RichTextLabel();
+            _factionDetail.BbcodeEnabled = true;
+            _factionDetail.FitContent = true;
+            _factionDetail.ScrollActive = true;
+            _factionDetail.SizeFlagsHorizontal = SizeFlags.Fill | SizeFlags.Expand;
+            _factionDetail.SizeFlagsVertical = SizeFlags.Fill | SizeFlags.Expand;
+            _factionDetail.CustomMinimumSize = new Vector2(0, 400);
+            factionRow.AddChild(_factionDetail);
+
+            PopulateFactionList();
         }
 
-        private void AppendLog(string message)
+        private void ShowBrowser()
         {
-            _state.Log.Add($"[{DateTime.Now:HH:mm:ss}] {message}");
+            if (_menuPanel != null) _menuPanel.Visible = false;
+            if (_browserPanel != null) _browserPanel.Visible = true;
         }
 
         private void PopulateFactionList()
         {
-            if (_factionList == null)
-                return;
-
+            if (_factionList == null) return;
             _factionList.Clear();
-            for (var i = 0; i < _definition.Factions.Count; i++)
+
+            foreach (var fac in _definition.Factions)
             {
-                var fac = _definition.Factions[i];
-                var label = string.IsNullOrWhiteSpace(fac.Icon)
-                    ? fac.Name
-                    : $"{fac.Icon} {fac.Name}";
-                _factionList.AddItem(label);
+                var cmdrs = _definition.GetCommandersForFaction(fac.Id);
+                var units = _definition.GetUnitsForFaction(fac.Id);
+                _factionList.AddItem($"{fac.Icon} {fac.Name} ({cmdrs.Count}C / {units.Count}U)");
             }
 
             if (_definition.Factions.Count > 0)
@@ -133,36 +193,50 @@ namespace Shardborne
             }
         }
 
-        private void OnFactionSelected(long index)
-        {
-            ShowFactionDetail((int)index);
-        }
+        private void OnFactionSelected(long index) => ShowFactionDetail((int)index);
 
         private void ShowFactionDetail(int index)
         {
-            if (_factionDetail == null)
-                return;
-            if (index < 0 || index >= _definition.Factions.Count)
-                return;
+            if (_factionDetail == null || index < 0 || index >= _definition.Factions.Count) return;
 
             var fac = _definition.Factions[index];
-            var units = fac.Units ?? new System.Collections.Generic.List<Unit>();
-            var topUnits = units.Take(8)
-                .Select(u => string.IsNullOrWhiteSpace(u.Name) ? "(unnamed)" : u.Points > 0 ? $"{u.Name} ({u.Points} pts)" : u.Name)
-                .ToList();
-            var unitLine = topUnits.Count == 0 ? "No units parsed yet." : string.Join(", ", topUnits);
+            var cmdrs = _definition.GetCommandersForFaction(fac.Id);
+            var units = _definition.GetUnitsForFaction(fac.Id);
 
-            var rawKeys = fac.Raw != null && fac.Raw.Count > 0
-                ? string.Join(", ", fac.Raw.Keys.Take(10))
-                : "(none)";
+            var text = $"[b]{fac.Icon} {fac.Name}[/b]\nColor: {fac.Color}\n\n";
 
-            _factionDetail.Text =
-                "[b]" + fac.Name + "[/b]\n" +
-                (!string.IsNullOrWhiteSpace(fac.Icon) ? fac.Icon + "\n" : string.Empty) +
-                ($"Units: {units.Count}\n") +
-                ($"Top entries: {unitLine}\n") +
-                ($"Raw keys: {rawKeys}\n") +
-                ($"Color: {fac.Color}\n");
+            // Commanders
+            text += $"[b]Commanders ({cmdrs.Count}):[/b]\n";
+            foreach (var c in cmdrs)
+            {
+                text += $"  ★ {c.Name} — {c.Title}\n";
+                text += $"    ATK:{c.Atk} DEF:{c.Def} HP:{c.Hp} MOV:{c.Mov} RNG:{c.Rng} MOR:{c.Mor} CMD:{c.Command} ({c.PointsCost} pts)\n";
+            }
+
+            // Units by type
+            text += $"\n[b]Units ({units.Count}):[/b]\n";
+            var byType = units.GroupBy(u => u.Type).OrderBy(g => g.Key);
+            foreach (var group in byType)
+            {
+                text += $"\n  [{group.Key}]\n";
+                foreach (var u in group.OrderBy(u => u.PointsCost))
+                {
+                    text += $"    {u.Name} — ATK:{u.Atk} DEF:{u.Def} HP:{u.Hp} MOV:{u.Mov} RNG:{u.Rng} MOR:{u.Mor} ({u.PointsCost} pts)\n";
+                }
+            }
+
+            // Sample army
+            var sample = _definition.SampleArmies.FirstOrDefault(s =>
+                s.Faction.Contains(fac.Name, StringComparison.OrdinalIgnoreCase));
+            if (sample != null)
+            {
+                text += $"\n[b]Sample Army ({sample.TotalPoints} pts):[/b]\n";
+                text += $"  Commander: {sample.Commander}\n";
+                text += $"  Units: {sample.Units}\n";
+                text += $"  Strategy: {sample.Strategy}\n";
+            }
+
+            _factionDetail.Text = text;
         }
     }
 }
