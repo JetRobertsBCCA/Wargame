@@ -1,27 +1,27 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Shardborne
 {
     /// <summary>
-    /// Simple AI controller that makes tactical decisions during its turn.
-    /// Strategy: move toward nearest enemy, attack best available target.
+    /// Tactical AI controller with engagement awareness, charging, terrain consideration,
+    /// and keyword-aware targeting. Makes intelligent decisions during its turn phases.
     /// </summary>
     public sealed class AIController
     {
         private readonly Random _rng = new();
 
-        /// <summary>
-        /// Execute the full AI turn: movement phase then combat phase.
-        /// Returns a list of log messages describing actions taken.
-        /// </summary>
+        // 
+        //  MOVEMENT PHASE
+        // 
+
         public List<string> ExecuteMovementPhase(MatchState state, int playerId)
         {
             var logs = new List<string>();
             var units = state.GetPlayerUnits(playerId)
                 .Where(u => !u.MovedThisTurn)
-                .OrderByDescending(u => u.IsCommander) // Move commander last (protect)
+                .OrderByDescending(u => u.IsCommander)
                 .ThenByDescending(u => u.BaseAtk)
                 .ToList();
 
@@ -31,20 +31,51 @@ namespace Shardborne
                 if (action.HasValue)
                 {
                     var (tx, ty) = action.Value;
+                    unit.PrevX = unit.X;
+                    unit.PrevY = unit.Y;
+                    
+                    // Check for charge
+                    bool charged = CombatResolver.IsChargeMove(unit, tx, ty, state);
+                    
+                    // Check for disengage
+                    bool disengaged = unit.IsEngaged;
+                    
                     unit.X = tx;
                     unit.Y = ty;
                     unit.MovedThisTurn = true;
-                    logs.Add($"AI moves {unit.Name} to ({tx},{ty})");
+                    unit.DidNotMoveThisTurn = false;
+                    
+                    if (charged && !state.IsFirstTurn[playerId])
+                    {
+                        unit.HasCharged = true;
+                        logs.Add($"AI charges {unit.Name} to ({tx},{ty})!");
+                    }
+                    else if (disengaged)
+                    {
+                        unit.DisengagedThisTurn = true;
+                        logs.Add($"AI disengages {unit.Name} to ({tx},{ty})");
+                    }
+                    else
+                    {
+                        logs.Add($"AI moves {unit.Name} to ({tx},{ty})");
+                    }
                 }
                 else
                 {
                     unit.MovedThisTurn = true;
+                    unit.DidNotMoveThisTurn = true;
                     logs.Add($"AI holds {unit.Name} at ({unit.X},{unit.Y})");
                 }
             }
 
+            // Refresh engagement after all moves
+            state.RefreshEngagement();
             return logs;
         }
+
+        // 
+        //  COMBAT PHASE
+        // 
 
         public List<string> ExecuteCombatPhase(MatchState state, int playerId)
         {
@@ -56,6 +87,13 @@ namespace Shardborne
 
             foreach (var unit in units)
             {
+                // Skip units that disengaged (can't attack after disengage)
+                if (unit.DisengagedThisTurn) 
+                {
+                    unit.AttackedThisTurn = true;
+                    continue;
+                }
+
                 var targets = CombatResolver.GetValidTargets(unit, state);
                 if (targets.Count == 0)
                 {
@@ -63,28 +101,56 @@ namespace Shardborne
                     continue;
                 }
 
-                // Priority: commander > low HP > highest value
                 var target = PickBestTarget(targets);
-                var result = CombatResolver.ResolveAttack(unit, target);
+                bool isCharging = unit.HasCharged;
+                var result = CombatResolver.ResolveAttack(unit, target, state, isCharging);
                 unit.AttackedThisTurn = true;
+                
+                // Stealth: lost on attacking
+                if (unit.IsStealthed) unit.IsStealthed = false;
+                
                 logs.Add(result.Summary);
+
+                // Double Strike: attack again
+                if (unit.HasSpecial("Double Strike") && target.IsAlive)
+                {
+                    var result2 = CombatResolver.ResolveAttack(unit, target, state, false);
+                    logs.Add($"  Double Strike: {result2.Summary}");
+                    if (result2.TargetDestroyed)
+                    {
+                        state.Players[playerId].Kills++;
+                        state.Players[playerId].VictoryPoints += target.PointsCost;
+                    }
+                }
 
                 if (result.TargetDestroyed)
                 {
                     state.Players[playerId].Kills++;
-                    state.Players[playerId].VictoryPoints += target.IsCommander ? 10 : 1;
-                    logs.Add($"  → {target.Name} destroyed! +{(target.IsCommander ? 10 : 1)} VP");
+                    state.Players[playerId].VictoryPoints += target.PointsCost;
+                    logs.Add($"  {target.Name} destroyed! +{target.PointsCost} VP");
+                    
+                    // Check if commander killed
+                    if (target.IsCommander)
+                        state.Players[1 - playerId].CommanderDead = true;
                 }
             }
 
+            state.RefreshEngagement();
             return logs;
         }
+
+        // 
+        //  DECISION MAKING
+        // 
 
         public (int x, int y)? DecideMoveTarget(UnitInstance unit, MatchState state)
         {
             int enemyId = 1 - unit.PlayerId;
             var enemies = state.GetPlayerUnits(enemyId);
             if (enemies.Count == 0) return null;
+
+            var validMoves = CombatResolver.GetValidMoves(unit, state);
+            if (validMoves.Count == 0) return null;
 
             // Find nearest enemy
             UnitInstance? nearest = null;
@@ -107,9 +173,22 @@ namespace Shardborne
             if (unit.IsMelee && bestDist <= 1)
                 return null;
 
-            // Move toward nearest enemy
-            var validMoves = CombatResolver.GetValidMoves(unit, state);
-            if (validMoves.Count == 0) return null;
+            // Try to find a charge opportunity (melee units, 2+ cells to adjacent)
+            if (unit.IsMelee && !state.IsFirstTurn[unit.PlayerId])
+            {
+                foreach (var (mx, my) in validMoves)
+                {
+                    if (CombatResolver.IsChargeMove(unit, mx, my, state))
+                    {
+                        // Check if the charge target is a good target
+                        foreach (var e in enemies)
+                        {
+                            if (CombatResolver.ChebyshevDistance(mx, my, e.X, e.Y) <= 1)
+                                return (mx, my);
+                        }
+                    }
+                }
+            }
 
             // Pick the move that gets closest to the nearest enemy
             (int x, int y) bestMove = validMoves[0];
@@ -119,17 +198,26 @@ namespace Shardborne
             {
                 int d = CombatResolver.ChebyshevDistance(mx, my, nearest.X, nearest.Y);
 
-                // For ranged units, try to stay at range (not too close)
-                if (!unit.IsMelee && d >= 1 && d <= unit.RangeCells)
+                // Prefer cover terrain for ranged units
+                if (!unit.IsMelee)
                 {
-                    // In range — prefer this
-                    if (d < bestMoveDist || bestMoveDist > unit.RangeCells)
+                    var terrain = state.GetTerrain(mx, my);
+                    bool hasCover = terrain == TerrainType.Cover || terrain == TerrainType.Forest || terrain == TerrainType.Ruins;
+                    
+                    if (d >= 1 && d <= unit.RangeCells)
                     {
-                        bestMoveDist = d;
-                        bestMove = (mx, my);
+                        // In range - prefer covered positions
+                        int score = d * 10 + (hasCover ? -5 : 0);
+                        if (score < bestMoveDist || bestMoveDist > unit.RangeCells * 10)
+                        {
+                            bestMoveDist = score;
+                            bestMove = (mx, my);
+                        }
+                        continue;
                     }
                 }
-                else if (d < bestMoveDist)
+
+                if (d < bestMoveDist)
                 {
                     bestMoveDist = d;
                     bestMove = (mx, my);
@@ -137,7 +225,7 @@ namespace Shardborne
             }
 
             // Only move if it improves position
-            if (bestMoveDist < bestDist)
+            if (bestMoveDist < bestDist || (unit.IsMelee && bestMoveDist <= bestDist))
                 return bestMove;
 
             // Commander: stay back if possible

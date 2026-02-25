@@ -1,0 +1,1744 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using Godot;
+
+namespace Shardborne
+{
+    public partial class GameScene : Control
+    {
+        //  Board layout (tabletop feel) 
+        private const int CellSize = 60;          // bigger cells = more table presence
+        private const int Cols = 12;
+        private const int Rows = 10;
+        private const int BoardLeft = 8;           // board hugs left, card panel on right
+        private const int BoardTop = 52;
+        private const int BoardW = Cols * CellSize;
+        private const int BoardH = Rows * CellSize;
+        private const int CardPanelX = BoardLeft + BoardW + 10;
+        private const int CardPanelW = 1280 - CardPanelX - 6;
+
+        //  State 
+        private MatchState _match = new();
+        private GameDefinition _data = new();
+        private AIController _ai = new();
+        private bool _aiProcessing;
+        private float _aiTimer;
+        private Queue<Action> _pendingAiActions = new();
+
+        //  Dice tray (shows last roll) 
+        private List<int> _lastRolls = new();
+        private int _lastDefTarget;
+        private string _lastRollLabel = "";
+        private float _diceShowTimer;
+
+        //  Setup flow fields 
+        private string _p1Faction = "";
+        private string _p2Faction = "";
+        private int _armyBuildPlayer;
+        private Commander _abSelectedCmdr;
+        private List<(UnitTemplate tmpl, int count)> _abRoster = new();
+        private int _abBudget = 75;
+
+        //  UI nodes 
+        private VBoxContainer _factionSelectPanel;
+        private VBoxContainer _victorySelectPanel;
+        private VBoxContainer _armyBuilderPanel;
+        private VBoxContainer _factionButtonsP1;
+        private VBoxContainer _factionButtonsP2;
+        private Label _p1SelectLabel;
+        private Label _p2SelectLabel;
+        private Button _startGameBtn;
+        private Label _abTitleLabel;
+        private VBoxContainer _abCmdrList;
+        private VBoxContainer _abUnitList;
+        private VBoxContainer _abRosterList;
+        private Label _abBudgetLabel;
+        private Button _abConfirmBtn;
+        private RichTextLabel _abCmdrDetail;
+        private ScrollContainer _abUnitScroll;
+        private ScrollContainer _abRosterScroll;
+        // In-game HUD
+        private Label _turnBanner;
+        private Label _phaseBanner;
+        private Label _instructionLabel;
+        private RichTextLabel _logLabel;
+        private Button _endPhaseBtn;
+        private Button _endTurnBtn;
+        private Button _backBtn;
+        private Button _playAgainBtn;
+
+        //  Mouse 
+        private Vector2 _mousePos;
+        private int _hoverCol = -1, _hoverRow = -1;
+
+        //  Tabletop palette 
+        static readonly Color TableFelt   = new(0.12f, 0.15f, 0.10f);
+        static readonly Color CellLight   = new(0.20f, 0.22f, 0.18f);
+        static readonly Color CellDark    = new(0.17f, 0.19f, 0.15f);
+        static readonly Color GridLine    = new(0.28f, 0.30f, 0.25f, 0.7f);
+        static readonly Color DeployBlue  = new(0.2f, 0.35f, 0.55f, 0.18f);
+        static readonly Color DeployRed   = new(0.55f, 0.2f, 0.2f, 0.18f);
+        static readonly Color MoveGreen   = new(0.1f, 0.75f, 0.2f, 0.3f);
+        static readonly Color ChargeOrange= new(1f, 0.55f, 0.1f, 0.35f);
+        static readonly Color AttackRed   = new(0.9f, 0.1f, 0.1f, 0.3f);
+        static readonly Color EngageRing  = new(1f, 0.45f, 0f);
+        static readonly Color SelectRing  = new(1f, 1f, 0.3f);
+        static readonly Color ObjGold     = new(1f, 0.85f, 0.15f);
+        static readonly Color CardBg      = new(0.10f, 0.11f, 0.13f, 0.95f);
+        static readonly Color CardBorder  = new(0.45f, 0.42f, 0.35f);
+        static readonly Color DiceBg      = new(0.08f, 0.08f, 0.06f, 0.9f);
+
+        // 
+        //  LIFECYCLE
+        // 
+
+        public override void _Ready()
+        {
+            var projectRoot = ProjectSettings.GlobalizePath("res://");
+            var repoRoot = Path.GetFullPath(Path.Combine(projectRoot, ".."));
+            _data = DataLoader.LoadFromRepo(repoRoot);
+            MouseFilter = MouseFilterEnum.Stop;
+            BuildUI();
+            ShowFactionSelect();
+        }
+
+        public override void _Process(double delta)
+        {
+            // Dice tray fade
+            if (_diceShowTimer > 0) { _diceShowTimer -= (float)delta; QueueRedraw(); }
+
+            // AI action queue
+            if (_aiProcessing)
+            {
+                _aiTimer -= (float)delta;
+                if (_aiTimer <= 0 && _pendingAiActions.Count > 0)
+                {
+                    _pendingAiActions.Dequeue().Invoke();
+                    RefreshHUD(); QueueRedraw();
+                    _aiTimer = 0.25f;
+                }
+                else if (_pendingAiActions.Count == 0)
+                {
+                    _aiProcessing = false;
+                    FinishAiTurn();
+                }
+            }
+        }
+        // 
+        //  BUILD UI  (in-game HUD is minimal -- board is king)
+        // 
+
+        private void BuildUI()
+        {
+            // Top banner bar (thin, like a table-edge scoreboard)
+            _turnBanner = new Label { Text = "SHARDBORNE" };
+            _turnBanner.AddThemeFontSizeOverride("font_size", 18);
+            _turnBanner.Position = new Vector2(BoardLeft, 6);
+            _turnBanner.Size = new Vector2(400, 30);
+            AddChild(_turnBanner);
+
+            _phaseBanner = new Label { Text = "" };
+            _phaseBanner.AddThemeFontSizeOverride("font_size", 14);
+            _phaseBanner.HorizontalAlignment = HorizontalAlignment.Right;
+            _phaseBanner.Position = new Vector2(BoardLeft + BoardW - 400, 6);
+            _phaseBanner.Size = new Vector2(400, 30);
+            AddChild(_phaseBanner);
+
+            // Instructions (below board)
+            _instructionLabel = new Label { Text = "" };
+            _instructionLabel.AddThemeFontSizeOverride("font_size", 12);
+            _instructionLabel.AutowrapMode = TextServer.AutowrapMode.WordSmart;
+            _instructionLabel.Position = new Vector2(BoardLeft, BoardTop + BoardH + 4);
+            _instructionLabel.Size = new Vector2(BoardW, 22);
+            AddChild(_instructionLabel);
+
+            // Log (small, at bottom)
+            _logLabel = new RichTextLabel();
+            _logLabel.BbcodeEnabled = true;
+            _logLabel.ScrollActive = true;
+            _logLabel.ScrollFollowing = true;
+            _logLabel.Position = new Vector2(BoardLeft, BoardTop + BoardH + 26);
+            _logLabel.Size = new Vector2(BoardW, 800 - (BoardTop + BoardH + 28));
+            _logLabel.AddThemeFontSizeOverride("normal_font_size", 11);
+            AddChild(_logLabel);
+
+            // Right-side buttons (below the card area)
+            int btnY = 650;
+            _endPhaseBtn = new Button { Text = "End Phase" };
+            _endPhaseBtn.Position = new Vector2(CardPanelX, btnY);
+            _endPhaseBtn.Size = new Vector2(CardPanelW / 2 - 4, 38);
+            _endPhaseBtn.Pressed += OnEndPhase;
+            _endPhaseBtn.Visible = false;
+            AddChild(_endPhaseBtn);
+
+            _endTurnBtn = new Button { Text = "End Turn" };
+            _endTurnBtn.Position = new Vector2(CardPanelX + CardPanelW / 2 + 4, btnY);
+            _endTurnBtn.Size = new Vector2(CardPanelW / 2 - 4, 38);
+            _endTurnBtn.Pressed += OnEndTurn;
+            _endTurnBtn.Visible = false;
+            AddChild(_endTurnBtn);
+
+            _backBtn = new Button { Text = "Menu [Esc]" };
+            _backBtn.Position = new Vector2(CardPanelX, btnY + 44);
+            _backBtn.Size = new Vector2(CardPanelW / 2 - 4, 32);
+            _backBtn.Pressed += OnBackToMenu;
+            _backBtn.Visible = false;
+            AddChild(_backBtn);
+
+            _playAgainBtn = new Button { Text = "Play Again" };
+            _playAgainBtn.Position = new Vector2(CardPanelX + CardPanelW / 2 + 4, btnY + 44);
+            _playAgainBtn.Size = new Vector2(CardPanelW / 2 - 4, 32);
+            _playAgainBtn.Pressed += OnPlayAgain;
+            _playAgainBtn.Visible = false;
+            AddChild(_playAgainBtn);
+
+            BuildFactionSelectPanel();
+            BuildVictorySelectPanel();
+            BuildArmyBuilderPanel();
+        }
+        // 
+        //  SETUP PANELS  (faction / victory / army builder)
+        // 
+
+        private void BuildFactionSelectPanel()
+        {
+            _factionSelectPanel = new VBoxContainer();
+            _factionSelectPanel.SetAnchorsPreset(LayoutPreset.FullRect);
+            _factionSelectPanel.AddThemeConstantOverride("separation", 12);
+            AddChild(_factionSelectPanel);
+
+            var bg = new ColorRect();
+            bg.Color = new Color(0.06f, 0.07f, 0.05f, 0.98f);
+            bg.SetAnchorsPreset(LayoutPreset.FullRect);
+            _factionSelectPanel.AddChild(bg);
+
+            var title = new Label { Text = "SHARDBORNE  SELECT FACTIONS" };
+            title.AddThemeFontSizeOverride("font_size", 26);
+            title.HorizontalAlignment = HorizontalAlignment.Center;
+            _factionSelectPanel.AddChild(title);
+
+            var row = new HBoxContainer();
+            row.AddThemeConstantOverride("separation", 40);
+            row.Alignment = BoxContainer.AlignmentMode.Center;
+            _factionSelectPanel.AddChild(row);
+
+            var p1Col = new VBoxContainer();
+            p1Col.AddThemeConstantOverride("separation", 6);
+            p1Col.CustomMinimumSize = new Vector2(400, 0);
+            row.AddChild(p1Col);
+
+            _p1SelectLabel = new Label { Text = "Player 1 - Pick a Faction:" };
+            _p1SelectLabel.AddThemeFontSizeOverride("font_size", 16);
+            p1Col.AddChild(_p1SelectLabel);
+            _factionButtonsP1 = new VBoxContainer();
+            _factionButtonsP1.AddThemeConstantOverride("separation", 4);
+            p1Col.AddChild(_factionButtonsP1);
+
+            var p2Col = new VBoxContainer();
+            p2Col.AddThemeConstantOverride("separation", 6);
+            p2Col.CustomMinimumSize = new Vector2(400, 0);
+            row.AddChild(p2Col);
+
+            _p2SelectLabel = new Label { Text = "Player 2 (AI) - Pick a Faction:" };
+            _p2SelectLabel.AddThemeFontSizeOverride("font_size", 16);
+            p2Col.AddChild(_p2SelectLabel);
+            _factionButtonsP2 = new VBoxContainer();
+            _factionButtonsP2.AddThemeConstantOverride("separation", 4);
+            p2Col.AddChild(_factionButtonsP2);
+
+            _startGameBtn = new Button { Text = "START GAME", Disabled = true };
+            _startGameBtn.CustomMinimumSize = new Vector2(300, 50);
+            _startGameBtn.Pressed += OnStartGame;
+            _factionSelectPanel.AddChild(_startGameBtn);
+
+            foreach (var fac in _data.Factions)
+            {
+                var cmdrs = _data.GetCommandersForFaction(fac.Id);
+                var units = _data.GetUnitsForFaction(fac.Id);
+                string label = fac.Icon + " " + fac.Name + " (" + cmdrs.Count + " cmdr, " + units.Count + " units)";
+                var facId = fac.Id; var facName = fac.Name; var facIcon = fac.Icon; var facColor = fac.Color;
+
+                var b1 = new Button { Text = label, CustomMinimumSize = new Vector2(390, 38) };
+                b1.Pressed += () => OnFactionPicked(0, facId, facName, facIcon, facColor);
+                _factionButtonsP1.AddChild(b1);
+
+                var b2 = new Button { Text = label, CustomMinimumSize = new Vector2(390, 38) };
+                b2.Pressed += () => OnFactionPicked(1, facId, facName, facIcon, facColor);
+                _factionButtonsP2.AddChild(b2);
+            }
+        }
+
+        private void BuildVictorySelectPanel()
+        {
+            _victorySelectPanel = new VBoxContainer();
+            _victorySelectPanel.SetAnchorsPreset(LayoutPreset.FullRect);
+            _victorySelectPanel.AddThemeConstantOverride("separation", 16);
+            _victorySelectPanel.Visible = false;
+            AddChild(_victorySelectPanel);
+
+            var bg = new ColorRect();
+            bg.Color = new Color(0.06f, 0.07f, 0.05f, 0.98f);
+            bg.SetAnchorsPreset(LayoutPreset.FullRect);
+            _victorySelectPanel.AddChild(bg);
+
+            var title = new Label { Text = "CHOOSE VICTORY CONDITION" };
+            title.AddThemeFontSizeOverride("font_size", 24);
+            title.HorizontalAlignment = HorizontalAlignment.Center;
+            _victorySelectPanel.AddChild(title);
+
+            var modes = new (VictoryMode m, string t, string d)[] {
+                (VictoryMode.Annihilation,    "ANNIHILATION",      "Destroy the enemy commander or all units."),
+                (VictoryMode.Attrition,       "ATTRITION",         "Score VP from kills. Most VP after 6 rounds wins."),
+                (VictoryMode.ObjectiveControl, "OBJECTIVE CONTROL", "Hold objectives to score VP each turn. First to 5 VP."),
+                (VictoryMode.KingOfTheHill,   "KING OF THE HILL",  "Hold the centre objective. First to 6 VP."),
+            };
+            foreach (var (mode, txt, desc) in modes)
+            {
+                var m = mode;
+                var btn = new Button { Text = txt + "\n" + desc, CustomMinimumSize = new Vector2(550, 54) };
+                btn.Pressed += () => OnVictoryPicked(m);
+                _victorySelectPanel.AddChild(btn);
+            }
+        }
+        // 
+        //  SELECTION HANDLERS
+        // 
+
+        private void OnFactionPicked(int player, string facId, string facName, string facIcon, string facColor)
+        {
+            _setupFaction[player] = facId;
+            _setupFacName[player] = facName;
+            _setupFacIcon[player] = facIcon;
+            _setupFacColor[player] = facColor;
+            var lbl = player == 0 ? _p1SelectLabel : _p2SelectLabel;
+            lbl.Text = (player == 0 ? "Player 1" : "Player 2 (AI)") + ": " + facIcon + " " + facName;
+            if (_setupFaction[0] != null && _setupFaction[1] != null)
+                _startGameBtn.Disabled = false;
+        }
+
+        private void OnStartGame()
+        {
+            _factionSelectPanel.Visible = false;
+            _victorySelectPanel.Visible = true;
+        }
+
+        private void OnVictoryPicked(VictoryMode mode)
+        {
+            _victorySelectPanel.Visible = false;
+            _gs.Victory = mode;
+            ShowArmyBuilder(0);
+        }
+        // 
+        //  ARMY BUILDER
+        // 
+
+        private void BuildArmyBuilderPanel()
+        {
+            _armyBuilderPanel = new VBoxContainer();
+            _armyBuilderPanel.SetAnchorsPreset(LayoutPreset.FullRect);
+            _armyBuilderPanel.AddThemeConstantOverride("separation", 6);
+            _armyBuilderPanel.Visible = false;
+            AddChild(_armyBuilderPanel);
+
+            var bg = new ColorRect();
+            bg.Color = new Color(0.06f, 0.07f, 0.05f, 0.98f);
+            bg.SetAnchorsPreset(LayoutPreset.FullRect);
+            _armyBuilderPanel.AddChild(bg);
+
+            _abTitle = new Label { Text = "ARMY BUILDER" };
+            _abTitle.AddThemeFontSizeOverride("font_size", 22);
+            _abTitle.HorizontalAlignment = HorizontalAlignment.Center;
+            _armyBuilderPanel.AddChild(_abTitle);
+
+            var hbox = new HBoxContainer();
+            hbox.AddThemeConstantOverride("separation", 10);
+            _armyBuilderPanel.AddChild(hbox);
+
+            // left: commander pick
+            var cmdCol = new VBoxContainer();
+            cmdCol.CustomMinimumSize = new Vector2(340, 0);
+            hbox.AddChild(cmdCol);
+            var cmdLbl = new Label { Text = "Commander:" };
+            cmdLbl.AddThemeFontSizeOverride("font_size", 16);
+            cmdCol.AddChild(cmdLbl);
+
+            var cmdScroll = new ScrollContainer();
+            cmdScroll.CustomMinimumSize = new Vector2(340, 280);
+            cmdCol.AddChild(cmdScroll);
+            _abCmdrList = new VBoxContainer();
+            _abCmdrList.AddThemeConstantOverride("separation", 3);
+            cmdScroll.AddChild(_abCmdrList);
+
+            // centre: unit pick
+            var unitCol = new VBoxContainer();
+            unitCol.CustomMinimumSize = new Vector2(380, 0);
+            hbox.AddChild(unitCol);
+            _abPointsLabel = new Label { Text = "Units (0/0 pts):" };
+            _abPointsLabel.AddThemeFontSizeOverride("font_size", 16);
+            unitCol.AddChild(_abPointsLabel);
+
+            var unitScroll = new ScrollContainer();
+            unitScroll.CustomMinimumSize = new Vector2(380, 280);
+            unitCol.AddChild(unitScroll);
+            _abUnitList = new VBoxContainer();
+            _abUnitList.AddThemeConstantOverride("separation", 3);
+            unitScroll.AddChild(_abUnitList);
+
+            // right: roster
+            var rosterCol = new VBoxContainer();
+            rosterCol.CustomMinimumSize = new Vector2(340, 0);
+            hbox.AddChild(rosterCol);
+            var rosterLbl = new Label { Text = "Your Roster:" };
+            rosterLbl.AddThemeFontSizeOverride("font_size", 16);
+            rosterCol.AddChild(rosterLbl);
+
+            var rosterScroll = new ScrollContainer();
+            rosterScroll.CustomMinimumSize = new Vector2(340, 280);
+            rosterCol.AddChild(rosterScroll);
+            _abRoster = new VBoxContainer();
+            _abRoster.AddThemeConstantOverride("separation", 3);
+            rosterScroll.AddChild(_abRoster);
+
+            // bottom buttons
+            var btnRow = new HBoxContainer();
+            btnRow.AddThemeConstantOverride("separation", 12);
+            btnRow.Alignment = BoxContainer.AlignmentMode.Center;
+            _armyBuilderPanel.AddChild(btnRow);
+
+            _abAutoFillBtn = new Button { Text = "Auto-Fill", CustomMinimumSize = new Vector2(140, 36) };
+            _abAutoFillBtn.Pressed += OnAbAutoFill;
+            btnRow.AddChild(_abAutoFillBtn);
+
+            _abClearBtn = new Button { Text = "Clear", CustomMinimumSize = new Vector2(100, 36) };
+            _abClearBtn.Pressed += OnAbClear;
+            btnRow.AddChild(_abClearBtn);
+
+            _abConfirmBtn = new Button { Text = "Confirm Army", CustomMinimumSize = new Vector2(180, 40) };
+            _abConfirmBtn.Pressed += OnAbConfirm;
+            btnRow.AddChild(_abConfirmBtn);
+        }
+
+        private int _abPlayer;
+        private Commander _abSelectedCommander;
+        private List<UnitData> _abSelectedUnits = new();
+        private int _abBudget;
+        private HashSet<Button> _abCmdrButtons = new();
+
+        private void ShowArmyBuilder(int player)
+        {
+            _abPlayer = player;
+            _abSelectedCommander = null;
+            _abSelectedUnits.Clear();
+            _abBudget = _gs.Players[player].StartingPoints > 0 ? _gs.Players[player].StartingPoints : 1000;
+            _abTitle.Text = (player == 0 ? "PLAYER 1" : "PLAYER 2 (AI)") + " - ARMY BUILDER  (" + _setupFacIcon[player] + " " + _setupFacName[player] + ")";
+            PopulateAbCommanders(player);
+            PopulateAbUnits(player);
+            RefreshAbRoster();
+            _armyBuilderPanel.Visible = true;
+        }
+
+        private void PopulateAbCommanders(int player)
+        {
+            foreach (Node c in _abCmdrList.GetChildren()) c.QueueFree();
+            _abCmdrButtons.Clear();
+            var cmdrs = _data.GetCommandersForFaction(_setupFaction[player]);
+            foreach (var cmd in cmdrs)
+            {
+                var cc = cmd;
+                string txt = cmd.Name + "  ATK:" + cmd.ATK + " DEF:" + cmd.DEF + " HP:" + cmd.HP;
+                if (cmd.Specials != null && cmd.Specials.Count > 0) txt += " [" + string.Join(",", cmd.Specials) + "]";
+                var btn = new Button { Text = txt, CustomMinimumSize = new Vector2(330, 30) };
+                btn.Pressed += () => OnAbSelectCommander(cc, btn);
+                _abCmdrList.AddChild(btn);
+                _abCmdrButtons.Add(btn);
+            }
+        }
+
+        private void OnAbSelectCommander(Commander cmd, Button btn)
+        {
+            _abSelectedCommander = cmd;
+            foreach (var b in _abCmdrButtons) b.Modulate = Colors.White;
+            btn.Modulate = new Color(0.5f, 1f, 0.5f);
+            RefreshAbRoster();
+        }
+
+        private void PopulateAbUnits(int player)
+        {
+            foreach (Node c in _abUnitList.GetChildren()) c.QueueFree();
+            var units = _data.GetUnitsForFaction(_setupFaction[player]);
+            foreach (var u in units)
+            {
+                var uu = u;
+                string txt = u.Name + " (" + u.PointsCost + "pts) ATK:" + u.ATK + " DEF:" + u.DEF + " HP:" + u.HP + " SPD:" + u.SPD;
+                var btn = new Button { Text = txt, CustomMinimumSize = new Vector2(370, 28) };
+                btn.Pressed += () => OnAbAddUnit(uu);
+                _abUnitList.AddChild(btn);
+            }
+        }
+
+        private void OnAbAddUnit(UnitData u)
+        {
+            int spent = GetAbSpent();
+            if (spent + u.PointsCost > _abBudget) return;
+            _abSelectedUnits.Add(u);
+            RefreshAbRoster();
+        }
+
+        private void OnAbRemoveUnit(int idx)
+        {
+            if (idx >= 0 && idx < _abSelectedUnits.Count)
+            {
+                _abSelectedUnits.RemoveAt(idx);
+                RefreshAbRoster();
+            }
+        }
+
+        private int GetAbSpent()
+        {
+            int s = 0;
+            foreach (var u in _abSelectedUnits) s += u.PointsCost;
+            return s;
+        }
+
+        private void RefreshAbRoster()
+        {
+            foreach (Node c in _abRoster.GetChildren()) c.QueueFree();
+            if (_abSelectedCommander != null)
+            {
+                var lbl = new Label { Text = "Commander: " + _abSelectedCommander.Name };
+                lbl.AddThemeFontSizeOverride("font_size", 14);
+                _abRoster.AddChild(lbl);
+            }
+            for (int i = 0; i < _abSelectedUnits.Count; i++)
+            {
+                var idx = i;
+                var u = _abSelectedUnits[i];
+                var row = new HBoxContainer();
+                var lbl = new Label { Text = u.Name + " (" + u.PointsCost + "pts)" };
+                lbl.SizeFlagsHorizontal = SizeFlags.ExpandFill;
+                row.AddChild(lbl);
+                var rm = new Button { Text = "X", CustomMinimumSize = new Vector2(28, 24) };
+                rm.Pressed += () => OnAbRemoveUnit(idx);
+                row.AddChild(rm);
+                _abRoster.AddChild(row);
+            }
+            int spent = GetAbSpent();
+            _abPointsLabel.Text = "Units (" + spent + "/" + _abBudget + " pts):";
+        }
+
+        private void OnAbAutoFill()
+        {
+            _abSelectedUnits.Clear();
+            if (_abSelectedCommander == null)
+            {
+                var cmdrs = _data.GetCommandersForFaction(_setupFaction[_abPlayer]);
+                if (cmdrs.Count > 0) _abSelectedCommander = cmdrs[0];
+            }
+            var units = _data.GetUnitsForFaction(_setupFaction[_abPlayer]);
+            var rng = new Random();
+            var shuffled = units.OrderBy(_ => rng.Next()).ToList();
+            int spent = 0;
+            foreach (var u in shuffled)
+            {
+                if (spent + u.PointsCost <= _abBudget) { _abSelectedUnits.Add(u); spent += u.PointsCost; }
+            }
+            RefreshAbRoster();
+        }
+
+        private void OnAbClear()
+        {
+            _abSelectedUnits.Clear();
+            _abSelectedCommander = null;
+            foreach (var b in _abCmdrButtons) b.Modulate = Colors.White;
+            RefreshAbRoster();
+        }
+
+        private void OnAbConfirm()
+        {
+            if (_abSelectedCommander == null || _abSelectedUnits.Count == 0) return;
+            CommitArmy(_abPlayer, _abSelectedCommander, _abSelectedUnits);
+            _armyBuilderPanel.Visible = false;
+            if (_abPlayer == 0)
+            {
+                ShowArmyBuilder(1);  // now build AI army
+            }
+            else
+            {
+                StartMatch();
+            }
+        }
+
+        private void CommitArmy(int player, Commander cmd, List<UnitData> units)
+        {
+            var mp = _gs.Players[player];
+            mp.FactionId = _setupFaction[player];
+            mp.FactionName = _setupFacName[player];
+            mp.FactionIcon = _setupFacIcon[player];
+            mp.FactionColor = _setupFacColor[player];
+            mp.Commander = new UnitInstance
+            {
+                Data = new UnitData {
+                    Name = cmd.Name, ATK = cmd.ATK, DEF = cmd.DEF, HP = cmd.HP,
+                    SPD = cmd.SPD > 0 ? cmd.SPD : 3, RNG = cmd.RNG, PointsCost = 0,
+                    Specials = cmd.Specials ?? new List<string>()
+                },
+                CurrentHP = cmd.HP, MaxHP = cmd.HP, Owner = player, IsCommander = true
+            };
+            mp.Units.Clear();
+            foreach (var u in units)
+            {
+                mp.Units.Add(new UnitInstance
+                {
+                    Data = u, CurrentHP = u.HP, MaxHP = u.HP, Owner = player
+                });
+            }
+        }
+
+        private void AutoBuildAIArmy()
+        {
+            _abPlayer = 1;
+            _abSelectedCommander = null;
+            _abSelectedUnits.Clear();
+            _abBudget = _gs.Players[1].StartingPoints > 0 ? _gs.Players[1].StartingPoints : 1000;
+            var cmdrs = _data.GetCommandersForFaction(_setupFaction[1]);
+            if (cmdrs.Count > 0) _abSelectedCommander = cmdrs[new Random().Next(cmdrs.Count)];
+            OnAbAutoFill();
+            if (_abSelectedCommander != null)
+                CommitArmy(1, _abSelectedCommander, _abSelectedUnits);
+        }
+        // 
+        //  GAME START & DEPLOYMENT
+        // 
+
+        private void StartMatch()
+        {
+            // Generate terrain
+            CombatResolver.GenerateTerrain(_gs);
+
+            // Starting points
+            foreach (var mp in _gs.Players)
+            {
+                if (mp.StartingPoints <= 0) mp.StartingPoints = 1000;
+                mp.ReactionPoints = 2;
+            }
+
+            // Place objectives for objective modes
+            if (_gs.Victory == VictoryMode.ObjectiveControl)
+            {
+                _gs.Objectives.Clear();
+                _gs.Objectives.Add(new Vector2I(3, 2));
+                _gs.Objectives.Add(new Vector2I(8, 2));
+                _gs.Objectives.Add(new Vector2I(6, 5));
+                _gs.Objectives.Add(new Vector2I(3, 7));
+                _gs.Objectives.Add(new Vector2I(8, 7));
+            }
+            else if (_gs.Victory == VictoryMode.KingOfTheHill)
+            {
+                _gs.Objectives.Clear();
+                _gs.Objectives.Add(new Vector2I(Cols / 2, Rows / 2));
+            }
+
+            _gs.IsFirstTurn = new bool[] { true, true };
+
+            // Deploy units
+            DeployUnits(0, 0);   // P1 rows 0-1
+            DeployUnits(1, Rows - 2); // P2 rows bottom
+
+            // Scout keyword: advance scouts
+            foreach (var mp in _gs.Players)
+            {
+                var all = new List<UnitInstance>();
+                if (mp.Commander != null) all.Add(mp.Commander);
+                all.AddRange(mp.Units);
+                foreach (var u in all)
+                {
+                    if (u.Data != null && u.Data.Specials != null && u.Data.Specials.Contains("Scout"))
+                    {
+                        int dir = u.Owner == 0 ? 1 : -1;
+                        var next = new Vector2I(u.Position.X, u.Position.Y + dir);
+                        if (next.Y >= 0 && next.Y < Rows && !IsOccupied(next))
+                            u.Position = next;
+                    }
+                }
+            }
+
+            _gs.Phase = "movement";
+            _gs.CurrentPlayer = 0;
+            _gs.Round = 1;
+            _selectedUnit = null;
+            _gameOver = false;
+            _gameOverMessage = "";
+            _log.Clear();
+            _log.Add("Match begins! Round 1  Player 1 Movement Phase.");
+            RefreshHUD();
+            QueueRedraw();
+        }
+
+        private void DeployUnits(int player, int startRow)
+        {
+            var mp = _gs.Players[player];
+            var all = new List<UnitInstance>();
+            if (mp.Commander != null) all.Add(mp.Commander);
+            all.AddRange(mp.Units);
+            int col = 0;
+            int row = startRow;
+            foreach (var u in all)
+            {
+                while (row < startRow + 2 && row < Rows)
+                {
+                    if (col < Cols && _gs.Terrain[col, row] == TerrainType.Impassable)
+                    { col++; continue; }
+                    if (col < Cols) break;
+                    col = 0; row++;
+                }
+                if (row >= startRow + 2 || row >= Rows) break;
+                u.Position = new Vector2I(col, row);
+                col++;
+                if (col >= Cols) { col = 0; row++; }
+            }
+        }
+
+        private bool IsOccupied(Vector2I pos)
+        {
+            foreach (var mp in _gs.Players)
+            {
+                if (mp.Commander != null && mp.Commander.CurrentHP > 0 && mp.Commander.Position == pos) return true;
+                foreach (var u in mp.Units)
+                    if (u.CurrentHP > 0 && u.Position == pos) return true;
+            }
+            return false;
+        }
+
+        private UnitInstance GetUnitAt(Vector2I pos)
+        {
+            foreach (var mp in _gs.Players)
+            {
+                if (mp.Commander != null && mp.Commander.CurrentHP > 0 && mp.Commander.Position == pos) return mp.Commander;
+                foreach (var u in mp.Units)
+                    if (u.CurrentHP > 0 && u.Position == pos) return u;
+            }
+            return null;
+        }
+
+        private List<UnitInstance> GetAllUnits(int player)
+        {
+            var list = new List<UnitInstance>();
+            var mp = _gs.Players[player];
+            if (mp.Commander != null && mp.Commander.CurrentHP > 0) list.Add(mp.Commander);
+            foreach (var u in mp.Units)
+                if (u.CurrentHP > 0) list.Add(u);
+            return list;
+        }
+        // 
+        //  PHASE MANAGEMENT
+        // 
+
+        private void OnEndPhase()
+        {
+            if (_gameOver || _gs.CurrentPlayer != 0) return;
+            if (_gs.Phase == "movement")
+            {
+                _gs.Phase = "combat";
+                _selectedUnit = null;
+                _log.Add("Player 1  Combat Phase.");
+            }
+            else if (_gs.Phase == "combat")
+            {
+                RunEndPhase(0);
+                _gs.Phase = "movement";
+                _gs.CurrentPlayer = 1;
+                _selectedUnit = null;
+                _log.Add("Player 2 (AI) turn begins.");
+                ExecuteAiPhase();
+                return;
+            }
+            RefreshHUD();
+            QueueRedraw();
+        }
+
+        private void OnEndTurn()
+        {
+            if (_gameOver || _gs.CurrentPlayer != 0) return;
+            RunEndPhase(0);
+            _gs.Phase = "movement";
+            _gs.CurrentPlayer = 1;
+            _selectedUnit = null;
+            _log.Add("Player 2 (AI) turn begins.");
+            ExecuteAiPhase();
+        }
+
+        private void RunEndPhase(int player)
+        {
+            // Morale checks
+            var combatLog = new List<string>();
+            foreach (var u in GetAllUnits(player))
+            {
+                CombatResolver.CheckMorale(u, _gs, combatLog);
+            }
+            _log.AddRange(combatLog);
+
+            // Objective VP
+            if (_gs.Victory == VictoryMode.ObjectiveControl || _gs.Victory == VictoryMode.KingOfTheHill)
+            {
+                foreach (var obj in _gs.Objectives)
+                {
+                    var holder = GetUnitAt(obj);
+                    if (holder != null)
+                    {
+                        _gs.Players[holder.Owner].VP++;
+                        _log.Add(_gs.Players[holder.Owner].FactionIcon + " scores 1 VP from objective!");
+                    }
+                }
+            }
+
+            // End-phase effects (burning, regen, etc.)
+            var effectLog = new List<string>();
+            CombatResolver.ApplyEndPhaseEffects(player, _gs, effectLog);
+            _log.AddRange(effectLog);
+
+            // Refresh engagement
+            GameState.RefreshEngagement(_gs);
+
+            // Check victory
+            CheckVictory();
+        }
+
+        private void StartNextTurn()
+        {
+            _gs.Round++;
+            _gs.CurrentPlayer = 0;
+            _gs.Phase = "movement";
+            _gs.IsFirstTurn[0] = false;
+            _gs.IsFirstTurn[1] = false;
+
+            // Refresh movement/charge/reaction
+            foreach (var mp in _gs.Players)
+            {
+                mp.ReactionPoints = 2;
+                var all = new List<UnitInstance>();
+                if (mp.Commander != null) all.Add(mp.Commander);
+                all.AddRange(mp.Units);
+                foreach (var u in all)
+                {
+                    u.HasMoved = false;
+                    u.HasAttacked = false;
+                    u.HasCharged = false;
+                    u.HasDoubleStriked = false;
+                    if (u.StatusEffects.ContainsKey("Staggered"))
+                    {
+                        u.StatusEffects["Staggered"]--;
+                        if (u.StatusEffects["Staggered"] <= 0)
+                            u.StatusEffects.Remove("Staggered");
+                    }
+                }
+            }
+
+            // Underdog CP: behind-player gains +1 reaction
+            int vp0 = _gs.Players[0].VP, vp1 = _gs.Players[1].VP;
+            if (vp0 > vp1 + 2) _gs.Players[1].ReactionPoints++;
+            else if (vp1 > vp0 + 2) _gs.Players[0].ReactionPoints++;
+
+            _selectedUnit = null;
+            _log.Add("Round " + _gs.Round + "  Player 1 Movement Phase.");
+            RefreshHUD();
+            QueueRedraw();
+        }
+        // 
+        //  VICTORY CONDITIONS
+        // 
+
+        private void CheckVictory()
+        {
+            if (_gameOver) return;
+            string winner = null;
+            switch (_gs.Victory)
+            {
+                case VictoryMode.Annihilation:
+                    for (int p = 0; p < 2; p++)
+                    {
+                        int enemy = 1 - p;
+                        bool cmdDead = _gs.Players[enemy].Commander == null || _gs.Players[enemy].Commander.CurrentHP <= 0;
+                        bool allDead = _gs.Players[enemy].Units.All(u => u.CurrentHP <= 0);
+                        if (cmdDead || allDead) winner = "Player " + (p + 1);
+                    }
+                    break;
+                case VictoryMode.Attrition:
+                    if (_gs.Round > 6)
+                    {
+                        winner = _gs.Players[0].VP >= _gs.Players[1].VP ? "Player 1" : "Player 2";
+                    }
+                    break;
+                case VictoryMode.ObjectiveControl:
+                    for (int p = 0; p < 2; p++)
+                        if (_gs.Players[p].VP >= 5) winner = "Player " + (p + 1);
+                    break;
+                case VictoryMode.KingOfTheHill:
+                    for (int p = 0; p < 2; p++)
+                        if (_gs.Players[p].VP >= 6) winner = "Player " + (p + 1);
+                    break;
+            }
+            if (winner != null) EndGame(winner + " wins!");
+        }
+
+        private void EndGame(string msg)
+        {
+            _gameOver = true;
+            _gameOverMessage = msg;
+            _log.Add("GAME OVER: " + msg);
+            _endPhaseBtn.Visible = false;
+            _endTurnBtn.Visible = false;
+            _playAgainBtn.Visible = true;
+            _backBtn.Visible = true;
+            RefreshHUD();
+            QueueRedraw();
+        }
+        // 
+        //  AI EXECUTION
+        // 
+
+        private void ExecuteAiPhase()
+        {
+            _aiActionQueue.Clear();
+            var actions = AIController.DecideActions(_gs, 1);
+            foreach (var a in actions) _aiActionQueue.Enqueue(a);
+            _aiTimer = 0.35f;
+            ProcessNextAiAction();
+        }
+
+        private void ProcessNextAiAction()
+        {
+            if (_aiActionQueue.Count == 0)
+            {
+                FinishAiTurn();
+                return;
+            }
+            var action = _aiActionQueue.Dequeue();
+            var combatLog = new List<string>();
+            if (action.Type == "move" && action.Unit != null)
+            {
+                action.Unit.Position = action.Target;
+                action.Unit.HasMoved = true;
+                // Check charge
+                if (CombatResolver.IsCharge(action.Unit, action.Target, _gs))
+                {
+                    action.Unit.HasCharged = true;
+                    combatLog.Add(action.Unit.Data.Name + " CHARGES!");
+                }
+                _log.Add("AI moves " + action.Unit.Data.Name + " to (" + action.Target.X + "," + action.Target.Y + ")");
+            }
+            else if (action.Type == "attack" && action.Unit != null && action.TargetUnit != null)
+            {
+                var result = CombatResolver.Resolve(action.Unit, action.TargetUnit, _gs, combatLog);
+                _log.AddRange(combatLog);
+                if (result != null)
+                {
+                    _lastRolls = result.Rolls;
+                    _lastDefTarget = result.DefenseTarget;
+                    _lastRollLabel = "AI: " + action.Unit.Data.Name + " vs " + action.TargetUnit.Data.Name;
+                    _diceShowTimer = 3.0f;
+                }
+                action.Unit.HasAttacked = true;
+                if (action.TargetUnit.CurrentHP <= 0 && _gs.Victory == VictoryMode.Attrition)
+                    _gs.Players[1].VP += 1;
+            }
+            _log.AddRange(combatLog);
+            GameState.RefreshEngagement(_gs);
+            RefreshHUD();
+            QueueRedraw();
+        }
+
+        private void FinishAiTurn()
+        {
+            RunEndPhase(1);
+            if (!_gameOver)
+            {
+                StartNextTurn();
+            }
+        }
+        // 
+        //  INPUT HANDLING
+        // 
+
+        public override void _Input(InputEvent ev)
+        {
+            if (ev is InputEventKey key && key.Pressed && key.Keycode == Key.Escape)
+            {
+                OnBackToMenu();
+                return;
+            }
+            if (ev is InputEventMouseMotion mm)
+            {
+                _mousePos = mm.Position;
+                // Update hover cell
+                int cx = (int)((mm.Position.X - BoardLeft) / CellSize);
+                int cy = (int)((mm.Position.Y - BoardTop) / CellSize);
+                if (cx >= 0 && cx < Cols && cy >= 0 && cy < Rows)
+                    _hoverCell = new Vector2I(cx, cy);
+                else
+                    _hoverCell = new Vector2I(-1, -1);
+                QueueRedraw();
+                return;
+            }
+            if (ev is InputEventMouseButton mb && mb.Pressed && mb.ButtonIndex == MouseButton.Left)
+            {
+                HandleBoardClick(mb.Position);
+            }
+            if (ev is InputEventMouseButton mb2 && mb2.Pressed && mb2.ButtonIndex == MouseButton.Right)
+            {
+                _selectedUnit = null;
+                _moveTargets.Clear();
+                _attackTargets.Clear();
+                QueueRedraw();
+            }
+        }
+
+        private void HandleBoardClick(Vector2 pos)
+        {
+            if (_gameOver || _gs.CurrentPlayer != 0) return;
+            int cx = (int)((pos.X - BoardLeft) / CellSize);
+            int cy = (int)((pos.Y - BoardTop) / CellSize);
+            if (cx < 0 || cx >= Cols || cy < 0 || cy >= Rows) return;
+            var cell = new Vector2I(cx, cy);
+
+            if (_selectedUnit == null)
+            {
+                HandleSelectUnit(cell);
+            }
+            else if (_gs.Phase == "movement")
+            {
+                HandleSelectMoveTarget(cell);
+            }
+            else if (_gs.Phase == "combat")
+            {
+                HandleSelectAttackTarget(cell);
+            }
+        }
+
+        private void HandleSelectUnit(Vector2I cell)
+        {
+            var u = GetUnitAt(cell);
+            if (u == null || u.Owner != 0) return;
+            _selectedUnit = u;
+
+            _moveTargets.Clear();
+            _attackTargets.Clear();
+
+            if (_gs.Phase == "movement" && !u.HasMoved)
+            {
+                int spd = u.Data.SPD;
+                if (u.IsEngaged)
+                {
+                    // Can only disengage 1 cell away from engager
+                    for (int dx = -1; dx <= 1; dx++)
+                        for (int dy = -1; dy <= 1; dy++)
+                        {
+                            if (dx == 0 && dy == 0) continue;
+                            var t = new Vector2I(u.Position.X + dx, u.Position.Y + dy);
+                            if (t.X >= 0 && t.X < Cols && t.Y >= 0 && t.Y < Rows
+                                && !IsOccupied(t) && _gs.Terrain[t.X, t.Y] != TerrainType.Impassable)
+                            {
+                                // Must move AWAY from engager (simplified: just allow it)
+                                _moveTargets.Add(t);
+                            }
+                        }
+                }
+                else
+                {
+                    for (int dx = -spd; dx <= spd; dx++)
+                        for (int dy = -spd; dy <= spd; dy++)
+                        {
+                            if (Math.Abs(dx) + Math.Abs(dy) > spd) continue;
+                            if (dx == 0 && dy == 0) continue;
+                            var t = new Vector2I(u.Position.X + dx, u.Position.Y + dy);
+                            if (t.X >= 0 && t.X < Cols && t.Y >= 0 && t.Y < Rows
+                                && !IsOccupied(t) && _gs.Terrain[t.X, t.Y] != TerrainType.Impassable)
+                            {
+                                // Difficult terrain costs +1 if entering
+                                if (_gs.Terrain[t.X, t.Y] == TerrainType.DifficultTerrain && Math.Abs(dx) + Math.Abs(dy) > spd - 1)
+                                    continue;
+                                _moveTargets.Add(t);
+                            }
+                        }
+                }
+            }
+            else if (_gs.Phase == "combat" && !u.HasAttacked)
+            {
+                int rng = u.Data.RNG > 0 ? u.Data.RNG : 1;
+                int enemy = 1 - u.Owner;
+                foreach (var eu in GetAllUnits(enemy))
+                {
+                    int dist = Math.Abs(eu.Position.X - u.Position.X) + Math.Abs(eu.Position.Y - u.Position.Y);
+                    if (dist <= rng)
+                    {
+                        // Stealth check
+                        if (eu.StatusEffects.ContainsKey("Stealth") && dist > 1) continue;
+                        // Engagement: if engaged, can only attack engager
+                        if (u.IsEngaged && dist > 1) continue;
+                        _attackTargets.Add(eu.Position);
+                    }
+                }
+            }
+            QueueRedraw();
+        }
+
+        private void HandleSelectMoveTarget(Vector2I cell)
+        {
+            if (_moveTargets.Contains(cell))
+            {
+                bool wasEngaged = _selectedUnit.IsEngaged;
+                _selectedUnit.Position = cell;
+                _selectedUnit.HasMoved = true;
+
+                // Check charge
+                if (!wasEngaged && CombatResolver.IsCharge(_selectedUnit, cell, _gs))
+                {
+                    _selectedUnit.HasCharged = true;
+                    _log.Add(_selectedUnit.Data.Name + " CHARGES into position!");
+                }
+
+                // Disengage penalty
+                if (wasEngaged)
+                {
+                    _log.Add(_selectedUnit.Data.Name + " disengages (free strike possible).");
+                }
+
+                GameState.RefreshEngagement(_gs);
+                _selectedUnit = null;
+                _moveTargets.Clear();
+                _log.Add("Unit moved.");
+                RefreshHUD();
+                QueueRedraw();
+            }
+            else
+            {
+                // Clicked elsewhere - try to select new unit
+                _selectedUnit = null;
+                _moveTargets.Clear();
+                HandleSelectUnit(cell);
+            }
+        }
+
+        private void HandleSelectAttackTarget(Vector2I cell)
+        {
+            if (_attackTargets.Contains(cell))
+            {
+                var target = GetUnitAt(cell);
+                if (target == null) return;
+                var combatLog = new List<string>();
+                var result = CombatResolver.Resolve(_selectedUnit, target, _gs, combatLog);
+                _log.AddRange(combatLog);
+
+                if (result != null)
+                {
+                    _lastRolls = result.Rolls;
+                    _lastDefTarget = result.DefenseTarget;
+                    _lastRollLabel = _selectedUnit.Data.Name + " vs " + target.Data.Name;
+                    _diceShowTimer = 4.0f;
+                }
+
+                _selectedUnit.HasAttacked = true;
+
+                // Double Strike
+                if (_selectedUnit.CurrentHP > 0 && !_selectedUnit.HasDoubleStriked
+                    && GameState.HasSpecial(_selectedUnit, "Double Strike") && target.CurrentHP > 0)
+                {
+                    _selectedUnit.HasDoubleStriked = true;
+                    var log2 = new List<string>();
+                    var result2 = CombatResolver.Resolve(_selectedUnit, target, _gs, log2);
+                    _log.AddRange(log2);
+                    if (result2 != null)
+                    {
+                        _lastRolls = result2.Rolls;
+                        _lastDefTarget = result2.DefenseTarget;
+                        _lastRollLabel += " (Double Strike)";
+                    }
+                }
+
+                // Attrition VP
+                if (target.CurrentHP <= 0 && _gs.Victory == VictoryMode.Attrition)
+                    _gs.Players[0].VP += 1;
+
+                // Commander death
+                if (target.IsCommander && target.CurrentHP <= 0)
+                {
+                    _gs.Players[target.Owner].CommanderDead = true;
+                    _log.Add("COMMANDER SLAIN! " + target.Data.Name + " has fallen!");
+                }
+
+                GameState.RefreshEngagement(_gs);
+                _selectedUnit = null;
+                _attackTargets.Clear();
+                CheckVictory();
+                RefreshHUD();
+                QueueRedraw();
+            }
+            else
+            {
+                _selectedUnit = null;
+                _attackTargets.Clear();
+                HandleSelectUnit(cell);
+            }
+        }
+        // 
+        //  DRAWING  BOARD & TERRAIN
+        // 
+
+        public override void _Draw()
+        {
+            // Only draw board when in gameplay (not setup panels)
+            if (_factionSelectPanel != null && _factionSelectPanel.Visible) return;
+            if (_victorySelectPanel != null && _victorySelectPanel.Visible) return;
+            if (_armyBuilderPanel != null && _armyBuilderPanel.Visible) return;
+
+            DrawBoard();
+            DrawUnits();
+            DrawDiceTray();
+            DrawUnitCard();
+            if (_hoverCell.X >= 0) DrawHoverTooltip();
+            if (_gameOver) DrawGameOverBanner();
+        }
+
+        private void DrawBoard()
+        {
+            // Table felt background
+            DrawRect(new Rect2(0, 0, 1280, 800), TableFelt);
+
+            // Board border (wooden frame feel)
+            var boardRect = new Rect2(BoardLeft - 3, BoardTop - 3, Cols * CellSize + 6, Rows * CellSize + 6);
+            DrawRect(boardRect, new Color(0.35f, 0.22f, 0.1f)); // wood brown border
+
+            // Draw cells
+            for (int x = 0; x < Cols; x++)
+            {
+                for (int y = 0; y < Rows; y++)
+                {
+                    float px = BoardLeft + x * CellSize;
+                    float py = BoardTop + y * CellSize;
+                    var cellRect = new Rect2(px, py, CellSize, CellSize);
+
+                    // Base cell color (checkerboard)
+                    Color baseCol = ((x + y) % 2 == 0) ? CellLight : CellDark;
+
+                    // Terrain coloring
+                    var terrain = _gs.Terrain[x, y];
+                    switch (terrain)
+                    {
+                        case TerrainType.Forest:
+                            baseCol = new Color(0.15f, 0.35f, 0.12f); break;
+                        case TerrainType.Ruins:
+                            baseCol = new Color(0.38f, 0.32f, 0.25f); break;
+                        case TerrainType.HighGround:
+                            baseCol = new Color(0.45f, 0.38f, 0.28f); break;
+                        case TerrainType.Water:
+                            baseCol = new Color(0.15f, 0.28f, 0.45f); break;
+                        case TerrainType.DifficultTerrain:
+                            baseCol = new Color(0.32f, 0.28f, 0.18f); break;
+                        case TerrainType.Impassable:
+                            baseCol = new Color(0.2f, 0.15f, 0.1f); break;
+                        case TerrainType.LowWall:
+                            baseCol = new Color(0.4f, 0.35f, 0.3f); break;
+                    }
+                    DrawRect(cellRect, baseCol);
+
+                    // Terrain icons
+                    var center = new Vector2(px + CellSize / 2, py + CellSize / 2);
+                    switch (terrain)
+                    {
+                        case TerrainType.Forest:
+                            // Tree symbol: triangle
+                            DrawColoredPolygon(new Vector2[] {
+                                center + new Vector2(0, -18),
+                                center + new Vector2(-12, 10),
+                                center + new Vector2(12, 10)
+                            }, new Color(0.1f, 0.5f, 0.1f, 0.7f));
+                            DrawRect(new Rect2(center.X - 2, center.Y + 10, 4, 8), new Color(0.4f, 0.25f, 0.1f, 0.7f));
+                            break;
+                        case TerrainType.Ruins:
+                            // Broken column
+                            DrawRect(new Rect2(center.X - 8, center.Y - 14, 6, 28), new Color(0.55f, 0.45f, 0.35f, 0.6f));
+                            DrawRect(new Rect2(center.X + 2, center.Y - 6, 6, 20), new Color(0.55f, 0.45f, 0.35f, 0.6f));
+                            break;
+                        case TerrainType.HighGround:
+                            // Upward arrow
+                            DrawColoredPolygon(new Vector2[] {
+                                center + new Vector2(0, -16),
+                                center + new Vector2(-10, -2),
+                                center + new Vector2(10, -2)
+                            }, new Color(0.6f, 0.5f, 0.3f, 0.5f));
+                            DrawRect(new Rect2(center.X - 4, center.Y - 2, 8, 14), new Color(0.6f, 0.5f, 0.3f, 0.5f));
+                            break;
+                        case TerrainType.Water:
+                            // Wave lines
+                            for (int w = -1; w <= 1; w++)
+                            {
+                                float wy = center.Y + w * 8;
+                                DrawLine(new Vector2(px + 8, wy), new Vector2(px + 18, wy - 4), new Color(0.3f, 0.5f, 0.8f, 0.6f), 2);
+                                DrawLine(new Vector2(px + 18, wy - 4), new Vector2(px + 28, wy), new Color(0.3f, 0.5f, 0.8f, 0.6f), 2);
+                                DrawLine(new Vector2(px + 28, wy), new Vector2(px + 38, wy - 4), new Color(0.3f, 0.5f, 0.8f, 0.6f), 2);
+                                DrawLine(new Vector2(px + 38, wy - 4), new Vector2(px + 48, wy), new Color(0.3f, 0.5f, 0.8f, 0.6f), 2);
+                            }
+                            break;
+                        case TerrainType.Impassable:
+                            // X mark
+                            DrawLine(new Vector2(px + 8, py + 8), new Vector2(px + CellSize - 8, py + CellSize - 8), new Color(0.6f, 0.1f, 0.1f, 0.5f), 3);
+                            DrawLine(new Vector2(px + CellSize - 8, py + 8), new Vector2(px + 8, py + CellSize - 8), new Color(0.6f, 0.1f, 0.1f, 0.5f), 3);
+                            break;
+                        case TerrainType.LowWall:
+                            // Horizontal brick line
+                            DrawRect(new Rect2(px + 6, center.Y - 3, CellSize - 12, 6), new Color(0.55f, 0.4f, 0.3f, 0.7f));
+                            DrawLine(new Vector2(px + 20, center.Y - 3), new Vector2(px + 20, center.Y + 3), new Color(0.3f, 0.2f, 0.15f, 0.5f), 1);
+                            DrawLine(new Vector2(px + 38, center.Y - 3), new Vector2(px + 38, center.Y + 3), new Color(0.3f, 0.2f, 0.15f, 0.5f), 1);
+                            break;
+                    }
+
+                    // Grid lines
+                    DrawRect(cellRect, GridLine, false, 1);
+                }
+            }
+
+            // Deployment zone tints
+            for (int x = 0; x < Cols; x++)
+            {
+                for (int row = 0; row < 2; row++)
+                {
+                    float px = BoardLeft + x * CellSize;
+                    float py = BoardTop + row * CellSize;
+                    DrawRect(new Rect2(px, py, CellSize, CellSize), DeployBlue);
+                    py = BoardTop + (Rows - 1 - row) * CellSize;
+                    DrawRect(new Rect2(px, py, CellSize, CellSize), DeployRed);
+                }
+            }
+
+            // Objectives
+            foreach (var obj in _gs.Objectives)
+            {
+                float ox = BoardLeft + obj.X * CellSize + CellSize / 2;
+                float oy = BoardTop + obj.Y * CellSize + CellSize / 2;
+                DrawCircle(new Vector2(ox, oy), 14, new Color(ObjGold.R, ObjGold.G, ObjGold.B, 0.3f));
+                DrawArc(new Vector2(ox, oy), 14, 0, Mathf.Tau, 24, ObjGold, 2.5f);
+                DrawString(ThemeDB.FallbackFont, new Vector2(ox - 4, oy + 5), "VP", HorizontalAlignment.Left, -1, 10, ObjGold);
+            }
+
+            // Highlight move targets
+            foreach (var t in _moveTargets)
+            {
+                float hx = BoardLeft + t.X * CellSize;
+                float hy = BoardTop + t.Y * CellSize;
+                DrawRect(new Rect2(hx + 2, hy + 2, CellSize - 4, CellSize - 4), MoveGreen);
+                // Charge indicator
+                if (_selectedUnit != null && CombatResolver.IsCharge(_selectedUnit, t, _gs))
+                {
+                    DrawRect(new Rect2(hx + 2, hy + 2, CellSize - 4, CellSize - 4), ChargeOrange);
+                    DrawString(ThemeDB.FallbackFont, new Vector2(hx + 6, hy + 16), "CHG", HorizontalAlignment.Left, -1, 10, Colors.White);
+                }
+            }
+
+            // Highlight attack targets
+            foreach (var t in _attackTargets)
+            {
+                float hx = BoardLeft + t.X * CellSize;
+                float hy = BoardTop + t.Y * CellSize;
+                DrawRect(new Rect2(hx + 1, hy + 1, CellSize - 2, CellSize - 2), AttackRed);
+            }
+
+            // Hover cell highlight
+            if (_hoverCell.X >= 0 && _hoverCell.X < Cols && _hoverCell.Y >= 0 && _hoverCell.Y < Rows)
+            {
+                float hx = BoardLeft + _hoverCell.X * CellSize;
+                float hy = BoardTop + _hoverCell.Y * CellSize;
+                DrawRect(new Rect2(hx, hy, CellSize, CellSize), new Color(1, 1, 1, 0.12f));
+                DrawRect(new Rect2(hx, hy, CellSize, CellSize), new Color(1, 1, 1, 0.3f), false, 1.5f);
+            }
+        }
+        // 
+        //  DRAWING  UNIT TOKENS
+        // 
+
+        private void DrawUnits()
+        {
+            for (int p = 0; p < 2; p++)
+            {
+                var mp = _gs.Players[p];
+                Color factionCol = ParseColor(mp.FactionColor, p == 0 ? Colors.Blue : Colors.Red);
+
+                var allUnits = new List<UnitInstance>();
+                if (mp.Commander != null && mp.Commander.CurrentHP > 0) allUnits.Add(mp.Commander);
+                foreach (var u in mp.Units)
+                    if (u.CurrentHP > 0) allUnits.Add(u);
+
+                foreach (var u in allUnits)
+                {
+                    DrawUnitToken(u, factionCol);
+                }
+            }
+        }
+
+        private void DrawUnitToken(UnitInstance u, Color factionCol)
+        {
+            float cx = BoardLeft + u.Position.X * CellSize + CellSize / 2;
+            float cy = BoardTop + u.Position.Y * CellSize + CellSize / 2;
+            float radius = CellSize * 0.4f;
+            var center = new Vector2(cx, cy);
+
+            // Base circle (dark)
+            DrawCircle(center, radius + 2, new Color(0.05f, 0.05f, 0.05f));
+
+            // Faction-colored ring
+            DrawArc(center, radius + 1, 0, Mathf.Tau, 32, factionCol, 3);
+
+            // Inner fill
+            Color innerCol = u.Owner == 0
+                ? new Color(0.15f, 0.2f, 0.35f)
+                : new Color(0.35f, 0.15f, 0.15f);
+            if (u.IsCommander) innerCol = innerCol.Lightened(0.15f);
+            DrawCircle(center, radius - 1, innerCol);
+
+            // Unit type abbreviation
+            string abbr = GetUnitAbbr(u);
+            int fontSize = u.IsCommander ? 13 : 11;
+            float textW = abbr.Length * fontSize * 0.5f;
+            DrawString(ThemeDB.FallbackFont, new Vector2(cx - textW / 2, cy + fontSize / 3), abbr,
+                HorizontalAlignment.Left, -1, fontSize, Colors.White);
+
+            // Commander crown
+            if (u.IsCommander)
+            {
+                DrawColoredPolygon(new Vector2[] {
+                    center + new Vector2(-8, -radius - 4),
+                    center + new Vector2(-5, -radius - 10),
+                    center + new Vector2(0, -radius - 6),
+                    center + new Vector2(5, -radius - 10),
+                    center + new Vector2(8, -radius - 4),
+                }, new Color(1f, 0.85f, 0.2f));
+            }
+
+            // HP arc (green to red)
+            float hpPct = (float)u.CurrentHP / u.MaxHP;
+            Color hpCol = hpPct > 0.5f
+                ? new Color(0.2f, 0.8f, 0.2f)
+                : hpPct > 0.25f ? new Color(0.9f, 0.7f, 0.1f) : new Color(0.9f, 0.2f, 0.1f);
+            float hpAngle = hpPct * Mathf.Tau;
+            if (hpPct < 1f)
+                DrawArc(center, radius - 3, -Mathf.Pi / 2, -Mathf.Pi / 2 + hpAngle, 24, hpCol, 2.5f);
+
+            // Engagement ring
+            if (u.IsEngaged)
+                DrawArc(center, radius + 4, 0, Mathf.Tau, 24, EngageRing, 2);
+
+            // Selection ring
+            if (_selectedUnit == u)
+                DrawArc(center, radius + 6, 0, Mathf.Tau, 24, SelectRing, 2.5f);
+
+            // Status dots
+            float dotY = cy + radius - 4;
+            float dotX = cx - 8;
+            if (u.StatusEffects.ContainsKey("Burning")) { DrawCircle(new Vector2(dotX, dotY), 3, new Color(1, 0.4f, 0)); dotX += 8; }
+            if (u.StatusEffects.ContainsKey("Staggered")) { DrawCircle(new Vector2(dotX, dotY), 3, new Color(0.8f, 0.8f, 0)); dotX += 8; }
+            if (u.StatusEffects.ContainsKey("Stealth")) { DrawCircle(new Vector2(dotX, dotY), 3, new Color(0.5f, 0.2f, 0.8f)); dotX += 8; }
+            if (u.HasCharged) DrawCircle(new Vector2(dotX, dotY), 3, ChargeOrange);
+        }
+
+        private string GetUnitAbbr(UnitInstance u)
+        {
+            if (u.Data == null || string.IsNullOrEmpty(u.Data.Name)) return "??";
+            var parts = u.Data.Name.Split(' ', System.StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 2) return ("" + parts[0][0] + parts[1][0]).ToUpper();
+            if (u.Data.Name.Length >= 2) return u.Data.Name.Substring(0, 2).ToUpper();
+            return u.Data.Name.ToUpper();
+        }
+        // 
+        //  DRAWING  DICE TRAY & UNIT CARD
+        // 
+
+        private void DrawDiceTray()
+        {
+            if (_diceShowTimer <= 0 || _lastRolls == null || _lastRolls.Count == 0) return;
+
+            float trayX = CardPanelX;
+            float trayY = 60;
+            float trayW = CardPanelW;
+            float trayH = 120;
+
+            // Tray background
+            DrawRect(new Rect2(trayX, trayY, trayW, trayH), DiceBg);
+            DrawRect(new Rect2(trayX, trayY, trayW, trayH), new Color(0.5f, 0.4f, 0.2f), false, 2);
+
+            // Label
+            DrawString(ThemeDB.FallbackFont, new Vector2(trayX + 8, trayY + 16), _lastRollLabel,
+                HorizontalAlignment.Left, (int)trayW - 16, 12, Colors.White);
+            DrawString(ThemeDB.FallbackFont, new Vector2(trayX + 8, trayY + 32),
+                "Need " + _lastDefTarget + "+ to hit",
+                HorizontalAlignment.Left, -1, 11, new Color(0.8f, 0.8f, 0.6f));
+
+            // Draw dice
+            float diceSize = 36;
+            float diceGap = 6;
+            float startX = trayX + 10;
+            float startY = trayY + 42;
+            int maxPerRow = (int)((trayW - 20) / (diceSize + diceGap));
+            for (int i = 0; i < _lastRolls.Count; i++)
+            {
+                int row = i / maxPerRow;
+                int col = i % maxPerRow;
+                float dx = startX + col * (diceSize + diceGap);
+                float dy = startY + row * (diceSize + diceGap);
+
+                bool isHit = _lastRolls[i] >= _lastDefTarget;
+                Color diceCol = isHit ? new Color(0.15f, 0.4f, 0.15f) : new Color(0.4f, 0.12f, 0.12f);
+
+                // Die body
+                DrawRect(new Rect2(dx, dy, diceSize, diceSize), diceCol);
+                DrawRect(new Rect2(dx, dy, diceSize, diceSize), new Color(0.8f, 0.8f, 0.7f), false, 1.5f);
+
+                // Die number
+                string num = _lastRolls[i].ToString();
+                DrawString(ThemeDB.FallbackFont, new Vector2(dx + diceSize / 2 - 6, dy + diceSize / 2 + 6),
+                    num, HorizontalAlignment.Left, -1, 18, Colors.White);
+
+                // Hit/miss indicator
+                string mark = isHit ? "HIT" : "MISS";
+                Color markCol = isHit ? new Color(0.3f, 1f, 0.3f) : new Color(1f, 0.4f, 0.4f);
+                DrawString(ThemeDB.FallbackFont, new Vector2(dx + 2, dy + diceSize - 2),
+                    mark, HorizontalAlignment.Left, -1, 8, markCol);
+            }
+        }
+
+        private void DrawUnitCard()
+        {
+            // Show card for selected unit or hovered unit
+            UnitInstance cardUnit = _selectedUnit;
+            if (cardUnit == null && _hoverCell.X >= 0)
+                cardUnit = GetUnitAt(_hoverCell);
+            if (cardUnit == null) return;
+
+            float cardX = CardPanelX;
+            float cardY = _diceShowTimer > 0 ? 190 : 60;
+            float cardW = CardPanelW;
+            float cardH = 280;
+
+            // Card background
+            DrawRect(new Rect2(cardX, cardY, cardW, cardH), CardBg);
+            DrawRect(new Rect2(cardX, cardY, cardW, cardH), CardBorder, false, 2);
+
+            // Header bar
+            Color headerCol = cardUnit.Owner == 0
+                ? new Color(0.12f, 0.15f, 0.3f)
+                : new Color(0.3f, 0.12f, 0.12f);
+            DrawRect(new Rect2(cardX, cardY, cardW, 32), headerCol);
+
+            // Name
+            string nameStr = (cardUnit.IsCommander ? "CMD " : "") + cardUnit.Data.Name;
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 8, cardY + 22), nameStr,
+                HorizontalAlignment.Left, (int)cardW - 16, 16, Colors.White);
+
+            float ly = cardY + 44;
+            int fs = 13;
+            Color tc = new Color(0.85f, 0.85f, 0.8f);
+            Color vc = Colors.White;
+
+            // Stats in two columns
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 12, ly), "ATK", HorizontalAlignment.Left, -1, fs, tc);
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 60, ly), cardUnit.Data.ATK.ToString(), HorizontalAlignment.Left, -1, fs, vc);
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 120, ly), "DEF", HorizontalAlignment.Left, -1, fs, tc);
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 168, ly), cardUnit.Data.DEF.ToString(), HorizontalAlignment.Left, -1, fs, vc);
+            ly += 20;
+
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 12, ly), "HP", HorizontalAlignment.Left, -1, fs, tc);
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 60, ly), cardUnit.CurrentHP + "/" + cardUnit.MaxHP, HorizontalAlignment.Left, -1, fs, vc);
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 120, ly), "SPD", HorizontalAlignment.Left, -1, fs, tc);
+            DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 168, ly), cardUnit.Data.SPD.ToString(), HorizontalAlignment.Left, -1, fs, vc);
+            ly += 20;
+
+            if (cardUnit.Data.RNG > 0)
+            {
+                DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 12, ly), "RNG", HorizontalAlignment.Left, -1, fs, tc);
+                DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 60, ly), cardUnit.Data.RNG.ToString(), HorizontalAlignment.Left, -1, fs, vc);
+                ly += 20;
+            }
+
+            // HP bar
+            ly += 4;
+            float barW = cardW - 24;
+            float barH = 12;
+            DrawRect(new Rect2(cardX + 12, ly, barW, barH), new Color(0.2f, 0.05f, 0.05f));
+            float hpPct = (float)cardUnit.CurrentHP / cardUnit.MaxHP;
+            Color hpBarCol = hpPct > 0.5f ? new Color(0.2f, 0.7f, 0.2f) : hpPct > 0.25f ? new Color(0.8f, 0.6f, 0.1f) : new Color(0.8f, 0.15f, 0.1f);
+            DrawRect(new Rect2(cardX + 12, ly, barW * hpPct, barH), hpBarCol);
+            DrawRect(new Rect2(cardX + 12, ly, barW, barH), new Color(0.5f, 0.5f, 0.4f), false, 1);
+            ly += 22;
+
+            // Specials / Keywords
+            if (cardUnit.Data.Specials != null && cardUnit.Data.Specials.Count > 0)
+            {
+                DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 12, ly), "Keywords:", HorizontalAlignment.Left, -1, 11, tc);
+                ly += 16;
+                string kw = string.Join(", ", cardUnit.Data.Specials);
+                DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 12, ly), kw,
+                    HorizontalAlignment.Left, (int)cardW - 24, 11, new Color(0.7f, 0.9f, 0.7f));
+                ly += 18;
+            }
+
+            // Status effects
+            if (cardUnit.StatusEffects.Count > 0)
+            {
+                DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 12, ly), "Status:", HorizontalAlignment.Left, -1, 11, tc);
+                ly += 16;
+                foreach (var se in cardUnit.StatusEffects)
+                {
+                    Color seCol = se.Key == "Burning" ? new Color(1, 0.5f, 0.1f)
+                        : se.Key == "Staggered" ? new Color(0.9f, 0.9f, 0.2f)
+                        : se.Key == "Stealth" ? new Color(0.6f, 0.3f, 0.9f)
+                        : new Color(0.7f, 0.7f, 0.7f);
+                    DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 16, ly), se.Key + " (" + se.Value + ")",
+                        HorizontalAlignment.Left, -1, 11, seCol);
+                    ly += 14;
+                }
+            }
+
+            // State flags
+            ly += 4;
+            string flags = "";
+            if (cardUnit.HasMoved) flags += "[Moved] ";
+            if (cardUnit.HasAttacked) flags += "[Attacked] ";
+            if (cardUnit.IsEngaged) flags += "[Engaged] ";
+            if (cardUnit.HasCharged) flags += "[Charged] ";
+            if (flags.Length > 0)
+                DrawString(ThemeDB.FallbackFont, new Vector2(cardX + 12, ly), flags,
+                    HorizontalAlignment.Left, (int)cardW - 24, 10, new Color(0.7f, 0.7f, 0.5f));
+        }
+        // 
+        //  DRAWING  TOOLTIP, GAME OVER, HUD
+        // 
+
+        private void DrawHoverTooltip()
+        {
+            var u = GetUnitAt(_hoverCell);
+            if (u == null) return;
+            // Draw small name tag near mouse
+            string tip = u.Data.Name + " HP:" + u.CurrentHP + "/" + u.MaxHP;
+            float tipX = _mousePos.X + 16;
+            float tipY = _mousePos.Y - 10;
+            if (tipX + 200 > 1280) tipX = _mousePos.X - 210;
+            DrawRect(new Rect2(tipX - 4, tipY - 14, tip.Length * 7 + 12, 20), new Color(0, 0, 0, 0.85f));
+            DrawString(ThemeDB.FallbackFont, new Vector2(tipX, tipY), tip,
+                HorizontalAlignment.Left, -1, 12, Colors.White);
+        }
+
+        private void DrawGameOverBanner()
+        {
+            // Semi-transparent overlay
+            DrawRect(new Rect2(0, 300, 1280, 120), new Color(0, 0, 0, 0.75f));
+            DrawString(ThemeDB.FallbackFont, new Vector2(200, 360), "GAME OVER",
+                HorizontalAlignment.Left, -1, 36, new Color(1, 0.85f, 0.2f));
+            DrawString(ThemeDB.FallbackFont, new Vector2(200, 395), _gameOverMessage,
+                HorizontalAlignment.Left, -1, 20, Colors.White);
+        }
+
+        private void RefreshHUD()
+        {
+            if (_turnBanner == null) return;
+            var mp = _gs.Players[_gs.CurrentPlayer];
+            _turnBanner.Text = "  Round " + _gs.Round + " | " + (mp.FactionIcon ?? "") + " " + (mp.FactionName ?? "?") +
+                " | VP: " + _gs.Players[0].VP + " - " + _gs.Players[1].VP + "  ";
+
+            string phaseStr = _gs.Phase.ToUpper();
+            if (_gs.CurrentPlayer == 1) phaseStr += " (AI)";
+            _phaseBanner.Text = "  " + phaseStr + "  ";
+
+            _instructionLabel.Text = GetInstructions();
+
+            // Log - show last 5
+            if (_log.Count > 0)
+            {
+                int start = Math.Max(0, _log.Count - 5);
+                var lines = new List<string>();
+                for (int i = start; i < _log.Count; i++) lines.Add(_log[i]);
+                _logLabel.Text = string.Join("\n", lines);
+            }
+
+            // Button visibility
+            bool isPlayer = _gs.CurrentPlayer == 0 && !_gameOver;
+            _endPhaseBtn.Visible = isPlayer;
+            _endTurnBtn.Visible = isPlayer;
+        }
+
+        private string GetInstructions()
+        {
+            if (_gameOver) return _gameOverMessage;
+            if (_gs.CurrentPlayer == 1) return "AI is thinking...";
+            if (_selectedUnit != null)
+            {
+                if (_gs.Phase == "movement") return "Click a green cell to move " + _selectedUnit.Data.Name + ". Right-click to deselect.";
+                if (_gs.Phase == "combat") return "Click a red-highlighted enemy to attack with " + _selectedUnit.Data.Name + ". Right-click to deselect.";
+            }
+            if (_gs.Phase == "movement") return "Click one of your units to select it for movement.";
+            if (_gs.Phase == "combat") return "Click one of your units to select it for attack.";
+            return "";
+        }
+
+        // 
+        //  NAVIGATION & HELPERS
+        // 
+
+        private void OnBackToMenu()
+        {
+            var main = GetTree().Root.GetNode<Main>("Main");
+            if (main != null) main.SetGameMode("menu");
+        }
+
+        private void OnPlayAgain()
+        {
+            // Reset game state
+            _gs = new GameState();
+            _gameOver = false;
+            _gameOverMessage = "";
+            _log.Clear();
+            _selectedUnit = null;
+            _moveTargets.Clear();
+            _attackTargets.Clear();
+            _lastRolls = null;
+            _diceShowTimer = 0;
+
+            _playAgainBtn.Visible = false;
+            _backBtn.Visible = false;
+            _endPhaseBtn.Visible = false;
+            _endTurnBtn.Visible = false;
+
+            // Rebuild setup panels (clear old children)
+            if (_factionSelectPanel != null) { _factionSelectPanel.QueueFree(); _factionSelectPanel = null; }
+            if (_victorySelectPanel != null) { _victorySelectPanel.QueueFree(); _victorySelectPanel = null; }
+            if (_armyBuilderPanel != null) { _armyBuilderPanel.QueueFree(); _armyBuilderPanel = null; }
+            _setupFaction = new string[2];
+            _setupFacName = new string[2];
+            _setupFacIcon = new string[2];
+            _setupFacColor = new string[2];
+
+            BuildFactionSelectPanel();
+            BuildVictorySelectPanel();
+            BuildArmyBuilderPanel();
+            QueueRedraw();
+        }
+
+        public void SetGameMode(string mode) { /* called from Main */ }
+
+        private Color ParseColor(string hex, Color fallback)
+        {
+            if (string.IsNullOrEmpty(hex)) return fallback;
+            try
+            {
+                hex = hex.TrimStart('#');
+                if (hex.Length == 6)
+                {
+                    float r = Convert.ToInt32(hex.Substring(0, 2), 16) / 255f;
+                    float g = Convert.ToInt32(hex.Substring(2, 2), 16) / 255f;
+                    float b = Convert.ToInt32(hex.Substring(4, 2), 16) / 255f;
+                    return new Color(r, g, b);
+                }
+            }
+            catch { }
+            return fallback;
+        }
+    }
+}

@@ -15,12 +15,33 @@ namespace Shardborne
 
     public enum MatchPhase
     {
-        FactionSelect, Deployment, Command, Movement, Combat, EndPhase, GameOver
+        FactionSelect, VictorySelect, ArmyBuilding, Deployment,
+        Command, Movement, Combat, EndPhase, GameOver
     }
 
     public enum InputMode
     {
         None, SelectUnit, SelectMoveTarget, SelectAttackTarget
+    }
+
+    public enum TerrainType
+    {
+        Open,
+        Cover,
+        DifficultTerrain,
+        Impassable,
+        Elevated,
+        Forest,
+        Ruins,
+        Water
+    }
+
+    public enum VictoryMode
+    {
+        Annihilation,
+        Attrition,
+        ObjectiveControl,
+        KingOfTheHill
     }
 
     // ───── Legacy State (kept for faction browser) ─────
@@ -225,13 +246,52 @@ namespace Shardborne
         public bool DamagedThisTurn { get; set; }
         public List<string> Specials { get; set; } = new();
 
+        // Engagement / Charging
+        public bool IsEngaged { get; set; }
+        public bool HasCharged { get; set; }
+        public bool DisengagedThisTurn { get; set; }
+        public bool DidNotMoveThisTurn { get; set; }
+        public int PrevX { get; set; }
+        public int PrevY { get; set; }
+
+        // Status effects
+        public bool IsBurning { get; set; }
+        public bool IsStaggered { get; set; }
+        public bool IsStealthed { get; set; }
+        public bool IsGrounded { get; set; }
+        public bool IsFearless { get; set; }
+        public bool CommanderDeadMoralePending { get; set; }
+
         // Computed
         public bool IsAlive => CurrentHp > 0;
         public bool IsMelee => BaseRng <= 4;
         public int MoveCells => Math.Max(1, BaseMov / 3);
         public int RangeCells => BaseRng <= 1 ? 1 : Math.Max(1, BaseRng / 3);
-        public int EffectiveAtk => Math.Max(1, BaseAtk + (IsShaken ? -1 : 0));
-        public int EffectiveDef => BaseDef;
+
+        public int EffectiveAtk
+        {
+            get
+            {
+                int atk = BaseAtk;
+                if (IsShaken) atk -= 1;
+                if (IsStaggered) atk -= 1;
+                return Math.Max(1, atk);
+            }
+        }
+
+        public int EffectiveDef
+        {
+            get
+            {
+                int def = BaseDef;
+                if (UnitType?.ToLowerInvariant() != "war machine")
+                    def = Math.Min(def, 6);
+                return def;
+            }
+        }
+
+        public bool HasSpecial(string keyword)
+            => Specials.Any(s => s.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0);
 
         public string ShortLabel
         {
@@ -254,7 +314,7 @@ namespace Shardborne
 
         public static UnitInstance FromTemplate(UnitTemplate t, int playerId)
         {
-            return new UnitInstance
+            var u = new UnitInstance
             {
                 Name = t.Name, FactionId = t.Faction, UnitType = t.Type,
                 PlayerId = playerId,
@@ -264,6 +324,11 @@ namespace Shardborne
                 Specials = new List<string>(t.Special),
                 IsCommander = false
             };
+            if (u.HasSpecial("Fearless") || u.HasSpecial("Void Resolve") || u.HasSpecial("Fate-Bound"))
+                u.IsFearless = true;
+            if (u.HasSpecial("Stealth") || u.HasSpecial("Shadow Meld"))
+                u.IsStealthed = true;
+            return u;
         }
 
         public static UnitInstance FromCommander(Commander c, int playerId)
@@ -293,6 +358,9 @@ namespace Shardborne
         public int Kills { get; set; }
         public bool IsAI { get; set; }
         public Commander? Commander { get; set; }
+        public int ReactionPoints { get; set; }
+        public bool CommanderDead { get; set; }
+        public int StartingPoints { get; set; }
     }
 
     public sealed class CombatResult
@@ -305,6 +373,7 @@ namespace Shardborne
         public int TotalDamage { get; set; }
         public bool TargetDestroyed { get; set; }
         public string Summary { get; set; } = string.Empty;
+        public List<string> Modifiers { get; set; } = new();
     }
 
     public sealed class MoraleResult
@@ -338,6 +407,12 @@ namespace Shardborne
         public List<string> Log { get; set; } = new();
         public string? Winner { get; set; }
 
+        // Terrain, Victory, Turn tracking
+        public TerrainType[,] Terrain { get; set; }
+        public VictoryMode Victory { get; set; } = VictoryMode.Annihilation;
+        public List<(int x, int y)> Objectives { get; set; } = new();
+        public bool[] IsFirstTurn { get; set; } = new bool[] { true, true };
+
         public MatchPlayer ActivePlayer => Players[ActivePlayerId];
         public MatchPlayer InactivePlayer => Players[1 - ActivePlayerId];
 
@@ -345,6 +420,7 @@ namespace Shardborne
         {
             Players[0] = new MatchPlayer { PlayerId = 0, Name = "Player 1" };
             Players[1] = new MatchPlayer { PlayerId = 1, Name = "Player 2" };
+            Terrain = new TerrainType[12, 10];
         }
 
         public UnitInstance? GetUnitAt(int x, int y)
@@ -357,6 +433,44 @@ namespace Shardborne
             => AllUnits.Any(u => u.IsAlive && u.X == x && u.Y == y);
         public bool InBounds(int x, int y)
             => x >= 0 && x < BoardWidth && y >= 0 && y < BoardHeight;
+
+        public TerrainType GetTerrain(int x, int y)
+        {
+            if (!InBounds(x, y)) return TerrainType.Impassable;
+            return Terrain[x, y];
+        }
+
+        public bool CheckEngaged(UnitInstance unit)
+        {
+            int enemyId = 1 - unit.PlayerId;
+            foreach (var e in AllUnits)
+            {
+                if (!e.IsAlive || e.PlayerId != enemyId) continue;
+                int dist = Math.Max(Math.Abs(unit.X - e.X), Math.Abs(unit.Y - e.Y));
+                if (dist <= 1) return true;
+            }
+            return false;
+        }
+
+        public void RefreshEngagement()
+        {
+            foreach (var u in AllUnits)
+            {
+                if (!u.IsAlive) { u.IsEngaged = false; continue; }
+                u.IsEngaged = CheckEngaged(u);
+            }
+        }
+
+        public UnitInstance? GetCommander(int playerId)
+            => AllUnits.FirstOrDefault(u => u.PlayerId == playerId && u.IsCommander && u.IsAlive);
+
+        public bool InCommanderAura(UnitInstance unit)
+        {
+            var cmdr = GetCommander(unit.PlayerId);
+            if (cmdr == null || cmdr == unit) return false;
+            int dist = Math.Max(Math.Abs(unit.X - cmdr.X), Math.Abs(unit.Y - cmdr.Y));
+            return dist <= 3;
+        }
 
         public void AddLog(string msg)
         {
