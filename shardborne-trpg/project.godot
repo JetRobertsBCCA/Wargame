@@ -1,0 +1,43 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[animation]
+
+compatibility/default_parent_skeleton_in_mesh_instance_3d=true
+
+[application]
+
+config/name="Shardborne_TRPG"
+run/main_scene="res://scenes/main_menu.tscn"
+config/features=PackedStringArray("4.6", "GL Compatibility")
+config/icon="res://icon.png"
+
+[autoload]
+
+SpriteGenerator="*res://data/sprite_generator.gd"
+SkillDatabase="*res://databases/skill_database_manager.gd"
+GameRules="*res://data/game_rules.gd"
+FactionDatabase="*res://data/faction_database.gd"
+BattleConfig="*res://data/battle_config.gd"
+
+[display]
+
+window/size/resizable=false
+mouse_cursor/custom_image="res://imagese/cursor.png"
+mouse_cursor/tooltip_position_offset=Vector2(64, 10)
+
+[dotnet]
+
+project/assembly_name="Shardborne_TRPG"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"
