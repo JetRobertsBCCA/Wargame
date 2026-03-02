@@ -15,6 +15,7 @@ var enemy_faction: int = -1
 # Scenario
 var scenario_type: String = "total_war"
 var round_limit: int = 6
+var battle_size: String = "standard"  # skirmish, standard, epic
 
 # Campaign mode
 var is_campaign := false
@@ -36,4 +37,5 @@ func clear():
 	is_campaign = false
 	scenario_type = "total_war"
 	round_limit = 6
+	battle_size = "standard"
 	campaign_battle_index = 0

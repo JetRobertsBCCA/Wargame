@@ -281,15 +281,32 @@ const SCENARIOS = {
 # ══════════════════════════════════════════════════════════════
 
 const STATUS_EFFECTS = {
-	"shaken":    {"atk_mod": -1, "description": "−1 ATK die. Must rally in Command Phase."},
-	"engaged":   {"description": "Cannot shoot. Cannot move away freely (must Disengage)."},
+	"shaken":    {"atk_mod": -1, "description": "−1 ATK die. Must rally in Command Phase. -2 to future morale checks."},
+	"routed":    {"description": "Must flee toward own board edge at full MOV each turn. Removed from play if it reaches the edge."},
+	"engaged":   {"description": "Cannot shoot. Cannot move away freely (must Disengage — costs full movement)."},
 	"stealthed": {"description": "Hidden from ranged attacks beyond 8\"."},
 	"activated": {"description": "Has acted this turn."},
 	"fearless":  {"description": "Auto-pass all Morale checks."},
 	"vengeful":  {"atk_mod": 2, "mov_mod": 2, "description": "+2 ATK, +2 MOV, Fearless. (Drake Bond survivor)"},
 	"grounded":  {"mor_mod": -2, "description": "Flying unit forced to land. -2 MOR until next turn."},
-	"burning":   {"damage_per_turn": 1, "description": "Takes 1 damage at start of turn."},
+	"burning":   {"damage_per_turn": 1, "def_mod": -1, "description": "Takes 1 damage at start of turn. -1 DEF. Extinguish on 4+ (d6) each turn."},
+	"staggered": {"atk_mod": -1, "mov_mod": -2, "duration": 1, "description": "-2 MOV, -1 ATK for 1 turn."},
+	"severed":   {"duration": 1, "description": "Cannot use faction abilities for 1 turn."},
+	"immovable": {"description": "Cannot be moved by enemy abilities. Cannot be knocked back."},
+	"corrupted": {"description": "Corrupted by Nightfang — d6 on turn start, 1-2: cannot act."},
 }
+
+## Turn 1 restrictions — prevent alpha-strike
+const TURN_1_RESTRICTIONS = {
+	"no_charges": true,
+	"no_war_machine_abilities": true,
+	"max_card_cp_cost": 2,  # No cards costing 3+ CP on Turn 1
+}
+
+## Disengage / Consolidate / Fall Back movement constants
+const DISENGAGE_COST_FULL_MOV = true    # Disengage costs entire movement
+const CONSOLIDATE_DISTANCE = 3          # Tiles you can move after destroying in melee
+const FALL_BACK_FORCED = true           # Shaken units must fall back away from enemies
 
 # ══════════════════════════════════════════════════════════════
 # KEYWORD GLOSSARY
@@ -331,7 +348,61 @@ const KEYWORDS = {
 	"Void Resolve": "Immune to Fear and Terror effects.",
 	"Temple Vow": "Cannot be forced to move by enemy abilities.",
 	"Non-Combatant": "Cannot make attacks. Dedicated support role.",
+	"Regeneration": "Heals 1 HP at the start of each turn.",
+	"Anti-Armor": "+2 ATK vs War Machines.",
+	"Armour Piercing": "Hits ignore 1 point of DEF (reduces target DEF by 1).",
+	"Sharpshot": "Critical hits on 5+ instead of 6.",
+	"Overcharge": "Double ATK dice this turn, but take d3 damage after.",
+	"Sniper": "Can target any visible unit regardless of range. Ignores cover.",
+	"Swarm": "+1 ATK for every 2 friendly Swarm units within 3\".",
+	"Phase": "Can move through units and non-impassable terrain.",
+	"Ambush": "Can deploy hidden. Revealed on attack or when enemy within 4\".",
+	"Charge": "+1 ATK die when charging (moved 5+ tiles toward target).",
+	"Healer": "Can heal adjacent ally for 2 HP instead of attacking.",
+	"Ward": "+1 DEF vs magical/fragment attacks.",
+	"Bulwark": "Adjacent allies gain +1 DEF vs ranged attacks.",
+	"Ethereal": "50% chance to ignore non-magical damage.",
 }
+
+# ══════════════════════════════════════════════════════════════
+# LINE OF SIGHT
+# ══════════════════════════════════════════════════════════════
+
+## LoS is blocked by terrain with blocks_los = true (impassable).
+## Light cover along path: -1 ATK. Heavy cover along path: -2 ATK.
+const LOS_BLOCKED_PENALTY = -999  # Sentinel: attack not allowed
+const LOS_LIGHT_COVER_ATK_PENALTY = -1
+const LOS_HEAVY_COVER_ATK_PENALTY = -2
+
+# ══════════════════════════════════════════════════════════════
+# FACING SYSTEM
+# ══════════════════════════════════════════════════════════════
+
+## Units face a direction (UP, DOWN, LEFT, RIGHT). Default = toward enemy.
+## Front arc: 180° facing direction. Rear arc: 180° behind.
+## Flanking (+1 ATK) from side, Rear (+2 ATK) from behind.
+## Changing facing costs 1 MOV.
+const FACING_CHANGE_COST = 1
+const REAR_ATK_BONUS = 2
+const FLANK_ATK_BONUS = 1
+
+enum Facing { UP, DOWN, LEFT, RIGHT }
+
+# ══════════════════════════════════════════════════════════════
+# COMMANDER DEATH
+# ══════════════════════════════════════════════════════════════
+
+const COMMANDER_AURA_RANGE = 8
+const COMMANDER_DEATH_CP_PENALTY = 1  # Lose 1 CP per turn after commander dies
+const COMMANDER_DEATH_MORALE_PENALTY = -2  # All units check morale at -2
+
+# ══════════════════════════════════════════════════════════════
+# MOVEMENT SPECIAL ACTIONS
+# ══════════════════════════════════════════════════════════════
+
+const DISENGAGE_COST_FULL_MOV = true    # Disengage costs entire movement
+const CONSOLIDATE_DISTANCE = 3          # Tiles you can move after destroying in melee
+const FALL_BACK_FORCED = true           # Shaken units must fall back away from enemies
 
 # ══════════════════════════════════════════════════════════════
 # UTILITY FUNCTIONS

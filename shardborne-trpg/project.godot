@@ -26,6 +26,7 @@ SkillDatabase="*res://databases/skill_database_manager.gd"
 GameRules="*res://data/game_rules.gd"
 FactionDatabase="*res://data/faction_database.gd"
 BattleConfig="*res://data/battle_config.gd"
+GameStateMachine="*res://combat/game_state_machine.gd"
 
 [display]
 

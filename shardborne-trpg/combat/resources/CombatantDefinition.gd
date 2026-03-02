@@ -87,6 +87,9 @@ func has_special(keyword: String) -> bool:
 func is_commander() -> bool:
 	return unit_type == UnitType.COMMANDER
 
+func is_war_machine() -> bool:
+	return unit_type == UnitType.WAR_MACHINE
+
 func is_melee_only() -> bool:
 	return rng <= 1
 

@@ -26,6 +26,7 @@ var unit_list: VBoxContainer
 var army_list: VBoxContainer
 var points_label: Label
 var budget_spin: SpinBox
+var scenario_option: OptionButton
 var confirm_btn: Button
 var title_label: Label
 var faction_panel: PanelContainer
@@ -80,6 +81,30 @@ func _build_ui():
 	points_label = Label.new()
 	points_label.text = "  Used: 0 / 250"
 	budget_row.add_child(points_label)
+
+	# Spacer
+	var budget_spacer = Control.new()
+	budget_spacer.size_flags_horizontal = SIZE_EXPAND_FILL
+	budget_row.add_child(budget_spacer)
+
+	# Scenario selection
+	var scenario_lbl = Label.new()
+	scenario_lbl.text = "Scenario:"
+	budget_row.add_child(scenario_lbl)
+	scenario_option = OptionButton.new()
+	var scenario_keys = GameRules.SCENARIOS.keys()
+	for i in range(scenario_keys.size()):
+		var key = scenario_keys[i]
+		var sdata = GameRules.SCENARIOS[key]
+		scenario_option.add_item(sdata.get("name", key), i)
+		scenario_option.set_item_metadata(i, key)
+	# Default to total_war (index 0 may not be total_war)
+	for i in range(scenario_keys.size()):
+		if scenario_keys[i] == "total_war":
+			scenario_option.select(i)
+			break
+	scenario_option.tooltip_text = "Choose the battle scenario type"
+	budget_row.add_child(scenario_option)
 
 	# Content area — 3 panels side by side
 	var hbox = HBoxContainer.new()
@@ -230,6 +255,34 @@ func _on_unit_added(unit_def: CombatantDefinition):
 	if current_pts + unit_def.pts > points_budget:
 		return  # Over budget
 
+	var army = player_army if selecting_for == "player" else enemy_army
+
+	# ── Army Composition Validation ──
+	# Max copies of same unit (MAX_UNIT_COPIES = 3)
+	var copy_count := 0
+	for name in army:
+		if name == unit_def.unit_name:
+			copy_count += 1
+	if copy_count >= GameRules.MAX_UNIT_COPIES:
+		return  # Already at max copies
+
+	# Only 1 legendary per army
+	if unit_def.is_legendary:
+		for name in army:
+			var d = FactionDatabase.get_unit(name)
+			if d and d.is_legendary:
+				return  # Already have a legendary
+
+	# Specialist/Support budget cap (25% of budget each)
+	if unit_def.unit_type == CombatantDefinition.UnitType.SPECIALIST or unit_def.unit_type == CombatantDefinition.UnitType.SUPPORT:
+		var type_pts := 0
+		for name in army:
+			var d = FactionDatabase.get_unit(name)
+			if d and d.unit_type == unit_def.unit_type:
+				type_pts += d.pts
+		if type_pts + unit_def.pts > int(points_budget * GameRules.SPECIALIST_BUDGET_PERCENT):
+			return  # Would exceed specialist/support budget
+
 	if selecting_for == "player":
 		player_army.append(unit_def.unit_name)
 		player_points += unit_def.pts
@@ -357,6 +410,11 @@ func _check_confirm():
 func _on_confirm():
 	# Store selections in BattleConfig autoload and launch combat
 	BattleConfig.set_armies(player_army, enemy_army, player_faction_id, enemy_faction_id)
+	# Set scenario from dropdown
+	var selected_idx = scenario_option.selected
+	if selected_idx >= 0:
+		BattleConfig.scenario_type = scenario_option.get_item_metadata(selected_idx)
+	GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
 	get_tree().change_scene_to_file("res://scenes/game.tscn")
 
 func _on_switch_side():

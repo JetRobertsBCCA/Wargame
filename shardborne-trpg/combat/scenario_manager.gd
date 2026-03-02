@@ -131,6 +131,13 @@ func _objective_type_name(obj: Dictionary) -> String:
 		_: return "point"
 
 func _spawn_shard_fragment():
+	# Limit total shard fragments on the field to 5
+	var fragment_count := 0
+	for obj in objectives:
+		if obj.type == "fragment":
+			fragment_count += 1
+	if fragment_count >= 5:
+		return
 	# Random fragment appears on the battlefield
 	var pos = Vector2i(randi_range(5, 30), randi_range(3, 17))
 	objectives.append({"position": pos, "owner": -1, "type": "fragment", "vp_value": 2})
@@ -146,7 +153,7 @@ func _check_last_stand():
 	if captured >= 2:
 		vp[1] += 10
 		_end_scenario(1)
-	elif current_round >= 5:
+	elif current_round >= max_rounds:
 		vp[0] += 10
 		_end_scenario(0)
 

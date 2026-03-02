@@ -18,12 +18,31 @@ const SIDE_COLORS := {
 
 const UNIT_TYPE_NAMES := ["Commander", "Infantry", "Cavalry", "Support", "Scout", "Artillery", "Specialist", "War Machine"]
 
+# ── Faction-themed turn labels ──
+const TURN_FLAVOR := {
+	CombatantDefinition.Faction.EMBERCLAW: ["THE WARPACK STRIKES", "THE WARPACK ACTS"],
+	CombatantDefinition.Faction.IRON_DOMINION: ["THE DOMINION COMMANDS", "THE DOMINION ACTS"],
+	CombatantDefinition.Faction.NIGHTFANG: ["THE NIGHTFANG HUNGER", "THE NIGHTFANG ACT"],
+	CombatantDefinition.Faction.THORNWEFT: ["THE MATRIARCHY WEAVES", "THE MATRIARCHY ACTS"],
+	CombatantDefinition.Faction.VEILBOUND: ["THE SHOGUNATE RESPONDS", "THE SHOGUNATE ACTS"],
+}
+
+# ── Faction resource tier qualifiers ──
+const RESOURCE_TIERS := {
+	"heat": [[3, "Smoldering"], [6, "Blazing"], [9, "Inferno!"]],
+	"grid_cohesion": [[3, "Forming"], [5, "Linked"], [8, "Fortified!"]],
+	"hunger": [[3, "Peckish"], [6, "Starving"], [10, "Frenzy!"]],
+	"flow": [[3, "Trickling"], [5, "Surging"], [8, "Torrent!"]],
+	"fate_threads": [[2, "Stirring"], [4, "Weaving"], [6, "Entangled!"]],
+}
+
 # ── Dynamically created UI nodes ──
 var _top_bar: PanelContainer
 var _turn_queue_container: HBoxContainer
 var _phase_label: Label
 var _round_label: Label
 var _resource_label: RichTextLabel
+var _cp_label: Label
 var _vp_label: Label
 
 var _bottom_bar: PanelContainer
@@ -160,6 +179,15 @@ func _build_top_bar():
 	_resource_label.mouse_filter = MOUSE_FILTER_IGNORE
 	_resource_label.custom_minimum_size = Vector2(140, 0)
 	hbox.add_child(_resource_label)
+
+	# Command Points display
+	_cp_label = Label.new()
+	_cp_label.text = "CP: 0"
+	_cp_label.add_theme_font_size_override("font_size", 12)
+	_cp_label.add_theme_color_override("font_color", Color(0.5, 0.85, 1.0))
+	_cp_label.custom_minimum_size = Vector2(50, 0)
+	_cp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	hbox.add_child(_cp_label)
 
 	# VP display
 	_vp_label = Label.new()
@@ -601,6 +629,20 @@ func show_combatant_status_main(comb: Dictionary):
 	if combat:
 		_round_label.text = "Round %d" % combat.round_number
 
+	# Phase indicator — faction-themed turn announcement
+	var turn_label := "YOUR TURN"
+	var turn_color := Color(0.3, 0.85, 0.4)
+	if combat:
+		var faction = combat.side_faction[comb.side]
+		var flavor = TURN_FLAVOR.get(faction, ["YOUR TURN", "ENEMY TURN"])
+		if comb.side == 0:
+			turn_label = flavor[0]
+		else:
+			turn_label = flavor[1]
+			turn_color = Color(1.0, 0.4, 0.3)
+	_phase_label.text = turn_label
+	_phase_label.add_theme_color_override("font_color", turn_color)
+
 
 func _update_active_stats(comb: Dictionary):
 	var atk_mod = comb.get("atk_modifier", 0)
@@ -619,7 +661,8 @@ func _update_active_stats(comb: Dictionary):
 	_active_stats_label.text = "%s  |  %s  |  HP %d/%d" % [atk_str, def_str, comb.hp, comb.max_hp]
 
 	# Bottom stat line (MOV/RNG/MOR) — reusing _movement_label for the secondary stats
-	_movement_label.text = "MOV %d  |  RNG %d  |  MOR %d" % [comb.mov, comb.rng, mor_total]
+	var mov_total = comb.mov + comb.get("mov_modifier", 0)
+	_movement_label.text = "MOV %d  |  RNG %d  |  MOR %d" % [mov_total, comb.rng, mor_total]
 
 
 func _update_status_text(label: RichTextLabel, comb: Dictionary):
@@ -689,17 +732,18 @@ func _show_inspect(comb: Dictionary):
 	# Status effects
 	_update_status_text(_inspect_status, comb)
 
-	# Specials & skills
+	# Specials & skills — with keyword glossary tooltips
 	_inspect_specials.clear()
 	if comb.has("definition"):
 		var def: CombatantDefinition = comb.definition
 		if def.specials.size() > 0:
-			_inspect_specials.append_text("[color=#AA9966]Specials:[/color] ")
-			var spec_parts := []
+			_inspect_specials.append_text("[color=#AA9966]Specials:[/color]\n")
 			for sp in def.specials:
-				spec_parts.append("[color=#CCBB88]%s[/color]" % sp)
-			_inspect_specials.append_text(", ".join(spec_parts))
-			_inspect_specials.append_text("\n")
+				var keyword_desc = GameRules.KEYWORDS.get(sp, "")
+				if keyword_desc != "":
+					_inspect_specials.append_text("  [color=#CCBB88]%s[/color] — [color=#888877][i]%s[/i][/color]\n" % [sp, keyword_desc])
+				else:
+					_inspect_specials.append_text("  [color=#CCBB88]%s[/color]\n" % sp)
 		if comb.skill_list.size() > 0:
 			_inspect_specials.append_text("[color=#7799AA]Skills:[/color] ")
 			var skill_parts := []
@@ -810,20 +854,43 @@ func update_faction_resources(faction_state: Dictionary):
 		return
 	_resource_label.clear()
 	if faction_state.has("heat"):
-		_resource_label.append_text("[color=#FF4010]Heat: %d[/color]\n" % faction_state.heat)
+		var tier = _get_resource_tier("heat", faction_state.heat)
+		_resource_label.append_text("[color=#FF4010]Heat: %d[/color] [color=#AA6030](%s)[/color]\n" % [faction_state.heat, tier])
 	if faction_state.has("grid_cohesion"):
-		_resource_label.append_text("[color=#8090CC]Grid: %d[/color]\n" % faction_state.grid_cohesion)
+		var tier = _get_resource_tier("grid_cohesion", faction_state.grid_cohesion)
+		_resource_label.append_text("[color=#8090CC]Grid: %d[/color] [color=#6070AA](%s)[/color]\n" % [faction_state.grid_cohesion, tier])
 	if faction_state.has("hunger"):
-		_resource_label.append_text("[color=#CC2255]Hunger: %d[/color]\n" % faction_state.hunger)
+		var tier = _get_resource_tier("hunger", faction_state.hunger)
+		_resource_label.append_text("[color=#CC2255]Hunger: %d[/color] [color=#AA3355](%s)[/color]\n" % [faction_state.hunger, tier])
 	if faction_state.has("flow"):
-		_resource_label.append_text("[color=#3388EE]Flow: %d[/color]\n" % faction_state.flow)
+		var tier = _get_resource_tier("flow", faction_state.flow)
+		_resource_label.append_text("[color=#3388EE]Flow: %d[/color] [color=#2266BB](%s)[/color]\n" % [faction_state.flow, tier])
 	if faction_state.has("fate_threads"):
-		_resource_label.append_text("[color=#33BB55]Fate: %d[/color]\n" % faction_state.fate_threads)
+		var tier = _get_resource_tier("fate_threads", faction_state.fate_threads)
+		_resource_label.append_text("[color=#33BB55]Fate: %d[/color] [color=#229944](%s)[/color]\n" % [faction_state.fate_threads, tier])
+
+	# Update CP display
+	if combat and _cp_label:
+		_cp_label.text = "CP: %d" % combat.command_points[0]
 
 	# Update VP display
 	if combat and combat.scenario_manager:
 		var vp = combat.scenario_manager.vp
 		_vp_label.text = "VP: %d — %d" % [vp[0], vp[1]]
+
+
+## Get a thematic tier label for a faction resource value
+func _get_resource_tier(resource_key: String, value: int) -> String:
+	if resource_key not in RESOURCE_TIERS:
+		return ""
+	var tiers = RESOURCE_TIERS[resource_key]
+	var label := tiers[0][1]  # Default to lowest tier name
+	if value == 0:
+		return "Dormant"
+	for tier in tiers:
+		if value >= tier[0]:
+			label = tier[1]
+	return label
 
 
 # ══════════════════════════════════════════════════════════════
@@ -838,10 +905,19 @@ func update_card_hand(cards: Array):
 		child.queue_free()
 	for card in cards:
 		var btn = Button.new()
-		btn.custom_minimum_size = Vector2(110, 30)
-		btn.text = card.get("name", "Card")
-		btn.tooltip_text = "%s\n%s" % [card.get("type", "").capitalize(), card.get("description", "")]
+		btn.custom_minimum_size = Vector2(120, 30)
+		var cp_cost = card.get("cp_cost", 1)
+		btn.text = "%s (%dCP)" % [card.get("name", "Card"), cp_cost]
+		btn.tooltip_text = "%s — Cost: %d CP\n%s" % [card.get("type", "").capitalize(), cp_cost, card.get("description", "")]
+		# Add flavor text if present
+		var flavor = card.get("flavor_text", "")
+		if flavor != "":
+			btn.tooltip_text = "\"%s\"\n\n%s" % [flavor, btn.tooltip_text]
 		btn.add_theme_font_size_override("font_size", 11)
+		# Dim cards the player can't afford
+		if combat and combat.command_points[0] < cp_cost:
+			btn.modulate = Color(0.5, 0.5, 0.5, 0.7)
+			btn.tooltip_text += "\n[Not enough CP]"
 		btn.pressed.connect(func(): _on_card_played(card))
 		_card_hand_container.add_child(btn)
 
@@ -892,12 +968,30 @@ func show_results_screen(results: Dictionary):
 	panel.add_child(vbox)
 
 	var winner_color = "lime" if results.winner == "Players" else "red"
+	# Faction-themed victory/defeat banner
+	var banner_text := "%s Win!" % results.winner
+	var epitaph_text := ""
+	if combat:
+		var winner_side = 0 if results.winner == "Players" else 1
+		var loser_side = 1 - winner_side
+		var winner_faction = combat.side_faction[winner_side]
+		var loser_faction = combat.side_faction[loser_side]
+		var win_flavor = Combat.VICTORY_FLAVOR.get(winner_faction, ["VICTORY!", "Defeat."])
+		var lose_flavor = Combat.VICTORY_FLAVOR.get(loser_faction, ["Victory!", "Defeat."])
+		if results.winner == "Players":
+			banner_text = win_flavor[0]
+		else:
+			banner_text = lose_flavor[1]
+		epitaph_text = "In %d rounds, the shards changed hands." % results.round
 	var title = RichTextLabel.new()
 	title.bbcode_enabled = true
 	title.fit_content = true
 	title.scroll_active = false
-	title.text = "[center][color=gold]══ BATTLE COMPLETE ══[/color]\n[color=%s]%s Win![/color][/center]" % [winner_color, results.winner]
-	title.custom_minimum_size = Vector2(0, 50)
+	title.text = "[center][color=gold]══ BATTLE COMPLETE ══[/color]\n[color=%s]%s[/color]" % [winner_color, banner_text]
+	if epitaph_text != "":
+		title.text += "\n[color=#8888AA][i]%s[/i][/color]" % epitaph_text
+	title.text += "[/center]"
+	title.custom_minimum_size = Vector2(0, 65)
 	vbox.add_child(title)
 
 	var info = RichTextLabel.new()

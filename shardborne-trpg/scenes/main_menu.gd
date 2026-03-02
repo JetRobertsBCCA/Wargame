@@ -26,6 +26,18 @@ const LORE_LINES := [
 	"\"Command your forces. Break the enemy. Seize the shards.\"",
 	"\"Every commander falls eventually. Legends fall last.\"",
 	"\"The battlefield remembers every decision you make.\"",
+	"\"We burn so that nothing is forgotten.\" — Emberclaw war-chant",
+	"\"The Grid endures. The Grid prevails.\" — Iron Dominion doctrine",
+	"\"We are the web and the spider both.\" — Thornweft teaching",
+	"\"Hunger is not weakness — it is purpose.\" — Nightfang creed",
+	"\"Flow like water. Strike like the tide.\" — Veilbound proverb",
+	"\"The drakes remember when the world was fire. They long for those days.\"",
+	"\"Corruption is patient. It does not conquer — it inherits.\"",
+	"\"Every thread in the web knows the spider's intent.\"",
+	"\"In the space between stances, the Veilbound find truth.\"",
+	"\"Steel without discipline is scrap. Discipline without steel is a funeral.\"",
+	"\"The shards are fragments of a god. Or a prison. No one agrees.\"",
+	"\"War does not determine who is right — only who remains.\"",
 ]
 
 # ── Shard particle data ──
@@ -355,12 +367,22 @@ func _make_thin_separator() -> StyleBoxFlat:
 
 # ══════════════════════════════════════════════════════════════
 # FACTION BAR BLOCKS
+const FACTION_TAGLINES := [
+	"Fire-born warriors bonded with drakes. They fight with furious speed and unstoppable heat.",
+	"Relentless war machine powered by the Grid. Discipline is their greatest weapon.",
+	"Masters of corruption and undying hunger. The dead serve, and the living will join them.",
+	"Nature's wrath given form. The web connects all, and none escape the Matriarchy.",
+	"Spirit-touched warriors who flow between stances. Honor guides every blade.",
+]
+
+# ══════════════════════════════════════════════════════════════
+# FACTION BLOCKS
 # ══════════════════════════════════════════════════════════════
 
 func _create_faction_block(index: int) -> PanelContainer:
 	var block = PanelContainer.new()
 	block.custom_minimum_size = Vector2(52, 42)
-	block.tooltip_text = FACTION_NAMES[index]
+	block.tooltip_text = "%s\n%s" % [FACTION_NAMES[index], FACTION_TAGLINES[index]]
 	block.mouse_filter = MOUSE_FILTER_PASS
 
 	var style = StyleBoxFlat.new()
@@ -478,11 +500,17 @@ func _draw():
 # ══════════════════════════════════════════════════════════════
 
 func _on_quick_battle():
+	GameStateMachine.reset()
+	GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
 	get_tree().change_scene_to_file("res://scenes/game.tscn")
 
 func _on_army_builder():
+	GameStateMachine.reset()
+	GameStateMachine.transition_to(GameStateMachine.GameState.ARMY_SELECT)
 	get_tree().change_scene_to_file("res://ui/army_builder.tscn")
 
 func _on_campaign():
 	BattleConfig.is_campaign = true
+	GameStateMachine.reset()
+	GameStateMachine.transition_to(GameStateMachine.GameState.ARMY_SELECT)
 	get_tree().change_scene_to_file("res://ui/army_builder.tscn")
