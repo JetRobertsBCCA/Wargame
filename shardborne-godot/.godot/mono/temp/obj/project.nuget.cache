@@ -1,17 +1,14 @@
 {
   "version": 2,
-  "dgSpecHash": "DXYDUOwI2e8=",
+  "dgSpecHash": "0vxz1JYIakQ=",
   "success": true,
-  "projectFilePath": "C:\\Users\\jetin\\Coding\\Wargame-main\\Wargame\\shardborne-godot\\Shardborne.csproj",
+  "projectFilePath": "C:\\Users\\nroberts\\wargame\\Wargame\\shardborne-godot\\Shardborne.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\jetin\\.nuget\\packages\\esprima\\3.0.5\\esprima.3.0.5.nupkg.sha512",
-    "C:\\Users\\jetin\\.nuget\\packages\\godot.sourcegenerators\\4.6.1\\godot.sourcegenerators.4.6.1.nupkg.sha512",
-    "C:\\Users\\jetin\\.nuget\\packages\\godotsharp\\4.6.1\\godotsharp.4.6.1.nupkg.sha512",
-    "C:\\Users\\jetin\\.nuget\\packages\\godotsharpeditor\\4.6.1\\godotsharpeditor.4.6.1.nupkg.sha512",
-    "C:\\Users\\jetin\\.nuget\\packages\\jint\\3.1.0\\jint.3.1.0.nupkg.sha512",
-    "C:\\Users\\jetin\\.nuget\\packages\\microsoft.netcore.app.ref\\8.0.24\\microsoft.netcore.app.ref.8.0.24.nupkg.sha512",
-    "C:\\Users\\jetin\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\8.0.24\\microsoft.windowsdesktop.app.ref.8.0.24.nupkg.sha512",
-    "C:\\Users\\jetin\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\8.0.24\\microsoft.aspnetcore.app.ref.8.0.24.nupkg.sha512"
+    "C:\\Users\\nroberts\\.nuget\\packages\\esprima\\3.0.5\\esprima.3.0.5.nupkg.sha512",
+    "C:\\Users\\nroberts\\.nuget\\packages\\godot.sourcegenerators\\4.6.1\\godot.sourcegenerators.4.6.1.nupkg.sha512",
+    "C:\\Users\\nroberts\\.nuget\\packages\\godotsharp\\4.6.1\\godotsharp.4.6.1.nupkg.sha512",
+    "C:\\Users\\nroberts\\.nuget\\packages\\godotsharpeditor\\4.6.1\\godotsharpeditor.4.6.1.nupkg.sha512",
+    "C:\\Users\\nroberts\\.nuget\\packages\\jint\\3.1.0\\jint.3.1.0.nupkg.sha512"
   ],
   "logs": []
 }
