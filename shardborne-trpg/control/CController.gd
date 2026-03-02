@@ -22,6 +22,7 @@ var player_turn = true
 
 var _attack_target_position
 var _blocked_target_position
+var _ally_target_position
 
 var _skill_selected = false
 
@@ -35,8 +36,9 @@ func _unhandled_input(event):
 				if _skill_selected == true:
 					var mouse_position = get_global_mouse_position()
 					var mouse_position_i = tile_map.local_to_map(mouse_position)
-					var comb = get_combatant_at_position(mouse_position_i)
-					if comb != null and comb.alive:
+					var needs_dead = _selected_skill == "feast"
+					var comb = get_combatant_at_position(mouse_position_i, needs_dead)
+					if comb != null and (comb.alive or needs_dead):
 						target_selected(comb)
 				elif _arrived == true:
 					move_player()
@@ -48,8 +50,16 @@ func _unhandled_input(event):
 			find_path(mouse_position_i)
 			var comb = get_combatant_at_position(mouse_position_i)
 			var local_map = tile_map.map_to_local(mouse_position_i)
+			_ally_target_position = null
 			if comb != null:
-				if comb.side == 1 and comb.alive:
+				if comb.alive and _skill_selected:
+					# When skill is selected, allow targeting any alive unit
+					if comb.side != combat.get_current_combatant().side:
+						_attack_target_position = local_map
+					else:
+						_ally_target_position = local_map
+						_attack_target_position = null
+				elif comb.side == 1 and comb.alive:
 					_attack_target_position = local_map
 				else:
 					_attack_target_position = null
@@ -61,10 +71,11 @@ func _unhandled_input(event):
 				_blocked_target_position = null
 
 
-func get_combatant_at_position(target_position: Vector2i):
+func get_combatant_at_position(target_position: Vector2i, include_dead: bool = false):
 	for comb in combat.combatants:
-		if comb.position == target_position and comb.alive:
-			return comb
+		if comb.position == target_position:
+			if comb.alive or include_dead:
+				return comb
 	return null
 
 var _occupied_spaces = []
@@ -77,7 +88,6 @@ var _blocking_spaces = [
 
 func _ready():
 	tile_map = get_node("../Terrain/TileMap")
-#	controlled_node = tile_map.get_node("Steve")
 	_astargrid.region = Rect2i(0, 0, 36, 21)
 	_astargrid.cell_size = Vector2i(32, 32)
 	_astargrid.offset = Vector2(16, 16)
@@ -93,13 +103,10 @@ func _ready():
 
 
 func combatant_added(combatant):
-#	_astargrid.set_point_solid(combatant.position, true)
-#	_astargrid.set_point_weight_scale(combatant.position, INF)
 	_occupied_spaces.append(combatant.position)
 
 
 func combatant_died(combatant):
-#	_astargrid.set_point_solid(combatant.position, false)
 	_astargrid.set_point_weight_scale(combatant.position, 1)
 	_occupied_spaces.erase(combatant.position)
 
@@ -110,7 +117,16 @@ func set_controlled_combatant(combatant: Dictionary):
 	else:
 		player_turn = false
 	controlled_node = combatant.sprite
-	movement = combatant.movement
+	var mov = combatant.movement
+	# Trapped status reduces movement by half (min 1)
+	if combatant.get("status_effects", []).has("trapped"):
+		mov = maxi(1, mov / 2)
+		combatant.status_effects.erase("trapped")  # Wears off after 1 turn
+	# Engaged units can't move
+	if combatant.get("status_effects", []).has("engaged"):
+		mov = 0
+		combatant.status_effects.erase("engaged")  # Wears off after 1 turn
+	movement = mov
 	update_points_weight()
 
 func update_points_weight():
@@ -148,7 +164,6 @@ func _process(delta):
 	if _arrived == false:
 		controlled_node.position += controlled_node.position.direction_to(_next_position) * delta * move_speed
 		if controlled_node.position.distance_to(_next_position) < 1:
-#			_astargrid.set_point_solid(_previous_position, false)
 			_occupied_spaces.erase(_previous_position)
 			_astargrid.set_point_weight_scale(_previous_position, 1)
 			var tile_cost = get_tile_cost(_previous_position)
@@ -156,7 +171,6 @@ func _process(delta):
 			var new_position: Vector2i = tile_map.local_to_map(_next_position)
 			combat.get_current_combatant().position = new_position
 			_previous_position = new_position
-#			_astargrid.set_point_solid(new_position, true)
 			_occupied_spaces.append(new_position)
 			update_points_weight()
 			var next_tile_cost = get_tile_cost(new_position)
@@ -187,43 +201,39 @@ const tiles_to_check = [
 func ai_process(target_position: Vector2i):
 	#find nearest non-solid tile to target_position
 	var current_position = tile_map.local_to_map(controlled_node.position)
-	print(current_position)
+	var moved := false
 	for tile in tiles_to_check:
 		if !_astargrid.get_point_weight_scale(target_position + tile) > 999999:
 			ai_move(target_position + tile)
+			moved = true
 			break
+	if not moved:
+		# No adjacent tile reachable — emit immediately to avoid infinite await
+		finished_move.emit()
 	return finished_move
 
 
 func ai_move(target_position: Vector2i):
 	var current_position = tile_map.local_to_map(controlled_node.position)
 	find_path(target_position)
-	print(target_position)
 	move_on_path(current_position)
 
 
 func find_path(tile_position: Vector2i):
 	var current_position = tile_map.local_to_map(controlled_node.position)
-#	print(current_position)
-#	print(tile_position)
-#	var distance = get_distance(current_position, tile_position)
-#	if distance > movement:
-#		return
 	if _astargrid.get_point_weight_scale(tile_position) > 999999:
-#	if _occupied_spaces.has(tile_position):
 		var dir : Vector2i
 		if current_position.x > tile_position.x:
-			dir = Vector2i.RIGHT
-		if current_position.y > tile_position.y:
-			dir = Vector2i.DOWN
-		if tile_position.x > current_position.x:
 			dir = Vector2i.LEFT
-		if tile_position.y > current_position.y:
+		if current_position.y > tile_position.y:
 			dir = Vector2i.UP
+		if tile_position.x > current_position.x:
+			dir = Vector2i.RIGHT
+		if tile_position.y > current_position.y:
+			dir = Vector2i.DOWN
 		tile_position += dir
 	_path = _astargrid.get_point_path(current_position, tile_position)
 	queue_redraw()
-#	print(_path)
 
 
 func move_player():
@@ -253,6 +263,35 @@ func begin_target_selection():
 
 
 func target_selected(target: Dictionary):
+	if _selected_skill.is_empty():
+		_skill_selected = false
+		target_selection_finished.emit()
+		return
+	if not combat.has_method(_selected_skill):
+		push_warning("No combat method for skill: " + _selected_skill)
+		_skill_selected = false
+		target_selection_finished.emit()
+		return
+	# Validate target side: attack skills require enemy, support skills require ally
+	var attacker = combat.get_current_combatant()
+	var is_offensive = _selected_skill in ["attack_melee", "attack_ranged", "basic_magic",
+		"flame_burst", "inferno_charge", "heat_vent", "pyroclasm",
+		"coordinated_fire", "artillery_barrage", "fragment_overload",
+		"corrupt_bite", "terror_shriek", "shadow_step",
+		"web_snare", "gossamer_trap", "natures_wrath",
+		"stance_strike", "phase_strike", "feast"]
+	var is_ally_only = _selected_skill in ["rally", "repair", "honor_guard",
+		"shield_wall", "fate_weave", "ritual_channel", "stoke_flames", "blood_tithe"]
+	if is_offensive and target.side == attacker.side:
+		combat.update_information.emit("[color=red]Cannot use that skill on allies.[/color]\n")
+		_skill_selected = false
+		target_selection_finished.emit()
+		return
+	if is_ally_only and target.side != attacker.side:
+		combat.update_information.emit("[color=red]That skill targets allies only.[/color]\n")
+		_skill_selected = false
+		target_selection_finished.emit()
+		return
 	combat.call(_selected_skill, combat.get_current_combatant(), target)
 	_skill_selected = false
 	target_selection_finished.emit()
@@ -288,5 +327,7 @@ func _draw():
 			draw_texture(grid_tex, point - Vector2(16, 16), draw_color)
 		if _attack_target_position != null:
 			draw_texture(grid_tex, _attack_target_position - Vector2(16, 16), Color.CRIMSON)
+		if _ally_target_position != null:
+			draw_texture(grid_tex, _ally_target_position - Vector2(16, 16), Color.DODGER_BLUE)
 		if _blocked_target_position != null:
 			draw_texture(grid_tex, _blocked_target_position - Vector2(16, 16))

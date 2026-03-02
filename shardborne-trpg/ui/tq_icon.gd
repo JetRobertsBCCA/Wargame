@@ -1,9 +1,9 @@
 extends TextureRect
 
-var max_hp: int
-var hp: int
+var max_hp: int = 1
+var hp: int = 1
 
-@onready var shader_material = material as ShaderMaterial
+@onready var shader_material: ShaderMaterial = material as ShaderMaterial
 
 func set_max_hp(max_hp: int):
 	$Deadness.max_value = max_hp
@@ -26,5 +26,7 @@ func set_side(side: int):
 			$Border.modulate = Color.CRIMSON
 
 func set_turn_taken(taken: bool):
+	if shader_material == null:
+		return
 	var color_factor = int(taken)
 	shader_material.set_shader_parameter("color_factor", color_factor)
