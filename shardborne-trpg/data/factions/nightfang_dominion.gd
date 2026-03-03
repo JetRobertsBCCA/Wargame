@@ -42,7 +42,7 @@ static func _commanders() -> Array:
 # ── Infantry (18) ──────────────────────────────────────
 static func _infantry() -> Array:
 	return [
-		_u("Thrall Conscripts", INF, 3, 3, 3, 5, 1, 4, 2, ["Thrall", "Expendable"], 0, false, "", 0),
+		_u("Thrall Conscripts", INF, 3, 3, 3, 5, 1, 4, 1, ["Thrall", "Expendable"], 0, false, "", 0),
 		_u("Plague Horde", INF, 6, 3, 3, 4, 1, 5, 2, ["Corruption Spread"], 0, false, "", 1),
 		_u("Blood Thralls", INF, 6, 3, 3, 5, 1, 5, 2, ["Thrall", "Blood Drain"], 0, false, "", 0),
 		_u("Corrupted Militia", INF, 6, 3, 3, 5, 1, 5, 2, ["Corruption Spread"], 0, false, "", 1),

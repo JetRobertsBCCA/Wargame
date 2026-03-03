@@ -28,6 +28,12 @@ var _skill_selected = false
 
 var _camera: Camera2D
 
+# ── Deployment mode ──
+var _deployment_mode := false
+var _deploy_zone_start := Vector2i.ZERO
+var _deploy_zone_end := Vector2i.ZERO
+var _deploy_selected_unit: Dictionary = {}
+
 func _unhandled_input(event):
 	# Camera zoom with mouse wheel
 	if event is InputEventMouseButton and _camera:
@@ -43,8 +49,22 @@ func _unhandled_input(event):
 		var hover_comb = get_combatant_at_position(mouse_position_i)
 		combat.set_hovered_combatant(hover_comb)
 
+	# ── Deployment mode input ──
+	if _deployment_mode:
+		_handle_deployment_input(event)
+		return
+
 	if player_turn == false:
 		return
+
+	# Undo move: press Escape or right-click to undo last move (before attacking)
+	if _undo_available and event is InputEventKey and event.is_released() and event.keycode == KEY_ESCAPE:
+		_perform_undo_move()
+		return
+	if _undo_available and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_released():
+		if not _skill_selected:  # Don't undo if selecting a skill target
+			_perform_undo_move()
+			return
 		
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
@@ -72,9 +92,14 @@ func _unhandled_input(event):
 					# When skill is selected, allow targeting any alive unit
 					if comb.side != combat.get_current_combatant().side:
 						_attack_target_position = local_map
+						# Show damage preview for enemy targets
+						if combat.game_ui and combat.game_ui.has_method("show_damage_preview_tooltip"):
+							combat.game_ui.show_damage_preview_tooltip(combat.get_current_combatant(), comb, _selected_skill)
 					else:
 						_ally_target_position = local_map
 						_attack_target_position = null
+						if combat.game_ui and combat.game_ui.has_method("hide_damage_preview_tooltip"):
+							combat.game_ui.hide_damage_preview_tooltip()
 				elif comb.side == 1 and comb.alive:
 					_attack_target_position = local_map
 				else:
@@ -85,6 +110,8 @@ func _unhandled_input(event):
 			else:
 				_attack_target_position = null
 				_blocked_target_position = null
+				if combat.game_ui and combat.game_ui.has_method("hide_damage_preview_tooltip"):
+					combat.game_ui.hide_damage_preview_tooltip()
 
 
 func get_combatant_at_position(target_position: Vector2i, include_dead: bool = false):
@@ -129,6 +156,10 @@ func combatant_died(combatant):
 
 
 func set_controlled_combatant(combatant: Dictionary):
+	# Clear undo state at the start of each unit's turn
+	_undo_available = false
+	_undo_position = Vector2i(-1, -1)
+	_undo_movement = 0
 	if combatant.side == 0:
 		player_turn = true
 	else:
@@ -149,6 +180,7 @@ func set_controlled_combatant(combatant: Dictionary):
 		return
 
 	# Engaged: Disengage costs full movement. Unit CAN move, but only 1 tile away.
+	# Flying units disengage for free — they simply take off.
 	if combatant.get("status_effects", []).has("engaged"):
 		var still_engaged := false
 		var pos: Vector2i = combatant.position
@@ -160,17 +192,27 @@ func set_controlled_combatant(combatant: Dictionary):
 					still_engaged = true
 					break
 		if still_engaged:
-			# Disengage: can only move 1 tile (costs full movement)
-			mov = 1
-			combatant.status_effects.erase("engaged")
-			combat.update_information.emit("[color=yellow]%s disengages! (costs full movement)[/color]\n" % combatant.name)
+			if combatant.movement_class == 1:
+				# Flying: free disengage — take off without movement penalty
+				combatant.status_effects.erase("engaged")
+				combat.update_information.emit("[color=cyan]%s takes flight and disengages freely![/color]\n" % combatant.name)
+			else:
+				# Ground/Mounted: disengage costs full movement (1 tile only)
+				mov = 1
+				combatant.status_effects.erase("engaged")
+				combat.update_information.emit("[color=yellow]%s disengages! (costs full movement)[/color]\n" % combatant.name)
 		else:
 			combatant.status_effects.erase("engaged")  # No longer adjacent, auto-disengage
 	movement = mov
 	update_points_weight()
 	_pan_camera_to(combatant.sprite.position)
+	# Teleport: if faction has teleport_available, grant massive movement (any tile)
+	if combat and combat.faction_state[combatant.side].get("teleport_available", false):
+		movement = 99
+		combat.faction_state[combatant.side]["teleport_available"] = false
+		combat.update_information.emit("[color=blue]%s teleports across the battlefield![/color]\n" % combatant.name)
 
-## Fall Back: Shaken unit flees directly away from nearest enemy
+## Fall Back: Shaken unit flees directly away from nearest enemy (tile-by-tile)
 func _apply_fall_back(combatant: Dictionary, mov: int) -> void:
 	var pos: Vector2i = combatant.position
 	var nearest_enemy_pos := Vector2i(18, 10)  # Default center
@@ -182,11 +224,31 @@ func _apply_fall_back(combatant: Dictionary, mov: int) -> void:
 			if dist < nearest_dist:
 				nearest_dist = dist
 				nearest_enemy_pos = enemy.position
-	# Move away from nearest enemy
+	# Move away from nearest enemy, tile-by-tile with terrain/occupancy checks
 	var dir := Vector2(pos - nearest_enemy_pos).normalized()
-	var new_pos := Vector2i(pos) + Vector2i(roundi(dir.x * mov), roundi(dir.y * mov))
-	new_pos.x = clampi(new_pos.x, 0, 35)
-	new_pos.y = clampi(new_pos.y, 0, 20)
+	var new_pos := pos
+	for step in range(1, mov + 1):
+		var candidate := Vector2i(pos) + Vector2i(roundi(dir.x * step), roundi(dir.y * step))
+		candidate.x = clampi(candidate.x, 0, 35)
+		candidate.y = clampi(candidate.y, 0, 20)
+		# Check terrain
+		if tile_map:
+			var tile_data = tile_map.get_cell_tile_data(0, candidate)
+			if tile_data != null:
+				var cost = int(tile_data.get_custom_data("Cost"))
+				if cost < 0 or cost >= 99:
+					break
+			else:
+				break
+		# Check occupancy
+		var blocked := false
+		for c in combat.combatants:
+			if c != combatant and c.alive and c.position == candidate:
+				blocked = true
+				break
+		if blocked:
+			break
+		new_pos = candidate
 	_occupied_spaces.erase(pos)
 	combatant.position = new_pos
 	_occupied_spaces.append(new_pos)
@@ -194,7 +256,7 @@ func _apply_fall_back(combatant: Dictionary, mov: int) -> void:
 		combatant.sprite.position = Vector2(new_pos * 32) + Vector2(16, 16)
 	combat.update_information.emit("[color=orange]%s falls back in panic![/color]\n" % combatant.name)
 
-## Consolidate: after destroying an enemy in melee, move up to 3 tiles toward nearest enemy
+## Consolidate: after destroying an enemy in melee, move up to 3 tiles toward nearest enemy (tile-by-tile)
 func apply_consolidate(combatant: Dictionary) -> void:
 	if not combatant.alive:
 		return
@@ -214,9 +276,31 @@ func apply_consolidate(combatant: Dictionary) -> void:
 	var consolidate_dist := mini(GameRules.CONSOLIDATE_DISTANCE, nearest_dist - 1)
 	if consolidate_dist <= 0:
 		return
-	var new_pos := Vector2i(pos) + Vector2i(roundi(dir.x * consolidate_dist), roundi(dir.y * consolidate_dist))
-	new_pos.x = clampi(new_pos.x, 0, 35)
-	new_pos.y = clampi(new_pos.y, 0, 20)
+	var new_pos := pos
+	for step in range(1, consolidate_dist + 1):
+		var candidate := Vector2i(pos) + Vector2i(roundi(dir.x * step), roundi(dir.y * step))
+		candidate.x = clampi(candidate.x, 0, 35)
+		candidate.y = clampi(candidate.y, 0, 20)
+		# Check terrain
+		if tile_map:
+			var tile_data = tile_map.get_cell_tile_data(0, candidate)
+			if tile_data != null:
+				var cost = int(tile_data.get_custom_data("Cost"))
+				if cost < 0 or cost >= 99:
+					break
+			else:
+				break
+		# Check occupancy
+		var blocked := false
+		for c in combat.combatants:
+			if c != combatant and c.alive and c.position == candidate:
+				blocked = true
+				break
+		if blocked:
+			break
+		new_pos = candidate
+	if new_pos == pos:
+		return
 	_occupied_spaces.erase(pos)
 	combatant.position = new_pos
 	_occupied_spaces.append(new_pos)
@@ -242,6 +326,16 @@ func update_points_weight():
 func get_distance(point1: Vector2i, point2: Vector2i):
 	return absi(point1.x - point2.x) + absi(point1.y - point2.y)
 
+## Check if a position is in an enemy's Zone of Control (adjacent to a living enemy)
+func _is_in_enemy_zoc(pos: Vector2i, comb: Dictionary) -> bool:
+	for idx in combat.groups[1 - comb.side]:
+		var enemy = combat.combatants[idx]
+		if enemy.alive:
+			var dist = absi(pos.x - enemy.position.x) + absi(pos.y - enemy.position.y)
+			if dist <= 1:
+				return true
+	return false
+
 ## Smoothly pan camera toward a world position
 func _pan_camera_to(target_pos: Vector2) -> void:
 	if _camera == null:
@@ -262,6 +356,11 @@ var move_speed = 96
 
 var _previous_position : Vector2i
 var _move_start_position : Vector2i  # For charge detection
+
+## Undo-move state: saved position before the unit moved this turn
+var _undo_position : Vector2i = Vector2i(-1, -1)
+var _undo_available : bool = false
+var _undo_movement : int = 0  # Movement value before the move
 
 ## Check if the current combatant moved 5+ tiles in a straight line (same row or column)
 ## toward the target. If so, sets has_charged = true on the combatant.
@@ -323,6 +422,9 @@ func _process(delta):
 			_occupied_spaces.erase(_previous_position)
 			_astargrid.set_point_weight_scale(_previous_position, 1)
 			var tile_cost = get_tile_cost(_previous_position)
+			# ZOC: leaving a tile adjacent to an enemy costs extra movement
+			if _is_in_enemy_zoc(_previous_position, combat.get_current_combatant()):
+				tile_cost += GameRules.ZOC_EXTRA_COST
 			controlled_node.position = _next_position
 			var new_position: Vector2i = tile_map.local_to_map(_next_position)
 			combat.get_current_combatant().position = new_position
@@ -340,6 +442,12 @@ func _process(delta):
 				_apply_auto_engagement(combat.get_current_combatant())
 				# Update facing to direction of movement
 				_update_facing_after_move(combat.get_current_combatant(), _move_start_position)
+				# Enable undo if player moved (and isn't engaged)
+				if player_turn and _undo_position != Vector2i(-1, -1):
+					var comb = combat.get_current_combatant()
+					if "engaged" not in comb.get("status_effects", []):
+						_undo_available = true
+						combat.update_information.emit("[color=gray]Press Escape or right-click to undo move.[/color]\n")
 				finished_move.emit()
 				_arrived = true
 
@@ -352,6 +460,99 @@ func _update_facing_after_move(combatant: Dictionary, start_pos: Vector2i) -> vo
 		combatant.facing = GameRules.Facing.RIGHT if dx > 0 else GameRules.Facing.LEFT
 	else:
 		combatant.facing = GameRules.Facing.DOWN if dy > 0 else GameRules.Facing.UP
+
+
+## Undo the last move: snap the unit back to where it was before moving.
+## Only available before attacking/using a skill.
+func _perform_undo_move() -> void:
+	if not _undo_available or _undo_position == Vector2i(-1, -1):
+		return
+	var comb = combat.get_current_combatant()
+	# Remove from current position
+	_occupied_spaces.erase(comb.position)
+	# Restore to undo position
+	comb.position = _undo_position
+	_occupied_spaces.append(_undo_position)
+	# Reset sprite position
+	if comb.get("sprite"):
+		comb.sprite.position = Vector2(_undo_position * 32) + Vector2(16, 16)
+	# Restore movement
+	movement = _undo_movement
+	# Reset charge state
+	comb.has_charged = false
+	# Remove auto-engagement that was applied
+	if "engaged" in comb.get("status_effects", []):
+		comb.status_effects.erase("engaged")
+	# Restore facing to default for side
+	comb.facing = GameRules.Facing.RIGHT if comb.side == 0 else GameRules.Facing.LEFT
+	# Clear undo state
+	_undo_available = false
+	_undo_position = Vector2i(-1, -1)
+	_undo_movement = 0
+	update_points_weight()
+	queue_redraw()
+	combat.update_information.emit("[color=silver]Move undone.[/color]\n")
+
+
+# ══════════════════════════════════════════════════════════════
+# DEPLOYMENT MODE
+# ══════════════════════════════════════════════════════════════
+
+## Enter deployment mode — highlight zone and accept repositioning clicks
+func enter_deployment_mode(zone_start: Vector2i, zone_end: Vector2i) -> void:
+	_deployment_mode = true
+	_deploy_zone_start = zone_start
+	_deploy_zone_end = zone_end
+	_deploy_selected_unit = {}
+	player_turn = true  # Ensure input is accepted
+	queue_redraw()
+
+## Exit deployment mode
+func exit_deployment_mode() -> void:
+	_deployment_mode = false
+	_deploy_selected_unit = {}
+	queue_redraw()
+
+## Handle input during deployment phase
+func _handle_deployment_input(event: InputEvent) -> void:
+	# Enter key ends deployment
+	if event is InputEventKey and event.is_released() and event.keycode == KEY_ENTER:
+		combat.end_deployment()
+		return
+
+	# Left click: select unit or place selected unit
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_released():
+		var mouse_pos = get_global_mouse_position()
+		var cell = tile_map.local_to_map(mouse_pos)
+		var comb = get_combatant_at_position(cell)
+
+		if _deploy_selected_unit.is_empty():
+			# No unit selected — try to select a player unit
+			if comb != null and comb.side == 0 and comb.alive:
+				_deploy_selected_unit = comb
+				combat.update_information.emit("[color=cyan]Selected %s — click a tile in the deployment zone to reposition.[/color]\n" % comb.name)
+				queue_redraw()
+			elif comb != null and comb.side == 1:
+				combat.update_information.emit("[color=red]Cannot select enemy units during deployment.[/color]\n")
+		else:
+			# Unit is selected — try to place it at the clicked tile
+			if comb != null and comb.side == 0 and comb != _deploy_selected_unit:
+				# Clicked another friendly unit — swap selection
+				_deploy_selected_unit = comb
+				combat.update_information.emit("[color=cyan]Selected %s instead.[/color]\n" % comb.name)
+				queue_redraw()
+			elif comb == null or comb == _deploy_selected_unit:
+				# Try to reposition to this tile
+				if combat.deploy_reposition(_deploy_selected_unit, cell):
+					_deploy_selected_unit = {}
+					queue_redraw()
+
+	# Right click: deselect
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_released():
+		if not _deploy_selected_unit.is_empty():
+			_deploy_selected_unit = {}
+			combat.update_information.emit("[color=silver]Unit deselected.[/color]\n")
+			queue_redraw()
 
 
 func set_movement(value):
@@ -428,6 +629,14 @@ func move_on_path(current_position):
 	if _path.size() < 2:
 		finished_move.emit()
 		return
+	# Save undo state before moving (player only)
+	if player_turn:
+		_undo_position = current_position
+		_undo_movement = movement
+		_undo_available = false  # Will be set to true after move completes
+	# Transition to MOVEMENT phase
+	if combat and combat.has_method("_set_phase"):
+		combat._set_phase(GameStateMachine.BattlePhase.MOVEMENT)
 	# Record movement start position for charge detection
 	_move_start_position = current_position
 	_previous_position = current_position
@@ -466,6 +675,7 @@ func begin_target_selection():
 
 
 func target_selected(target: Dictionary):
+	_undo_available = false  # Can't undo after committing to an action
 	if _selected_skill.is_empty():
 		_skill_selected = false
 		target_selection_finished.emit()
@@ -525,22 +735,32 @@ func get_tile_cost_at_point(point):
 		return 1
 
 func _draw():
+	# Draw deployment zone during deployment phase
+	if _deployment_mode:
+		_draw_deployment_zone()
+		return
+
 	if _arrived == true and player_turn == true:
-		# Draw movement range overlay — highlight all reachable tiles
-		_draw_movement_range()
+		# Draw attack range overlay when a skill is selected for targeting
+		if _skill_selected:
+			_draw_attack_range()
+		else:
+			# Draw movement range overlay — highlight all reachable tiles
+			_draw_movement_range()
 
 		# Draw path from current position to mouse target
-		var path_length = movement
-		for i in range(_path.size()):
-			var point = _path[i]
-			if i > 0:
-				path_length -= get_tile_cost_at_point(point)
-			if i > 0:
-				# Draw path dots: blue if reachable, dim if out of range
-				if path_length >= 0:
-					_draw_path_tile(point, Color(0.25, 0.55, 1.0, 0.5))
-				else:
-					_draw_path_tile(point, Color(0.5, 0.5, 0.5, 0.25))
+		if not _skill_selected:
+			var path_length = movement
+			for i in range(_path.size()):
+				var point = _path[i]
+				if i > 0:
+					path_length -= get_tile_cost_at_point(point)
+				if i > 0:
+					# Draw path dots: blue if reachable, dim if out of range
+					if path_length >= 0:
+						_draw_path_tile(point, Color(0.25, 0.55, 1.0, 0.5))
+					else:
+						_draw_path_tile(point, Color(0.5, 0.5, 0.5, 0.25))
 
 		# Draw target markers
 		if _attack_target_position != null:
@@ -549,6 +769,53 @@ func _draw():
 			_draw_target_marker(_ally_target_position, Color(0.2, 0.6, 1.0, 0.7))
 		if _blocked_target_position != null:
 			_draw_blocked_marker(_blocked_target_position)
+
+## Draw attack range ring when a skill is selected for targeting
+func _draw_attack_range():
+	if combat == null or combat.combatants.is_empty():
+		return
+	var comb = combat.get_current_combatant()
+	var start = comb.position
+	# Determine max range from skill definition or unit stats
+	var max_range := 1
+	var skill_def = SkillDatabase.skills.get(_selected_skill) if SkillDatabase else null
+	if skill_def:
+		max_range = skill_def.max_range
+		# Override with unit stats for standard attacks
+		if _selected_skill == "attack_ranged":
+			max_range = comb.rng
+		elif _selected_skill == "attack_melee":
+			max_range = 1
+		elif _selected_skill == "basic_magic":
+			max_range = maxi(comb.rng, 6)
+	else:
+		max_range = comb.rng if comb.rng > 1 else 1
+	if max_range <= 0:
+		return
+	# Draw all tiles within range using Chebyshev distance
+	for dx in range(-max_range, max_range + 1):
+		for dy in range(-max_range, max_range + 1):
+			var dist = absi(dx) + absi(dy)
+			if dist == 0 or dist > max_range:
+				continue
+			var tile_pos = start + Vector2i(dx, dy)
+			if tile_pos.x < 0 or tile_pos.y < 0 or tile_pos.x >= 36 or tile_pos.y >= 21:
+				continue
+			var world_pos = tile_map.map_to_local(tile_pos)
+			# Orange tint for attack range, stronger at edges
+			var alpha = lerp(0.06, 0.15, float(dist) / float(max_range))
+			draw_rect(Rect2(world_pos.x - 15, world_pos.y - 15, 30, 30), Color(1.0, 0.5, 0.15, alpha))
+	# Draw range border ring at max distance
+	for dx in range(-max_range, max_range + 1):
+		for dy in range(-max_range, max_range + 1):
+			var dist = absi(dx) + absi(dy)
+			if dist == max_range:
+				var tile_pos = start + Vector2i(dx, dy)
+				if tile_pos.x < 0 or tile_pos.y < 0 or tile_pos.x >= 36 or tile_pos.y >= 21:
+					continue
+				var world_pos = tile_map.map_to_local(tile_pos)
+				draw_rect(Rect2(world_pos.x - 16, world_pos.y - 16, 32, 32), Color(1.0, 0.4, 0.1, 0.35), false, 1.5)
+
 
 ## Draw a semi-transparent blue overlay on all tiles the active unit can reach
 func _draw_movement_range():
@@ -567,6 +834,8 @@ func _draw_movement_range():
 		var entry = queue.pop_front()
 		var pos: Vector2i = entry[0]
 		var cost_so_far: int = entry[1]
+		# ZOC: leaving a tile adjacent to an enemy costs extra movement
+		var leaving_zoc := _is_in_enemy_zoc(pos, comb)
 		for dir in [Vector2i.RIGHT, Vector2i.LEFT, Vector2i.UP, Vector2i.DOWN]:
 			var next: Vector2i = pos + dir
 			if next in visited:
@@ -584,6 +853,8 @@ func _draw_movement_range():
 			else:
 				step_cost = 1
 			var total = cost_so_far + step_cost
+			if leaving_zoc:
+				total += GameRules.ZOC_EXTRA_COST
 			if total <= mov:
 				visited[next] = true
 				queue.append([next, total])
@@ -618,3 +889,21 @@ func _draw_blocked_marker(pos: Vector2):
 	var color := Color(0.7, 0.3, 0.3, 0.5)
 	draw_line(Vector2(pos.x - 10, pos.y - 10), Vector2(pos.x + 10, pos.y + 10), color, 2.0)
 	draw_line(Vector2(pos.x + 10, pos.y - 10), Vector2(pos.x - 10, pos.y + 10), color, 2.0)
+
+## Draw deployment zone overlay and selected unit highlight
+func _draw_deployment_zone():
+	# Draw zone background
+	for y in range(_deploy_zone_start.y, _deploy_zone_end.y + 1):
+		for x in range(_deploy_zone_start.x, _deploy_zone_end.x + 1):
+			var pos = tile_map.map_to_local(Vector2i(x, y))
+			var rect = Rect2(pos - Vector2(16, 16), Vector2(32, 32))
+			draw_rect(rect, Color(0.1, 0.5, 0.8, 0.15))
+	# Draw zone border
+	var top_left = tile_map.map_to_local(_deploy_zone_start) - Vector2(16, 16)
+	var bottom_right = tile_map.map_to_local(_deploy_zone_end) + Vector2(16, 16)
+	var zone_rect = Rect2(top_left, bottom_right - top_left)
+	draw_rect(zone_rect, Color(0.2, 0.7, 1.0, 0.6), false, 2.0)
+	# Highlight selected unit
+	if not _deploy_selected_unit.is_empty() and _deploy_selected_unit.get("sprite"):
+		var unit_pos = _deploy_selected_unit.sprite.position
+		_draw_target_marker(unit_pos, Color(0.2, 1.0, 0.5, 0.8))

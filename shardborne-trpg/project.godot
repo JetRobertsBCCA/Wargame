@@ -26,11 +26,13 @@ SkillDatabase="*res://databases/skill_database_manager.gd"
 GameRules="*res://data/game_rules.gd"
 FactionDatabase="*res://data/faction_database.gd"
 BattleConfig="*res://data/battle_config.gd"
+SaveManager="*res://data/save_manager.gd"
+AudioManager="*res://data/audio_manager.gd"
 GameStateMachine="*res://combat/game_state_machine.gd"
 
 [display]
 
-window/size/resizable=false
+window/size/resizable=true
 mouse_cursor/custom_image="res://imagese/cursor.png"
 mouse_cursor/tooltip_position_offset=Vector2(64, 10)
 

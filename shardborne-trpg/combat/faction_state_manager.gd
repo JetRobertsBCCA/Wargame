@@ -54,10 +54,10 @@ static func create_faction_state(faction: int) -> Dictionary:
 
 ## Process round-start effects for one side. Called from Combat._on_round_start().
 func process_round_start(side: int, faction: int, state: Dictionary,
-		combatants: Array, groups: Array) -> void:
+		combatants: Array, groups: Array, combat: Node = null) -> void:
 	match faction:
 		CombatantDefinition.Faction.EMBERCLAW:
-			_emberclaw_round_start(side, state, combatants, groups)
+			_emberclaw_round_start(side, state, combatants, groups, combat)
 		CombatantDefinition.Faction.IRON_DOMINION:
 			_iron_dominion_round_start(side, state, combatants, groups)
 		CombatantDefinition.Faction.NIGHTFANG:
@@ -68,20 +68,23 @@ func process_round_start(side: int, faction: int, state: Dictionary,
 			_veilbound_round_start(side, state, combatants, groups)
 
 
+var _combat_ref: Node = null  # Set transiently during round-start processing
+
 func _emberclaw_round_start(side: int, state: Dictionary,
-		combatants: Array, groups: Array) -> void:
+		combatants: Array, groups: Array, combat: Node = null) -> void:
+	_combat_ref = combat
 	# Step 1: Cooldown first (lose 3 Heat — forges cool)
 	var cooldown = mini(state.heat, GameRules.HEAT_COOLDOWN_PER_TURN)
 	state.heat = maxi(0, state.heat - cooldown)
 	state.overheat_this_round = false
 
-	# Step 2: Generate Heat from Fire keyword units
+	# Step 2: Generate Heat from Fire keyword units (no clamping — allow overshoot)
 	var fire_heat := 0
 	for idx in groups[side]:
 		var comb = combatants[idx]
 		if comb.alive and comb.definition.has_special("Fire"):
 			fire_heat += GameRules.HEAT_GENERATION.get("fire_unit", 1)
-	state.heat = mini(state.heat + fire_heat, state.heat_max)
+	state.heat += fire_heat
 
 	# Step 3: Commander generates Heat = half CMD (rounded up)
 	var cmd_heat := 0
@@ -90,7 +93,7 @@ func _emberclaw_round_start(side: int, state: Dictionary,
 		if comb.alive and comb.definition.unit_type == CombatantDefinition.UnitType.COMMANDER:
 			var cmd_stat = comb.definition.cmd if comb.definition.cmd > 0 else 0
 			cmd_heat += ceili(cmd_stat / 2.0)
-	state.heat = mini(state.heat + cmd_heat, state.heat_max)
+	state.heat += cmd_heat
 
 	if cooldown > 0 or fire_heat > 0 or cmd_heat > 0:
 		_log("[color=orange]Emberclaw Heat: -%d cooldown, +%d fire units, +%d commander CMD = %d[/color]\n" % [
@@ -99,15 +102,25 @@ func _emberclaw_round_start(side: int, state: Dictionary,
 	# Step 4: Check for Overheat (>15 at end of phase)
 	if state.heat > GameRules.HEAT_MAX:
 		state.overheat_this_round = true
+		_log("[color=red]OVERHEAT! All units suffer 1 damage from thermal backlash![/color]\n")
 		state.heat = GameRules.HEAT_OVERHEAT_RESET
-		# All Emberclaw units suffer 1 damage from thermal backlash
+		# All Emberclaw units suffer 1 damage — use combatant_die for proper death handling
+		var killed: Array = []
 		for idx in groups[side]:
 			var comb = combatants[idx]
 			if comb.alive:
 				comb.hp -= 1
 				if comb.hp <= 0:
-					comb.alive = false
-		_log("[color=red]OVERHEAT! Heat reset to %d. All units suffer 1 damage![/color]\n" % state.heat)
+					killed.append(comb)
+		for comb in killed:
+			if _combat_ref:
+				_combat_ref.combatant_die(comb)
+			else:
+				comb.alive = false
+		_log("[color=red]Heat reset to %d.[/color]\n" % state.heat)
+	else:
+		# Clamp heat to max only if no overheat (prevents slow creep above max)
+		state.heat = mini(state.heat, state.heat_max)
 
 
 ## Emberclaw: Auto-detect Drake Bond pairs from units with "Drake Bond" special.
@@ -169,6 +182,8 @@ func _iron_dominion_round_start(side: int, state: Dictionary,
 
 func _nightfang_round_start(combatants: Array) -> void:
 	process_corruption_effects(combatants)
+	# Hunger decay reduced: only lose 1 per round instead of implicit drain (#11)
+	# (Decay is handled here — hunger gains are increased in on_attack_hit and blood_tithe)
 
 
 func _thornweft_round_start(side: int, state: Dictionary) -> void:
@@ -183,6 +198,8 @@ func _thornweft_round_start(side: int, state: Dictionary) -> void:
 func _veilbound_round_start(side: int, state: Dictionary,
 		combatants: Array, groups: Array) -> void:
 	var flow_gain := 0
+	# Passive flow generation: +1 per round baseline (#12)
+	flow_gain += 1
 	for idx in groups[side]:
 		var comb = combatants[idx]
 		if comb.alive and comb.definition.flow_value > 0:
@@ -195,6 +212,14 @@ func _veilbound_round_start(side: int, state: Dictionary,
 	if flow_gain > 0:
 		_log("[color=cyan]Veilbound gains %d Flow (total: %d — %s)[/color]\n" % [
 			flow_gain, state.flow, state.flow_tier])
+	# Burst at max: when hitting max flow, all Veilbound gain +1 ATK this round (#12)
+	if state.flow >= state.flow_max:
+		for idx in groups[side]:
+			var comb = combatants[idx]
+			if comb.alive and comb.definition.faction == CombatantDefinition.Faction.VEILBOUND:
+				comb.atk_modifier += 1
+		_log("[color=gold]FLOW BURST! All Veilbound units gain +1 ATK![/color]\n")
+		state.flow = state.flow_max / 2  # Burst consumes half the flow
 
 
 ## Veilbound: Switch a unit's stance between honor and revelation.
@@ -275,6 +300,17 @@ func get_faction_attack_bonus(attacker: Dictionary, _target: Dictionary,
 	# Charge keyword: extra +1 ATK on charge (stacks with base charge bonus)
 	if def.has_special("Charge") and attacker.get("has_charged", false) and _attack_key == "attack_melee":
 		bonus += 1
+	# Duelist: +2 ATK when exactly 1 enemy is adjacent
+	if def.has_special("Duelist") and _attack_key == "attack_melee":
+		var adj_enemies := 0
+		for idx in groups[1 - attacker.side]:
+			var enemy = combatants[idx]
+			if enemy.alive:
+				var dist = absi(attacker.position.x - enemy.position.x) + absi(attacker.position.y - enemy.position.y)
+				if dist <= 1:
+					adj_enemies += 1
+		if adj_enemies == 1:
+			bonus += 2
 
 	# ── Faction-Specific Bonuses ──
 	match def.faction:
@@ -396,11 +432,15 @@ func on_attack_hit(attacker: Dictionary, target: Dictionary,
 		attacker.hp = mini(attacker.hp + 1, attacker.max_hp)
 		_log("[color=crimson]%s drains blood — heals 1 HP![/color]\n" % attacker.name)
 
-	# Nightfang: Feed Hunger Pool on kill
+	# Nightfang: Feed Hunger Pool on kill (+2 per kill, up from +1) (#11)
 	if a_def.faction == CombatantDefinition.Faction.NIGHTFANG and not target.alive:
 		var state = faction_state_dict[attacker.side]
-		state.hunger += 1
+		state.hunger += 2
 		update_hunger_tier(state)
+		# Frenzy heal: at Gorged tier, heal 1 HP on melee kills (#11)
+		if state.hunger_tier == "gorged" and _attack_key == "attack_melee" and attacker.alive:
+			attacker.hp = mini(attacker.hp + 1, attacker.max_hp)
+			_log("[color=crimson]%s is in a FRENZY! Heals 1 HP from the kill![/color]\n" % attacker.name)
 
 
 ## Called after any attack completes (hit or miss).
@@ -484,9 +524,25 @@ static func get_corruption_def_penalty(tokens: int) -> int:
 
 ## Nightfang: Apply corruption debuffs each round.
 ## Idempotent — sets modifiers from scratch rather than adding, safe for mirror matches.
+## Also applies natural corruption decay: -1 token per round (minimum 0).
 func process_corruption_effects(combatants: Array) -> void:
 	for comb in combatants:
 		if comb.alive and comb.corruption_tokens > 0:
+			# Corruption decay: reduce by 1 per round (natural resistance)
+			comb.corruption_tokens = maxi(0, comb.corruption_tokens - 1)
+			if comb.corruption_tokens > 0:
+				_log("[color=purple]%s resists corruption (-1 token, now %d)[/color]\n" % [comb.name, comb.corruption_tokens])
+			else:
+				_log("[color=lime]%s purges the last of their corruption![/color]\n" % comb.name)
+				# Clear corruption modifiers
+				var old_corr_atk = comb.get("_corruption_atk", 0)
+				var old_corr_mor = comb.get("_corruption_mor", 0)
+				comb.atk_modifier -= old_corr_atk
+				comb.mor_modifier -= old_corr_mor
+				comb["_corruption_atk"] = 0
+				comb["_corruption_mor"] = 0
+				continue
+
 			var threshold := ""
 			if comb.corruption_tokens >= 9:
 				threshold = "consumed"
@@ -505,6 +561,14 @@ func process_corruption_effects(combatants: Array) -> void:
 				comb.mor_modifier += (new_corr_mor - old_corr_mor)
 				comb["_corruption_atk"] = new_corr_atk
 				comb["_corruption_mor"] = new_corr_mor
+			else:
+				# Below threshold — clear corruption modifiers
+				var old_corr_atk = comb.get("_corruption_atk", 0)
+				var old_corr_mor = comb.get("_corruption_mor", 0)
+				comb.atk_modifier -= old_corr_atk
+				comb.mor_modifier -= old_corr_mor
+				comb["_corruption_atk"] = 0
+				comb["_corruption_mor"] = 0
 
 
 ## Nightfang: Update hunger tier based on current hunger value.
@@ -563,15 +627,15 @@ func get_web_tier(comb: Dictionary, faction_state: Array,
 		return GameRules.WEB_TIERS["severed"]
 
 
-## Veilbound: Update flow tier from current flow amount.
+## Veilbound: Update flow tier from current flow amount (adjusted thresholds #12).
 static func update_flow_tier(state: Dictionary) -> void:
-	if state.flow >= 30:
+	if state.flow >= 14:
 		state.flow_tier = "ascendant"
-	elif state.flow >= 20:
+	elif state.flow >= 10:
 		state.flow_tier = "overflowing"
-	elif state.flow >= 12:
+	elif state.flow >= 6:
 		state.flow_tier = "surging"
-	elif state.flow >= 5:
+	elif state.flow >= 3:
 		state.flow_tier = "stirring"
 	else:
 		state.flow_tier = "none"
@@ -606,6 +670,23 @@ func count_nearby_with_special(comb: Dictionary, special: String, range_tiles: i
 ## Manhattan distance between two combatants.
 static func _distance(a: Dictionary, b: Dictionary) -> int:
 	return absi(a.position.x - b.position.x) + absi(a.position.y - b.position.y)
+
+
+## Modify heat safely (clamp to max).
+func modify_heat(state: Dictionary, amount: int) -> void:
+	if state.has("heat"):
+		state.heat = clampi(state.heat + amount, 0, state.get("heat_max", GameRules.HEAT_MAX))
+
+
+## Iron Dominion: Spend grid cohesion for an active command (#13).
+## Returns true if successfully spent.
+func spend_grid_cohesion(side: int, state: Dictionary, cost: int,
+		combatants: Array, groups: Array) -> bool:
+	recalculate_grid_cohesion(side, state, combatants, groups)
+	if state.grid_cohesion >= cost:
+		state.grid_cohesion -= cost
+		return true
+	return false
 
 
 func _log(message: String) -> void:

@@ -74,6 +74,18 @@ var _combat_over := false
 var _commander_dead_cp_penalty := [0, 0]
 
 # ══════════════════════════════════════════════════════════════
+# DEPLOYMENT PHASE
+# ══════════════════════════════════════════════════════════════
+
+## Whether we are in the pre-battle deployment phase
+var deploying := false
+## Player deployment zone boundaries (inclusive)
+const DEPLOY_ZONE_START := Vector2i(1, 1)
+const DEPLOY_ZONE_END := Vector2i(6, 19)
+## Currently selected unit for repositioning during deployment
+var _deploy_selected_unit: Dictionary = {}
+
+# ══════════════════════════════════════════════════════════════
 # LORE & FLAVOR TEXT
 # ══════════════════════════════════════════════════════════════
 
@@ -181,6 +193,18 @@ const VICTORY_FLAVOR := {
 func _get_faction_name(side: int) -> String:
 	return FactionDatabase.FACTIONS.get(side_faction[side], {}).get("name", "Unknown")
 
+## ── Phase tracking within each unit's activation ──
+## Sets the battle phase and updates the UI label.
+func _set_phase(phase: GameStateMachine.BattlePhase) -> void:
+	GameStateMachine.current_phase = phase
+	if game_ui and game_ui.has_method("update_phase"):
+		var phase_name := GameStateMachine.BattlePhase.keys()[phase] if phase != GameStateMachine.BattlePhase.NONE else ""
+		game_ui.update_phase("Round %d — %s" % [round_number, phase_name])
+
+## Returns true if the current phase allows card play (COMMAND only).
+func is_card_phase() -> bool:
+	return GameStateMachine.current_phase == GameStateMachine.BattlePhase.COMMAND
+
 # ══════════════════════════════════════════════════════════════
 # INITIALIZATION
 # ══════════════════════════════════════════════════════════════
@@ -238,16 +262,22 @@ func _ready():
 
 	update_information.emit("Round %d begins.\n" % round_number)
 
+	# Play faction battle music for the player's faction
+	AudioManager.play_faction_music(side_faction[0])
+
 	emit_signal("update_turn_queue", combatants, turn_queue)
-	controller.set_controlled_combatant(combatants[turn_queue[0]])
-	game_ui.set_skill_list(combatants[turn_queue[0]].skill_list)
-	_update_active_highlight(combatants[turn_queue[0]])
+
+	# Enter deployment phase — player can reposition units before combat begins
+	AudioManager.play_sfx("deploy")
+	_enter_deployment()
 
 	# Update UI with faction state and card hand
 	if game_ui.has_method("update_faction_resources"):
 		game_ui.update_faction_resources(faction_state[0])
 	if game_ui.has_method("update_card_hand"):
 		game_ui.update_card_hand(card_hands[0])
+	if game_ui.has_method("update_minimap"):
+		game_ui.update_minimap(combatants)
 
 	# Clear BattleConfig so Quick Battle from menu works normally next time
 	BattleConfig.clear()
@@ -266,11 +296,57 @@ func _setup_from_battle_config():
 		occupied_cells.append(pos)
 		_add_unit_by_name(unit_name, 0, pos)
 
+	# Apply veterancy bonuses from campaign progression
+	if BattleConfig.is_campaign and BattleConfig.campaign_manager != null:
+		for comb in combatants:
+			if comb.side == 0:
+				BattleConfig.campaign_manager.apply_veterancy_to_combatant(comb.name, comb)
+
 	# Place enemy units on right side
 	for unit_name in BattleConfig.enemy_army:
 		var pos = _find_open_cell(Vector2i(11, 2), Vector2i(14, 18), occupied_cells)
 		occupied_cells.append(pos)
 		_add_unit_by_name(unit_name, 1, pos)
+
+	# Apply battle modifiers from campaign missions
+	_apply_battle_modifiers()
+
+## Apply environmental battle modifiers from campaign data
+func _apply_battle_modifiers():
+	var mods = BattleConfig.battle_modifiers
+	if mods.is_empty():
+		return
+	var label = mods.get("label", "Battle Modifier")
+	update_information.emit("[color=orange]⚡ %s[/color]\n" % label)
+	if mods.has("description"):
+		update_information.emit("[color=#CCAA66]  %s[/color]\n" % mods.description)
+	# Apply stat modifiers to combatants
+	for comb in combatants:
+		if comb.side == 0:  # Player side
+			if mods.has("player_atk_bonus"):
+				comb.atk_modifier += mods.player_atk_bonus
+			if mods.has("player_def_bonus"):
+				comb.def_modifier += mods.player_def_bonus
+			if mods.has("player_mov_bonus"):
+				comb.mov += mods.player_mov_bonus
+			if mods.has("player_hp_bonus"):
+				comb.hp += mods.player_hp_bonus
+				comb.max_hp += mods.player_hp_bonus
+		else:  # Enemy side
+			if mods.has("enemy_atk_bonus"):
+				comb.atk_modifier += mods.enemy_atk_bonus
+			if mods.has("enemy_def_bonus"):
+				comb.def_modifier += mods.enemy_def_bonus
+			if mods.has("enemy_mov_bonus"):
+				comb.mov += mods.enemy_mov_bonus
+			if mods.has("enemy_hp_bonus"):
+				comb.hp += mods.enemy_hp_bonus
+				comb.max_hp += mods.enemy_hp_bonus
+	# Extra starting CP
+	if mods.has("player_cp_bonus"):
+		command_points[0] += mods.player_cp_bonus
+	if mods.has("enemy_cp_bonus"):
+		command_points[1] += mods.enemy_cp_bonus
 
 ## Find an open cell in the given rectangle, avoiding occupied_cells
 func _find_open_cell(start: Vector2i, end: Vector2i, occupied: Array[Vector2i]) -> Vector2i:
@@ -314,6 +390,71 @@ func _add_unit_by_name(unit_name: String, side: int, pos: Vector2i) -> void:
 		return
 	add_combatant(create_combatant(def), side, pos)
 
+
+# ══════════════════════════════════════════════════════════════
+# DEPLOYMENT PHASE LOGIC
+# ══════════════════════════════════════════════════════════════
+
+## Enter deployment mode — player can reposition units before combat starts
+func _enter_deployment():
+	deploying = true
+	_deploy_selected_unit = {}
+	GameStateMachine.force_state(GameStateMachine.GameState.DEPLOYMENT)
+	if game_ui and game_ui.has_method("update_phase"):
+		game_ui.update_phase("DEPLOYMENT — Click unit, then click tile to reposition")
+	update_information.emit("[color=cyan]═══ DEPLOYMENT PHASE ═══[/color]\n")
+	update_information.emit("[color=silver]Click one of your units, then click an empty tile in the deployment zone (highlighted) to move it.[/color]\n")
+	update_information.emit("[color=silver]Press [color=yellow]Enter[/color] when ready to begin combat.[/color]\n")
+	controller.enter_deployment_mode(DEPLOY_ZONE_START, DEPLOY_ZONE_END)
+
+## Handle a deployment click from CController
+func deploy_reposition(unit: Dictionary, new_pos: Vector2i) -> bool:
+	if not deploying:
+		return false
+	if unit.side != 0:
+		update_information.emit("[color=red]You can only reposition your own units.[/color]\n")
+		return false
+	# Validate within deployment zone
+	if new_pos.x < DEPLOY_ZONE_START.x or new_pos.x > DEPLOY_ZONE_END.x \
+		or new_pos.y < DEPLOY_ZONE_START.y or new_pos.y > DEPLOY_ZONE_END.y:
+		update_information.emit("[color=red]Target tile is outside the deployment zone.[/color]\n")
+		return false
+	# Check tile is not occupied
+	for comb in combatants:
+		if comb.alive and comb.position == new_pos:
+			update_information.emit("[color=red]Tile is already occupied by %s.[/color]\n" % comb.name)
+			return false
+	# Move unit
+	var old_pos = unit.position
+	unit.position = new_pos
+	if unit.sprite:
+		unit.sprite.position = controller.tile_map.map_to_local(new_pos)
+	# Update label position
+	var label = unit.get("label_node")
+	if label:
+		label.position = controller.tile_map.map_to_local(new_pos)
+	# Update occupied spaces in controller
+	controller._occupied_spaces.erase(old_pos)
+	controller._occupied_spaces.append(new_pos)
+	update_information.emit("[color=green]%s repositioned.[/color]\n" % unit.name)
+	controller.queue_redraw()
+	return true
+
+## End deployment and start combat
+func end_deployment():
+	if not deploying:
+		return
+	deploying = false
+	_deploy_selected_unit = {}
+	GameStateMachine.force_state(GameStateMachine.GameState.BATTLE)
+	controller.exit_deployment_mode()
+	update_information.emit("[color=gold]═══ DEPLOYMENT COMPLETE — BATTLE BEGINS ═══[/color]\n")
+	# Now start the first unit's turn
+	controller.set_controlled_combatant(combatants[turn_queue[0]])
+	game_ui.set_skill_list(combatants[turn_queue[0]].skill_list)
+	_update_active_highlight(combatants[turn_queue[0]])
+	_set_phase(GameStateMachine.BattlePhase.COMMAND)
+
 # ══════════════════════════════════════════════════════════════
 # FACTION STATE INITIALIZATION
 # ══════════════════════════════════════════════════════════════
@@ -342,6 +483,9 @@ func create_combatant(definition: CombatantDefinition, override_name: String = "
 	# Ranged units get Overwatch (optional)
 	if definition.rng > 1:
 		skill_list.append("overwatch")
+	# All infantry and cavalry get Brace (universal defensive action)
+	if definition.unit_type == CombatantDefinition.UnitType.INFANTRY or definition.unit_type == CombatantDefinition.UnitType.CAVALRY:
+		skill_list.append("brace")
 	# Append faction-specific skills based on specials
 	_assign_faction_skills(definition, skill_list)
 	# Append any skills from definition
@@ -417,6 +561,13 @@ func _assign_faction_skills(def: CombatantDefinition, skills: Array) -> void:
 				skills.append("repair")
 			if def.unit_type == CombatantDefinition.UnitType.ARTILLERY:
 				skills.append("artillery_barrage")
+			if def.has_special("Overcharge"):
+				skills.append("overcharge")
+			# Grid Command skills for commanders
+			if def.is_commander():
+				skills.append("grid_fire_order")
+				skills.append("grid_shield_protocol")
+				skills.append("grid_relay")
 
 		CombatantDefinition.Faction.NIGHTFANG:
 			if def.has_special("Corruption Spread") or def.corruption_spread > 0:
@@ -460,9 +611,36 @@ func _assign_faction_skills(def: CombatantDefinition, skills: Array) -> void:
 func sort_turn_queue(a, b):
 	return combatants[b].initiative < combatants[a].initiative
 
+## Build alternating activation queue: interleave sides by initiative
+func _build_alternating_queue():
+	var side_units := [[], []]
+	for i in range(combatants.size()):
+		if combatants[i].alive:
+			side_units[combatants[i].side].append(i)
+	# Sort each side by initiative (descending)
+	for s in [0, 1]:
+		side_units[s].sort_custom(func(a, b): return combatants[a].initiative > combatants[b].initiative)
+	# Interleave: player first, then enemy, alternating
+	turn_queue.clear()
+	var max_len = maxi(side_units[0].size(), side_units[1].size())
+	for i in range(max_len):
+		if i < side_units[0].size():
+			turn_queue.append(side_units[0][i])
+		if i < side_units[1].size():
+			turn_queue.append(side_units[1][i])
+
 func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatant["position"] = position
 	combatant["side"] = side
+	# Apply difficulty modifiers to enemy units
+	if side == 1:
+		var diff = BattleConfig.get_difficulty_settings()
+		combatant.atk_modifier += diff.get("enemy_atk", 0)
+		combatant.def_modifier += diff.get("enemy_def", 0)
+		var hp_mult: float = diff.get("enemy_hp_mult", 1.0)
+		if hp_mult != 1.0:
+			combatant.max_hp = maxi(1, int(combatant.max_hp * hp_mult))
+			combatant.hp = combatant.max_hp
 	# Set default facing: player faces right, enemy faces left
 	combatant["facing"] = GameRules.Facing.RIGHT if side == 0 else GameRules.Facing.LEFT
 	combatants.append(combatant)
@@ -528,13 +706,21 @@ func set_next_combatant():
 			comb.mor_modifier = 0
 			comb.mov_modifier = 0
 			comb.overwatch_active = false
+			# Clear terror immunity for new round
+			comb.erase("morale_checked_this_round")
+			# Clear brace state
+			comb.erase("braced")
 		_on_round_start()
+		# Alternating activation: interleave sides
+		_build_alternating_queue()
 		turn = 0
 	current_combatant = turn_queue[turn]
 
 func advance_turn():
 	if _combat_over:
 		return
+	# End current unit's activation
+	_set_phase(GameStateMachine.BattlePhase.END)
 	combatants[current_combatant].turn_taken = true
 	set_next_combatant()
 	var safety := 0
@@ -553,8 +739,19 @@ func advance_turn():
 	# Update active unit highlight on map
 	_update_active_highlight(comb)
 
+	# Start this unit's activation in COMMAND phase (cards only)
+	_set_phase(GameStateMachine.BattlePhase.COMMAND)
+
 	emit_signal("turn_advanced", comb)
 	emit_signal("update_combatants", combatants)
+
+	# Play turn start SFX for player units
+	if comb.side == 0:
+		AudioManager.play_sfx("turn_start")
+
+	# Update minimap
+	if game_ui.has_method("update_minimap"):
+		game_ui.update_minimap(combatants)
 
 	# Update faction UI for active side
 	if game_ui.has_method("update_faction_resources"):
@@ -583,12 +780,24 @@ func _on_round_start():
 	if herald_lines.size() > 0:
 		herald_text = " — %s" % herald_lines[0]
 	update_information.emit("\n[color=gold]═══ Round %d ═══[/color][color=#CCAA66][i]%s[/i][/color]\n" % [round_number, herald_text])
+	AudioManager.play_sfx("round_start")
 	GameStateMachine.start_round(round_number)
 
 	# Score objectives from previous round
 	if scenario_manager and round_number > 1:
 		scenario_manager.on_round_end(round_number - 1)
 		update_information.emit("[color=silver]%s[/color]\n" % scenario_manager.get_vp_text())
+		# Show round summary banner on UI
+		if game_ui and game_ui.has_method("show_round_summary"):
+			var player_alive := 0
+			var enemy_alive := 0
+			for idx in groups[0]:
+				if combatants[idx].alive:
+					player_alive += 1
+			for idx in groups[1]:
+				if combatants[idx].alive:
+					enemy_alive += 1
+			game_ui.show_round_summary(round_number - 1, scenario_manager.vp, player_alive, enemy_alive)
 
 	# Generate CP for both sides
 	_generate_command_points(0)
@@ -610,18 +819,28 @@ func _on_round_start():
 	for side in [0, 1]:
 		_faction_round_start(side)
 
-	# Update phase indicator
-	if game_ui.has_method("update_phase"):
-		game_ui.update_phase("Round %d" % round_number)
+	# Update phase indicator — starts in COMMAND when first unit activates
+	_set_phase(GameStateMachine.BattlePhase.COMMAND)
 
 func _generate_command_points(side: int):
-	var cp := 0
+	# Diminishing returns: each successive commander generates less CP
+	var commanders := []
 	for idx in groups[side]:
 		var comb = combatants[idx]
 		if comb.alive and comb.cmd > 0:
-			cp += comb.cmd
+			commanders.append(comb)
+	# Sort by CMD descending so highest generates full value
+	commanders.sort_custom(func(a, b): return a.cmd > b.cmd)
+	var cp := 0
+	for i in range(commanders.size()):
+		var cmd_value: int = commanders[i].cmd
+		# 1st commander full, 2nd half, 3rd third, etc.
+		cp += maxi(1, cmd_value / (i + 1))
 	# Apply commander-death CP penalty
 	cp = maxi(0, cp - _commander_dead_cp_penalty[side])
+	# Difficulty: player gets bonus CP on Easy
+	if side == 0:
+		cp += BattleConfig.get_difficulty_settings().get("player_cp_bonus", 0)
 	command_points[side] += cp
 	if cp > 0:
 		var faction = side_faction[side]
@@ -635,7 +854,7 @@ func _generate_command_points(side: int):
 func _faction_round_start(side: int):
 	var faction = side_faction[side]
 	var state = faction_state[side]
-	_faction_mgr.process_round_start(side, faction, state, combatants, groups)
+	_faction_mgr.process_round_start(side, faction, state, combatants, groups, self)
 
 	# Veilbound: AI auto-switches stances during Command Phase
 	if faction == CombatantDefinition.Faction.VEILBOUND and side == 1:
@@ -647,19 +866,8 @@ func switch_unit_stance(comb: Dictionary, new_stance: String) -> bool:
 	return _faction_mgr.switch_stance(comb, new_stance)
 
 
-## AI: Decide stances for Veilbound units. Aggressive when behind, defensive when ahead.
+## AI: Decide stances for Veilbound units per-unit based on role and situation.
 func _ai_veilbound_stance_switch(side: int) -> void:
-	var my_alive := 0
-	var enemy_alive := 0
-	var opp_side = 1 - side
-	for idx in groups[side]:
-		if combatants[idx].alive:
-			my_alive += 1
-	for idx in groups[opp_side]:
-		if combatants[idx].alive:
-			enemy_alive += 1
-	# If losing (fewer units) go aggressive, if winning go defensive
-	var prefer_revelation = my_alive <= enemy_alive
 	for idx in groups[side]:
 		var comb = combatants[idx]
 		if not comb.alive:
@@ -669,8 +877,32 @@ func _ai_veilbound_stance_switch(side: int) -> void:
 		var utype = comb.definition.unit_type
 		if utype != CombatantDefinition.UnitType.INFANTRY and utype != CombatantDefinition.UnitType.CAVALRY:
 			continue
-		# Front-line infantry: match strategy, cavalry: always revelation for aggression
-		var target_stance = "revelation" if (prefer_revelation or utype == CombatantDefinition.UnitType.CAVALRY) else "honor"
+		# Per-unit stance decision based on context
+		var target_stance := "honor"  # Default to defensive
+		var hp_ratio = float(comb.hp) / float(comb.max_hp)
+		# Wounded units (< 60% HP) prefer honor (defensive) for survival
+		if hp_ratio < 0.6:
+			target_stance = "honor"
+		# Tanks / high-DEF units always prefer honor
+		elif comb.defense >= 5:
+			target_stance = "honor"
+		else:
+			# Check if enemies are nearby — close combat favors revelation
+			var nearest_enemy_dist := 999
+			for eidx in groups[1 - side]:
+				var enemy = combatants[eidx]
+				if enemy.alive:
+					var d = get_distance(comb, enemy)
+					if d < nearest_enemy_dist:
+						nearest_enemy_dist = d
+			if nearest_enemy_dist <= 3:
+				target_stance = "revelation"  # Aggressive when close
+			elif nearest_enemy_dist > 8:
+				target_stance = "honor"  # Defensive when far
+			else:
+				# Medium range: cavalry and high-ATK go revelation
+				if utype == CombatantDefinition.UnitType.CAVALRY or comb.atk >= 5:
+					target_stance = "revelation"
 		if comb.get("stance", "") != target_stance:
 			_faction_mgr.switch_stance(comb, target_stance)
 
@@ -703,6 +935,17 @@ func _on_unit_turn_start(comb: Dictionary) -> bool:
 			update_information.emit("[color=lime]%s extinguishes the flames! (rolled %d)[/color]\n" % [comb.name, extinguish_roll])
 		else:
 			update_information.emit("[color=orange]  Extinguish failed (rolled %d, need 4+)[/color]\n" % extinguish_roll)
+
+	# Web Snare engaged wears off after 1 turn
+	if "engaged" in comb.status_effects and "web_snared" in comb.status_effects:
+		comb.status_effects.erase("engaged")
+		comb.status_effects.erase("web_snared")
+		update_information.emit("[color=silver]%s breaks free of web snare.[/color]\n" % comb.name)
+
+	# Trapped wears off after 1 turn (visual cleanup — movement penalty already handled in CController)
+	if "trapped" in comb.status_effects:
+		comb.status_effects.erase("trapped")
+		update_information.emit("[color=silver]%s frees itself from the trap.[/color]\n" % comb.name)
 
 	# Staggered wears off after 1 turn
 	if "staggered" in comb.status_effects:
@@ -743,6 +986,30 @@ func _on_unit_turn_start(comb: Dictionary) -> bool:
 			advance_turn()
 			return true
 
+	# Passive shaken recovery: if no enemies within range, roll d6, 4+ removes shaken
+	if comb.shaken and not ("routed" in comb.status_effects):
+		var enemies_nearby := false
+		for idx in groups[1 - comb.side]:
+			var enemy = combatants[idx]
+			if enemy.alive and get_distance(comb, enemy) <= GameRules.SHAKEN_PASSIVE_RECOVERY_RANGE:
+				enemies_nearby = true
+				break
+		if not enemies_nearby:
+			var recovery_roll = randi_range(1, 6)
+			if recovery_roll >= 4:
+				comb.shaken = false
+				comb.status_effects.erase("shaken")
+				update_information.emit("[color=lime]%s recovers composure! (rolled %d, no enemies near)[/color]\n" % [comb.name, recovery_roll])
+			else:
+				update_information.emit("[color=gray]%s tries to recover from Shaken (rolled %d, need 4+)[/color]\n" % [comb.name, recovery_roll])
+
+	# Braced units get their bonuses consumed and cannot move (handled by CController)
+	if comb.get("braced", false):
+		update_information.emit("[color=steel_blue]%s was bracing — bonus expires.[/color]\n" % comb.name)
+		comb.def_modifier -= 1
+		comb.mor_modifier -= 1
+		comb.erase("braced")
+
 	return false
 
 
@@ -755,12 +1022,18 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 	if _combat_over:
 		return
 
+	# Transition to COMBAT phase
+	_set_phase(GameStateMachine.BattlePhase.COMBAT)
+
 	# Non-Combatant units cannot attack
 	if attacker.definition.has_special("Non-Combatant"):
 		update_information.emit("[color=red]%s is a Non-Combatant and cannot attack.[/color]\n" % attacker.name)
 		if attacker.side == 1:
 			advance_turn()
 		return
+
+	# Update attacker facing toward target
+	_update_facing_toward(attacker, target)
 
 	# Engaged units cannot use ranged attacks
 	if attack_key != "attack_melee" and "engaged" in attacker.get("status_effects", []):
@@ -799,6 +1072,10 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 				advance_turn()
 			return
 
+	# ── Calculate modifiers ──
+	var atk_mod: int = attacker.atk_modifier
+	var def_mod: int = target.def_modifier
+
 	# ── Line of Sight check for ranged attacks ──
 	if attack_key != "attack_melee":
 		# Indirect Fire keyword ignores LoS
@@ -823,10 +1100,6 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 			if not has_spotter:
 				atk_mod -= 1
 				update_information.emit("[color=silver]  (Indirect Fire without spotter: -1 ATK)[/color]\n")
-
-	# ── Calculate modifiers ──
-	var atk_mod: int = attacker.atk_modifier
-	var def_mod: int = target.def_modifier
 
 	# Shaken attacker penalty
 	if attacker.shaken:
@@ -899,7 +1172,10 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 	if attacker.definition.has_special("Sharpshot"):
 		crit_threshold = 5
 	# Severed: no faction abilities (no keyword bonuses) — already handled above
-	var result = _roll_attack_dice(dice_count, target_def, crit_threshold)
+	var result = _roll_attack_dice(dice_count, target_def, crit_threshold, attacker.get("fate_reroll", false))
+	# Consume the fate reroll after use
+	if attacker.get("fate_reroll", false):
+		attacker["fate_reroll"] = false
 
 	# ── Keyword damage modifiers ──
 	# Siege: double damage to War Machines/structures
@@ -944,6 +1220,11 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 
 	# ── Apply damage ──
 	if result.total_damage > 0:
+		# Play hit/crit SFX
+		if result.crits > 0:
+			AudioManager.play_sfx("critical_hit", 0.05)
+		else:
+			AudioManager.play_sfx("attack_hit", 0.1)
 		var actual_target = target
 		# Honor Guard: redirect damage to guardian if present
 		if target.guarded_by != "":
@@ -965,6 +1246,7 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 			if controller and controller.has_method("apply_consolidate"):
 				controller.apply_consolidate(attacker)
 	else:
+		AudioManager.play_sfx("attack_miss", 0.1)
 		update_information.emit("No damage dealt.\n")
 
 	# Post-attack faction effects
@@ -991,6 +1273,18 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 		attacker.status_effects.erase("stealthed")
 		update_information.emit("[color=gray]%s breaks stealth![/color]\n" % attacker.name)
 
+	# Ambush: consume status after attack (was +2 ATK granted at card play)
+	if "ambush" in attacker.get("status_effects", []):
+		attacker.status_effects.erase("ambush")
+		attacker.atk_modifier -= 2
+		update_information.emit("[color=dark_green]%s's ambush bonus expires.[/color]\n" % attacker.name)
+
+	# Counter Strike: if target has "counter" status and survived, they strike back (melee)
+	if target.alive and "counter" in target.get("status_effects", []) and attack_key == "attack_melee":
+		target.status_effects.erase("counter")
+		update_information.emit("[color=steel_blue]%s counter-strikes![/color]\n" % target.name)
+		attack(target, attacker, "attack_melee", false)
+
 	if _check_combat_over():
 		return
 
@@ -1005,7 +1299,7 @@ func _check_combat_over() -> bool:
 		return true
 	return false
 
-func _roll_attack_dice(dice_count: int, target_def: int, crit_threshold: int = 6) -> Dictionary:
+func _roll_attack_dice(dice_count: int, target_def: int, crit_threshold: int = 6, fate_reroll: bool = false) -> Dictionary:
 	var hits := 0
 	var crits := 0
 	var rolls: Array = []
@@ -1017,6 +1311,21 @@ func _roll_attack_dice(dice_count: int, target_def: int, crit_threshold: int = 6
 			hits += 1
 		elif roll >= target_def:
 			hits += 1
+	# Fate Weave: reroll all dice that missed
+	if fate_reroll:
+		var rerolled := 0
+		for i in range(rolls.size()):
+			if rolls[i] < target_def:
+				var new_roll := randi_range(1, 6)
+				rolls[i] = new_roll
+				rerolled += 1
+				if new_roll >= crit_threshold:
+					crits += 1
+					hits += 1
+				elif new_roll >= target_def:
+					hits += 1
+		if rerolled > 0:
+			update_information.emit("[color=green]  (Fate Weave: rerolled %d missed dice)[/color]\n" % rerolled)
 	var total_damage: int = (hits - crits) + (crits * 2)
 	return {"hits": hits, "crits": crits, "total_damage": total_damage, "rolls": rolls}
 
@@ -1046,6 +1355,15 @@ func basic_magic(attacker: Dictionary, target: Dictionary):
 # POSITIONAL COMBAT HELPERS
 # ══════════════════════════════════════════════════════════════
 
+## Update a combatant's facing to look toward a target
+func _update_facing_toward(attacker: Dictionary, target: Dictionary) -> void:
+	var dx := target.position.x - attacker.position.x
+	var dy := target.position.y - attacker.position.y
+	if absi(dx) >= absi(dy):
+		attacker.facing = GameRules.Facing.RIGHT if dx > 0 else GameRules.Facing.LEFT
+	else:
+		attacker.facing = GameRules.Facing.DOWN if dy > 0 else GameRules.Facing.UP
+
 ## Check if the attacker is flanking or rear-attacking the target using facing.
 ## Returns: 0 = frontal, 1 = flank (+1 ATK), 2 = rear (+2 ATK)
 func _check_attack_arc(attacker: Dictionary, target: Dictionary) -> int:
@@ -1062,16 +1380,16 @@ func _check_attack_arc(attacker: Dictionary, target: Dictionary) -> int:
 	match target_facing:
 		GameRules.Facing.RIGHT:
 			if dx < 0: is_rear = true      # Attacker is to the LEFT (behind)
-			elif dy != 0 and dx == 0: is_flank = true  # Attacker is above/below
+			elif dy != 0 and absi(dx) <= 1: is_flank = true  # Attacker is above/below or diagonal
 		GameRules.Facing.LEFT:
 			if dx > 0: is_rear = true       # Attacker is to the RIGHT (behind)
-			elif dy != 0 and dx == 0: is_flank = true
+			elif dy != 0 and absi(dx) <= 1: is_flank = true
 		GameRules.Facing.UP:
 			if dy > 0: is_rear = true       # Attacker is BELOW (behind)
-			elif dx != 0 and dy == 0: is_flank = true
+			elif dx != 0 and absi(dy) <= 1: is_flank = true
 		GameRules.Facing.DOWN:
 			if dy < 0: is_rear = true       # Attacker is ABOVE (behind)
-			elif dx != 0 and dy == 0: is_flank = true
+			elif dx != 0 and absi(dy) <= 1: is_flank = true
 
 	# Honor Stance: cannot be flanked
 	if target.get("stance") == "honor":
@@ -1177,10 +1495,19 @@ func _apply_terrain_effects(comb: Dictionary) -> void:
 	# Track whether unit is in cover (used by Nocturnal Predators, etc.)
 	comb["_in_cover"] = cost >= 2 and cost < 99  # Difficult or heavy cover
 
-	# Elevated terrain: +1 ATK for ranged, +1 DEF
-	if cost == 2:  # Elevated/forest terrain
-		# Already handled via cover system
-		pass
+	# Burning terrain: deal 1 damage (Fire Resistant takes 0, Fire Immune ignores)
+	var blocks_data = tile_data.get_custom_data("Blocks") if tile_data.get_custom_data("Blocks") != null else ""
+	if typeof(blocks_data) == TYPE_STRING and blocks_data == "burning":
+		if comb.definition.has_special("Fire Immune"):
+			pass  # Immune to fire
+		elif comb.definition.has_special("Fire Resistant"):
+			# Half damage, min 0 — so 1 damage halved = 0
+			pass
+		else:
+			comb.hp -= 1
+			update_information.emit("[color=orange]%s takes 1 fire damage from burning terrain![/color]\n" % comb.name)
+			if comb.hp <= 0:
+				combatant_die(comb)
 
 ## Get terrain type string for a tile position
 func _get_terrain_type_at(pos: Vector2i) -> String:
@@ -1198,10 +1525,15 @@ func _get_terrain_type_at(pos: Vector2i) -> String:
 		return "difficult"
 	return "open"
 
-## Check if a tile is water terrain (prevents charging)
+## Check if a tile is water terrain
 func _is_water_terrain(pos: Vector2i) -> bool:
-	# Water terrain has cost 2 and specific tile type — for now heuristic
-	return false  # Will be populated when terrain system is expanded
+	if controller == null or controller.tile_map == null:
+		return false
+	var tile_data = controller.tile_map.get_cell_tile_data(0, pos)
+	if tile_data == null:
+		return false
+	var blocks_data = tile_data.get_custom_data("Blocks") if tile_data.get_custom_data("Blocks") != null else ""
+	return typeof(blocks_data) == TYPE_STRING and blocks_data == "water"
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1240,6 +1572,7 @@ func fragment_overload(attacker: Dictionary, target: Dictionary): _skill_manager
 func coordinated_fire(attacker: Dictionary, target: Dictionary): _skill_manager.coordinated_fire(self, attacker, target)
 func repair(attacker: Dictionary, target: Dictionary): _skill_manager.repair(self, attacker, target)
 func artillery_barrage(attacker: Dictionary, target: Dictionary): _skill_manager.artillery_barrage(self, attacker, target)
+func overcharge(attacker: Dictionary, target: Dictionary): _skill_manager.overcharge_attack(self, attacker, target)
 func corrupt_bite(attacker: Dictionary, target: Dictionary): _skill_manager.corrupt_bite(self, attacker, target)
 func blood_tithe(attacker: Dictionary, target: Dictionary): _skill_manager.blood_tithe(self, attacker, target)
 func shadow_step(attacker: Dictionary, target: Dictionary): _skill_manager.shadow_step(self, attacker, target)
@@ -1261,6 +1594,14 @@ func rally(attacker: Dictionary, target: Dictionary): _skill_manager.rally(self,
 
 ## Overwatch
 func overwatch(attacker: Dictionary, target: Dictionary): _skill_manager.overwatch(self, attacker, target)
+
+## Brace (universal)
+func brace(attacker: Dictionary, target: Dictionary): _skill_manager.brace(self, attacker, target)
+
+## Iron Dominion: Grid Command skills
+func grid_fire_order(attacker: Dictionary, target: Dictionary): _skill_manager.grid_fire_order(self, attacker, target)
+func grid_shield_protocol(attacker: Dictionary, target: Dictionary): _skill_manager.grid_shield_protocol(self, attacker, target)
+func grid_relay(attacker: Dictionary, target: Dictionary): _skill_manager.grid_relay(self, attacker, target)
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1361,7 +1702,7 @@ func check_morale(comb: Dictionary) -> void:
 	result.margin += shaken_penalty
 	var faction = side_faction[comb.side]
 	var flavor = MORALE_FLAVOR.get(faction, ["Holds firm.", "%s wavers!", "%s flees!"])
-	if result.passed and result.margin + shaken_penalty >= 0:
+	if result.passed and result.margin >= 0:
 		update_information.emit("[color=lime]%s[/color] passes morale (%d vs MOR %d) — [i]%s[/i]\n" % [
 			comb.name, result.total, result.mor, flavor[0]])
 	else:
@@ -1378,6 +1719,7 @@ func check_morale(comb: Dictionary) -> void:
 			comb.shaken = true
 			if "shaken" not in comb.status_effects:
 				comb.status_effects.append("shaken")
+			AudioManager.play_sfx("morale_break", 0.05)
 			update_information.emit("[color=orange]%s[/color] is SHAKEN (%d vs MOR %d) — [i]%s[/i]\n" % [
 				comb.name, result.total, result.mor, flavor[1] % comb.name])
 
@@ -1389,13 +1731,34 @@ func _apply_routed_flee(comb: Dictionary) -> void:
 	var pos: Vector2i = comb.position
 	var flee_dist: int = comb.mov + comb.mov_modifier
 	var direction := -1 if comb.side == 0 else 1
-	var new_x := clampi(pos.x + direction * flee_dist, 0, 35)
-	comb.position = Vector2i(new_x, pos.y)
+	# Step tile-by-tile, stopping at impassable terrain or occupied tiles
+	var new_pos := pos
+	for step in range(1, flee_dist + 1):
+		var candidate := Vector2i(clampi(pos.x + direction * step, 0, 35), pos.y)
+		# Check for impassable terrain
+		if controller and controller.tile_map:
+			var tile_data = controller.tile_map.get_cell_tile_data(0, candidate)
+			if tile_data != null:
+				var cost = int(tile_data.get_custom_data("Cost"))
+				if cost < 0 or cost >= 99:
+					break  # Can't flee through impassable terrain
+			else:
+				break  # No tile data = out of bounds
+		# Check for occupied tiles
+		var blocked := false
+		for other in combatants:
+			if other != comb and other.alive and other.position == candidate:
+				blocked = true
+				break
+		if blocked:
+			break
+		new_pos = candidate
+	comb.position = new_pos
 	if comb.get("sprite"):
 		comb.sprite.position = Vector2(comb.position * 32) + Vector2(16, 16)
 	update_information.emit("[color=orange]%s flees toward the board edge! (now at %s)[/color]\n" % [comb.name, str(comb.position)])
 	# Check if reached board edge — removed from play
-	if (comb.side == 0 and new_x <= 0) or (comb.side == 1 and new_x >= 35):
+	if (comb.side == 0 and new_pos.x <= 0) or (comb.side == 1 and new_pos.x >= 35):
 		update_information.emit("[color=red]%s has fled the battlefield![/color]\n" % comb.name)
 		combatant_die(comb)
 
@@ -1415,6 +1778,7 @@ func combatant_die(combatant: Dictionary):
 		var death_lines = DEATH_FLAVOR.get(faction, ["%s destroyed.", "%s falls!"])
 		var death_msg = death_lines[1] % combatant.name if is_commander else death_lines[0] % combatant.name
 		update_information.emit("[color=red]%s[/color]\n" % death_msg)
+		AudioManager.play_sfx("unit_death", 0.05)
 
 		# Score kill VP
 		var killer_side = 1 if combatant.side == 0 else 0
@@ -1497,6 +1861,7 @@ func combat_finish():
 	if _combat_over:
 		return
 	_combat_over = true
+	AudioManager.stop_music(true)
 	GameStateMachine.transition_to(GameStateMachine.GameState.GAME_OVER)
 	# Score final round objectives before declaring winner
 	if scenario_manager:
@@ -1572,9 +1937,12 @@ func _on_combat_finished():
 	if game_ui and game_ui.has_method("show_results_screen"):
 		game_ui.show_results_screen(results)
 	else:
-		# Fallback: wait and return to menu
+		# Fallback: wait and return appropriately
 		await get_tree().create_timer(4.0).timeout
-		get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+		if BattleConfig.is_campaign:
+			get_tree().change_scene_to_file("res://scenes/campaign_overview.tscn")
+		else:
+			get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1639,6 +2007,7 @@ func _make_card(card_name: String, card_type: String, desc: String, effects: Dic
 	}
 
 func _draw_cards(side: int, count: int):
+	var drew_any := false
 	for i in range(count):
 		if card_hands[side].size() >= GameRules.MAX_HAND_SIZE:
 			break
@@ -1649,6 +2018,9 @@ func _draw_cards(side: int, count: int):
 			card_decks[side].shuffle()
 		if not card_decks[side].is_empty():
 			card_hands[side].append(card_decks[side].pop_back())
+			drew_any = true
+	if drew_any and side == 0:
+		AudioManager.play_sfx("card_draw")
 
 ## Enforce hand limit — discard random excess cards (AI) or oldest (for consistency)
 func _enforce_hand_limit(side: int) -> void:
@@ -1663,6 +2035,10 @@ func play_card(card: Dictionary):
 	var side = 0  # Player side
 	if card not in card_hands[side]:
 		return
+	# Cards can only be played during Command phase (before movement)
+	if not is_card_phase():
+		update_information.emit("[color=gray]Cards can only be played during the Command phase (before moving).[/color]\n")
+		return
 	# Check CP cost
 	var cp_cost = card.get("cp_cost", 1)
 	if command_points[side] < cp_cost:
@@ -1672,139 +2048,26 @@ func play_card(card: Dictionary):
 	if round_number <= 1 and cp_cost >= 3:
 		update_information.emit("[color=gray]Cannot play cards costing 3+ CP on Turn 1.[/color]\n")
 		return
+	# Check faction resource costs before committing
+	var effects = card.get("effects", {})
+	if effects.has("heat_cost"):
+		if not faction_state[side].has("heat") or faction_state[side].heat < effects.heat_cost:
+			update_information.emit("[color=red]Not enough Heat (%d needed, have %d)[/color]\n" % [effects.heat_cost, faction_state[side].get("heat", 0)])
+			return
+	if effects.has("flow_cost"):
+		if not faction_state[side].has("flow") or faction_state[side].flow < effects.flow_cost:
+			update_information.emit("[color=red]Not enough Flow (%d needed, have %d)[/color]\n" % [effects.flow_cost, faction_state[side].get("flow", 0)])
+			return
+	if effects.has("fate_cost"):
+		if not faction_state[side].has("fate_threads") or faction_state[side].fate_threads < effects.fate_cost:
+			update_information.emit("[color=red]Not enough Fate Threads (%d needed, have %d)[/color]\n" % [effects.fate_cost, faction_state[side].get("fate_threads", 0)])
+			return
 	command_points[side] -= cp_cost
 	card_hands[side].erase(card)
 	card_discard[side].append(card)
-	var effects = card.get("effects", {})
 
 	update_information.emit("[color=gold]Card played: %s (-%d CP)[/color]\n" % [card.name, cp_cost])
-
-	# Apply card effects
-	if effects.has("atk_bonus"):
-		for idx in groups[side]:
-			combatants[idx].atk_modifier += effects.atk_bonus
-
-	if effects.has("def_bonus"):
-		for idx in groups[side]:
-			combatants[idx].def_modifier += effects.def_bonus
-
-	if effects.has("mov_bonus"):
-		for idx in groups[side]:
-			# Use a temporary mov modifier that resets at round start (not permanent base stat)
-			combatants[idx].mov_modifier = combatants[idx].get("mov_modifier", 0) + effects.mov_bonus
-
-	if effects.has("heal"):
-		# Heal the current combatant
-		var comb = get_current_combatant()
-		comb.hp = mini(comb.hp + effects.heal, comb.max_hp)
-		update_combatants.emit(combatants)
-
-	if effects.has("remove_shaken"):
-		for idx in groups[side]:
-			if combatants[idx].shaken:
-				combatants[idx].shaken = false
-				update_information.emit("%s rallied by card!\n" % combatants[idx].name)
-				break
-
-	if effects.has("draw"):
-		_draw_cards(side, effects.draw)
-
-	# ── AoE damage (e.g., Firestorm) ──
-	if effects.has("aoe_damage"):
-		var enemy_side = 1 - side
-		var aoe_dmg: int = effects.aoe_damage
-		for idx in groups[enemy_side].duplicate():
-			var t = combatants[idx]
-			if t.alive:
-				apply_damage(t, aoe_dmg)
-				if _combat_over:
-					return
-
-	# ── Corruption AoE (Nightfang) ──
-	if effects.has("corruption_aoe"):
-		var enemy_side = 1 - side
-		var tokens: int = effects.corruption_aoe
-		for idx in groups[enemy_side]:
-			var t = combatants[idx]
-			if t.alive:
-				t.corruption_tokens = t.get("corruption_tokens", 0) + tokens
-				update_information.emit("[color=purple]%s gains %d corruption![/color]\n" % [t.name, tokens])
-
-	# ── CMD damage (commander debuff) ──
-	if effects.has("cmd_damage"):
-		var enemy_side = 1 - side
-		for idx in groups[enemy_side]:
-			var t = combatants[idx]
-			if t.alive and t.get("cmd", 0) > 0:
-				t.atk_modifier -= effects.cmd_damage
-				update_information.emit("[color=red]%s's command disrupted (-%d ATK)![/color]\n" % [t.name, effects.cmd_damage])
-				break  # Hit one commander
-
-	# ── Stealth (Shadow Shroud) ──
-	if effects.has("stealth"):
-		for idx in groups[side]:
-			var c = combatants[idx]
-			if c.alive and "stealthed" not in c.status_effects:
-				c.status_effects.append("stealthed")
-				c.def_modifier += 2
-		update_information.emit("[color=dark_violet]All allies enter shadow shroud (+2 DEF, hidden).[/color]\n")
-
-	# ── Counter (Counter Strike) ──
-	if effects.has("counter"):
-		var comb = get_current_combatant()
-		if not comb.has("status_effects"):
-			comb.status_effects = []
-		comb.status_effects.append("counter")
-		update_information.emit("[color=steel_blue]%s readies a counter strike![/color]\n" % comb.name)
-
-	# ── Ambush ──
-	if effects.has("ambush"):
-		var comb = get_current_combatant()
-		if not comb.has("status_effects"):
-			comb.status_effects = []
-		comb.status_effects.append("ambush")
-		comb.atk_modifier += 2
-		update_information.emit("[color=dark_green]%s sets an ambush (+2 ATK next attack)![/color]\n" % comb.name)
-
-	# ── Teleport (Veilbound) ──
-	if effects.has("teleport"):
-		update_information.emit("[color=blue]Teleport effect granted to next move.[/color]\n")
-
-	# ── Heat gain / cost (Emberclaw) ──
-	if effects.has("heat_gain"):
-		_faction_mgr.modify_heat(faction_state[side], effects.heat_gain)
-	if effects.has("heat_cost"):
-		var state = faction_state[side]
-		if state.has("heat") and state.heat >= effects.heat_cost:
-			_faction_mgr.modify_heat(state, -effects.heat_cost)
-		else:
-			update_information.emit("[color=red]Not enough Heat for card effect.[/color]\n")
-
-	# ── Flow gain / cost (Veilbound) ──
-	if effects.has("flow_gain"):
-		if faction_state[side].has("flow"):
-			faction_state[side].flow += effects.flow_gain
-	if effects.has("flow_cost"):
-		if faction_state[side].has("flow") and faction_state[side].flow >= effects.flow_cost:
-			faction_state[side].flow -= effects.flow_cost
-
-	# ── Fate cost (Thornweft) ──
-	if effects.has("fate_cost"):
-		if faction_state[side].has("fate_threads") and faction_state[side].fate_threads >= effects.fate_cost:
-			faction_state[side].fate_threads -= effects.fate_cost
-
-	# ── Grid override (Iron Dominion) ──
-	if effects.has("grid_override"):
-		for idx in groups[side]:
-			combatants[idx].def_modifier += 1
-		update_information.emit("[color=steel_blue]Grid Override: all units +1 DEF this round.[/color]\n")
-
-	# ── War Machine MOV bonus ──
-	if effects.has("wm_mov"):
-		for idx in groups[side]:
-			if combatants[idx].get("definition") and combatants[idx].definition.unit_type == CombatantDefinition.UnitType.WAR_MACHINE:
-				combatants[idx].mov_modifier = combatants[idx].get("mov_modifier", 0) + effects.wm_mov
-				update_information.emit("[color=steel_blue]%s gets +%d MOV.[/color]\n" % [combatants[idx].name, effects.wm_mov])
+	_apply_card_effects(side, effects)
 
 	# Update hand in UI
 	if game_ui.has_method("update_card_hand"):
@@ -1825,51 +2088,116 @@ func ai_process(comb: Dictionary):
 	# AI plays a card at start of its first unit's turn each round
 	_ai_try_play_card()
 
-	var nearest_target: Dictionary
-	var nearest_dist := INF
+	# AI target selection: weighted scoring instead of nearest-only
+	var best_target: Dictionary
+	var best_score := -INF
 
 	for target_idx in groups[Group.PLAYERS]:
 		var target = combatants[target_idx]
 		if not target.alive:
 			continue
 		var dist = get_distance(comb, target)
-		if dist < nearest_dist:
-			nearest_dist = dist
-			nearest_target = target
+		var score := 0.0
+		# Distance factor (closer = better, but not the only factor)
+		score -= dist * 2.0
+		# Wounded targets are higher priority
+		var hp_ratio = float(target.hp) / float(target.max_hp)
+		score += (1.0 - hp_ratio) * 15.0
+		# Commanders are high-value targets
+		if target.definition.is_commander():
+			score += 10.0
+		# Support/artillery are squishy high-value
+		if target.definition.unit_type == CombatantDefinition.UnitType.SUPPORT or target.definition.unit_type == CombatantDefinition.UnitType.ARTILLERY:
+			score += 5.0
+		# Shaken targets are easier to finish off
+		if target.shaken:
+			score += 7.0
+		# In range bonus (can actually attack this turn)
+		if dist <= 1 or (comb.rng > 1 and dist <= comb.rng):
+			score += 12.0
+		if score > best_score:
+			best_score = score
+			best_target = target
 
-	if nearest_target.is_empty():
+	if best_target.is_empty():
 		advance_turn()
 		return
+
+	var nearest_dist = get_distance(comb, best_target)
 
 	# Non-Combatant AI: just move toward objectives, don't attack
 	if comb.definition.has_special("Non-Combatant"):
 		if nearest_dist > 3:
-			await controller.ai_process(nearest_target.position)
+			await controller.ai_process(best_target.position)
 		advance_turn()
 		return
 
+	# AI Rally: try to rally a nearby shaken ally
+	if "rally" in comb.get("skill_list", []) and comb.definition.is_commander():
+		var shaken_ally: Dictionary
+		var closest_shaken_dist := 999
+		for idx in groups[comb.side]:
+			var ally = combatants[idx]
+			if ally.alive and ally.shaken and ally != comb:
+				var d = get_distance(comb, ally)
+				if d <= 6 and d < closest_shaken_dist:
+					closest_shaken_dist = d
+					shaken_ally = ally
+		if not shaken_ally.is_empty():
+			rally(comb, shaken_ally)
+			return
+
+	# Support units: move toward wounded allies instead of enemies
+	if comb.definition.unit_type == CombatantDefinition.UnitType.SUPPORT:
+		var wounded_ally: Dictionary
+		var worst_ratio := 0.8
+		for idx in groups[comb.side]:
+			var ally = combatants[idx]
+			if ally.alive and ally != comb:
+				var ratio = float(ally.hp) / float(ally.max_hp)
+				if ratio < worst_ratio:
+					worst_ratio = ratio
+					wounded_ally = ally
+		if not wounded_ally.is_empty():
+			# Try to heal/support the wounded ally
+			if _ai_try_use_skill(comb, wounded_ally, get_distance(comb, wounded_ally)):
+				return
+			# Move toward the wounded ally
+			if get_distance(comb, wounded_ally) > 1:
+				await controller.ai_process(wounded_ally.position)
+				if get_distance(comb, wounded_ally) <= 1 and "repair" in comb.get("skill_list", []):
+					repair(comb, wounded_ally)
+					return
+			advance_turn()
+			return
+
 	# Try using a faction skill before basic attack
-	if _ai_try_use_skill(comb, nearest_target, nearest_dist):
+	if _ai_try_use_skill(comb, best_target, nearest_dist):
 		return
 
 	if nearest_dist <= 1:
-		attack(comb, nearest_target, "attack_melee")
+		attack(comb, best_target, "attack_melee")
 		return
 
 	# Engaged units can't shoot — must melee or skip
 	var is_engaged := "engaged" in comb.get("status_effects", [])
 
 	if comb.rng > 1 and nearest_dist <= comb.rng and not is_engaged:
-		attack(comb, nearest_target, "attack_ranged")
+		attack(comb, best_target, "attack_ranged")
 		return
 
-	# Can't move while engaged
+	# Can't move while engaged (unless flying — free disengage)
 	if is_engaged:
-		advance_turn()
-		return
+		if comb.movement_class == 1:
+			# Flying: free disengage
+			comb.status_effects.erase("engaged")
+			update_information.emit("[color=cyan]%s takes flight and disengages![/color]\n" % comb.name)
+		else:
+			advance_turn()
+			return
 
 	# Move toward target then attack if in range
-	await controller.ai_process(nearest_target.position)
+	await controller.ai_process(best_target.position)
 
 	# Check for overwatch from player units
 	_check_overwatch(comb)
@@ -1877,12 +2205,16 @@ func ai_process(comb: Dictionary):
 	if not comb.alive:
 		return  # Killed by overwatch
 
-	if get_distance(comb, nearest_target) <= 1:
-		attack(comb, nearest_target, "attack_melee")
-	elif comb.rng > 1 and get_distance(comb, nearest_target) <= comb.rng:
-		attack(comb, nearest_target, "attack_ranged")
+	if get_distance(comb, best_target) <= 1:
+		attack(comb, best_target, "attack_melee")
+	elif comb.rng > 1 and get_distance(comb, best_target) <= comb.rng:
+		attack(comb, best_target, "attack_ranged")
 	else:
-		advance_turn()
+		# Ranged units with overwatch skill set it when they can't reach a target
+		if comb.rng > 1 and "overwatch" in comb.get("skill_list", []) and not comb.overwatch_active:
+			overwatch(comb, comb)
+		else:
+			advance_turn()
 
 
 ## AI considers using a faction skill. Returns true if it used one (and already advanced turn).
@@ -1891,9 +2223,21 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 	var state: Dictionary = faction_state[side]
 	var skill_list: Array = comb.get("skill_list", [])
 	# Skip basic attacks and overwatch — AI already handles those
-	var basic_skills := ["attack_melee", "attack_ranged", "basic_magic", "overwatch", "rally"]
+	var basic_skills := ["attack_melee", "attack_ranged", "basic_magic", "overwatch"]
 
 	# ── Self-buff / heal priorities first ──
+	# Grid Command: fire order when multiple enemies nearby
+	if "grid_fire_order" in skill_list and state.get("grid_cohesion", 0) >= 2 and dist <= 4:
+		grid_fire_order(comb, comb)
+		return true
+	# Grid Command: shield protocol when wounded
+	if "grid_shield_protocol" in skill_list and state.get("grid_cohesion", 0) >= 2 and float(comb.hp) / float(comb.max_hp) < 0.7:
+		grid_shield_protocol(comb, comb)
+		return true
+	# Grid Relay: restore CP when cohesion is high
+	if "grid_relay" in skill_list and state.get("grid_cohesion", 0) >= 5:
+		grid_relay(comb, comb)
+		return true
 	# Blood Tithe: sacrifice 1 HP for +2 ATK when HP > 2 and enemy adjacent
 	if "blood_tithe" in skill_list and comb.hp > 2 and dist <= 1:
 		blood_tithe(comb, comb)
@@ -1967,6 +2311,10 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 	if "pyroclasm" in skill_list and dist >= 1 and dist <= 8 and state.get("heat", 0) >= 3:
 		pyroclasm(comb, target)
 		return true
+	# Overcharge: double ATK dice, self-damage after — use when enemy is in range
+	if "overcharge" in skill_list and dist >= 2 and dist <= comb.rng:
+		overcharge(comb, target)
+		return true
 	# Artillery Barrage: long-range heavy attack
 	if "artillery_barrage" in skill_list and dist >= 4 and dist <= 16:
 		artillery_barrage(comb, target)
@@ -2002,12 +2350,20 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 				feast(comb, dead_enemy)
 				return true
 
+	# ── Brace: defensive hold when no enemies in melee range ──
+	if "brace" in skill_list and dist > 1 and dist <= 4 and not comb.get("braced", false):
+		brace(comb, comb)
+		return true
+
 	return false
 
 ## Check if any enemies with overwatch can fire at a unit that just moved.
 ## Uses auto_advance=false so it does NOT consume a turn.
 func _check_overwatch(mover: Dictionary):
 	if _combat_over:
+		return
+	# Flying units cannot be targeted by overwatch — they're flying above the battlefield
+	if mover.movement_class == 1:
 		return
 	var enemy_side = 1 if mover.side == 0 else 0
 	for idx in groups[enemy_side]:
@@ -2023,42 +2379,215 @@ func _check_overwatch(mover: Dictionary):
 				watcher.atk_modifier += 1
 				break  # Only one overwatch per move
 
-## AI card play — plays one useful card per round if it has CP
+## AI card play — plays one useful card per round if it has CP.
+## Now considers faction-specific cards in addition to generic ones.
 func _ai_try_play_card():
 	var side := 1
 	if card_hands[side].is_empty() or command_points[side] <= 0:
 		return
-	# Prioritize: War Cry > Fortify > Reinforce > Tactical Reserve
-	var priority_names = ["War Cry", "Fortify", "Reinforce", "Tactical Reserve"]
+
+	# Build a priority list based on faction and game state
+	var priority_names: Array[String] = []
+	var faction = side_faction[side]
+
+	# Faction-specific card priorities
+	match faction:
+		CombatantDefinition.Faction.EMBERCLAW:
+			# Firestorm when heat is high enough, Drake Fury for damage
+			if faction_state[side].get("heat", 0) >= 5:
+				priority_names.append("Firestorm")
+			priority_names.append("Drake Fury")
+			priority_names.append("Thermal Surge")
+		CombatantDefinition.Faction.IRON_DOMINION:
+			priority_names.append("Grid Override")
+			priority_names.append("Fragment Charge")
+			priority_names.append("Mechanical March")
+		CombatantDefinition.Faction.NIGHTFANG:
+			priority_names.append("Corruption Wave")
+			priority_names.append("Blood Frenzy")
+			priority_names.append("Shadow Shroud")
+		CombatantDefinition.Faction.THORNWEFT:
+			priority_names.append("Web Expansion")
+			if faction_state[side].get("fate_threads", 0) >= 3:
+				priority_names.append("Fate Sever")
+			priority_names.append("Nature's Shield")
+		CombatantDefinition.Faction.VEILBOUND:
+			if faction_state[side].get("flow", 0) >= 5:
+				priority_names.append("Veil Rift")
+			priority_names.append("Stance Shift")
+			priority_names.append("Spirit Surge")
+
+	# Then generic cards as fallback
+	priority_names.append_array(["War Cry", "Fortify", "Reinforce", "Tactical Reserve"])
+
 	for pname in priority_names:
 		for card in card_hands[side]:
 			if card.name == pname:
 				var cp_cost = card.get("cp_cost", 1)
 				if command_points[side] >= cp_cost:
+					# Check faction resource costs
+					var effects = card.get("effects", {})
+					if effects.has("heat_cost"):
+						if faction_state[side].get("heat", 0) < effects.heat_cost:
+							continue
+					if effects.has("flow_cost"):
+						if faction_state[side].get("flow", 0) < effects.flow_cost:
+							continue
+					if effects.has("fate_cost"):
+						if faction_state[side].get("fate_threads", 0) < effects.fate_cost:
+							continue
 					command_points[side] -= cp_cost
 					card_hands[side].erase(card)
 					card_discard[side].append(card)
-					var effects = card.get("effects", {})
 					update_information.emit("[color=red]Enemy plays: %s[/color]\n" % card.name)
-					if effects.has("atk_bonus"):
-						for idx in groups[side]:
-							combatants[idx].atk_modifier += effects.atk_bonus
-					if effects.has("def_bonus"):
-						for idx in groups[side]:
-							combatants[idx].def_modifier += effects.def_bonus
-					if effects.has("heal"):
-						# Heal lowest HP enemy unit
-						var lowest_hp_comb = null
-						var lowest_ratio := 1.0
-						for idx in groups[side]:
-							var c = combatants[idx]
-							if c.alive and c.hp < c.max_hp:
-								var ratio = float(c.hp) / float(c.max_hp)
-								if ratio < lowest_ratio:
-									lowest_ratio = ratio
-									lowest_hp_comb = c
-						if lowest_hp_comb:
-							lowest_hp_comb.hp = mini(lowest_hp_comb.hp + effects.heal, lowest_hp_comb.max_hp)
-					if effects.has("draw"):
-						_draw_cards(side, effects.draw)
+					_apply_card_effects(side, effects)
 					return  # Play at most 1 card per AI activation
+
+## Apply card effects for a given side (shared between player play_card and AI).
+## Card buffs cap at +3 per stat to prevent stacking abuse.
+func _apply_card_effects(side: int, effects: Dictionary) -> void:
+	if effects.has("atk_bonus"):
+		for idx in groups[side]:
+			var c = combatants[idx]
+			if c.atk_modifier < 3:  # Cap card ATK stacking at +3
+				c.atk_modifier += effects.atk_bonus
+	if effects.has("def_bonus"):
+		for idx in groups[side]:
+			var c = combatants[idx]
+			if c.def_modifier < 3:  # Cap card DEF stacking at +3
+				c.def_modifier += effects.def_bonus
+	if effects.has("heal"):
+		# Heal lowest HP unit on that side
+		var lowest_hp_comb = null
+		var lowest_ratio := 1.0
+		for idx in groups[side]:
+			var c = combatants[idx]
+			if c.alive and c.hp < c.max_hp:
+				var ratio = float(c.hp) / float(c.max_hp)
+				if ratio < lowest_ratio:
+					lowest_ratio = ratio
+					lowest_hp_comb = c
+		if lowest_hp_comb:
+			lowest_hp_comb.hp = mini(lowest_hp_comb.hp + effects.heal, lowest_hp_comb.max_hp)
+	if effects.has("draw"):
+		_draw_cards(side, effects.draw)
+	if effects.has("aoe_damage"):
+		var enemy_side = 1 - side
+		var aoe_dmg: int = effects.aoe_damage
+		for idx in groups[enemy_side].duplicate():
+			var t = combatants[idx]
+			if t.alive:
+				apply_damage(t, aoe_dmg)
+				if _combat_over:
+					return
+	if effects.has("corruption_aoe"):
+		var enemy_side = 1 - side
+		var tokens: int = effects.corruption_aoe
+		for idx in groups[enemy_side]:
+			var t = combatants[idx]
+			if t.alive:
+				t.corruption_tokens = t.get("corruption_tokens", 0) + tokens
+				update_information.emit("[color=purple]%s gains %d corruption![/color]\n" % [t.name, tokens])
+	if effects.has("stealth"):
+		for idx in groups[side]:
+			var c = combatants[idx]
+			if c.alive and "stealthed" not in c.status_effects:
+				c.status_effects.append("stealthed")
+				c.def_modifier += 2
+		update_information.emit("[color=dark_violet]All allies enter shadow shroud (+2 DEF, hidden).[/color]\n")
+	if effects.has("grid_override"):
+		for idx in groups[side]:
+			combatants[idx].def_modifier += 1
+		update_information.emit("[color=steel_blue]Grid Override: all units +1 DEF this round.[/color]\n")
+	if effects.has("wm_mov"):
+		for idx in groups[side]:
+			if combatants[idx].get("definition") and combatants[idx].definition.unit_type == CombatantDefinition.UnitType.WAR_MACHINE:
+				combatants[idx].mov_modifier = combatants[idx].get("mov_modifier", 0) + effects.wm_mov
+				update_information.emit("[color=steel_blue]%s gets +%d MOV.[/color]\n" % [combatants[idx].name, effects.wm_mov])
+	if effects.has("heat_gain"):
+		_faction_mgr.modify_heat(faction_state[side], effects.heat_gain)
+	if effects.has("heat_cost"):
+		var state = faction_state[side]
+		if state.has("heat") and state.heat >= effects.heat_cost:
+			_faction_mgr.modify_heat(state, -effects.heat_cost)
+	if effects.has("flow_gain"):
+		if faction_state[side].has("flow"):
+			faction_state[side].flow += effects.flow_gain
+	if effects.has("flow_cost"):
+		if faction_state[side].has("flow") and faction_state[side].flow >= effects.flow_cost:
+			faction_state[side].flow -= effects.flow_cost
+	if effects.has("fate_cost"):
+		if faction_state[side].has("fate_threads") and faction_state[side].fate_threads >= effects.fate_cost:
+			faction_state[side].fate_threads -= effects.fate_cost
+	if effects.has("mov_bonus"):
+		for idx in groups[side]:
+			combatants[idx].mov_modifier = combatants[idx].get("mov_modifier", 0) + effects.mov_bonus
+	if effects.has("cmd_damage"):
+		var enemy_side = 1 - side
+		for idx in groups[enemy_side]:
+			var t = combatants[idx]
+			if t.alive and t.get("cmd", 0) > 0:
+				t.atk_modifier -= effects.cmd_damage
+				update_information.emit("[color=red]%s's command disrupted (-%d ATK)![/color]\n" % [t.name, effects.cmd_damage])
+				break
+	# Stance Shift: switch all Veilbound stance units to the opposite stance
+	if effects.has("stance_shift"):
+		for idx in groups[side]:
+			var c = combatants[idx]
+			if c.alive and c.definition.faction == CombatantDefinition.Faction.VEILBOUND:
+				var new_stance = "revelation" if c.get("stance", "") == "honor" else "honor"
+				_faction_mgr.switch_stance(c, new_stance)
+		update_information.emit("[color=cyan]All Veilbound units shift stance![/color]\n")
+	# Teleport: mark the side as having a teleport available
+	if effects.has("teleport"):
+		faction_state[side]["teleport_available"] = true
+		update_information.emit("[color=blue]Teleport ready — next unit can teleport anywhere on the map.[/color]\n")
+	# Web Expansion: place web anchors at random positions near existing units
+	if effects.has("anchors"):
+		var anchor_count: int = effects.anchors
+		var state = faction_state[side]
+		if not state.has("web_anchors"):
+			state["web_anchors"] = []
+		for i in range(anchor_count):
+			# Place near a random alive friendly unit
+			var alive_units := []
+			for idx in groups[side]:
+				if combatants[idx].alive:
+					alive_units.append(combatants[idx])
+			if alive_units.size() > 0:
+				var ref_unit = alive_units[randi() % alive_units.size()]
+				var anchor_pos = Vector2i(
+					clampi(ref_unit.position.x + randi_range(-3, 3), 0, 35),
+					clampi(ref_unit.position.y + randi_range(-3, 3), 0, 20))
+				state.web_anchors.append(anchor_pos)
+				update_information.emit("[color=green]Web-Anchor placed at %s[/color]\n" % str(anchor_pos))
+	# Counter Strike
+	if effects.has("counter"):
+		var comb = get_current_combatant()
+		if "counter" not in comb.get("status_effects", []):
+			comb.status_effects.append("counter")
+		update_information.emit("[color=steel_blue]%s readies a counter strike![/color]\n" % comb.name)
+	# Ambush
+	if effects.has("ambush"):
+		var comb = get_current_combatant()
+		if "ambush" not in comb.get("status_effects", []):
+			comb.status_effects.append("ambush")
+			comb.atk_modifier += 2
+		update_information.emit("[color=dark_green]%s sets an ambush (+2 ATK next attack)![/color]\n" % comb.name)
+	# Remove Shaken
+	if effects.has("remove_shaken"):
+		for idx in groups[side]:
+			if combatants[idx].shaken:
+				combatants[idx].shaken = false
+				update_information.emit("%s rallied by card!\n" % combatants[idx].name)
+				break
+	# Negate (Fate Sever) — remove one random buff from all enemies this round
+	if effects.has("negate"):
+		var enemy_side = 1 - side
+		for idx in groups[enemy_side]:
+			var c = combatants[idx]
+			if c.alive and c.atk_modifier > 0:
+				c.atk_modifier = maxi(0, c.atk_modifier - 1)
+			if c.alive and c.def_modifier > 0:
+				c.def_modifier = maxi(0, c.def_modifier - 1)
+		update_information.emit("[color=green]Fate Sever strips enemy enhancements![/color]\n")

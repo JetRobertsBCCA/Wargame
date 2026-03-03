@@ -69,10 +69,10 @@ static func _cavalry() -> Array:
 		_u("Void Crane Riders", CAV, 12, 4, 9, 10, 1, 7, 6, ["Spirit Glide", "Spirit Descent", "Samurai's Challenge"], 0, false, "", 2),
 		_u("Thunder Kirin Cavalry", CAV, 9, 4, 6, 9, 1, 7, 5, ["Momentum Strike", "Cascading Thunder"], 0, false, "", 2),
 		_u("Dreambound Riders", CAV, 12, 4, 12, 10, 1, 8, 7, ["Dream Walk", "Dream Step", "Momentum Strike"], 0, false, "", 3),
-		_u("Shrine Lion Riders", CAV, 9, 4, 9, 8, 1, 8, 5, ["Momentum Strike", "Guardian Aura", "Shrine Oath"], 0, false, "", 1),
-		_u("Spirit Wolf Hunters", CAV, 9, 3, 9, 9, 1, 7, 5, ["Pack Tactics", "Momentum Strike"], 0, false, "", 2),
-		_u("Eclipse Manta Riders", CAV, 12, 3, 6, 10, 6, 7, 6, ["Spirit Glide", "Suppression", "Flowing Retreat"], 0, false, "", 2),
-		_u("Spirit Dragon Cohort", CAV, 9, 4, 6, 9, 1, 8, 5, ["Momentum Strike", "Cavalry Amplifier", "Dragon Bond"], 0, false, "", 3),
+		_u("Shrine Lion Riders", INF, 9, 4, 9, 6, 1, 8, 5, ["Momentum Strike", "Guardian Aura", "Shrine Oath"], 0, false, "", 1),
+		_u("Spirit Wolf Hunters", INF, 9, 3, 9, 7, 1, 7, 5, ["Pack Tactics", "Momentum Strike"], 0, false, "", 2),
+		_u("Eclipse Manta Riders", SUP, 12, 3, 6, 8, 6, 7, 6, ["Spirit Glide", "Suppression", "Flowing Retreat"], 0, false, "", 2),
+		_u("Spirit Dragon Cohort", SUP, 9, 4, 6, 7, 1, 8, 5, ["Momentum Strike", "Cavalry Amplifier", "Dragon Bond"], 0, false, "", 3),
 	]
 
 # ── Support (7) ────────────────────────────────────────
@@ -102,7 +102,7 @@ static func _artillery() -> Array:
 		_u("Dreampiercer Archers", ART, 9, 3, 6, 5, 20, 7, 4, ["Phase Arrows", "Disorientation"], 0, false, "", 1),
 		_u("Void Bolt Crossbowmen", ART, 12, 3, 6, 4, 16, 7, 4, ["Armor Piercing", "Heavy"], 0, false, "", 1),
 		_u("Celestial Slingers", ART, 9, 3, 6, 5, 14, 7, 4, ["Blast", "Flow Infused"], 0, false, "", 2),
-		_u("Shadow Marksmen", ART, 9, 3, 6, 5, 22, 8, 5, ["Sharpshot", "Sniper", "Commander Hunter"], 0, false, "", 2),
+		_u("Shadow Marksmen", ART, 9, 3, 6, 5, 12, 8, 5, ["Sharpshot", "Sniper", "Commander Hunter"], 0, false, "", 2),
 	]
 
 # ── Specialists (8) ────────────────────────────────────

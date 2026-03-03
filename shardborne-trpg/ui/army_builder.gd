@@ -32,6 +32,7 @@ var title_label: Label
 var faction_panel: PanelContainer
 var unit_panel: PanelContainer
 var army_panel: PanelContainer
+var _feedback_label: Label  # Shows validation messages
 
 func _ready():
 	_build_ui()
@@ -98,13 +99,23 @@ func _build_ui():
 		var sdata = GameRules.SCENARIOS[key]
 		scenario_option.add_item(sdata.get("name", key), i)
 		scenario_option.set_item_metadata(i, key)
+		scenario_option.set_item_tooltip(i, sdata.get("description", ""))
 	# Default to total_war (index 0 may not be total_war)
 	for i in range(scenario_keys.size()):
 		if scenario_keys[i] == "total_war":
 			scenario_option.select(i)
 			break
-	scenario_option.tooltip_text = "Choose the battle scenario type"
+	scenario_option.tooltip_text = "Choose the battle scenario type. Hover options for details."
 	budget_row.add_child(scenario_option)
+
+	# Feedback label for validation messages
+	_feedback_label = Label.new()
+	_feedback_label.text = ""
+	_feedback_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_feedback_label.add_theme_font_size_override("font_size", 12)
+	_feedback_label.add_theme_color_override("font_color", Color(1.0, 0.5, 0.3))
+	_feedback_label.custom_minimum_size = Vector2(0, 18)
+	vbox.add_child(_feedback_label)
 
 	# Content area — 3 panels side by side
 	var hbox = HBoxContainer.new()
@@ -240,19 +251,33 @@ func _show_unit_list(faction_id: int):
 	all_units.sort_custom(func(a, b): return a.pts < b.pts)
 
 	for unit_def in all_units:
+		var row = HBoxContainer.new()
+		row.add_theme_constant_override("separation", 4)
+		unit_list.add_child(row)
+
 		var btn = Button.new()
 		var type_str = CombatantDefinition.UnitType.keys()[unit_def.unit_type] if unit_def.unit_type < CombatantDefinition.UnitType.size() else "?"
 		btn.text = "%s (%s) — %d pts" % [unit_def.unit_name, type_str, unit_def.pts]
 		btn.tooltip_text = "ATK:%d DEF:%d HP:%d MOV:%d RNG:%d MOR:%d" % [
 			unit_def.atk, unit_def.defense, unit_def.max_hp, unit_def.mov, unit_def.rng, unit_def.mor]
+		btn.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		btn.pressed.connect(_on_unit_added.bind(unit_def))
-		unit_list.add_child(btn)
+		row.add_child(btn)
+
+		var info_btn = Button.new()
+		info_btn.text = "i"
+		info_btn.custom_minimum_size = Vector2(28, 0)
+		info_btn.tooltip_text = "View unit details"
+		info_btn.focus_mode = Control.FOCUS_NONE
+		info_btn.pressed.connect(_show_unit_detail.bind(unit_def))
+		row.add_child(info_btn)
 
 	title_label.text = "SHARDBORNE — Pick Units (%s)" % selecting_for.capitalize()
 
 func _on_unit_added(unit_def: CombatantDefinition):
 	var current_pts = player_points if selecting_for == "player" else enemy_points
 	if current_pts + unit_def.pts > points_budget:
+		_show_feedback("Over budget! Need %d pts, only %d remaining." % [unit_def.pts, points_budget - current_pts])
 		return  # Over budget
 
 	var army = player_army if selecting_for == "player" else enemy_army
@@ -264,6 +289,7 @@ func _on_unit_added(unit_def: CombatantDefinition):
 		if name == unit_def.unit_name:
 			copy_count += 1
 	if copy_count >= GameRules.MAX_UNIT_COPIES:
+		_show_feedback("Max %d copies of %s allowed." % [GameRules.MAX_UNIT_COPIES, unit_def.unit_name])
 		return  # Already at max copies
 
 	# Only 1 legendary per army
@@ -271,6 +297,7 @@ func _on_unit_added(unit_def: CombatantDefinition):
 		for name in army:
 			var d = FactionDatabase.get_unit(name)
 			if d and d.is_legendary:
+				_show_feedback("Only 1 Legendary unit per army. Already have one.")
 				return  # Already have a legendary
 
 	# Specialist/Support budget cap (25% of budget each)
@@ -281,7 +308,11 @@ func _on_unit_added(unit_def: CombatantDefinition):
 			if d and d.unit_type == unit_def.unit_type:
 				type_pts += d.pts
 		if type_pts + unit_def.pts > int(points_budget * GameRules.SPECIALIST_BUDGET_PERCENT):
+			var type_name = "Specialist" if unit_def.unit_type == CombatantDefinition.UnitType.SPECIALIST else "Support"
+			_show_feedback("%s budget exceeded (max 25%% of total)." % type_name)
 			return  # Would exceed specialist/support budget
+
+	_show_feedback("")  # Clear any previous message
 
 	if selecting_for == "player":
 		player_army.append(unit_def.unit_name)
@@ -431,3 +462,120 @@ func _clear_list(container: VBoxContainer):
 		return
 	for child in container.get_children():
 		child.queue_free()
+
+func _show_feedback(msg: String):
+	if _feedback_label:
+		_feedback_label.text = msg
+		if msg != "":
+			# Auto-clear after 3 seconds
+			var tw = create_tween()
+			tw.tween_interval(3.0)
+			tw.tween_callback(func():
+				if _feedback_label and _feedback_label.text == msg:
+					_feedback_label.text = "")
+
+
+func _show_unit_detail(unit_def: CombatantDefinition):
+	"""Show a detailed popup with full unit stats and specials."""
+	var overlay = ColorRect.new()
+	overlay.name = "UnitDetailOverlay"
+	overlay.color = Color(0.0, 0.0, 0.0, 0.65)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(overlay)
+
+	# Close on click outside panel
+	overlay.gui_input.connect(func(ev):
+		if ev is InputEventMouseButton and ev.pressed:
+			overlay.queue_free())
+
+	var center = CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(420, 320)
+	var pstyle = StyleBoxFlat.new()
+	pstyle.bg_color = Color(0.06, 0.05, 0.10, 0.95)
+	pstyle.corner_radius_top_left = 10
+	pstyle.corner_radius_top_right = 10
+	pstyle.corner_radius_bottom_left = 10
+	pstyle.corner_radius_bottom_right = 10
+	pstyle.border_width_top = 2
+	pstyle.border_width_bottom = 2
+	pstyle.border_width_left = 2
+	pstyle.border_width_right = 2
+	pstyle.border_color = Color(0.5, 0.7, 1.0, 0.5)
+	pstyle.content_margin_left = 24
+	pstyle.content_margin_right = 24
+	pstyle.content_margin_top = 20
+	pstyle.content_margin_bottom = 20
+	panel.add_theme_stylebox_override("panel", pstyle)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	panel.add_child(vbox)
+
+	# Title
+	var type_str = CombatantDefinition.UnitType.keys()[unit_def.unit_type] if unit_def.unit_type < CombatantDefinition.UnitType.size() else "?"
+	var title = RichTextLabel.new()
+	title.bbcode_enabled = true
+	title.fit_content = true
+	title.scroll_active = false
+	title.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	title.text = "[color=#6DB3F2][font_size=20]%s[/font_size][/color]  [color=#888][font_size=14]%s — %d pts[/font_size][/color]" % [
+		unit_def.unit_name, type_str, unit_def.pts]
+	vbox.add_child(title)
+
+	vbox.add_child(HSeparator.new())
+
+	# Stats grid
+	var stats_label = RichTextLabel.new()
+	stats_label.bbcode_enabled = true
+	stats_label.fit_content = true
+	stats_label.scroll_active = false
+	stats_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	stats_label.text = "[color=#FFD700]ATK[/color] %d    [color=#44AAFF]DEF[/color] %d    [color=#FF6644]HP[/color] %d    [color=#44FF44]MOV[/color] %d    [color=#FFAA33]RNG[/color] %d    [color=#BB88FF]MOR[/color] %d" % [
+		unit_def.atk, unit_def.defense, unit_def.max_hp, unit_def.mov, unit_def.rng, unit_def.mor]
+	vbox.add_child(stats_label)
+
+	# Commander flag
+	if unit_def.is_commander():
+		var cmd_label = Label.new()
+		cmd_label.text = "★ COMMANDER"
+		cmd_label.add_theme_font_size_override("font_size", 13)
+		cmd_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+		vbox.add_child(cmd_label)
+
+	# Specials
+	if unit_def.specials.size() > 0:
+		vbox.add_child(HSeparator.new())
+		var spec_title = Label.new()
+		spec_title.text = "SPECIAL ABILITIES"
+		spec_title.add_theme_font_size_override("font_size", 13)
+		spec_title.add_theme_color_override("font_color", Color(0.8, 0.7, 0.4))
+		vbox.add_child(spec_title)
+
+		for spec in unit_def.specials:
+			var spec_text = Label.new()
+			spec_text.text = "• %s" % spec
+			spec_text.add_theme_font_size_override("font_size", 12)
+			spec_text.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+			spec_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+			vbox.add_child(spec_text)
+
+	# Close button
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 8)
+	vbox.add_child(spacer)
+
+	var close_btn = Button.new()
+	close_btn.text = "Close"
+	close_btn.custom_minimum_size = Vector2(100, 30)
+	close_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	close_btn.focus_mode = Control.FOCUS_NONE
+	close_btn.add_theme_font_size_override("font_size", 12)
+	close_btn.pressed.connect(func(): overlay.queue_free())
+	vbox.add_child(close_btn)

@@ -62,6 +62,8 @@ func _ready():
 	# Seed initial particles
 	for i in range(25):
 		_spawn_shard(true)
+	# Play menu music
+	AudioManager.play_music("menu")
 
 func _process(delta: float):
 	_update_shards(delta)
@@ -235,8 +237,49 @@ func _build_ui():
 		Color(0.85, 0.3, 0.15), _on_quick_battle)
 	_add_menu_button(right_vbox, "ARMY  BUILDER", "Assemble your forces before the fight",
 		Color(0.3, 0.55, 0.85), _on_army_builder)
-	_add_menu_button(right_vbox, "CAMPAIGN", "Fight through a series of linked battles",
+	_add_menu_button(right_vbox, "CAMPAIGN", "Commander story campaigns with lore and progression",
 		Color(0.2, 0.65, 0.25), _on_campaign)
+
+	# Difficulty selector
+	var diff_hbox = HBoxContainer.new()
+	diff_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	diff_hbox.add_theme_constant_override("separation", 6)
+	right_vbox.add_child(diff_hbox)
+	var diff_title = Label.new()
+	diff_title.text = "Difficulty:"
+	diff_title.add_theme_font_size_override("font_size", 12)
+	diff_title.add_theme_color_override("font_color", Color(0.6, 0.55, 0.5))
+	diff_hbox.add_child(diff_title)
+	var diff_options = OptionButton.new()
+	diff_options.add_item("Easy", 0)
+	diff_options.add_item("Normal", 1)
+	diff_options.add_item("Hard", 2)
+	diff_options.add_item("Brutal", 3)
+	diff_options.selected = BattleConfig.difficulty
+	diff_options.add_theme_font_size_override("font_size", 12)
+	diff_options.custom_minimum_size = Vector2(100, 28)
+	diff_options.item_selected.connect(func(idx): BattleConfig.difficulty = idx)
+	diff_hbox.add_child(diff_options)
+
+	# Tutorial button
+	var tut_btn = Button.new()
+	tut_btn.text = "HOW TO PLAY"
+	tut_btn.custom_minimum_size = Vector2(280, 36)
+	tut_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	tut_btn.add_theme_font_size_override("font_size", 12)
+	var tut_style_n = _make_button_style(Color(0.3, 0.3, 0.15, 0.3))
+	tut_style_n.border_width_left = 3
+	tut_style_n.border_color = Color(0.7, 0.6, 0.2, 0.4)
+	tut_btn.add_theme_stylebox_override("normal", tut_style_n)
+	var tut_style_h = _make_button_style(Color(0.4, 0.35, 0.15, 0.5))
+	tut_style_h.border_width_left = 3
+	tut_style_h.border_color = Color(0.8, 0.7, 0.2)
+	tut_btn.add_theme_stylebox_override("hover", tut_style_h)
+	tut_btn.add_theme_color_override("font_color", Color(0.8, 0.75, 0.5))
+	tut_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.5))
+	tut_btn.focus_mode = Control.FOCUS_NONE
+	tut_btn.pressed.connect(_show_tutorial)
+	right_vbox.add_child(tut_btn)
 
 	# Bottom spacer
 	var expand = Control.new()
@@ -496,10 +539,272 @@ func _draw():
 
 
 # ══════════════════════════════════════════════════════════════
+# TUTORIAL OVERLAY
+# ══════════════════════════════════════════════════════════════
+
+func _show_tutorial():
+	var overlay = ColorRect.new()
+	overlay.color = Color(0.0, 0.0, 0.02, 0.85)
+	overlay.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(overlay)
+
+	var scroll = ScrollContainer.new()
+	scroll.set_anchors_and_offsets_preset(PRESET_FULL_RECT)
+	scroll.add_theme_constant_override("margin_left", 60)
+	scroll.add_theme_constant_override("margin_right", 60)
+	scroll.add_theme_constant_override("margin_top", 30)
+	scroll.add_theme_constant_override("margin_bottom", 30)
+	overlay.add_child(scroll)
+
+	var panel = PanelContainer.new()
+	panel.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	var ps = StyleBoxFlat.new()
+	ps.bg_color = Color(0.06, 0.06, 0.12, 0.95)
+	ps.corner_radius_top_left = 6
+	ps.corner_radius_top_right = 6
+	ps.corner_radius_bottom_left = 6
+	ps.corner_radius_bottom_right = 6
+	ps.content_margin_left = 30
+	ps.content_margin_right = 30
+	ps.content_margin_top = 20
+	ps.content_margin_bottom = 20
+	panel.add_theme_stylebox_override("panel", ps)
+	scroll.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	panel.add_child(vbox)
+
+	var title = Label.new()
+	title.text = "HOW TO PLAY SHARDBORNE"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 20)
+	title.add_theme_color_override("font_color", Color(0.9, 0.8, 0.3))
+	vbox.add_child(title)
+
+	var tutorial_text = RichTextLabel.new()
+	tutorial_text.bbcode_enabled = true
+	tutorial_text.fit_content = true
+	tutorial_text.scroll_active = false
+	tutorial_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	tutorial_text.add_theme_font_size_override("normal_font_size", 13)
+	tutorial_text.text = """[color=gold]═ Turn Structure ═[/color]
+[color=#CCCCDD]Each round, units activate one at a time in initiative order.
+Each unit's turn has 3 phases:[/color]
+
+[color=cyan]1. COMMAND[/color] — Play cards from your hand (costs CP).
+[color=cyan]2. MOVEMENT[/color] — Move up to MOV tiles. Terrain affects cost.
+[color=cyan]3. COMBAT[/color] — Use a skill (attack, ability, or end turn).
+
+[color=gold]═ Combat ═[/color]
+[color=#CCCCDD]Roll ATK dice (d6). Each die ≥ target DEF = 1 hit.
+Rolling a 6 = CRIT (2 damage instead of 1).
+Melee: range 1. Ranged: range = RNG stat. Magic: range = max(RNG, 6).[/color]
+
+[color=gold]═ Morale ═[/color]
+[color=#CCCCDD]When a unit drops below 50%% HP, roll 2d6 vs MOR.
+Fail = Shaken (-1 ATK, must fall back). Fail badly = Routed (removed).[/color]
+
+[color=gold]═ Engagement ═[/color]
+[color=#CCCCDD]Units adjacent to enemies become Engaged.
+Disengaging costs full movement. Flying units disengage free.[/color]
+
+[color=gold]═ Cards & CP ═[/color]
+[color=#CCCCDD]Commanders generate CP each round. Spend CP to play cards.
+Cards provide buffs, heals, AOE damage, and faction abilities.[/color]
+
+[color=gold]═ Flanking & Facing ═[/color]
+[color=#CCCCDD]Attack from the side = +1 ATK (Flank).
+Attack from behind = +2 ATK (Rear). Units face the direction they moved.[/color]
+
+[color=gold]═ Keywords ═[/color]
+[color=#CCCCDD]Blast: AOE splash. Siege: double vs War Machines. Stealth: hidden until attacking.
+Ethereal: 50%% to ignore non-magic hits. Fire Resistant: halves fire damage.[/color]
+
+[color=gold]═ Factions ═[/color]
+[color=orange]Emberclaw[/color] — Heat resource. Aggressive, fire-based, drake bonds.
+[color=#8090CC]Iron Dominion[/color] — Grid Cohesion. Defensive, formation bonuses, Fragment weapons.
+[color=#CC2255]Nightfang[/color] — Hunger. Corruption, undying, life-drain.
+[color=#33BB55]Thornweft[/color] — Fate Threads + Web-Anchors. Terrain control, fate manipulation.
+[color=#3388EE]Veilbound[/color] — Ritual Flow + Stances. Stance switching, spirit abilities.
+"""
+	vbox.add_child(tutorial_text)
+
+	var close_btn = Button.new()
+	close_btn.text = "Close"
+	close_btn.custom_minimum_size = Vector2(120, 36)
+	close_btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	close_btn.add_theme_font_size_override("font_size", 14)
+	close_btn.pressed.connect(func(): overlay.queue_free())
+	vbox.add_child(close_btn)
+
+
+# ══════════════════════════════════════════════════════════════
 # NAVIGATION
 # ══════════════════════════════════════════════════════════════
 
 func _on_quick_battle():
+	_show_quick_battle_picker()
+
+func _show_quick_battle_picker():
+	"""Show a faction selection overlay for quick battle."""
+	var overlay = ColorRect.new()
+	overlay.name = "QuickBattleOverlay"
+	overlay.color = Color(0.0, 0.0, 0.0, 0.7)
+	overlay.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	overlay.mouse_filter = Control.MOUSE_FILTER_STOP
+	add_child(overlay)
+
+	var center = CenterContainer.new()
+	center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	center.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	overlay.add_child(center)
+
+	var panel = PanelContainer.new()
+	panel.custom_minimum_size = Vector2(520, 400)
+	var pstyle = StyleBoxFlat.new()
+	pstyle.bg_color = Color(0.06, 0.05, 0.10, 0.95)
+	pstyle.corner_radius_top_left = 10
+	pstyle.corner_radius_top_right = 10
+	pstyle.corner_radius_bottom_left = 10
+	pstyle.corner_radius_bottom_right = 10
+	pstyle.border_width_top = 2
+	pstyle.border_width_bottom = 2
+	pstyle.border_width_left = 2
+	pstyle.border_width_right = 2
+	pstyle.border_color = Color(0.85, 0.3, 0.15, 0.6)
+	pstyle.content_margin_left = 24
+	pstyle.content_margin_right = 24
+	pstyle.content_margin_top = 20
+	pstyle.content_margin_bottom = 20
+	panel.add_theme_stylebox_override("panel", pstyle)
+	center.add_child(panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 10)
+	panel.add_child(vbox)
+
+	var title = Label.new()
+	title.text = "CHOOSE YOUR FACTION"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(0.9, 0.8, 0.4))
+	vbox.add_child(title)
+
+	var subtitle = Label.new()
+	subtitle.text = "Enemy faction will be randomly selected"
+	subtitle.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	subtitle.add_theme_font_size_override("font_size", 12)
+	subtitle.add_theme_color_override("font_color", Color(0.5, 0.5, 0.55))
+	vbox.add_child(subtitle)
+
+	vbox.add_child(HSeparator.new())
+
+	# Faction buttons
+	var faction_info := [
+		{"enum": CombatantDefinition.Faction.EMBERCLAW, "name": "Emberclaw Warpack",
+		 "desc": "Aggressive melee & drake riders. Heat fuels devastating attacks.",
+		 "color": Color(0.85, 0.25, 0.10)},
+		{"enum": CombatantDefinition.Faction.IRON_DOMINION, "name": "Iron Dominion",
+		 "desc": "Warforged machines & grid-linked formations. Cohesion is their strength.",
+		 "color": Color(0.45, 0.52, 0.60)},
+		{"enum": CombatantDefinition.Faction.NIGHTFANG, "name": "Nightfang Dominion",
+		 "desc": "Undead hordes & corruption magic. Feed the Hunger to grow unstoppable.",
+		 "color": Color(0.50, 0.12, 0.60)},
+		{"enum": CombatantDefinition.Faction.THORNWEFT, "name": "Thornweft Matriarchy",
+		 "desc": "Nature magic & web control. Fate-threads manipulate the battlefield.",
+		 "color": Color(0.18, 0.62, 0.18)},
+		{"enum": CombatantDefinition.Faction.VEILBOUND, "name": "Veilbound Shogunate",
+		 "desc": "Disciplined warriors & spirit stances. Flow between offense and defense.",
+		 "color": Color(0.15, 0.45, 0.80)},
+	]
+
+	for fi in faction_info:
+		var btn = Button.new()
+		btn.text = "%s\n%s" % [fi.name, fi.desc]
+		btn.custom_minimum_size = Vector2(460, 50)
+		btn.add_theme_font_size_override("font_size", 12)
+		btn.focus_mode = Control.FOCUS_NONE
+		var bstyle = StyleBoxFlat.new()
+		bstyle.bg_color = Color(fi.color.r, fi.color.g, fi.color.b, 0.12)
+		bstyle.corner_radius_top_left = 6
+		bstyle.corner_radius_top_right = 6
+		bstyle.corner_radius_bottom_left = 6
+		bstyle.corner_radius_bottom_right = 6
+		bstyle.border_width_left = 3
+		bstyle.border_color = fi.color.darkened(0.2)
+		bstyle.content_margin_left = 14
+		bstyle.content_margin_right = 14
+		bstyle.content_margin_top = 6
+		bstyle.content_margin_bottom = 6
+		btn.add_theme_stylebox_override("normal", bstyle)
+		var hstyle = bstyle.duplicate()
+		hstyle.bg_color = Color(fi.color.r, fi.color.g, fi.color.b, 0.3)
+		hstyle.border_color = fi.color.lightened(0.2)
+		btn.add_theme_stylebox_override("hover", hstyle)
+		btn.add_theme_color_override("font_color", fi.color.lightened(0.4))
+		btn.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.85))
+		var faction_enum = fi.enum
+		btn.pressed.connect(func(): _launch_quick_battle(faction_enum, overlay))
+		vbox.add_child(btn)
+
+	# Random button
+	var rand_btn = Button.new()
+	rand_btn.text = "⚄  RANDOM"
+	rand_btn.custom_minimum_size = Vector2(460, 36)
+	rand_btn.add_theme_font_size_override("font_size", 13)
+	rand_btn.focus_mode = Control.FOCUS_NONE
+	var rstyle = StyleBoxFlat.new()
+	rstyle.bg_color = Color(0.5, 0.4, 0.2, 0.15)
+	rstyle.corner_radius_top_left = 6
+	rstyle.corner_radius_top_right = 6
+	rstyle.corner_radius_bottom_left = 6
+	rstyle.corner_radius_bottom_right = 6
+	rstyle.border_width_left = 3
+	rstyle.border_color = Color(0.7, 0.6, 0.3, 0.5)
+	rstyle.content_margin_left = 14
+	rstyle.content_margin_right = 14
+	rstyle.content_margin_top = 4
+	rstyle.content_margin_bottom = 4
+	rand_btn.add_theme_stylebox_override("normal", rstyle)
+	var rstyle_h = rstyle.duplicate()
+	rstyle_h.bg_color = Color(0.6, 0.5, 0.3, 0.3)
+	rand_btn.add_theme_stylebox_override("hover", rstyle_h)
+	rand_btn.add_theme_color_override("font_color", Color(0.8, 0.7, 0.4))
+	rand_btn.pressed.connect(func():
+		var factions = FactionDatabase.FACTIONS.keys()
+		_launch_quick_battle(factions[randi() % factions.size()], overlay))
+	vbox.add_child(rand_btn)
+
+	# Cancel button
+	var cancel = Button.new()
+	cancel.text = "Cancel"
+	cancel.custom_minimum_size = Vector2(120, 30)
+	cancel.add_theme_font_size_override("font_size", 12)
+	cancel.focus_mode = Control.FOCUS_NONE
+	cancel.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	cancel.add_theme_color_override("font_color", Color(0.6, 0.5, 0.5))
+	cancel.pressed.connect(func(): overlay.queue_free())
+	vbox.add_child(cancel)
+
+	# Fade in
+	overlay.modulate.a = 0.0
+	var tween = create_tween()
+	tween.tween_property(overlay, "modulate:a", 1.0, 0.25)
+
+func _launch_quick_battle(player_faction_enum: int, overlay: Control):
+	"""Launch a quick battle with the selected player faction and a random enemy faction."""
+	overlay.queue_free()
+	# Pick a random enemy faction (different from player)
+	var all_factions = FactionDatabase.FACTIONS.keys()
+	var enemy_factions = all_factions.filter(func(f): return f != player_faction_enum)
+	var enemy_enum = enemy_factions[randi() % enemy_factions.size()]
+
+	BattleConfig.clear()
+	BattleConfig.player_faction = player_faction_enum
+	BattleConfig.enemy_faction = enemy_enum
+	BattleConfig.has_custom_armies = false  # Let Combat build default armies
 	GameStateMachine.reset()
 	GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
 	get_tree().change_scene_to_file("res://scenes/game.tscn")
@@ -510,7 +815,5 @@ func _on_army_builder():
 	get_tree().change_scene_to_file("res://ui/army_builder.tscn")
 
 func _on_campaign():
-	BattleConfig.is_campaign = true
 	GameStateMachine.reset()
-	GameStateMachine.transition_to(GameStateMachine.GameState.ARMY_SELECT)
-	get_tree().change_scene_to_file("res://ui/army_builder.tscn")
+	get_tree().change_scene_to_file("res://scenes/campaign_select.tscn")

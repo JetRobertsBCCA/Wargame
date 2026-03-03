@@ -184,13 +184,13 @@ const BLOOD_TITHE = {
 # FACTION MECHANICS — VEILBOUND RITUAL FLOW
 # ══════════════════════════════════════════════════════════════
 
-const FLOW_MAX = 40
+const FLOW_MAX = 15
 
 const FLOW_THRESHOLDS = {
-	"stirring":    {"flow": 5,  "effect": "Unlock Tier 1 Flow abilities"},
-	"surging":     {"flow": 12, "effect": "Unlock Tier 2. All Veilbound +1 MOR"},
-	"overflowing": {"flow": 20, "effect": "Unlock Tier 3. Commander plays 1 free card/turn"},
-	"ascendant":   {"flow": 30, "effect": "Unlock Tier 4. All Veilbound +1 ATK. Transformations available"},
+	"stirring":    {"flow": 3,  "effect": "Unlock Tier 1 Flow abilities"},
+	"surging":     {"flow": 6,  "effect": "Unlock Tier 2. All Veilbound +1 MOR"},
+	"overflowing": {"flow": 10, "effect": "Unlock Tier 3. Commander plays 1 free card/turn"},
+	"ascendant":   {"flow": 14, "effect": "Unlock Tier 4. All Veilbound +1 ATK. Burst available"},
 }
 
 const STANCES = {
@@ -274,6 +274,11 @@ const SCENARIOS = {
 		"description": "Devastated field. 5 objectives, 1 VP each per turn controlled.",
 		"objectives": {"objective_count": 5, "vp_per_turn": 1},
 	},
+	"shard_clash": {
+		"name": "Shard Clash",
+		"description": "3 shard deposits scattered across the field. Hold more than your opponent each round for 2 VP. Kills also count.",
+		"objectives": {"shard_count": 3, "vp_per_turn": 2, "kill_vp": 1},
+	},
 }
 
 # ══════════════════════════════════════════════════════════════
@@ -307,6 +312,8 @@ const TURN_1_RESTRICTIONS = {
 const DISENGAGE_COST_FULL_MOV = true    # Disengage costs entire movement
 const CONSOLIDATE_DISTANCE = 3          # Tiles you can move after destroying in melee
 const FALL_BACK_FORCED = true           # Shaken units must fall back away from enemies
+const ZOC_EXTRA_COST = 1                # Extra movement cost when leaving a tile adjacent to an enemy
+const SHAKEN_PASSIVE_RECOVERY_RANGE = 4 # No enemies within this range → attempt passive shaken recovery
 
 # ══════════════════════════════════════════════════════════════
 # KEYWORD GLOSSARY
@@ -362,6 +369,11 @@ const KEYWORDS = {
 	"Ward": "+1 DEF vs magical/fragment attacks.",
 	"Bulwark": "Adjacent allies gain +1 DEF vs ranged attacks.",
 	"Ethereal": "50% chance to ignore non-magical damage.",
+	"Wall-Climber": "Ignores impassable terrain movement costs (vertical surfaces).",
+	"Aquatic": "Water terrain costs 1 movement instead of impassable.",
+	"Burrowing": "Can tunnel through terrain. Stealth on first turn. Ignores difficult terrain.",
+	"Duelist": "+2 ATK when exactly one enemy is adjacent.",
+	"Brace": "+1 DEF and +1 MOR until next activation. Cannot move this turn.",
 }
 
 # ══════════════════════════════════════════════════════════════
@@ -395,14 +407,6 @@ enum Facing { UP, DOWN, LEFT, RIGHT }
 const COMMANDER_AURA_RANGE = 8
 const COMMANDER_DEATH_CP_PENALTY = 1  # Lose 1 CP per turn after commander dies
 const COMMANDER_DEATH_MORALE_PENALTY = -2  # All units check morale at -2
-
-# ══════════════════════════════════════════════════════════════
-# MOVEMENT SPECIAL ACTIONS
-# ══════════════════════════════════════════════════════════════
-
-const DISENGAGE_COST_FULL_MOV = true    # Disengage costs entire movement
-const CONSOLIDATE_DISTANCE = 3          # Tiles you can move after destroying in melee
-const FALL_BACK_FORCED = true           # Shaken units must fall back away from enemies
 
 # ══════════════════════════════════════════════════════════════
 # UTILITY FUNCTIONS

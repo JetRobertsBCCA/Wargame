@@ -138,6 +138,7 @@ func repair(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 		return
 	var heal_amount = mini(2, target.max_hp - target.hp)
 	target.hp += heal_amount
+	AudioManager.play_sfx("heal")
 	_log("[color=steel_blue]%s repairs %s for %d HP![/color]\n" % [attacker.name, target.name, heal_amount])
 	combat.update_combatants.emit(combat.combatants)
 	combat.advance_turn()
@@ -154,6 +155,54 @@ func artillery_barrage(combat: Node, attacker: Dictionary, target: Dictionary) -
 	attacker.atk_modifier += 4
 	combat.attack(attacker, target, "attack_ranged")
 	attacker.atk_modifier -= 4
+
+## Iron Dominion: Grid Fire Order — spend 2 cohesion, all allies +2 ATK this turn
+func grid_fire_order(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
+	var state = combat.faction_state[attacker.side]
+	if state.grid_cohesion < 2:
+		_log("Not enough Grid Cohesion (need 2, have %d).\n" % state.grid_cohesion)
+		if attacker.side == 1:
+			combat.advance_turn()
+		return
+	state.grid_cohesion -= 2
+	for idx in combat.groups[attacker.side]:
+		var ally = combat.combatants[idx]
+		if ally.alive:
+			ally.atk_modifier += 2
+	_log("[color=steel_blue]%s issues Grid Fire Order! All allies +2 ATK (-2 Cohesion → %d)[/color]\n" % [
+		attacker.name, state.grid_cohesion])
+	combat.advance_turn()
+
+## Iron Dominion: Grid Shield Protocol — spend 2 cohesion, all allies +2 DEF this turn
+func grid_shield_protocol(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
+	var state = combat.faction_state[attacker.side]
+	if state.grid_cohesion < 2:
+		_log("Not enough Grid Cohesion (need 2, have %d).\n" % state.grid_cohesion)
+		if attacker.side == 1:
+			combat.advance_turn()
+		return
+	state.grid_cohesion -= 2
+	for idx in combat.groups[attacker.side]:
+		var ally = combat.combatants[idx]
+		if ally.alive:
+			ally.def_modifier += 2
+	_log("[color=steel_blue]%s activates Grid Shield Protocol! All allies +2 DEF (-2 Cohesion → %d)[/color]\n" % [
+		attacker.name, state.grid_cohesion])
+	combat.advance_turn()
+
+## Iron Dominion: Grid Relay — spend 3 cohesion, restore 1 CP
+func grid_relay(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
+	var state = combat.faction_state[attacker.side]
+	if state.grid_cohesion < 3:
+		_log("Not enough Grid Cohesion (need 3, have %d).\n" % state.grid_cohesion)
+		if attacker.side == 1:
+			combat.advance_turn()
+		return
+	state.grid_cohesion -= 3
+	combat.command_points[attacker.side] += 1
+	_log("[color=steel_blue]%s relays through the Grid! +1 CP (-3 Cohesion → %d)[/color]\n" % [
+		attacker.name, state.grid_cohesion])
+	combat.advance_turn()
 
 
 # ══════════════════════════════════════════════════════════════
@@ -177,13 +226,13 @@ func blood_tithe(combat: Node, attacker: Dictionary, _target: Dictionary) -> voi
 		return
 	attacker.hp -= 1
 	var state = combat.faction_state[attacker.side]
-	state.hunger += 1
+	state.hunger += 2
 	combat._update_hunger_tier(attacker.side)
 	for idx in combat.groups[attacker.side]:
 		var ally = combat.combatants[idx]
 		if ally.alive and combat.get_distance(attacker, ally) <= 3:
 			ally.atk_modifier += 1
-	_log("[color=crimson]%s performs Blood Tithe (-1 HP, nearby allies +1 ATK, +1 Hunger → %d)[/color]\n" % [
+	_log("[color=crimson]%s performs Blood Tithe (-1 HP, nearby allies +1 ATK, +2 Hunger → %d)[/color]\n" % [
 		attacker.name, state.hunger])
 	combat.update_combatants.emit(combat.combatants)
 	combat.advance_turn()
@@ -202,6 +251,9 @@ func shadow_step(combat: Node, attacker: Dictionary, target: Dictionary) -> void
 				break
 		if not occupied:
 			var old_pos = attacker.position
+			if combat.controller:
+				combat.controller._occupied_spaces.erase(old_pos)
+				combat.controller._occupied_spaces.append(dest)
 			attacker.position = dest
 			attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
 			_log("[color=purple]%s shadow steps from (%d,%d) to (%d,%d)![/color]\n" % [
@@ -222,6 +274,7 @@ func feast(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 		return
 	var heal = mini(3, attacker.max_hp - attacker.hp)
 	attacker.hp += heal
+	AudioManager.play_sfx("heal")
 	var state = combat.faction_state[attacker.side]
 	state.hunger += 3
 	combat._update_hunger_tier(attacker.side)
@@ -231,13 +284,22 @@ func feast(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 	combat.advance_turn()
 
 ## Nightfang: Terror Shriek — force morale checks on nearby enemies
+## Units that already checked morale this round are immune (prevents infinite loops)
 func terror_shriek(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
 	_log("[color=purple]%s unleashes a Terror Shriek![/color]\n" % attacker.name)
 	var enemy_side = 1 if attacker.side == 0 else 0
+	var affected := 0
 	for idx in combat.groups[enemy_side]:
 		var enemy = combat.combatants[idx]
 		if enemy.alive and combat.get_distance(attacker, enemy) <= 4:
+			if enemy.get("morale_checked_this_round", false):
+				_log("  %s already tested morale this round — immune.\n" % enemy.name)
+				continue
+			enemy["morale_checked_this_round"] = true
 			combat.check_morale(enemy)
+			affected += 1
+	if affected == 0:
+		_log("  No enemies affected by Terror Shriek.\n")
 	combat.advance_turn()
 
 
@@ -254,6 +316,7 @@ func web_snare(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 			combat.advance_turn()
 		return
 	target.status_effects.append("engaged")
+	target.status_effects.append("web_snared")
 	_log("[color=green]%s snares %s in web! (Engaged for 1 turn)[/color]\n" % [attacker.name, target.name])
 	combat.advance_turn()
 
@@ -266,6 +329,7 @@ func fate_weave(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 			combat.advance_turn()
 		return
 	state.fate_threads -= 1
+	target["fate_reroll"] = true
 	_log("[color=green]%s weaves fate for %s! (Reroll failed dice next attack)[/color]\n" % [
 		attacker.name, target.name])
 	combat.advance_turn()
@@ -351,6 +415,25 @@ func phase_strike(combat: Node, attacker: Dictionary, target: Dictionary) -> voi
 			combat.advance_turn()
 		return
 	state.flow -= 2
+	# Teleport adjacent to target before striking
+	var directions = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+	var teleported := false
+	for dir in directions:
+		var dest = target.position + dir
+		var occupied := false
+		for c in combat.combatants:
+			if c.alive and c.position == dest:
+				occupied = true
+				break
+		if not occupied:
+			var old_pos = attacker.position
+			if combat.controller:
+				combat.controller._occupied_spaces.erase(old_pos)
+				combat.controller._occupied_spaces.append(dest)
+			attacker.position = dest
+			attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
+			teleported = true
+			break
 	_log("[color=cyan]%s phases through the Veil to strike![/color]\n" % attacker.name)
 	combat.attack(attacker, target, "attack_melee")
 
@@ -374,6 +457,9 @@ func veil_walk(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 				break
 		if not occupied:
 			var old_pos = attacker.position
+			if combat.controller:
+				combat.controller._occupied_spaces.erase(old_pos)
+				combat.controller._occupied_spaces.append(dest)
 			attacker.position = dest
 			attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
 			_log("[color=cyan]%s walks through the Veil from (%d,%d) to (%d,%d)![/color]\n" % [
@@ -431,6 +517,32 @@ func rally(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 func overwatch(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
 	attacker.overwatch_active = true
 	_log("[color=steel_blue]%s sets Overwatch — will fire at next enemy in range.[/color]\n" % attacker.name)
+	combat.advance_turn()
+
+## Brace (universal) — hold position for +1 DEF, +1 MOR until next activation
+func brace(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
+	attacker.def_modifier += 1
+	attacker.mor_modifier += 1
+	attacker["braced"] = true
+	_log("[color=steel_blue]%s braces for impact! (+1 DEF, +1 MOR, cannot move)[/color]\n" % attacker.name)
+	combat.advance_turn()
+
+
+## Iron Dominion: Overcharge — Double ATK dice this attack, then take d3 self-damage
+func overcharge_attack(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
+	var original_atk = attacker.atk_modifier
+	attacker.atk_modifier += attacker.definition.atk  # Effectively doubles ATK dice
+	_log("[color=yellow]%s OVERCHARGES weapons! (Double ATK dice)[/color]\n" % attacker.name)
+	combat.attack(attacker, target, "attack_ranged" if attacker.rng > 1 else "attack_melee", false)
+	# Restore ATK modifier
+	attacker.atk_modifier = original_atk
+	# Self-damage: d3 (1-3)
+	var self_damage = randi_range(1, 3)
+	attacker.hp -= self_damage
+	_log("[color=red]%s takes %d overcharge backlash damage![/color]\n" % [attacker.name, self_damage])
+	if attacker.hp <= 0 and attacker.alive:
+		combat.combatant_die(attacker)
+	combat.update_combatants.emit(combat.combatants)
 	combat.advance_turn()
 
 

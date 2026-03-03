@@ -42,6 +42,7 @@ var _turn_queue_container: HBoxContainer
 var _phase_label: Label
 var _round_label: Label
 var _resource_label: RichTextLabel
+var _enemy_resource_label: RichTextLabel
 var _cp_label: Label
 var _vp_label: Label
 
@@ -69,6 +70,23 @@ var _inspected_comb: Dictionary = {}
 var _card_hand_container: HBoxContainer
 var _card_hand_panel: PanelContainer
 var _current_comb: Dictionary = {}  # Currently active combatant
+var _tutorial_panel: PanelContainer  # Campaign tutorial tips overlay
+
+# ── Pause menu ──
+var _pause_overlay: ColorRect
+var _pause_panel: PanelContainer
+var _paused := false
+
+# ── Speed controls ──
+var _speed_multiplier := 1.0
+var _speed_label: Label
+
+# ── Minimap ──
+var _minimap_rect: ColorRect
+var _minimap_container: Control
+const MINIMAP_WIDTH := 144  # 36 tiles * 4px
+const MINIMAP_HEIGHT := 84  # 21 tiles * 4px
+const MINIMAP_TILE := 4     # px per tile
 
 # ══════════════════════════════════════════════════════════════
 # INITIALIZATION
@@ -81,10 +99,29 @@ func _ready():
 	_build_bottom_bar()
 	_build_inspect_panel()
 	_build_card_hand()
+	_build_tutorial_tips()
+	_build_pause_menu()
+	_build_minimap()
 
 
 func _unhandled_input(event: InputEvent):
-	# Right-click to inspect any unit on the map
+	# Escape key → toggle pause menu (only when undo not available in controller)
+	if event is InputEventKey and event.is_released() and event.keycode == KEY_ESCAPE:
+		if _paused:
+			_toggle_pause()
+			get_viewport().set_input_as_handled()
+			return
+		# Only open pause if controller doesn't have undo available
+		if controller and controller._undo_available:
+			pass  # Let CController handle the undo
+		else:
+			_toggle_pause()
+			get_viewport().set_input_as_handled()
+			return
+	# Block all other input while paused
+	if _paused:
+		return
+	# Right-click to inspect any unit on the map, or show terrain info
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_released():
 		if controller and controller.tile_map:
 			var mouse_pos = controller.get_global_mouse_position()
@@ -93,7 +130,8 @@ func _unhandled_input(event: InputEvent):
 			if comb != null and comb.alive:
 				_show_inspect(comb)
 			else:
-				_hide_inspect()
+				# No unit here — show terrain info instead
+				_show_terrain_inspect(tile_pos)
 	# Left-click outside inspect panel hides it
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.is_pressed():
 		if _inspect_panel.visible:
@@ -171,14 +209,25 @@ func _build_top_bar():
 	spacer.mouse_filter = MOUSE_FILTER_IGNORE
 	hbox.add_child(spacer)
 
-	# Faction resources
+	# Faction resources (player side)
 	_resource_label = RichTextLabel.new()
 	_resource_label.bbcode_enabled = true
 	_resource_label.fit_content = true
 	_resource_label.scroll_active = false
-	_resource_label.mouse_filter = MOUSE_FILTER_IGNORE
-	_resource_label.custom_minimum_size = Vector2(140, 0)
+	_resource_label.mouse_filter = MOUSE_FILTER_PASS
+	_resource_label.tooltip_text = ""
+	_resource_label.custom_minimum_size = Vector2(130, 0)
 	hbox.add_child(_resource_label)
+
+	# Enemy faction resources
+	_enemy_resource_label = RichTextLabel.new()
+	_enemy_resource_label.bbcode_enabled = true
+	_enemy_resource_label.fit_content = true
+	_enemy_resource_label.scroll_active = false
+	_enemy_resource_label.mouse_filter = MOUSE_FILTER_PASS
+	_enemy_resource_label.tooltip_text = ""
+	_enemy_resource_label.custom_minimum_size = Vector2(130, 0)
+	hbox.add_child(_enemy_resource_label)
 
 	# Command Points display
 	_cp_label = Label.new()
@@ -521,6 +570,64 @@ func _build_card_hand():
 	_card_hand_panel.add_child(_card_hand_container)
 
 
+## Build tutorial tips panel — shows campaign mission tips in a dismissible overlay
+func _build_tutorial_tips():
+	if not BattleConfig.is_campaign or BattleConfig.tutorial_tips.is_empty():
+		return
+
+	_tutorial_panel = PanelContainer.new()
+	_tutorial_panel.set_anchors_preset(PRESET_CENTER_RIGHT)
+	_tutorial_panel.offset_left = -280
+	_tutorial_panel.offset_right = -12
+	_tutorial_panel.offset_top = -100
+	_tutorial_panel.offset_bottom = 100
+	var tip_style = _make_panel_style(Color(0.06, 0.06, 0.12, 0.92), 1, Color(0.8, 0.65, 0.15, 0.4))
+	tip_style.content_margin_left = 12
+	tip_style.content_margin_right = 12
+	tip_style.content_margin_top = 8
+	tip_style.content_margin_bottom = 8
+	_tutorial_panel.add_theme_stylebox_override("panel", tip_style)
+	_tutorial_panel.mouse_filter = MOUSE_FILTER_STOP
+	add_child(_tutorial_panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 6)
+	_tutorial_panel.add_child(vbox)
+
+	# Header row with dismiss button
+	var header = HBoxContainer.new()
+	header.add_theme_constant_override("separation", 6)
+	vbox.add_child(header)
+
+	var title = Label.new()
+	title.text = "💡 TIPS"
+	title.add_theme_font_size_override("font_size", 12)
+	title.add_theme_color_override("font_color", Color(0.9, 0.8, 0.3))
+	title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	header.add_child(title)
+
+	var dismiss_btn = Button.new()
+	dismiss_btn.text = "✕"
+	dismiss_btn.custom_minimum_size = Vector2(24, 24)
+	dismiss_btn.add_theme_font_size_override("font_size", 12)
+	dismiss_btn.focus_mode = Control.FOCUS_NONE
+	dismiss_btn.flat = true
+	dismiss_btn.add_theme_color_override("font_color", Color(0.6, 0.5, 0.4))
+	dismiss_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.8, 0.4))
+	dismiss_btn.pressed.connect(func(): _tutorial_panel.queue_free())
+	header.add_child(dismiss_btn)
+
+	# Tip entries
+	for tip in BattleConfig.tutorial_tips:
+		var tip_label = RichTextLabel.new()
+		tip_label.bbcode_enabled = true
+		tip_label.fit_content = true
+		tip_label.scroll_active = false
+		tip_label.mouse_filter = MOUSE_FILTER_IGNORE
+		tip_label.text = "[color=#CCCCDD][font_size=11]• %s[/font_size][/color]" % tip
+		vbox.add_child(tip_label)
+
+
 # ══════════════════════════════════════════════════════════════
 # STYLE HELPERS
 # ══════════════════════════════════════════════════════════════
@@ -758,6 +865,40 @@ func _hide_inspect():
 	_inspect_panel.visible = false
 	_inspected_comb = {}
 
+## Show terrain info when right-clicking an empty tile
+func _show_terrain_inspect(tile_pos: Vector2i) -> void:
+	if controller == null or controller.tile_map == null:
+		_hide_inspect()
+		return
+	var tile_data = controller.tile_map.get_cell_tile_data(0, tile_pos)
+	if tile_data == null:
+		_hide_inspect()
+		return
+	var cost = int(tile_data.get_custom_data("Cost"))
+	var terrain_name := "Open Ground"
+	var terrain_desc := "No movement penalty, no cover."
+	if cost < 0 or cost >= 99:
+		terrain_name = "Impassable"
+		terrain_desc = "Cannot be traversed. Blocks line of sight."
+	elif cost >= 3:
+		terrain_name = "Heavy Cover"
+		terrain_desc = "MOV cost %d. +2 DEF cover vs ranged. Obscures LoS." % cost
+	elif cost >= 2:
+		terrain_name = "Difficult / Forest"
+		terrain_desc = "MOV cost %d. +1 DEF cover vs ranged. +1 ATK if elevated." % cost
+	elif cost == 1:
+		terrain_desc = "MOV cost 1. No cover bonus."
+	# Show in inspect panel
+	_inspected_comb = {}
+	_inspect_icon.texture = null
+	_inspect_name.clear()
+	_inspect_name.append_text("[b][color=silver]%s[/color][/b]\n[color=gray]Tile (%d, %d)[/color]" % [terrain_name, tile_pos.x, tile_pos.y])
+	_inspect_stats.clear()
+	_inspect_stats.append_text("[color=silver]%s[/color]" % terrain_desc)
+	_inspect_status.clear()
+	_inspect_specials.clear()
+	_inspect_panel.visible = true
+
 
 # ══════════════════════════════════════════════════════════════
 # SKILL BUTTONS
@@ -853,21 +994,29 @@ func update_faction_resources(faction_state: Dictionary):
 	if _resource_label == null:
 		return
 	_resource_label.clear()
+	var tooltip_parts := []
 	if faction_state.has("heat"):
 		var tier = _get_resource_tier("heat", faction_state.heat)
 		_resource_label.append_text("[color=#FF4010]Heat: %d[/color] [color=#AA6030](%s)[/color]\n" % [faction_state.heat, tier])
+		tooltip_parts.append("HEAT: Builds from fire attacks. High Heat unlocks powerful flame abilities. At 10+, triggers Overheat (2 dmg to all friendlies).")
 	if faction_state.has("grid_cohesion"):
 		var tier = _get_resource_tier("grid_cohesion", faction_state.grid_cohesion)
 		_resource_label.append_text("[color=#8090CC]Grid: %d[/color] [color=#6070AA](%s)[/color]\n" % [faction_state.grid_cohesion, tier])
+		tooltip_parts.append("GRID COHESION: Grows when units are in formation. Grants DEF bonuses at higher tiers. Drops when units die.")
 	if faction_state.has("hunger"):
 		var tier = _get_resource_tier("hunger", faction_state.hunger)
 		_resource_label.append_text("[color=#CC2255]Hunger: %d[/color] [color=#AA3355](%s)[/color]\n" % [faction_state.hunger, tier])
+		tooltip_parts.append("HUNGER: Rises each round and from kills. High Hunger boosts ATK but units take self-damage at Frenzy (10+).")
 	if faction_state.has("flow"):
 		var tier = _get_resource_tier("flow", faction_state.flow)
 		_resource_label.append_text("[color=#3388EE]Flow: %d[/color] [color=#2266BB](%s)[/color]\n" % [faction_state.flow, tier])
+		tooltip_parts.append("RITUAL FLOW: Generated by stance switching and cards. Spent on powerful spirit abilities like teleport and spirit surge.")
 	if faction_state.has("fate_threads"):
 		var tier = _get_resource_tier("fate_threads", faction_state.fate_threads)
 		_resource_label.append_text("[color=#33BB55]Fate: %d[/color] [color=#229944](%s)[/color]\n" % [faction_state.fate_threads, tier])
+		tooltip_parts.append("FATE THREADS: Woven near Web-Anchors. Spent to reroll dice (Fate Weave) or negate enemy cards (Fate Sever).")
+	if tooltip_parts.size() > 0:
+		_resource_label.tooltip_text = "\n".join(tooltip_parts)
 
 	# Update CP display
 	if combat and _cp_label:
@@ -903,17 +1052,38 @@ func update_card_hand(cards: Array):
 	_card_hand_panel.visible = cards.size() > 0
 	for child in _card_hand_container.get_children():
 		child.queue_free()
+
+	# Card type colors
+	var type_colors := {
+		"tactical": Color(0.3, 0.5, 0.8),
+		"fragment": Color(0.8, 0.5, 0.15),
+		"command": Color(0.7, 0.25, 0.7),
+	}
+
 	for card in cards:
 		var btn = Button.new()
 		btn.custom_minimum_size = Vector2(120, 30)
 		var cp_cost = card.get("cp_cost", 1)
+		var card_type = card.get("type", "tactical")
 		btn.text = "%s (%dCP)" % [card.get("name", "Card"), cp_cost]
-		btn.tooltip_text = "%s — Cost: %d CP\n%s" % [card.get("type", "").capitalize(), cp_cost, card.get("description", "")]
+		btn.tooltip_text = "%s — Cost: %d CP\n%s" % [card_type.capitalize(), cp_cost, card.get("description", "")]
 		# Add flavor text if present
 		var flavor = card.get("flavor_text", "")
 		if flavor != "":
 			btn.tooltip_text = "\"%s\"\n\n%s" % [flavor, btn.tooltip_text]
 		btn.add_theme_font_size_override("font_size", 11)
+
+		# Color by card type
+		var accent = type_colors.get(card_type, Color(0.4, 0.4, 0.5))
+		var style_n = _make_btn_style(Color(accent.r, accent.g, accent.b, 0.25))
+		style_n.border_width_bottom = 2
+		style_n.border_color = accent
+		btn.add_theme_stylebox_override("normal", style_n)
+		var style_h = _make_btn_style(Color(accent.r, accent.g, accent.b, 0.45))
+		style_h.border_width_bottom = 2
+		style_h.border_color = accent.lightened(0.3)
+		btn.add_theme_stylebox_override("hover", style_h)
+
 		# Dim cards the player can't afford
 		if combat and combat.command_points[0] < cp_cost:
 			btn.modulate = Color(0.5, 0.5, 0.5, 0.7)
@@ -922,6 +1092,7 @@ func update_card_hand(cards: Array):
 		_card_hand_container.add_child(btn)
 
 func _on_card_played(card: Dictionary):
+	AudioManager.play_sfx("card_play")
 	if combat.has_method("play_card"):
 		combat.play_card(card)
 
@@ -934,6 +1105,14 @@ func update_phase(phase_name: String):
 	if _phase_label == null:
 		return
 	_phase_label.text = phase_name
+
+## Called when combat advances to a new unit's turn (connected via scene signal)
+func _on_combat_turn_advanced(combatant: Dictionary):
+	# Update phase label with active unit info
+	var side_label := "Player" if combatant.side == 0 else "Enemy"
+	var phase_text := GameStateMachine.get_phase_name()
+	if _phase_label:
+		_phase_label.text = "Round %d — %s — %s" % [GameStateMachine.round_number, phase_text, combatant.get("name", side_label)]
 
 
 # ══════════════════════════════════════════════════════════════
@@ -968,6 +1147,11 @@ func show_results_screen(results: Dictionary):
 	panel.add_child(vbox)
 
 	var winner_color = "lime" if results.winner == "Players" else "red"
+	# Play win or defeat music
+	if results.winner == "Players":
+		AudioManager.play_music("win", false)
+	else:
+		AudioManager.play_music("defeat", false)
 	# Faction-themed victory/defeat banner
 	var banner_text := "%s Win!" % results.winner
 	var epitaph_text := ""
@@ -1030,7 +1214,380 @@ func show_results_screen(results: Dictionary):
 	var btn_c = CenterContainer.new()
 	vbox.add_child(btn_c)
 	var btn = Button.new()
-	btn.text = "Return to Menu"
-	btn.custom_minimum_size = Vector2(180, 40)
-	btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/main_menu.tscn"))
+
+	# Campaign mode: record result and return to campaign overview
+	if BattleConfig.is_campaign and BattleConfig.campaign_manager != null:
+		var victory = (results.winner == "Players")
+		# Gather player casualties
+		var player_casualties: Array = []
+		if combat:
+			for comb in combat.combatants:
+				if comb.side == 0 and not comb.alive:
+					player_casualties.append(comb.name)
+		var mission_result = BattleConfig.campaign_manager.complete_mission(victory, player_casualties)
+		BattleConfig.set_meta("last_battle_won", victory)
+
+		# Show campaign rewards section
+		if victory:
+			var rewards = RichTextLabel.new()
+			rewards.bbcode_enabled = true
+			rewards.fit_content = true
+			rewards.scroll_active = false
+			var rewards_text = "[center][color=gold]═ Campaign Rewards ═[/color]\n"
+			var xp_amount = mission_result.get("xp_gained", 5)
+			var survivors = BattleConfig.player_army.size() - player_casualties.size()
+			rewards_text += "[color=#88CC88]+%d XP to %d surviving units[/color]\n" % [xp_amount, survivors]
+			var level_ups = mission_result.get("level_ups", [])
+			if not level_ups.is_empty():
+				for lu in level_ups:
+					rewards_text += "[color=#FFD700]★ %s → Level %d (%s)[/color]\n" % [lu.unit, lu.level, lu.bonus]
+			rewards_text += "[/center]"
+			rewards.text = rewards_text
+			rewards.custom_minimum_size = Vector2(0, 40)
+			vbox.add_child(rewards)
+			vbox.add_child(HSeparator.new())
+
+		if victory:
+			btn.text = "Continue Campaign"
+		else:
+			# Show defeat consequences
+			var xp_lost = mission_result.get("xp_lost_units", [])
+			if not xp_lost.is_empty():
+				var penalty = RichTextLabel.new()
+				penalty.bbcode_enabled = true
+				penalty.fit_content = true
+				penalty.scroll_active = false
+				penalty.text = "[center][color=#FF6644]═ Defeat Penalty ═[/color]\n"
+				penalty.text += "[color=#CC8888]Fallen units lost XP: %s[/color][/center]" % ", ".join(xp_lost)
+				penalty.custom_minimum_size = Vector2(0, 30)
+				vbox.add_child(penalty)
+				vbox.add_child(HSeparator.new())
+			btn.text = "Retry Mission"
+		btn.custom_minimum_size = Vector2(200, 40)
+		btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/campaign_overview.tscn"))
+	else:
+		btn.text = "Return to Menu"
+		btn.custom_minimum_size = Vector2(180, 40)
+		btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/main_menu.tscn"))
 	btn_c.add_child(btn)
+
+	# Retry button — immediately replays the same battle
+	var retry_btn_c = CenterContainer.new()
+	vbox.add_child(retry_btn_c)
+	var retry_btn = Button.new()
+	retry_btn.text = "Retry Battle"
+	retry_btn.custom_minimum_size = Vector2(140, 32)
+	retry_btn.add_theme_font_size_override("font_size", 12)
+	retry_btn.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
+	retry_btn.pressed.connect(func():
+		get_tree().paused = false
+		Engine.time_scale = 1.0
+		get_tree().change_scene_to_file("res://scenes/game.tscn"))
+	retry_btn_c.add_child(retry_btn)
+
+
+# ══════════════════════════════════════════════════════════════
+# PAUSE MENU
+# ══════════════════════════════════════════════════════════════
+
+func _build_pause_menu():
+	_pause_overlay = ColorRect.new()
+	_pause_overlay.color = Color(0.0, 0.0, 0.0, 0.65)
+	_pause_overlay.set_anchors_preset(PRESET_FULL_RECT)
+	_pause_overlay.mouse_filter = MOUSE_FILTER_STOP
+	_pause_overlay.visible = false
+	_pause_overlay.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(_pause_overlay)
+
+	_pause_panel = PanelContainer.new()
+	_pause_panel.set_anchors_preset(PRESET_CENTER)
+	_pause_panel.custom_minimum_size = Vector2(320, 340)
+	_pause_panel.position = Vector2(-160, -170)
+	_pause_panel.add_theme_stylebox_override("panel", _make_panel_style(
+		Color(0.06, 0.06, 0.12, 0.95), 2, Color(0.8, 0.65, 0.2)))
+	_pause_overlay.add_child(_pause_panel)
+
+	var vbox = VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	_pause_panel.add_child(vbox)
+
+	var title = Label.new()
+	title.text = "PAUSED"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 22)
+	title.add_theme_color_override("font_color", Color(0.9, 0.8, 0.4))
+	vbox.add_child(title)
+
+	vbox.add_child(HSeparator.new())
+
+	# Speed controls
+	var speed_hbox = HBoxContainer.new()
+	speed_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	speed_hbox.add_theme_constant_override("separation", 8)
+	vbox.add_child(speed_hbox)
+
+	var speed_title = Label.new()
+	speed_title.text = "Game Speed:"
+	speed_title.add_theme_font_size_override("font_size", 13)
+	speed_title.add_theme_color_override("font_color", Color(0.7, 0.7, 0.8))
+	speed_hbox.add_child(speed_title)
+
+	for spd in [0.5, 1.0, 1.5, 2.0, 3.0]:
+		var speed_btn = Button.new()
+		speed_btn.text = "%gx" % spd
+		speed_btn.custom_minimum_size = Vector2(40, 28)
+		speed_btn.add_theme_font_size_override("font_size", 11)
+		speed_btn.pressed.connect(_set_game_speed.bind(spd))
+		speed_hbox.add_child(speed_btn)
+
+	_speed_label = Label.new()
+	_speed_label.text = "Current: 1x"
+	_speed_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	_speed_label.add_theme_font_size_override("font_size", 11)
+	_speed_label.add_theme_color_override("font_color", Color(0.6, 0.8, 0.6))
+	vbox.add_child(_speed_label)
+
+	vbox.add_child(HSeparator.new())
+
+	# Buttons
+	_add_pause_button(vbox, "Resume", Color(0.3, 0.7, 0.3), func(): _toggle_pause())
+	_add_pause_button(vbox, "Restart Battle", Color(0.7, 0.5, 0.2), func():
+		get_tree().paused = false
+		get_tree().change_scene_to_file("res://scenes/game.tscn"))
+	if BattleConfig.is_campaign:
+		_add_pause_button(vbox, "Abandon Campaign", Color(0.7, 0.25, 0.25), func():
+			get_tree().paused = false
+			BattleConfig.clear_campaign()
+			get_tree().change_scene_to_file("res://scenes/campaign_select.tscn"))
+	_add_pause_button(vbox, "Quit to Menu", Color(0.6, 0.3, 0.3), func():
+		get_tree().paused = false
+		BattleConfig.clear_campaign()
+		get_tree().change_scene_to_file("res://scenes/main_menu.tscn"))
+
+	var hint = Label.new()
+	hint.text = "Press ESC to resume"
+	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	hint.add_theme_font_size_override("font_size", 10)
+	hint.add_theme_color_override("font_color", Color(0.5, 0.5, 0.55))
+	vbox.add_child(hint)
+
+func _add_pause_button(parent: VBoxContainer, text: String, color: Color, callback: Callable):
+	var btn = Button.new()
+	btn.text = text
+	btn.custom_minimum_size = Vector2(200, 36)
+	btn.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+	btn.add_theme_font_size_override("font_size", 14)
+	var style_n = StyleBoxFlat.new()
+	style_n.bg_color = Color(color.r, color.g, color.b, 0.3)
+	style_n.border_width_bottom = 1
+	style_n.border_color = Color(color.r, color.g, color.b, 0.5)
+	style_n.corner_radius_top_left = 4
+	style_n.corner_radius_top_right = 4
+	style_n.corner_radius_bottom_left = 4
+	style_n.corner_radius_bottom_right = 4
+	style_n.content_margin_left = 12
+	style_n.content_margin_right = 12
+	style_n.content_margin_top = 6
+	style_n.content_margin_bottom = 6
+	btn.add_theme_stylebox_override("normal", style_n)
+	var style_h = style_n.duplicate()
+	style_h.bg_color = Color(color.r, color.g, color.b, 0.5)
+	btn.add_theme_stylebox_override("hover", style_h)
+	btn.pressed.connect(callback)
+	parent.add_child(btn)
+
+func _toggle_pause():
+	_paused = !_paused
+	_pause_overlay.visible = _paused
+	get_tree().paused = _paused
+	AudioManager.play_sfx("pause")
+
+func _set_game_speed(spd: float):
+	_speed_multiplier = spd
+	Engine.time_scale = spd
+	if _speed_label:
+		_speed_label.text = "Current: %gx" % spd
+
+
+# ══════════════════════════════════════════════════════════════
+# DAMAGE PREVIEW
+# ══════════════════════════════════════════════════════════════
+
+## Calculate and return expected damage info for display
+func get_damage_preview(attacker: Dictionary, target: Dictionary, skill_key: String = "attack_melee") -> String:
+	if attacker.is_empty() or target.is_empty():
+		return ""
+	var atk_dice: int = attacker.atk + attacker.get("atk_modifier", 0)
+	var target_def: int = target.def + target.get("def_modifier", 0)
+
+	# Faction modifiers
+	if combat and combat._faction_mgr:
+		atk_dice += combat._faction_mgr.get_faction_attack_bonus(attacker, target, combat)
+		target_def += combat._faction_mgr.get_faction_defense_bonus(target, attacker, combat)
+
+	# Terrain cover for ranged
+	if skill_key in ["attack_ranged", "basic_magic"] and combat and combat.controller:
+		var cover = combat._get_terrain_cover(target.position)
+		target_def += cover
+
+	# Charging
+	if attacker.get("charged", false) and skill_key == "attack_melee":
+		atk_dice += 1
+
+	# Shaken penalty
+	if attacker.get("shaken", false):
+		atk_dice -= 1
+
+	atk_dice = maxi(1, atk_dice)
+	target_def = clampi(target_def, 2, 6)
+
+	var hit_chance: float = (7.0 - target_def) / 6.0
+	var expected_hits: float = atk_dice * hit_chance
+	var crit_chance: float = 1.0 / 6.0
+	var expected_crits: float = atk_dice * crit_chance
+	var expected_dmg: float = expected_hits + expected_crits  # Crits add 1 extra
+
+	return "[color=silver]%dd6 vs DEF %d[/color] — [color=yellow]~%.1f dmg[/color] (%.0f%% per die)" % [
+		atk_dice, target_def, expected_dmg, hit_chance * 100.0]
+
+var _dmg_preview_label: RichTextLabel
+
+func show_damage_preview_tooltip(attacker: Dictionary, target: Dictionary, skill_key: String):
+	var text = get_damage_preview(attacker, target, skill_key)
+	if text.is_empty():
+		hide_damage_preview_tooltip()
+		return
+	if _dmg_preview_label == null:
+		_dmg_preview_label = RichTextLabel.new()
+		_dmg_preview_label.bbcode_enabled = true
+		_dmg_preview_label.fit_content = true
+		_dmg_preview_label.scroll_active = false
+		_dmg_preview_label.mouse_filter = MOUSE_FILTER_IGNORE
+		_dmg_preview_label.set_anchors_preset(PRESET_BOTTOM_LEFT)
+		_dmg_preview_label.offset_left = 260
+		_dmg_preview_label.offset_bottom = -140
+		_dmg_preview_label.offset_top = -160
+		_dmg_preview_label.offset_right = 560
+		_dmg_preview_label.add_theme_font_size_override("normal_font_size", 11)
+		add_child(_dmg_preview_label)
+	_dmg_preview_label.text = text
+	_dmg_preview_label.visible = true
+
+func hide_damage_preview_tooltip():
+	if _dmg_preview_label:
+		_dmg_preview_label.visible = false
+
+
+# ══════════════════════════════════════════════════════════════
+# END-OF-ROUND SUMMARY
+# ══════════════════════════════════════════════════════════════
+
+func show_round_summary(round_num: int, vp: Array, player_alive: int, enemy_alive: int):
+	"""Flash a brief round summary banner."""
+	var banner = PanelContainer.new()
+	banner.set_anchors_preset(PRESET_CENTER_TOP)
+	banner.position = Vector2(-180, 50)
+	banner.custom_minimum_size = Vector2(360, 0)
+	banner.add_theme_stylebox_override("panel", _make_panel_style(
+		Color(0.06, 0.06, 0.12, 0.9), 1, Color(0.7, 0.6, 0.2, 0.8)))
+	banner.mouse_filter = MOUSE_FILTER_IGNORE
+	add_child(banner)
+
+	var label = RichTextLabel.new()
+	label.bbcode_enabled = true
+	label.fit_content = true
+	label.scroll_active = false
+	label.mouse_filter = MOUSE_FILTER_IGNORE
+	label.text = "[center][color=gold]═ Round %d Complete ═[/color]\n" % round_num
+	label.text += "[color=cyan]VP: %d[/color] — [color=orange]%d[/color]  |  " % [vp[0], vp[1]]
+	label.text += "[color=cyan]%d alive[/color] vs [color=orange]%d alive[/color][/center]" % [player_alive, enemy_alive]
+	banner.add_child(label)
+
+	# Fade out after 2.5 seconds
+	var tween = create_tween()
+	tween.tween_interval(2.5)
+	tween.tween_property(banner, "modulate:a", 0.0, 1.0)
+	tween.tween_callback(banner.queue_free)
+
+# ══════════════════════════════════════════════════════════════
+# MINIMAP
+# ══════════════════════════════════════════════════════════════
+
+func _build_minimap():
+	"""Build a small minimap in the bottom-right corner showing unit positions."""
+	_minimap_container = Control.new()
+	_minimap_container.mouse_filter = MOUSE_FILTER_IGNORE
+	_minimap_container.set_anchors_preset(PRESET_BOTTOM_RIGHT)
+	_minimap_container.position = Vector2(-MINIMAP_WIDTH - 12, -MINIMAP_HEIGHT - 60)
+	_minimap_container.custom_minimum_size = Vector2(MINIMAP_WIDTH + 4, MINIMAP_HEIGHT + 4)
+	_minimap_container.size = Vector2(MINIMAP_WIDTH + 4, MINIMAP_HEIGHT + 4)
+	add_child(_minimap_container)
+
+	# Background with border
+	var bg = ColorRect.new()
+	bg.color = Color(0.02, 0.02, 0.05, 0.8)
+	bg.size = Vector2(MINIMAP_WIDTH + 4, MINIMAP_HEIGHT + 4)
+	bg.mouse_filter = MOUSE_FILTER_IGNORE
+	_minimap_container.add_child(bg)
+
+	var border = ReferenceRect.new()
+	border.size = bg.size
+	border.border_color = Color(0.4, 0.35, 0.2, 0.6)
+	border.border_width = 1.0
+	border.editor_only = false
+	border.mouse_filter = MOUSE_FILTER_IGNORE
+	_minimap_container.add_child(border)
+
+	# Unit dot container
+	_minimap_rect = ColorRect.new()
+	_minimap_rect.color = Color(0.0, 0.0, 0.0, 0.0)  # Transparent — just a parent for dots
+	_minimap_rect.position = Vector2(2, 2)
+	_minimap_rect.size = Vector2(MINIMAP_WIDTH, MINIMAP_HEIGHT)
+	_minimap_rect.mouse_filter = MOUSE_FILTER_IGNORE
+	_minimap_container.add_child(_minimap_rect)
+
+	# Label
+	var label = Label.new()
+	label.text = "MAP"
+	label.add_theme_font_size_override("font_size", 8)
+	label.add_theme_color_override("font_color", Color(0.5, 0.45, 0.3, 0.6))
+	label.position = Vector2(2, -12)
+	label.mouse_filter = MOUSE_FILTER_IGNORE
+	_minimap_container.add_child(label)
+
+
+func update_minimap(combatants: Array):
+	"""Refresh minimap dots from current combatant positions."""
+	if _minimap_rect == null:
+		return
+
+	# Clear existing dots
+	for child in _minimap_rect.get_children():
+		child.queue_free()
+
+	for comb in combatants:
+		if not comb.get("alive", false):
+			continue
+		var pos = comb.get("position", Vector2i(-1, -1))
+		if pos.x < 0 or pos.y < 0:
+			continue
+
+		var dot = ColorRect.new()
+		dot.size = Vector2(MINIMAP_TILE, MINIMAP_TILE)
+		dot.position = Vector2(pos.x * MINIMAP_TILE, pos.y * MINIMAP_TILE)
+		dot.mouse_filter = MOUSE_FILTER_IGNORE
+
+		if comb.get("side", 1) == 0:
+			# Player unit — cyan, commander brighter
+			if comb.get("is_commander", false):
+				dot.color = Color(0.2, 1.0, 1.0)
+			else:
+				dot.color = Color(0.2, 0.7, 0.9, 0.9)
+		else:
+			# Enemy unit — red/orange
+			if comb.get("is_commander", false):
+				dot.color = Color(1.0, 0.3, 0.1)
+			else:
+				dot.color = Color(0.9, 0.4, 0.2, 0.85)
+
+		_minimap_rect.add_child(dot)
