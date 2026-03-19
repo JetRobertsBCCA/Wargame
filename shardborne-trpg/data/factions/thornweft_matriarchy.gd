@@ -21,21 +21,27 @@ static func get_units() -> Array:
 	return units
 
 # ── Commanders (13) ────────────────────────────────────
+# Thornweft has excellent natural stat variation — focus on keyword specificity.
+# Vethiss = web expansion (extra anchor); Kythara = fate/reroll; Draven = venom army;
+# Nyx = instant-kill assassin; Thessari = brood summoner; Morthis = fortress anchor;
+# Silivex = mind-control support; Varek = bodyguard tank; Ithris = phase-walker;
+# Rathis = economic cocoon harvester; Yalith = healer; Kaelyx = mounted cavalry;
+# Quileth = terrain architect
 static func _commanders() -> Array:
 	return [
-		_u("Loom-Mother Vethiss", CMD, 12, 5, 30, 6, 8, 9, 24, ["Web mastery", "Fate manipulation"], 10),
-		_u("Thread-Seer Kythara", CMD, 15, 3, 24, 7, 12, 8, 22, ["Fate reading", "Probability control"], 8),
-		_u("Silk-Marshal Draven", CMD, 15, 4, 27, 7, 8, 8, 20, ["Venom warfare", "Combined arms"], 7),
-		_u("Thread-Cutter Nyx", CMD, 21, 2, 18, 9, 4, 9, 19, ["Assassination", "Fate-severing"], 6),
-		_u("Brood-Warden Thessari", CMD, 9, 5, 30, 5, 4, 9, 21, ["Spider spawning", "Beast command"], 7),
-		_u("Silk-Warden Morthis", CMD, 9, 6, 33, 4, 6, 9, 20, ["Defensive web", "Terrain control"], 8),
-		_u("Loom-Mother Silivex", CMD, 9, 3, 24, 7, 12, 9, 22, ["Intelligence", "Psychic warfare"], 9),
-		_u("Spindle-Knight Varek", CMD, 15, 7, 42, 5, 1, 10, 23, ["Tank", "Bodyguard", "Immovable"], 7),
-		_u("Web-Walker Ithris", CMD, 15, 2, 21, 16, 6, 8, 20, ["Phase", "Teleport", "Extreme mobility"], 7),
-		_u("Cocoon-Keeper Rathis", CMD, 12, 4, 27, 6, 6, 8, 18, ["Resource harvesting", "Economy"], 7),
-		_u("Silk-Mender Yalith", CMD, 9, 5, 24, 5, 4, 9, 18, ["Healing", "Silk restoration"], 6),
-		_u("Fang-Rider Kaelyx", CMD, 18, 4, 27, 10, 2, 8, 22, ["Cavalry charges", "Spider-mount"], 8),
-		_u("Loom-Shaper Quileth", CMD, 12, 4, 24, 5, 8, 9, 20, ["Terrain creation", "Web architecture"], 7),
+		_u("Loom-Mother Vethiss",  CMD, 12, 5, 30, 6,  8, 9, 24, ["Web Expansion", "Anchor Network", "Silk Throne"], 10),
+		_u("Thread-Seer Kythara",  CMD, 15, 3, 24, 7, 12, 8, 22, ["Fate Weave", "Thread Reroll", "Probability Shift"], 8),
+		_u("Silk-Marshal Draven",  CMD, 15, 4, 27, 7,  8, 8, 20, ["Venom Barrage", "Silk Bind", "Toxin Cascade"], 7),
+		_u("Thread-Cutter Nyx",    CMD, 21, 2, 18, 9,  4, 9, 19, ["Silk Garrote", "Fate Sever", "Thread Cut"], 6),
+		_u("Brood-Warden Thessari",CMD, 9,  5, 30, 5,  4, 9, 21, ["Spawn Spiderlings", "Brood Commander", "Queen's Call"], 7),
+		_u("Silk-Warden Morthis",  CMD, 9,  6, 33, 4,  6, 9, 20, ["Web Fortress", "Anchor Shield", "Silk Redoubt"], 8),
+		_u("Loom-Mother Silivex",  CMD, 9,  3, 24, 7, 12, 9, 22, ["Mind Silk", "Thread Whisper", "Unravel Will"], 9),
+		_u("Spindle-Knight Varek", CMD, 15, 7, 42, 5,  1, 10, 23, ["Unyielding Carapace", "Body Block", "Last Web"], 7),
+		_u("Web-Walker Ithris",    CMD, 15, 2, 21, 16, 6, 8, 20, ["Phase Step", "Silk Teleport", "Untouchable"], 7),
+		_u("Cocoon-Keeper Rathis", CMD, 12, 4, 27, 6,  6, 8, 18, ["Cocoon Harvest", "Silk Economy", "Resource Web"], 7),
+		_u("Silk-Mender Yalith",   CMD, 9,  5, 24, 5,  4, 9, 18, ["Silk Regeneration", "Web Mend", "Binding Salve"], 6),
+		_u("Fang-Rider Kaelyx",    CMD, 18, 4, 27, 10, 2, 8, 22, ["Spider Mount", "Fang Charge", "Mounted Silk Strike"], 8),
+		_u("Loom-Shaper Quileth",  CMD, 12, 4, 24, 5,  8, 9, 20, ["Terrain Weave", "Web Sculpt", "Anchor Placement"], 7),
 	]
 
 # ── Infantry (15) ──────────────────────────────────────
@@ -112,7 +118,7 @@ static func _war_machines() -> Array:
 	return [
 		_u("Brood-Mother Spider", WM, 21, 6, 30, 6, 4, 10, 90, ["Spawn Spiderlings", "Wall-Climber", "Venomstrike", "Mobile Web-Anchor"]),
 		_u("Silk Colossus", WM, 24, 7, 36, 5, 6, 10, 100, ["Massive", "Silk Storm", "Creates Web", "Living Fortress"]),
-		_u("Gossamer Titan", WM, 27, 6, 39, 4, 8, 10, 110, ["Reality Weaving", "Fate Command", "Wall-Climber"], 0, true),
+		_u("Gossamer Titan", WM, 27, 6, 39, 4, 8, 10, 110, ["Reality Weaving", "Fate Command", "Wall-Climber"], 0, true, "Thread-Seer Kythara"),
 		_u("Venom Engine", WM, 18, 5, 24, 5, 12, 10, 70, ["Venom Spray", "Poison Cloud Aura", "Web-Walk"]),
 		_u("Web-Fortress", WM, 12, 8, 30, 0, 12, 10, 80, ["Immovable", "Enhanced Web-Anchor", "Garrison", "Self-Repair"]),
 		_u("Fate-Loom Engine", WM, 12, 5, 27, 3, 30, 10, 85, ["Fate Weaving", "Thread Amplification", "Fragile Core"]),

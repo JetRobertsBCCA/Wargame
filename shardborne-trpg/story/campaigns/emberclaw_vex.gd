@@ -89,7 +89,7 @@ static func _mission_1_first_flame() -> Dictionary:
 		],
 		"battle_size": "skirmish",
 		"scenario": "total_war",
-		"round_limit": 8,
+		"round_limit": 6,
 		"tutorial_tips": [
 			"Click a unit to select it, then click a highlighted tile to move.",
 			"Move units adjacent to enemies to attack in melee range.",
@@ -97,9 +97,8 @@ static func _mission_1_first_flame() -> Dictionary:
 			"Destroy all enemy units to win this battle.",
 		],		"battle_modifiers": {
 			"label": "Alien Terrain",
-			"description": "The unfamiliar ground slows everyone. All units -1 MOV.",
+			"description": "Unfamiliar ground slows your warband. Your units -1 MOV. The native beasts are unaffected.",
 			"player_mov_bonus": -1,
-			"enemy_mov_bonus": -1,
 		},	}
 
 # ────────────────────────────────────────────────────────
@@ -145,7 +144,7 @@ static func _mission_2_foreign_ground() -> Dictionary:
 		],
 		"battle_size": "skirmish",
 		"scenario": "total_war",
-		"round_limit": 8,
+		"round_limit": 6,
 		"tutorial_tips": [
 			"Heat builds as your units fight. Higher Heat = more damage but more risk.",
 			"Use Vex's Breath Weapon ability to deal area damage.",
@@ -153,8 +152,9 @@ static func _mission_2_foreign_ground() -> Dictionary:
 			"Watch your Heat gauge — if it gets too high, units may take self-damage.",
 		],		"battle_modifiers": {
 			"label": "Nightfang Hunger",
-			"description": "The enemy feeds on death. Enemy units have +1 ATK from bloodlust.",
+			"description": "The enemy feeds on death. Enemy units have +1 ATK from bloodlust. Your units gain +1 ATK from righteous fury — they've never been prey before.",
 			"enemy_atk_bonus": 1,
+			"player_atk_bonus": 1,
 		},	}
 
 # ────────────────────────────────────────────────────────
@@ -345,7 +345,7 @@ static func _mission_5_hunger_in_the_dark() -> Dictionary:
 			"Fire your artillery early to thin out the Thrall horde before they reach your lines.",
 		],		"battle_modifiers": {
 			"label": "Night Ambush",
-			"description": "Darkness falls. Ranged units suffer -1 ATK. Enemy starts with +2 CP from surprise.",
+			"description": "Darkness falls. All your units suffer -1 ATK in the dark. Enemy starts with +2 CP from surprise.",
 			"player_atk_bonus": -1,
 			"enemy_cp_bonus": 2,
 		},

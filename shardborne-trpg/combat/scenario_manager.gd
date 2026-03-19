@@ -10,9 +10,10 @@ var objectives: Array = []  # Array of {position, owner, type, vp_value, marker}
 var max_rounds: int = 6
 var current_round: int = 0
 var _ended: bool = false
+var _last_scored_round: int = -1
 var _next_shard_pos: Vector2i = Vector2i(-1, -1)  # Shardstorm forecast: next spawn location
-var _map_width: int = 36   # Grid width for ratio-based placement
-var _map_height: int = 21  # Grid height for ratio-based placement
+var _map_width: int = 36   # Grid width — set from BattleConfig in setup()
+var _map_height: int = 21  # Grid height — set from BattleConfig in setup()
 
 # Objective marker colors by type
 const OBJECTIVE_COLORS := {
@@ -34,6 +35,10 @@ func setup(key: String, combat_ref: Combat, round_limit: int = 6):
 	vp = [0, 0]
 	objectives.clear()
 	current_round = 0
+	# Read map dimensions from BattleConfig
+	var map_size := BattleConfig.get_map_size()
+	_map_width = map_size.x
+	_map_height = map_size.y
 
 	if GameRules.SCENARIOS.has(key):
 		active_scenario = GameRules.SCENARIOS[key]
@@ -152,6 +157,9 @@ func _update_objective_markers() -> void:
 func on_round_end(round_num: int):
 	if _ended:
 		return
+	if round_num == _last_scored_round:
+		return
+	_last_scored_round = round_num
 	current_round = round_num
 
 	match scenario_key:

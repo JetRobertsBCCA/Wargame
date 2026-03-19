@@ -19,6 +19,8 @@ var points_budget: int = 250
 var player_points: int = 0
 var enemy_points: int = 0
 var selecting_for: String = "player"  # "player" or "enemy"
+var _sort_by: String = "pts"       # "pts" or "name"
+var _sort_asc: bool = true
 
 # UI node refs
 var faction_list: VBoxContainer
@@ -27,6 +29,7 @@ var army_list: VBoxContainer
 var points_label: Label
 var budget_spin: SpinBox
 var scenario_option: OptionButton
+var battle_size_option: OptionButton
 var confirm_btn: Button
 var title_label: Label
 var faction_panel: PanelContainer
@@ -108,6 +111,20 @@ func _build_ui():
 	scenario_option.tooltip_text = "Choose the battle scenario type. Hover options for details."
 	budget_row.add_child(scenario_option)
 
+	# Battle size selection
+	var size_lbl = Label.new()
+	size_lbl.text = "  Map Size:"
+	budget_row.add_child(size_lbl)
+	battle_size_option = OptionButton.new()
+	var size_keys = ["skirmish", "standard", "epic"]
+	var size_labels = ["Skirmish (24x18)", "Standard (36x21)", "Epic (48x28)"]
+	for i in range(size_keys.size()):
+		battle_size_option.add_item(size_labels[i], i)
+		battle_size_option.set_item_metadata(i, size_keys[i])
+	battle_size_option.select(1)  # Default to standard
+	battle_size_option.tooltip_text = "Choose the battlefield size. Larger maps suit more units."
+	budget_row.add_child(battle_size_option)
+
 	# Feedback label for validation messages
 	_feedback_label = Label.new()
 	_feedback_label.text = ""
@@ -151,8 +168,15 @@ func _build_ui():
 
 	var auto_btn = Button.new()
 	auto_btn.text = "Auto-Fill Enemy"
+	auto_btn.tooltip_text = "Randomly select an opposing faction and fill their army within the point budget."
 	auto_btn.pressed.connect(_on_auto_fill_enemy)
 	btn_row.add_child(auto_btn)
+
+	var regen_btn = Button.new()
+	regen_btn.text = "↺ Re-roll"
+	regen_btn.tooltip_text = "Re-randomize the enemy army (keeps same budget, picks a new faction and composition)."
+	regen_btn.pressed.connect(_on_auto_fill_enemy)
+	btn_row.add_child(regen_btn)
 
 	var clear_btn = Button.new()
 	clear_btn.text = "Clear Army"
@@ -237,7 +261,36 @@ func _on_faction_selected(faction_id: int):
 
 func _show_unit_list(faction_id: int):
 	_clear_list(unit_list)
-	var faction_key = FactionDatabase.FACTIONS.keys()[faction_id] if faction_id < FactionDatabase.FACTIONS.size() else ""
+
+	# Sort controls row
+	var sort_row = HBoxContainer.new()
+	sort_row.add_theme_constant_override("separation", 4)
+	unit_list.add_child(sort_row)
+
+	var sort_lbl = Label.new()
+	sort_lbl.text = "Sort:"
+	sort_lbl.add_theme_font_size_override("font_size", 10)
+	sort_lbl.add_theme_color_override("font_color", Color(0.55, 0.55, 0.6))
+	sort_row.add_child(sort_lbl)
+
+	for sort_key in ["pts", "name"]:
+		var s_btn = Button.new()
+		s_btn.text = sort_key.capitalize()
+		s_btn.custom_minimum_size = Vector2(40, 18)
+		s_btn.add_theme_font_size_override("font_size", 9)
+		s_btn.focus_mode = Control.FOCUS_NONE
+		s_btn.pressed.connect(func():
+			if _sort_by == sort_key:
+				_sort_asc = !_sort_asc
+			else:
+				_sort_by = sort_key
+				_sort_asc = true
+			_show_unit_list(faction_id)
+		)
+		if _sort_by == sort_key:
+			s_btn.add_theme_color_override("font_color", Color.GOLD)
+			s_btn.text += " " + ("▲" if _sort_asc else "▼")
+		sort_row.add_child(s_btn)
 
 	# Search faction database for units
 	var all_units = FactionDatabase.get_faction(faction_id)
@@ -247,8 +300,11 @@ func _show_unit_list(faction_id: int):
 		unit_list.add_child(lbl)
 		return
 
-	# Sort by pts
-	all_units.sort_custom(func(a, b): return a.pts < b.pts)
+	# Sort per user preference
+	if _sort_by == "name":
+		all_units.sort_custom(func(a, b): return (a.unit_name < b.unit_name) if _sort_asc else (a.unit_name > b.unit_name))
+	else:
+		all_units.sort_custom(func(a, b): return (a.pts < b.pts) if _sort_asc else (a.pts > b.pts))
 
 	for unit_def in all_units:
 		var row = HBoxContainer.new()
@@ -371,14 +427,25 @@ func _on_budget_changed(value: float):
 	_update_points()
 
 func _on_clear_army():
-	if selecting_for == "player":
-		player_army.clear()
-		player_points = 0
-	else:
-		enemy_army.clear()
-		enemy_points = 0
-	_refresh_army_list()
-	_update_points()
+	var side_name = "player" if selecting_for == "player" else "enemy"
+	var dialog = AcceptDialog.new()
+	dialog.title = "Clear Army"
+	dialog.dialog_text = "Clear the entire %s army? This cannot be undone." % side_name
+	dialog.add_cancel_button("Cancel")
+	dialog.confirmed.connect(func():
+		if selecting_for == "player":
+			player_army.clear()
+			player_points = 0
+		else:
+			enemy_army.clear()
+			enemy_points = 0
+		_refresh_army_list()
+		_update_points()
+		dialog.queue_free()
+	)
+	dialog.canceled.connect(func(): dialog.queue_free())
+	add_child(dialog)
+	dialog.popup_centered()
 
 func _on_auto_fill_enemy():
 	# Auto-pick a random opposing faction and fill with units
@@ -412,6 +479,13 @@ func _on_auto_fill_enemy():
 	_refresh_army_list()
 	_update_points()
 	_check_confirm()
+	var faction_entry = FACTIONS.filter(func(f): return f.id == enemy_faction_id)
+	var faction_name = faction_entry[0].name if not faction_entry.is_empty() else "Unknown Faction"
+	_feedback_label.text = "Enemy filled: %s (%d pts)" % [faction_name, enemy_points]
+	get_tree().create_timer(3.0).timeout.connect(func():
+		if _feedback_label.text.begins_with("Enemy filled:"):
+			_feedback_label.text = ""
+	)
 
 func _get_army_points(army: Array) -> int:
 	var total := 0
@@ -445,6 +519,10 @@ func _on_confirm():
 	var selected_idx = scenario_option.selected
 	if selected_idx >= 0:
 		BattleConfig.scenario_type = scenario_option.get_item_metadata(selected_idx)
+	# Set battle size (map dimensions) from dropdown
+	var size_idx = battle_size_option.selected
+	if size_idx >= 0:
+		BattleConfig.battle_size = battle_size_option.get_item_metadata(size_idx)
 	GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
 	get_tree().change_scene_to_file("res://scenes/game.tscn")
 

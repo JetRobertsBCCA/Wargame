@@ -107,7 +107,7 @@ static func _mission_1_the_awakening_hunger() -> Dictionary:
 		],
 		"battle_size": "skirmish",
 		"scenario": "total_war",
-		"round_limit": 8,
+		"round_limit": 6,
 		"tutorial_tips": [
 			"The Nightfang Dominion feeds on death. Your units can drain blood from defeated enemies.",
 			"Thrall Conscripts are expendable — use them to absorb enemy charges.",
@@ -116,8 +116,9 @@ static func _mission_1_the_awakening_hunger() -> Dictionary:
 		],
 		"battle_modifiers": {
 			"label": "Starving Court",
-			"description": "The Hunger weakens your warriors. All Nightfang units -1 DEF from starvation.",
+			"description": "The Hunger weakens your warriors. All Nightfang units start with -1 DEF and -1 ATK from starvation — but after the first kill, the blood feeds your strength. Stay aggressive.",
 			"player_def_bonus": -1,
+			"player_atk_bonus": -1,
 		},
 	}
 
@@ -170,7 +171,7 @@ static func _mission_2_cold_iron() -> Dictionary:
 		],
 		"battle_size": "skirmish",
 		"scenario": "total_war",
-		"round_limit": 8,
+		"round_limit": 7,
 		"tutorial_tips": [
 			"The Iron Dominion resist terror — their Grid shares morale across the formation.",
 			"Focus fire to eliminate isolated units. The Grid weakens when units are destroyed.",
@@ -179,8 +180,8 @@ static func _mission_2_cold_iron() -> Dictionary:
 		],
 		"battle_modifiers": {
 			"label": "Cold Iron",
-			"description": "Machine blood doesn't feed the Hunger. Your units gain no HP from Blood Drain this battle.",
-			"player_atk_bonus": 0,
+			"description": "Machine blood doesn't feed the Hunger — your Blood Drain provides no recovery this battle. Additionally, their clockwork bodies are harder to wound. Enemy units +1 DEF.",
+			"enemy_def_bonus": 1,
 		},
 	}
 
@@ -326,8 +327,8 @@ static func _mission_4_the_honourable_dead() -> Dictionary:
 		],
 		"battle_modifiers": {
 			"label": "Spirit Wards",
-			"description": "Veilbound spirit wards dampen corruption. Enemy units gain +1 MOR.",
-			"enemy_mor_bonus": 1,
+			"description": "Veilbound spirit wards dampen shadow magic. Enemy units gain +1 MOR and +1 DEF — their spiritual protection runs deep. Your corruption spreads half as fast.",
+			"enemy_def_bonus": 1,
 		},
 	}
 

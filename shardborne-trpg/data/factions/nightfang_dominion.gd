@@ -22,44 +22,56 @@ static func get_units() -> Array:
 	return units
 
 # ── Commanders (13) ────────────────────────────────────
+# Commander identities: Sanguinar = blood/corruption overlord; Nyxara = shadow debuffer;
+# Voraxis = melee beast (low RNG, high ATK/MOV); Ghul = thrall swarm general (low ATK);
+# Hemora = healer/sustain; Kreev = assassin (high MOV, low DEF); Prophet = corruption
+# zone controller; Rathka = fortress (high DEF/HP); Lysara = blood drain sustain;
+# Mortivex = plague area denial (high RNG); Zharak = tiger cavalry; Hollow King = unkillable tank;
+# Nightclaw Vex = fast glass cannon
 static func _commanders() -> Array:
 	return [
-		_u("Lord Sanguinar", CMD, 18, 4, 33, 5, 3, 10, 25, ["Blood magic", "Corruption mastery"], 10),
-		_u("Countess Nyxara", CMD, 12, 3, 27, 5, 6, 9, 20, ["Shadow magic", "Debuffs"], 8),
-		_u("Grand Fang Voraxis", CMD, 21, 5, 36, 6, 1, 10, 29, ["Melee beast", "Tiger bond"], 6),
-		_u("Thrallmaster Ghul", CMD, 9, 3, 24, 5, 3, 8, 17, ["Thrall command", "Summoning"], 7),
-		_u("Lady Hemora", CMD, 12, 4, 30, 4, 6, 9, 22, ["Blood rituals", "Healing"], 7),
-		_u("Shadowfang Kreev", CMD, 18, 3, 24, 7, 1, 9, 22, ["Assassin", "Stealth", "Ambush"], 6),
-		_u("The Crimson Prophet", CMD, 9, 4, 30, 4, 8, 10, 21, ["Corruption spread", "Prophecy"], 8),
-		_u("Warlord Rathka", CMD, 15, 5, 33, 4, 3, 10, 25, ["Defensive", "Fortress tactics"], 9),
-		_u("Blood Duchess Lysara", CMD, 15, 4, 27, 5, 6, 10, 23, ["Blood drain", "Aristocratic warfare"], 8),
-		_u("Plague Herald Mortivex", CMD, 12, 3, 27, 6, 6, 8, 20, ["Plague spreading", "Area denial"], 7),
-		_u("Fang General Zharak", CMD, 15, 4, 30, 5, 3, 9, 23, ["Combined arms", "Tiger units"], 8),
-		_u("The Hollow King", CMD, 12, 6, 39, 3, 1, 10, 26, ["Undying tank", "Ancient power"], 7),
-		_u("Nightclaw Vex", CMD, 21, 3, 30, 8, 1, 9, 25, ["Fast striker", "Melee assassin"], 6),
+		_u("Lord Sanguinar",        CMD, 18, 4, 33, 5,  3, 10, 25, ["Blood Siphon", "Corruption Cascade", "Apex Predator"], 10),
+		_u("Countess Nyxara",       CMD, 12, 3, 27, 6, 10,  9, 20, ["Shadow Hex", "Curse Weave", "Unravel"], 8),
+		_u("Grand Fang Voraxis",    CMD, 21, 5, 36, 8,  1, 10, 29, ["Tiger Fury", "Pack Bond", "Apex Charge"], 6),
+		_u("Thrallmaster Ghul",     CMD, 9,  3, 24, 5,  3,  8, 17, ["Thrall Legion", "Blood Puppet", "Undying Servitude"], 7),
+		_u("Lady Hemora",           CMD, 12, 4, 30, 4,  8,  9, 22, ["Crimson Mend", "Blood Rite Healing", "Sacrifice Ward"], 7),
+		_u("Shadowfang Kreev",      CMD, 18, 3, 24, 9,  1,  9, 22, ["Death from Shadows", "Vanish", "Brutal Ambush"], 6),
+		_u("The Crimson Prophet",   CMD, 9,  4, 30, 4,  8, 10, 21, ["Plague Vision", "Corruption Sermon", "Festering Foresight"], 8),
+		_u("Warlord Rathka",        CMD, 15, 6, 39, 4,  3, 10, 25, ["Iron Carapace", "Siege Hold", "Unyielding Blood"], 9),
+		_u("Blood Duchess Lysara",  CMD, 15, 4, 27, 6,  8, 10, 23, ["Noble Drain", "Aristocrat's Hunger", "Sanguine Command"], 8),
+		_u("Plague Herald Mortivex",CMD, 12, 3, 27, 5, 10,  8, 20, ["Plague Barrage", "Blight Zone", "Contagion Field"], 7),
+		_u("Fang General Zharak",   CMD, 15, 4, 30, 7,  3,  9, 23, ["Tiger Command", "Fang Formation", "Pack Assault"], 8),
+		_u("The Hollow King",       CMD, 12, 6, 39, 3,  1, 10, 26, ["Unkillable", "Ancient Spite", "Hollow Resurrection"], 7),
+		_u("Nightclaw Vex",         CMD, 21, 3, 30, 10, 1,  9, 25, ["Pounce Strike", "Gore Rush", "Frenzy Surge"], 6),
 	]
 
 # ── Infantry (18) ──────────────────────────────────────
+# Corruption variants:
+#   Blood Contamination — infects on melee hit (active melee units)
+#   Plague Cloud        — passive area infection aura (slow, diseased units)
+#   Death Curse         — spreads corruption on kill (reapers, executioners)
+#   Corruption Aura     — constant passive aura, no trigger (corrupted constructs)
+#   Corruption Spread   — generic, reserved for truly generic/thrall units
 static func _infantry() -> Array:
 	return [
-		_u("Thrall Conscripts", INF, 3, 3, 3, 5, 1, 4, 1, ["Thrall", "Expendable"], 0, false, "", 0),
-		_u("Plague Horde", INF, 6, 3, 3, 4, 1, 5, 2, ["Corruption Spread"], 0, false, "", 1),
-		_u("Blood Thralls", INF, 6, 3, 3, 5, 1, 5, 2, ["Thrall", "Blood Drain"], 0, false, "", 0),
-		_u("Corrupted Militia", INF, 6, 3, 3, 5, 1, 5, 2, ["Corruption Spread"], 0, false, "", 1),
-		_u("Fang Guard", INF, 9, 4, 6, 5, 1, 7, 3, ["Corruption Spread"], 0, false, "", 1),
-		_u("Crimson Spearmen", INF, 9, 3, 6, 5, 1, 6, 3, ["Corruption Spread"], 0, false, "", 1),
-		_u("Nightfang Warriors", INF, 12, 4, 6, 5, 1, 7, 4, ["Corruption Spread", "Pack Tactics"], 0, false, "", 1),
-		_u("Blood Reavers", INF, 12, 3, 6, 6, 1, 7, 4, ["Blood Drain", "Corruption Spread"], 0, false, "", 1),
-		_u("Plague Knights", INF, 9, 4, 9, 4, 1, 7, 4, ["Corruption Aura"], 0, false, "", 2),
-		_u("Tiger Berserkers", INF, 15, 3, 6, 6, 1, 8, 5, ["Corruption Spread", "Pack Tactics", "Blood-Drunk"], 0, false, "", 2),
-		_u("Shadow Claw Infantry", INF, 9, 3, 6, 6, 1, 6, 3, ["Shadow Meld", "Lurker Strike"], 0, false, "", 1),
-		_u("Corruption Guard", INF, 9, 4, 9, 4, 1, 7, 4, ["Corruption Aura"], 0, false, "", 2),
-		_u("Blight Reapers", INF, 12, 3, 6, 5, 1, 7, 4, ["Corruption Spread"], 0, false, "", 2),
-		_u("Infected Archers", INF, 6, 3, 3, 5, 12, 5, 3, ["Corruption Spread"], 0, false, "", 1),
-		_u("Blightspitter Thralls", INF, 6, 3, 3, 5, 8, 4, 2, ["Thrall", "Corruption Spread"], 0, false, "", 1),
-		_u("Tiger Fang Elite", INF, 15, 4, 9, 6, 1, 8, 6, ["Pack Tactics", "Blood-Drunk", "Terrifying"], 0, false, "", 2),
-		_u("Crimson Halberdiers", INF, 9, 4, 6, 5, 2, 7, 4, ["Corruption Spread"], 0, false, "", 1),
-		_u("Bloodsworn Templars", INF, 12, 4, 9, 5, 1, 8, 5, ["Blood Drain", "Corruption Spread"], 0, false, "", 2),
+		_u("Thrall Conscripts",    INF, 3,  3, 3, 5, 1, 4, 1, ["Thrall", "Expendable"], 0, false, "", 0),
+		_u("Plague Horde",         INF, 6,  3, 3, 4, 1, 5, 2, ["Plague Cloud", "Shambling"], 0, false, "", 1),
+		_u("Blood Thralls",        INF, 6,  3, 3, 5, 1, 5, 2, ["Thrall", "Blood Drain"], 0, false, "", 0),
+		_u("Corrupted Militia",    INF, 6,  3, 3, 5, 1, 5, 2, ["Corruption Spread"], 0, false, "", 1),
+		_u("Fang Guard",           INF, 9,  4, 6, 5, 1, 7, 3, ["Blood Contamination", "Guard Formation"], 0, false, "", 1),
+		_u("Crimson Spearmen",     INF, 9,  3, 6, 5, 1, 6, 3, ["Blood Contamination", "Reach"], 0, false, "", 1),
+		_u("Nightfang Warriors",   INF, 12, 4, 6, 5, 1, 7, 4, ["Blood Contamination", "Pack Tactics"], 0, false, "", 1),
+		_u("Blood Reavers",        INF, 12, 3, 6, 6, 1, 7, 4, ["Blood Drain", "Death Curse"], 0, false, "", 1),
+		_u("Plague Knights",       INF, 9,  4, 9, 4, 1, 7, 4, ["Plague Cloud", "Resilient"], 0, false, "", 2),
+		_u("Tiger Berserkers",     INF, 15, 3, 6, 6, 1, 8, 5, ["Blood Frenzy", "Pack Tactics", "Blood-Drunk"], 0, false, "", 2),
+		_u("Shadow Claw Infantry", INF, 9,  3, 6, 6, 1, 6, 3, ["Shadow Meld", "Lurker Strike"], 0, false, "", 1),
+		_u("Corruption Guard",     INF, 9,  4, 9, 4, 1, 7, 4, ["Corruption Aura", "Bulwark"], 0, false, "", 2),
+		_u("Blight Reapers",       INF, 12, 3, 6, 5, 1, 7, 4, ["Death Curse", "Harvest Souls"], 0, false, "", 2),
+		_u("Infected Archers",     INF, 6,  3, 3, 5, 12, 5, 3, ["Plague Shot", "Poison Volley"], 0, false, "", 1),
+		_u("Blightspitter Thralls",INF, 6,  3, 3, 5, 8,  4, 2, ["Thrall", "Plague Spit"], 0, false, "", 1),
+		_u("Tiger Fang Elite",     INF, 15, 4, 9, 6, 1,  8, 6, ["Pack Tactics", "Blood-Drunk", "Terrifying"], 0, false, "", 2),
+		_u("Crimson Halberdiers",  INF, 9,  4, 6, 5, 2,  7, 4, ["Blood Contamination", "Reach"], 0, false, "", 1),
+		_u("Bloodsworn Templars",  INF, 12, 4, 9, 5, 1,  8, 5, ["Blood Drain", "Death Curse"], 0, false, "", 2),
 	]
 
 # ── Cavalry (6) ────────────────────────────────────────
@@ -132,7 +144,7 @@ static func _war_machines() -> Array:
 		_u("Elder Tiger Horror", WM, 21, 4, 30, 8, 1, 10, 85, ["Corruption Aura", "Supreme Alpha", "Pack Tactics", "Terrifying", "Blood-Drunk"], 0, false, "", 3),
 		_u("Plague Broodmother", WM, 12, 4, 27, 3, 1, 10, 80, ["Spawn Thralls", "Corruption Aura", "Blood-Drunk"], 0, false, "", 2),
 		_u("Shadow Leviathan", WM, 27, 4, 30, 7, 1, 10, 95, ["Corruption Aura", "Shadow Meld", "Mist Form", "Ambush", "Towering", "Terrifying", "Blood-Drunk"], 0, false, "", 4),
-		_u("The Patriarch's Avatar", WM, 27, 6, 54, 5, 1, 10, 150, ["Corruption Aura", "Blood Harvest", "Apex Terror", "Massive", "Fearless", "Blood-Drunk"], 0, true, "", 5),
+		_u("The Patriarch's Avatar", WM, 27, 6, 54, 5, 1, 10, 150, ["Corruption Aura", "Blood Harvest", "Apex Terror", "Massive", "Fearless", "Blood-Drunk"], 0, true, "Lord Sanguinar", 5),
 	]
 
 # ── Helper: Nightfang includes corruption column ──────

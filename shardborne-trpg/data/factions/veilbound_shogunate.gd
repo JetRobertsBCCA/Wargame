@@ -22,21 +22,26 @@ static func get_units() -> Array:
 	return units
 
 # ── Commanders (13) ────────────────────────────────────
+# Each commander's flow value (last arg) reflects their ritual role:
+# Shogun=5 (supreme), Ritual Captains=4, support/mage=3-4, melee=2, scouts/assassins=1
+# Stat identities: Asagiri = pure speed (low ATK, very high MOV); Rengoku = cavalry charger
+# (high ATK, low DEF, high MOV); Yukimaru = fast glass cannon; Hoshimaru = heavy infantry (high DEF);
+# Akikaze = ritual controller (low ATK, high RNG for magic); Tsukihana = healer (low ATK, healing)
 static func _commanders() -> Array:
 	return [
-		_u("The Shrouded Shogun", CMD, 18, 5, 45, 7, 6, 10, 29, ["Supreme command", "Stance mastery"], 10),
-		_u("Masked Lord Kurohane", CMD, 18, 5, 36, 6, 3, 10, 26, ["Elite melee", "Bodyguard"], 9),
-		_u("Elite Cmdr Asagiri", CMD, 15, 4, 27, 10, 6, 9, 22, ["Mobility", "Scouting"], 6),
-		_u("Elite Cmdr Hoshimaru", CMD, 15, 5, 33, 6, 3, 10, 23, ["Infantry command", "Defense"], 8),
-		_u("Ritual Cpt Akikaze", CMD, 15, 3, 27, 5, 6, 10, 19, ["Ritual Flow support"], 6),
-		_u("Ritual Cpt Tsukihana", CMD, 15, 4, 27, 6, 6, 9, 20, ["Flow manipulation", "Healing"], 7),
-		_u("Elite Cmdr Rengoku", CMD, 15, 4, 33, 8, 3, 10, 22, ["Aggressive cavalry", "Charges"], 8),
-		_u("Elite Cmdr Yukimaru", CMD, 15, 4, 30, 9, 3, 10, 22, ["Fast strike", "Flanking"], 7),
-		_u("Cmdr Hisame", CMD, 12, 3, 27, 8, 6, 9, 20, ["Ranged support", "Artillery"], 7),
-		_u("Cmdr Midorikaze", CMD, 9, 4, 30, 6, 6, 10, 22, ["Healing", "Defensive support"], 7),
-		_u("Cmdr Kagero", CMD, 18, 3, 24, 10, 3, 9, 19, ["Assassin", "Stealth"], 6),
-		_u("Cmdr Tsuyukusa", CMD, 15, 4, 27, 7, 6, 9, 21, ["Versatile", "Balanced"], 7),
-		_u("Cmdr Hoshikami", CMD, 12, 3, 27, 7, 6, 9, 19, ["Fragment specialist", "Sigils"], 7),
+		_u("The Shrouded Shogun",   CMD, 18, 5, 45, 7,  6, 10, 29, ["Ancestral Resonance", "Stance Mastery", "Supreme Command"], 10, false, "", 5),
+		_u("Masked Lord Kurohane", CMD, 18, 5, 36, 6,  3, 10, 26, ["Void Blade", "Retinue Bond", "Shadow Parry"], 9, false, "", 3),
+		_u("Elite Cmdr Asagiri",    CMD, 12, 3, 24, 13, 6,  9, 21, ["Wind Step", "Ghost Advance", "Flanking Mastery"], 6, false, "", 2),
+		_u("Elite Cmdr Hoshimaru", CMD, 15, 6, 36, 5,  3, 10, 23, ["Iron Stance", "Temple Guard", "Unyielding Spirit"], 8, false, "", 2),
+		_u("Ritual Cpt Akikaze",    CMD, 9,  3, 24, 5, 12, 10, 19, ["Flow Surge", "Ritual Amplification", "Veil Tap"], 7, false, "", 4),
+		_u("Ritual Cpt Tsukihana", CMD, 9,  4, 30, 6, 10,  9, 20, ["Spirit Mend", "Flow Weave", "Sanctuary Aura"], 7, false, "", 4),
+		_u("Elite Cmdr Rengoku",    CMD, 18, 3, 30, 10, 3, 10, 22, ["Cavalry Thunder", "Formation Breach", "Reckless Charge"], 8, false, "", 2),
+		_u("Elite Cmdr Yukimaru",   CMD, 18, 3, 27, 11, 1,  9, 21, ["Blur Strike", "Phantom Step", "Death in Motion"], 7, false, "", 1),
+		_u("Cmdr Hisame",           CMD, 12, 3, 27, 7, 14,  9, 20, ["Precision Rain", "Artillery Bond", "Long-Range Sight"], 7, false, "", 2),
+		_u("Cmdr Midorikaze",       CMD, 9,  4, 30, 6,  8, 10, 22, ["Forest Mending", "Nature's Ward", "Regeneration Pulse"], 7, false, "", 3),
+		_u("Cmdr Kagero",           CMD, 18, 3, 24, 10, 3,  9, 19, ["Shadow Execution", "Ink Vanish", "Mark Target"], 6, false, "", 1),
+		_u("Cmdr Tsuyukusa",        CMD, 15, 4, 27, 7,  6,  9, 21, ["Adaptive Stance", "Balanced Doctrine", "Opportunist"], 7, false, "", 2),
+		_u("Cmdr Hoshikami",        CMD, 12, 3, 27, 6, 10,  9, 19, ["Sigil Mastery", "Fragment Seal", "Ink Binding"], 7, false, "", 4),
 	]
 
 # ── Infantry (16) ──────────────────────────────────────
@@ -69,10 +74,10 @@ static func _cavalry() -> Array:
 		_u("Void Crane Riders", CAV, 12, 4, 9, 10, 1, 7, 6, ["Spirit Glide", "Spirit Descent", "Samurai's Challenge"], 0, false, "", 2),
 		_u("Thunder Kirin Cavalry", CAV, 9, 4, 6, 9, 1, 7, 5, ["Momentum Strike", "Cascading Thunder"], 0, false, "", 2),
 		_u("Dreambound Riders", CAV, 12, 4, 12, 10, 1, 8, 7, ["Dream Walk", "Dream Step", "Momentum Strike"], 0, false, "", 3),
-		_u("Shrine Lion Riders", INF, 9, 4, 9, 6, 1, 8, 5, ["Momentum Strike", "Guardian Aura", "Shrine Oath"], 0, false, "", 1),
-		_u("Spirit Wolf Hunters", INF, 9, 3, 9, 7, 1, 7, 5, ["Pack Tactics", "Momentum Strike"], 0, false, "", 2),
-		_u("Eclipse Manta Riders", SUP, 12, 3, 6, 8, 6, 7, 6, ["Spirit Glide", "Suppression", "Flowing Retreat"], 0, false, "", 2),
-		_u("Spirit Dragon Cohort", SUP, 9, 4, 6, 7, 1, 8, 5, ["Momentum Strike", "Cavalry Amplifier", "Dragon Bond"], 0, false, "", 3),
+		_u("Shrine Lion Riders", CAV, 9, 4, 9, 6, 1, 8, 5, ["Momentum Strike", "Guardian Aura", "Shrine Oath"], 0, false, "", 1),
+		_u("Spirit Wolf Hunters", CAV, 9, 3, 9, 7, 1, 7, 5, ["Pack Tactics", "Momentum Strike"], 0, false, "", 2),
+		_u("Eclipse Manta Riders", CAV, 12, 3, 6, 8, 6, 7, 6, ["Spirit Glide", "Suppression", "Flowing Retreat"], 0, false, "", 2),
+		_u("Spirit Dragon Cohort", CAV, 9, 4, 6, 7, 1, 8, 5, ["Momentum Strike", "Cavalry Amplifier", "Dragon Bond"], 0, false, "", 3),
 	]
 
 # ── Support (7) ────────────────────────────────────────
@@ -131,7 +136,7 @@ static func _war_machines() -> Array:
 		_u("Lotus Ascendant Monolith", WM, 9, 5, 24, 0, 1, 10, 65, ["Bloom", "Flow Beacon", "Immovable", "Void Resolve"], 0, false, "", 5),
 		_u("Veilbound Oni Juggernaut", WM, 27, 4, 36, 5, 1, 10, 95, ["Devastating Charge", "Terror Aura", "Void Resolve", "Rampage"], 0, false, "", 3),
 		_u("Shrouded Throne Entity", WM, 15, 5, 36, 0, 8, 10, 90, ["Reality Distortion", "Flow Nexus", "Void Resolve", "Immovable"], 0, false, "", 5),
-		_u("Celestial Shogun Construct", WM, 27, 7, 54, 5, 6, 10, 150, ["Stance", "Ancestral Resonance", "Celestial Blade", "Spirit Shield", "Flow Surge", "Massive", "Fearless"], 0, true, "", 3),
+		_u("Celestial Shogun Construct", WM, 27, 7, 54, 5, 6, 10, 150, ["Stance", "Ancestral Resonance", "Celestial Blade", "Spirit Shield", "Flow Surge", "Massive", "Fearless"], 0, true, "The Shrouded Shogun", 5),
 	]
 
 # ── Helper: Veilbound includes flow column ─────────────

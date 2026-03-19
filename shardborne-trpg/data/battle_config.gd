@@ -47,6 +47,10 @@ func get_difficulty_settings() -> Dictionary:
 # Save/Load flag — set when loading a saved campaign (skip battle-return flow)
 var is_loaded_save := false
 
+## Return the grid dimensions for the current battle size
+func get_map_size() -> Vector2i:
+	return GameRules.get_map_size(battle_size)
+
 func set_armies(p_army: Array, e_army: Array, p_faction: int, e_faction: int):
 	player_army = p_army.duplicate()
 	enemy_army = e_army.duplicate()

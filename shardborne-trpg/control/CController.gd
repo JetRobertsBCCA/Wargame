@@ -10,6 +10,9 @@ signal target_selection_finished()
 @export var controlled_node : Node2D
 @export var combat: Combat
 
+var grid_width: int = 36
+var grid_height: int = 21
+
 var tile_map : TileMap
 
 var movement = 3:
@@ -57,12 +60,32 @@ func _unhandled_input(event):
 	if player_turn == false:
 		return
 
+	# Middle-click: inspect hovered unit without cancelling skill targeting
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE and event.is_released():
+		var mouse_pos := get_global_mouse_position()
+		var tile_pos := tile_map.local_to_map(mouse_pos)
+		var peek_comb = get_combatant_at_position(tile_pos)
+		if peek_comb != null and peek_comb.alive and combat and combat.game_ui:
+			combat.game_ui._show_inspect(peek_comb)
+		get_viewport().set_input_as_handled()
+		return
+
 	# Undo move: press Escape or right-click to undo last move (before attacking)
 	if _undo_available and event is InputEventKey and event.is_released() and event.keycode == KEY_ESCAPE:
 		_perform_undo_move()
 		return
-	if _undo_available and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_released():
-		if not _skill_selected:  # Don't undo if selecting a skill target
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_released():
+		if _skill_selected:
+			# Right-click always cancels skill targeting
+			var cancelled_skill = _selected_skill
+			_skill_selected = false
+			_selected_skill = ""
+			if combat and combat.game_ui:
+				var skill_label = cancelled_skill.capitalize().replace("_", " ")
+				combat.game_ui.update_information("[color=#888877]— %s targeting cancelled.[/color]\n" % skill_label)
+				combat.game_ui.emit_signal("target_selection_finished")
+			return
+		elif _undo_available:
 			_perform_undo_move()
 			return
 		
@@ -132,13 +155,21 @@ var _blocking_spaces = [
 func _ready():
 	tile_map = get_node("../Terrain/TileMap")
 	_camera = get_node_or_null("../Terrain/Camera2D")
-	_astargrid.region = Rect2i(0, 0, 36, 21)
+	# Read map dimensions from BattleConfig (scales with battle size)
+	var map_size := BattleConfig.get_map_size()
+	grid_width = map_size.x
+	grid_height = map_size.y
+	_astargrid.region = Rect2i(0, 0, grid_width, grid_height)
 	_astargrid.cell_size = Vector2i(32, 32)
 	_astargrid.offset = Vector2(16, 16)
 	_astargrid.default_compute_heuristic = AStarGrid2D.HEURISTIC_MANHATTAN
 	_astargrid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 	_astargrid.update()
-	
+
+	# Center camera on the map
+	if _camera:
+		_camera.position = Vector2(grid_width * 32, grid_height * 32) / 2.0
+
 	#build blocking spaces arrays
 	for tile in tile_map.get_used_cells(0):
 		var tile_blocking = tile_map.get_cell_tile_data(0, tile)
@@ -160,6 +191,9 @@ func set_controlled_combatant(combatant: Dictionary):
 	_undo_available = false
 	_undo_position = Vector2i(-1, -1)
 	_undo_movement = 0
+	# Invalidate movement range cache for new unit
+	_cached_move_pos = Vector2i(-1, -1)
+	_cached_move_points = -1
 	if combatant.side == 0:
 		player_turn = true
 	else:
@@ -170,9 +204,13 @@ func set_controlled_combatant(combatant: Dictionary):
 	if combatant.get("status_effects", []).has("trapped"):
 		mov = maxi(1, mov / 2)
 		combatant.status_effects.erase("trapped")  # Wears off after 1 turn
+		if combatant.side == 0:
+			combat.update_information.emit("[color=yellow]⚠ %s is TRAPPED — movement halved to %d this turn.[/color]\n" % [combatant.name, mov])
 
 	# Shaken Fall Back: Shaken units must move directly away from nearest enemy
 	if combatant.shaken and not combatant.get("status_effects", []).has("engaged"):
+		if combatant.side == 0:
+			combat.update_information.emit("[color=orange]⚠ %s is SHAKEN — forced to fall back from nearest enemy![/color]\n" % combatant.name)
 		_apply_fall_back(combatant, mov)
 		movement = 0  # No further movement after fall back
 		update_points_weight()
@@ -206,6 +244,16 @@ func set_controlled_combatant(combatant: Dictionary):
 	movement = mov
 	update_points_weight()
 	_pan_camera_to(combatant.sprite.position)
+	# ZOC warning: if any enemy is adjacent, warn the player that leaving costs +1 MOV
+	if combatant.side == 0:
+		var pos: Vector2i = combatant.position
+		for idx in combat.groups[1]:
+			var enemy = combat.combatants[idx]
+			if enemy.alive:
+				var dist = absi(pos.x - enemy.position.x) + absi(pos.y - enemy.position.y)
+				if dist <= GameRules.ENGAGEMENT_RANGE:
+					combat.update_information.emit("[color=#FFAA44]⚠ ZOC: %s is adjacent to %s — leaving costs +1 MOV[/color]\n" % [combatant.name, enemy.name])
+					break
 	# Teleport: if faction has teleport_available, grant massive movement (any tile)
 	if combat and combat.faction_state[combatant.side].get("teleport_available", false):
 		movement = 99
@@ -229,8 +277,8 @@ func _apply_fall_back(combatant: Dictionary, mov: int) -> void:
 	var new_pos := pos
 	for step in range(1, mov + 1):
 		var candidate := Vector2i(pos) + Vector2i(roundi(dir.x * step), roundi(dir.y * step))
-		candidate.x = clampi(candidate.x, 0, 35)
-		candidate.y = clampi(candidate.y, 0, 20)
+		candidate.x = clampi(candidate.x, 0, grid_width - 1)
+		candidate.y = clampi(candidate.y, 0, grid_height - 1)
 		# Check terrain
 		if tile_map:
 			var tile_data = tile_map.get_cell_tile_data(0, candidate)
@@ -279,8 +327,8 @@ func apply_consolidate(combatant: Dictionary) -> void:
 	var new_pos := pos
 	for step in range(1, consolidate_dist + 1):
 		var candidate := Vector2i(pos) + Vector2i(roundi(dir.x * step), roundi(dir.y * step))
-		candidate.x = clampi(candidate.x, 0, 35)
-		candidate.y = clampi(candidate.y, 0, 20)
+		candidate.x = clampi(candidate.x, 0, grid_width - 1)
+		candidate.y = clampi(candidate.y, 0, grid_height - 1)
 		# Check terrain
 		if tile_map:
 			var tile_data = tile_map.get_cell_tile_data(0, candidate)
@@ -361,6 +409,11 @@ var _move_start_position : Vector2i  # For charge detection
 var _undo_position : Vector2i = Vector2i(-1, -1)
 var _undo_available : bool = false
 var _undo_movement : int = 0  # Movement value before the move
+
+## Cached BFS movement range — invalidated on position/movement change
+var _cached_move_tiles: Dictionary = {}
+var _cached_move_pos: Vector2i = Vector2i(-1, -1)
+var _cached_move_points: int = -1
 
 ## Check if the current combatant moved 5+ tiles in a straight line (same row or column)
 ## toward the target. If so, sets has_charged = true on the combatant.
@@ -577,9 +630,9 @@ func ai_process(target_position: Vector2i):
 	for tile in tiles_to_check:
 		var candidate: Vector2i = target_position + tile
 		# Clamp to grid bounds to avoid AStarGrid2D crash
-		if candidate.x < 0 or candidate.y < 0 or candidate.x >= 36 or candidate.y >= 21:
+		if candidate.x < 0 or candidate.y < 0 or candidate.x >= grid_width or candidate.y >= grid_height:
 			continue
-		if !_astargrid.get_point_weight_scale(candidate) > 999999:
+		if _astargrid.get_point_weight_scale(candidate) <= 999999:
 			ai_move(candidate)
 			moved = true
 			break
@@ -598,8 +651,8 @@ func ai_move(target_position: Vector2i):
 func find_path(tile_position: Vector2i):
 	var current_position = tile_map.local_to_map(controlled_node.position)
 	# Clamp to grid bounds
-	tile_position.x = clampi(tile_position.x, 0, 35)
-	tile_position.y = clampi(tile_position.y, 0, 20)
+	tile_position.x = clampi(tile_position.x, 0, grid_width - 1)
+	tile_position.y = clampi(tile_position.y, 0, grid_height - 1)
 	if _astargrid.get_point_weight_scale(tile_position) > 999999:
 		var dir : Vector2i
 		if current_position.x > tile_position.x:
@@ -612,8 +665,8 @@ func find_path(tile_position: Vector2i):
 			dir = Vector2i.DOWN
 		tile_position += dir
 		# Re-clamp after adjustment
-		tile_position.x = clampi(tile_position.x, 0, 35)
-		tile_position.y = clampi(tile_position.y, 0, 20)
+		tile_position.x = clampi(tile_position.x, 0, grid_width - 1)
+		tile_position.y = clampi(tile_position.y, 0, grid_height - 1)
 	_path = _astargrid.get_point_path(current_position, tile_position)
 	queue_redraw()
 
@@ -799,7 +852,7 @@ func _draw_attack_range():
 			if dist == 0 or dist > max_range:
 				continue
 			var tile_pos = start + Vector2i(dx, dy)
-			if tile_pos.x < 0 or tile_pos.y < 0 or tile_pos.x >= 36 or tile_pos.y >= 21:
+			if tile_pos.x < 0 or tile_pos.y < 0 or tile_pos.x >= grid_width or tile_pos.y >= grid_height:
 				continue
 			var world_pos = tile_map.map_to_local(tile_pos)
 			# Orange tint for attack range, stronger at edges
@@ -811,7 +864,7 @@ func _draw_attack_range():
 			var dist = absi(dx) + absi(dy)
 			if dist == max_range:
 				var tile_pos = start + Vector2i(dx, dy)
-				if tile_pos.x < 0 or tile_pos.y < 0 or tile_pos.x >= 36 or tile_pos.y >= 21:
+				if tile_pos.x < 0 or tile_pos.y < 0 or tile_pos.x >= grid_width or tile_pos.y >= grid_height:
 					continue
 				var world_pos = tile_map.map_to_local(tile_pos)
 				draw_rect(Rect2(world_pos.x - 16, world_pos.y - 16, 32, 32), Color(1.0, 0.4, 0.1, 0.35), false, 1.5)
@@ -826,7 +879,20 @@ func _draw_movement_range():
 	var mov = movement
 	if mov <= 0:
 		return
-	# BFS flood fill to find reachable tiles
+	# Use cached BFS result if position and movement haven't changed
+	if start != _cached_move_pos or mov != _cached_move_points:
+		_cached_move_tiles = _compute_movement_range(comb, start, mov)
+		_cached_move_pos = start
+		_cached_move_points = mov
+	# Draw reachable tiles (skip the unit's own tile)
+	for tile_pos in _cached_move_tiles:
+		if tile_pos == start:
+			continue
+		var world_pos = tile_map.map_to_local(tile_pos)
+		draw_rect(Rect2(world_pos.x - 15, world_pos.y - 15, 30, 30), Color(0.3, 0.6, 1.0, 0.12))
+
+## BFS flood fill to find all reachable tiles from a position with given movement points
+func _compute_movement_range(comb: Dictionary, start: Vector2i, mov: int) -> Dictionary:
 	var visited := {}
 	var queue := [[start, 0]]
 	visited[start] = true
@@ -840,7 +906,7 @@ func _draw_movement_range():
 			var next: Vector2i = pos + dir
 			if next in visited:
 				continue
-			if next.x < 0 or next.y < 0 or next.x >= 36 or next.y >= 21:
+			if next.x < 0 or next.y < 0 or next.x >= grid_width or next.y >= grid_height:
 				continue
 			if _astargrid.get_point_weight_scale(next) > 999999:
 				continue
@@ -858,12 +924,7 @@ func _draw_movement_range():
 			if total <= mov:
 				visited[next] = true
 				queue.append([next, total])
-	# Draw reachable tiles (skip the unit's own tile)
-	for tile_pos in visited:
-		if tile_pos == start:
-			continue
-		var world_pos = tile_map.map_to_local(tile_pos)
-		draw_rect(Rect2(world_pos.x - 15, world_pos.y - 15, 30, 30), Color(0.3, 0.6, 1.0, 0.12))
+	return visited
 
 ## Draw a highlighted path tile
 func _draw_path_tile(point: Vector2, color: Color):

@@ -17,6 +17,8 @@ signal update_combatants(combatants: Array)
 signal combat_finished()
 
 var combatants = []
+## Name → combatant dictionary for O(1) lookups
+var _combatant_by_name: Dictionary = {}
 
 enum Group { PLAYERS, ENEMIES }
 
@@ -39,6 +41,8 @@ var round_number = 1
 
 var _skill_manager := FactionSkillManager.new()
 var _faction_mgr := FactionStateManager.new()
+var _skill_log_cb: Callable
+var _faction_log_cb: Callable
 
 # ══════════════════════════════════════════════════════════════
 # FACTION STATE
@@ -79,9 +83,9 @@ var _commander_dead_cp_penalty := [0, 0]
 
 ## Whether we are in the pre-battle deployment phase
 var deploying := false
-## Player deployment zone boundaries (inclusive)
-const DEPLOY_ZONE_START := Vector2i(1, 1)
-const DEPLOY_ZONE_END := Vector2i(6, 19)
+## Player deployment zone boundaries (computed from map size)
+var deploy_zone_start := Vector2i(1, 1)
+var deploy_zone_end := Vector2i(6, 19)
 ## Currently selected unit for repositioning during deployment
 var _deploy_selected_unit: Dictionary = {}
 
@@ -213,13 +217,21 @@ func _ready():
 	emit_signal("register_combat", self)
 	randomize()
 
+	# Compute map-relative deployment zones from battle size
+	var map_size := BattleConfig.get_map_size()
+	# Player deploys in left ~17% of map, with 1-tile margin
+	deploy_zone_start = Vector2i(1, 1)
+	deploy_zone_end = Vector2i(maxi(4, map_size.x / 6), map_size.y - 2)
+
 	# Notify state machine that battle is active
 	if GameStateMachine.current_state != GameStateMachine.GameState.BATTLE:
 		GameStateMachine.force_state(GameStateMachine.GameState.BATTLE)
 
 	# Wire manager log signals → update_information
-	_skill_manager.skill_log.connect(func(msg): update_information.emit(msg))
-	_faction_mgr.faction_log.connect(func(msg): update_information.emit(msg))
+	_skill_log_cb = func(msg): update_information.emit(msg)
+	_faction_log_cb = func(msg): update_information.emit(msg)
+	_skill_manager.skill_log.connect(_skill_log_cb)
+	_faction_mgr.faction_log.connect(_faction_log_cb)
 
 	# Handle end-of-combat
 	combat_finished.connect(_on_combat_finished)
@@ -272,15 +284,21 @@ func _ready():
 	_enter_deployment()
 
 	# Update UI with faction state and card hand
-	if game_ui.has_method("update_faction_resources"):
+	if game_ui and game_ui.has_method("update_faction_resources"):
 		game_ui.update_faction_resources(faction_state[0])
-	if game_ui.has_method("update_card_hand"):
+	if game_ui and game_ui.has_method("update_card_hand"):
 		game_ui.update_card_hand(card_hands[0])
-	if game_ui.has_method("update_minimap"):
+	if game_ui and game_ui.has_method("update_minimap"):
 		game_ui.update_minimap(combatants)
 
 	# Clear BattleConfig so Quick Battle from menu works normally next time
 	BattleConfig.clear()
+
+func _exit_tree():
+	if _skill_manager and _skill_manager.skill_log.is_connected(_skill_log_cb):
+		_skill_manager.skill_log.disconnect(_skill_log_cb)
+	if _faction_mgr and _faction_mgr.faction_log.is_connected(_faction_log_cb):
+		_faction_mgr.faction_log.disconnect(_faction_log_cb)
 
 ## Setup from Army Builder selections
 func _setup_from_battle_config():
@@ -289,10 +307,18 @@ func _setup_from_battle_config():
 	_init_faction_state(0, side_faction[0])
 	_init_faction_state(1, side_faction[1])
 
+	# Compute placement zones from map size
+	var map_size := BattleConfig.get_map_size()
+	var player_start := Vector2i(deploy_zone_start.x + 1, 2)
+	var player_end := Vector2i(deploy_zone_end.x - 1, map_size.y - 3)
+	# Enemy deploys mirrored on the right side
+	var enemy_start := Vector2i(map_size.x - deploy_zone_end.x, 2)
+	var enemy_end := Vector2i(map_size.x - deploy_zone_start.x - 1, map_size.y - 3)
+
 	# Place player units on left side, avoiding collisions
 	var occupied_cells: Array[Vector2i] = []
 	for unit_name in BattleConfig.player_army:
-		var pos = _find_open_cell(Vector2i(2, 2), Vector2i(5, 18), occupied_cells)
+		var pos = _find_open_cell(player_start, player_end, occupied_cells)
 		occupied_cells.append(pos)
 		_add_unit_by_name(unit_name, 0, pos)
 
@@ -304,7 +330,7 @@ func _setup_from_battle_config():
 
 	# Place enemy units on right side
 	for unit_name in BattleConfig.enemy_army:
-		var pos = _find_open_cell(Vector2i(11, 2), Vector2i(14, 18), occupied_cells)
+		var pos = _find_open_cell(enemy_start, enemy_end, occupied_cells)
 		occupied_cells.append(pos)
 		_add_unit_by_name(unit_name, 1, pos)
 
@@ -405,7 +431,7 @@ func _enter_deployment():
 	update_information.emit("[color=cyan]═══ DEPLOYMENT PHASE ═══[/color]\n")
 	update_information.emit("[color=silver]Click one of your units, then click an empty tile in the deployment zone (highlighted) to move it.[/color]\n")
 	update_information.emit("[color=silver]Press [color=yellow]Enter[/color] when ready to begin combat.[/color]\n")
-	controller.enter_deployment_mode(DEPLOY_ZONE_START, DEPLOY_ZONE_END)
+	controller.enter_deployment_mode(deploy_zone_start, deploy_zone_end)
 
 ## Handle a deployment click from CController
 func deploy_reposition(unit: Dictionary, new_pos: Vector2i) -> bool:
@@ -415,8 +441,8 @@ func deploy_reposition(unit: Dictionary, new_pos: Vector2i) -> bool:
 		update_information.emit("[color=red]You can only reposition your own units.[/color]\n")
 		return false
 	# Validate within deployment zone
-	if new_pos.x < DEPLOY_ZONE_START.x or new_pos.x > DEPLOY_ZONE_END.x \
-		or new_pos.y < DEPLOY_ZONE_START.y or new_pos.y > DEPLOY_ZONE_END.y:
+	if new_pos.x < deploy_zone_start.x or new_pos.x > deploy_zone_end.x \
+		or new_pos.y < deploy_zone_start.y or new_pos.y > deploy_zone_end.y:
 		update_information.emit("[color=red]Target tile is outside the deployment zone.[/color]\n")
 		return false
 	# Check tile is not occupied
@@ -451,7 +477,8 @@ func end_deployment():
 	update_information.emit("[color=gold]═══ DEPLOYMENT COMPLETE — BATTLE BEGINS ═══[/color]\n")
 	# Now start the first unit's turn
 	controller.set_controlled_combatant(combatants[turn_queue[0]])
-	game_ui.set_skill_list(combatants[turn_queue[0]].skill_list)
+	if game_ui and game_ui.has_method("set_skill_list"):
+		game_ui.set_skill_list(combatants[turn_queue[0]].skill_list)
 	_update_active_highlight(combatants[turn_queue[0]])
 	_set_phase(GameStateMachine.BattlePhase.COMMAND)
 
@@ -549,6 +576,9 @@ func _assign_faction_skills(def: CombatantDefinition, skills: Array) -> void:
 				skills.append("inferno_charge")
 			if def.is_commander():
 				skills.append("heat_vent")
+			# Fragment Overload commanders (Ryx, Tidescar) can use fragment skills
+			if def.has_special("Fragment Overload") or def.has_special("Volatile Detonation"):
+				skills.append("fragment_overload")
 
 		CombatantDefinition.Faction.IRON_DOMINION:
 			if def.has_special("Grid Node") or def.has_special("Shield Wall"):
@@ -570,15 +600,18 @@ func _assign_faction_skills(def: CombatantDefinition, skills: Array) -> void:
 				skills.append("grid_relay")
 
 		CombatantDefinition.Faction.NIGHTFANG:
-			if def.has_special("Corruption Spread") or def.corruption_spread > 0:
+			if def.has_special("Corruption Spread") or def.corruption_spread > 0 \
+					or def.has_special("Blood Contamination") \
+					or def.has_special("Plague Shot") or def.has_special("Plague Spit") \
+					or def.has_special("Blood Frenzy"):
 				skills.append("corrupt_bite")
-			if def.has_special("Blood") or def.is_commander():
+			if def.has_special("Blood") or def.is_commander() or def.has_special("Thrall Legion"):
 				skills.append("blood_tithe")
 			if def.has_special("Shadow Meld") or def.has_special("Mist Form"):
 				skills.append("shadow_step")
-			if def.has_special("Blood Drain"):
+			if def.has_special("Blood Drain") or def.has_special("Blood Siphon"):
 				skills.append("feast")
-			if def.has_special("Terror"):
+			if def.has_special("Terror") or def.has_special("Death Curse"):
 				skills.append("terror_shriek")
 
 		CombatantDefinition.Faction.THORNWEFT:
@@ -586,22 +619,31 @@ func _assign_faction_skills(def: CombatantDefinition, skills: Array) -> void:
 				skills.append("web_snare")
 			if def.is_commander() or def.unit_type == CombatantDefinition.UnitType.SUPPORT:
 				skills.append("fate_weave")
-			if def.has_special("Silk Camouflage"):
+			if def.has_special("Silk Camouflage") or def.has_special("Gossamer Trap"):
 				skills.append("gossamer_trap")
 			if def.is_commander():
 				skills.append("anchor_pulse")
+			# Fate/reroll commanders grant extra fate_weave uses (already have it; anchor_pulse doubles)
+			if def.has_special("Spawn Spiderlings") or def.has_special("Brood Commander"):
+				if "anchor_pulse" not in skills:
+					skills.append("anchor_pulse")
 
 		CombatantDefinition.Faction.VEILBOUND:
 			if def.has_special("Stance"):
 				skills.append("stance_strike")
 			if def.unit_type == CombatantDefinition.UnitType.SUPPORT or def.is_commander():
 				skills.append("ritual_channel")
-			if def.has_special("Spirit Glide") or def.has_special("Void Resolve"):
+			if def.has_special("Spirit Glide") or def.has_special("Void Resolve") \
+					or def.has_special("Wind Step") or def.has_special("Ghost Advance"):
 				skills.append("phase_strike")
 			if def.is_commander():
 				skills.append("veil_walk")
 			if def.has_special("Temple Vow"):
 				skills.append("honor_guard")
+			# Cavalry Thunder / Formation Breach: mounted charge bonus via stance_strike
+			if def.has_special("Cavalry Thunder") or def.has_special("Formation Breach"):
+				if "stance_strike" not in skills:
+					skills.append("stance_strike")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -645,6 +687,7 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	combatant["facing"] = GameRules.Facing.RIGHT if side == 0 else GameRules.Facing.LEFT
 	combatants.append(combatant)
 	groups[side].append(combatants.size() - 1)
+	_combatant_by_name[combatant.name] = combatant
 
 	var new_combatant_sprite = Sprite2D.new()
 	new_combatant_sprite.texture = combatant.map_sprite
@@ -657,6 +700,10 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	else:
 		combatant["initiative"] -= 1
 	combatant["sprite"] = new_combatant_sprite
+	# Faction tint: subtle hue overlay for visual faction identification
+	var _faction_tint := _faction_sprite_tint(combatant.definition.faction)
+	new_combatant_sprite.modulate = _faction_tint
+	combatant["_sprite_tint"] = _faction_tint
 
 	# Floating HP bar + side border
 	var label_node = Node2D.new()
@@ -750,11 +797,11 @@ func advance_turn():
 		AudioManager.play_sfx("turn_start")
 
 	# Update minimap
-	if game_ui.has_method("update_minimap"):
+	if game_ui and game_ui.has_method("update_minimap"):
 		game_ui.update_minimap(combatants)
 
 	# Update faction UI for active side
-	if game_ui.has_method("update_faction_resources"):
+	if game_ui and game_ui.has_method("update_faction_resources"):
 		game_ui.update_faction_resources(faction_state[comb.side])
 
 	if comb.side == 1:
@@ -791,10 +838,10 @@ func _on_round_start():
 		if game_ui and game_ui.has_method("show_round_summary"):
 			var player_alive := 0
 			var enemy_alive := 0
-			for idx in groups[0]:
+			for idx in groups[Group.PLAYERS]:
 				if combatants[idx].alive:
 					player_alive += 1
-			for idx in groups[1]:
+			for idx in groups[Group.ENEMIES]:
 				if combatants[idx].alive:
 					enemy_alive += 1
 			game_ui.show_round_summary(round_number - 1, scenario_manager.vp, player_alive, enemy_alive)
@@ -963,6 +1010,12 @@ func _on_unit_turn_start(comb: Dictionary) -> bool:
 	if comb.definition.has_special("Regeneration") and comb.hp < comb.max_hp:
 		comb.hp = mini(comb.hp + 1, comb.max_hp)
 		update_information.emit("[color=green]%s regenerates 1 HP (%d/%d)[/color]\n" % [comb.name, comb.hp, comb.max_hp])
+		update_combatants.emit(combatants)
+	# Self-Repair keyword: heal 2 HP at start of turn (stronger — war machines and structures)
+	if comb.definition.has_special("Self-Repair") and comb.hp < comb.max_hp:
+		var repair_amt := mini(2, comb.max_hp - comb.hp)
+		comb.hp += repair_amt
+		update_information.emit("[color=lime]%s self-repairs %d HP (%d/%d)[/color]\n" % [comb.name, repair_amt, comb.hp, comb.max_hp])
 		update_combatants.emit(combatants)
 
 	# Routed units must flee every turn
@@ -1172,7 +1225,8 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 	if attacker.definition.has_special("Sharpshot"):
 		crit_threshold = 5
 	# Severed: no faction abilities (no keyword bonuses) — already handled above
-	var result = _roll_attack_dice(dice_count, target_def, crit_threshold, attacker.get("fate_reroll", false))
+	var veteran_reroll := attacker.definition.has_special("Veteran") or attacker.definition.has_special("Reroll 1s")
+	var result = _roll_attack_dice(dice_count, target_def, crit_threshold, attacker.get("fate_reroll", false), veteran_reroll)
 	# Consume the fate reroll after use
 	if attacker.get("fate_reroll", false):
 		attacker["fate_reroll"] = false
@@ -1183,13 +1237,14 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 		result.total_damage *= 2
 		update_information.emit("[color=silver]  (Siege: double damage!)[/color]\n")
 
-	# Fire Resistant: half damage from fire attacks (round down, min 1)
-	if target.definition.has_special("Fire Resistant") and attacker.definition.has_special("Fire"):
+	# Fire Resistant: half damage from fire or breath weapon attacks (round down, min 1)
+	var is_fire_attack := attacker.definition.has_special("Fire") or attacker.definition.has_special("Breath Weapon")
+	if target.definition.has_special("Fire Resistant") and is_fire_attack:
 		result.total_damage = maxi(1, result.total_damage / 2)
 		update_information.emit("[color=silver]  (Fire Resistant: damage halved)[/color]\n")
 
-	# Fire Immune: no damage from fire attacks
-	if target.definition.has_special("Fire Immune") and attacker.definition.has_special("Fire"):
+	# Fire Immune: no damage from fire or breath weapon attacks
+	if target.definition.has_special("Fire Immune") and is_fire_attack:
 		result.total_damage = 0
 		update_information.emit("[color=silver]  (Fire Immune!)[/color]\n")
 
@@ -1228,14 +1283,23 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 		var actual_target = target
 		# Honor Guard: redirect damage to guardian if present
 		if target.guarded_by != "":
-			for c in combatants:
-				if c.alive and c.name == target.guarded_by:
-					update_information.emit("[color=cyan]%s intercepts the blow for %s![/color]\n" % [c.name, target.name])
-					actual_target = c
-					# Clear guard after use
-					c.guarding = ""
-					target.guarded_by = ""
-					break
+			var guardian = _combatant_by_name.get(target.guarded_by)
+			if guardian and guardian.alive:
+				update_information.emit("[color=cyan]%s intercepts the blow for %s![/color]\n" % [guardian.name, target.name])
+				actual_target = guardian
+				# Clear guard after use
+				guardian.guarding = ""
+				target.guarded_by = ""
+		# Melee lunge animation: attacker punches toward target and snaps back
+		if attack_key == "attack_melee":
+			var _att_spr := attacker.get("sprite") as Sprite2D
+			var _tgt_spr := actual_target.get("sprite") as Sprite2D
+			if _att_spr and _tgt_spr:
+				var _start := _att_spr.position
+				var _lunge_dir := (_tgt_spr.position - _start).normalized() * 8.0
+				var _lunge_tw := create_tween()
+				_lunge_tw.tween_property(_att_spr, "position", _start + _lunge_dir, 0.07)
+				_lunge_tw.tween_property(_att_spr, "position", _start, 0.13)
 		apply_damage(actual_target, result.total_damage)
 
 		# Post-hit effects
@@ -1248,6 +1312,24 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 	else:
 		AudioManager.play_sfx("attack_miss", 0.1)
 		update_information.emit("No damage dealt.\n")
+
+	# Massive: nearby enemies check morale when this unit attacks
+	if attacker.definition.has_special("Massive") and result.total_damage > 0:
+		for idx in groups[1 - attacker.side].duplicate():
+			var enemy = combatants[idx]
+			if enemy.alive and get_distance(attacker, enemy) <= 3 and not enemy.get("morale_checked_this_round", false):
+				enemy["morale_checked_this_round"] = true
+				update_information.emit("[color=red]  (%s's MASSIVE presence terrifies %s!)[/color]\n" % [attacker.name, enemy.name])
+				check_morale(enemy)
+				if _combat_over:
+					return
+
+	# Kamikaze: unit detonates after attacking
+	if attacker.definition.has_special("Kamikaze") and attacker.alive:
+		update_information.emit("[color=red]%s detonates in a Kamikaze strike![/color]\n" % attacker.name)
+		combatant_die(attacker)
+		if _combat_over:
+			return
 
 	# Post-attack faction effects
 	_on_attack_complete(attacker, target, attack_key)
@@ -1299,7 +1381,7 @@ func _check_combat_over() -> bool:
 		return true
 	return false
 
-func _roll_attack_dice(dice_count: int, target_def: int, crit_threshold: int = 6, fate_reroll: bool = false) -> Dictionary:
+func _roll_attack_dice(dice_count: int, target_def: int, crit_threshold: int = 6, fate_reroll: bool = false, veteran_reroll: bool = false) -> Dictionary:
 	var hits := 0
 	var crits := 0
 	var rolls: Array = []
@@ -1311,6 +1393,21 @@ func _roll_attack_dice(dice_count: int, target_def: int, crit_threshold: int = 6
 			hits += 1
 		elif roll >= target_def:
 			hits += 1
+	# Veteran / Reroll 1s: reroll all natural 1s once
+	if veteran_reroll:
+		var rerolled_1s := 0
+		for i in range(rolls.size()):
+			if rolls[i] == 1:
+				var new_roll := randi_range(1, 6)
+				rolls[i] = new_roll
+				rerolled_1s += 1
+				if new_roll >= crit_threshold:
+					crits += 1
+					hits += 1
+				elif new_roll >= target_def:
+					hits += 1
+		if rerolled_1s > 0:
+			update_information.emit("[color=lime]  (Veteran: rerolled %d ones)[/color]\n" % rerolled_1s)
 	# Fate Weave: reroll all dice that missed
 	if fate_reroll:
 		var rerolled := 0
@@ -1334,6 +1431,16 @@ func apply_damage(target: Dictionary, damage: int) -> void:
 	update_combatants.emit(combatants)
 	update_information.emit("[color=red]%s[/color] takes [color=gray]%d damage[/color] (%d/%d HP)\n" % [
 		target.name, damage, maxi(0, target.hp), target.max_hp])
+	# ── Hit flash + floating damage number ──
+	var _hit_spr := target.get("sprite") as Sprite2D
+	if _hit_spr:
+		var _base_tint: Color = target.get("_sprite_tint", Color.WHITE)
+		var _flash_tw := create_tween()
+		_flash_tw.tween_property(_hit_spr, "modulate", Color(2.2, 2.2, 2.2), 0.06)
+		_flash_tw.tween_property(_hit_spr, "modulate", _base_tint, 0.20)
+	var _lbl = target.get("label_node")
+	if _lbl != null:
+		_lbl.show_damage(damage)
 	if target.hp <= 0:
 		combatant_die(target)
 	elif target.hp <= target.max_hp / 2:
@@ -1547,7 +1654,7 @@ func _get_faction_defense_bonus(target: Dictionary) -> int:
 	return _faction_mgr.get_faction_defense_bonus(target, faction_state, combatants, groups)
 
 func _on_attack_hit(attacker: Dictionary, target: Dictionary, result: Dictionary, attack_key: String):
-	_faction_mgr.on_attack_hit(attacker, target, result, attack_key, faction_state)
+	_faction_mgr.on_attack_hit(attacker, target, result, attack_key, faction_state, combatants)
 	# Blood Drain visual update
 	if attacker.definition.has_special("Blood Drain") and not target.alive:
 		update_combatants.emit(combatants)
@@ -1624,7 +1731,7 @@ func _update_hunger_tier(side: int):
 	FactionStateManager.update_hunger_tier(faction_state[side])
 
 func _count_web_anchors(side: int) -> int:
-	return FactionStateManager.count_web_anchors(faction_state[side])
+	return FactionStateManager.count_web_anchors(faction_state[side], combatants, groups, side)
 
 func _get_web_tier(comb: Dictionary) -> Dictionary:
 	return _faction_mgr.get_web_tier(comb, faction_state, combatants, groups)
@@ -1674,11 +1781,11 @@ func roll_morale(comb: Dictionary) -> Dictionary:
 		if terror_applied:
 			update_information.emit("[color=purple]  (%s suffers -1 MOR from Terror!)[/color]\n" % comb.name)
 
-	# Inspiring aura: +1 MOR if ally with Inspiring within 3 tiles
+	# Inspiring aura: +1 MOR if ally with Inspiring/Inspiring Presence/Inspiring Vibration within 3 tiles
 	for idx in groups[comb.side]:
 		var ally = combatants[idx]
-		if ally != comb and ally.alive and ally.definition.has_special("Inspiring"):
-			if get_distance(comb, ally) <= 3:
+		if ally != comb and ally.alive and get_distance(comb, ally) <= 3:
+			if ally.definition.has_special("Inspiring") or ally.definition.has_special("Inspiring Presence") or ally.definition.has_special("Inspiring Vibration"):
 				mor += 1
 				update_information.emit("[color=silver]  (%s +1 MOR from Inspiring ally)[/color]\n" % comb.name)
 				break
@@ -1694,12 +1801,24 @@ func check_morale(comb: Dictionary) -> void:
 		return
 	if comb.definition.has_special("Thrall") or comb.definition.has_special("Expendable"):
 		return  # No morale check needed
+	# Thrall Legion: units near a "Thrall Legion" commander also auto-pass morale
+	for idx in groups[comb.side]:
+		var ally = combatants[idx]
+		if ally.alive and ally != comb and ally.definition.has_special("Thrall Legion") and get_distance(comb, ally) <= 4:
+			return  # Thrall Legion grants morale immunity to nearby allies
 	# Shaken units check at -2 per core.js
 	var shaken_penalty := -2 if comb.shaken else 0
 
 	var result = roll_morale(comb)
 	# Apply shaken penalty to the effective margin
 	result.margin += shaken_penalty
+	# Stubborn: reroll a failed morale check once, take the better result
+	if not (result.passed and result.margin >= 0) and comb.definition.has_special("Stubborn"):
+		var result2 = roll_morale(comb)
+		result2.margin += shaken_penalty
+		if result2.passed and result2.margin >= 0:
+			result = result2
+			update_information.emit("[color=lime]%s's Stubborn resolve holds on the reroll![/color]\n" % comb.name)
 	var faction = side_faction[comb.side]
 	var flavor = MORALE_FLAVOR.get(faction, ["Holds firm.", "%s wavers!", "%s flees!"])
 	if result.passed and result.margin >= 0:
@@ -1768,6 +1887,15 @@ func _apply_routed_flee(comb: Dictionary) -> void:
 # ══════════════════════════════════════════════════════════════
 
 func combatant_die(combatant: Dictionary):
+	# Phoenix Rebirth: unit revives at half HP once per battle (intercept before death)
+	if combatant.alive and combatant.definition.has_special("Phoenix Rebirth") and not combatant.get("phoenix_used", false):
+		combatant["phoenix_used"] = true
+		combatant.hp = maxi(1, combatant.max_hp / 2)
+		update_information.emit("[color=gold]✦ %s RISES through Phoenix Rebirth! (%d/%d HP)[/color]\n" % [
+			combatant.name, combatant.hp, combatant.max_hp])
+		AudioManager.play_sfx("heal")
+		update_combatants.emit(combatants)
+		return
 	var comb_id = combatants.find(combatant)
 	if comb_id != -1:
 		combatant.alive = false
@@ -1804,7 +1932,11 @@ func combatant_die(combatant: Dictionary):
 		if not combatant.definition.has_special("Expendable"):
 			_morale_cascade(combatant)
 
-	combatant.sprite.frame = 1
+	# Death fade: tween sprite to gray then switch to dead frame
+	var _dying_spr: Sprite2D = combatant.sprite
+	var _fade_tw := create_tween()
+	_fade_tw.tween_property(_dying_spr, "modulate", Color(0.42, 0.42, 0.42, 0.65), 0.28)
+	_fade_tw.tween_callback(func(): _dying_spr.frame = 1)
 	combatant_died.emit(combatant)
 
 	# Check if combat is over
@@ -1812,6 +1944,11 @@ func combatant_die(combatant: Dictionary):
 		combat_finish()
 
 ## Commander death: discard all cards, all friendlies morale check at -2, lose 1 CP/turn
+## Compute a subtle faction-hue modulate for map sprites (preserves portrait readability).
+func _faction_sprite_tint(faction: int) -> Color:
+	var fc: Color = SpriteGenerator.FACTION_COLORS.get(faction, Color.WHITE)
+	return Color.WHITE.lerp(fc, 0.22).lightened(0.05)
+
 func _on_commander_death(commander: Dictionary) -> void:
 	var side = commander.side
 	update_information.emit("[color=red]═══ COMMANDER FALLEN! ═══[/color]\n")
@@ -2070,10 +2207,10 @@ func play_card(card: Dictionary):
 	_apply_card_effects(side, effects)
 
 	# Update hand in UI
-	if game_ui.has_method("update_card_hand"):
+	if game_ui and game_ui.has_method("update_card_hand"):
 		game_ui.update_card_hand(card_hands[side])
 	# Refresh faction resources & CP display
-	if game_ui.has_method("update_faction_resources"):
+	if game_ui and game_ui.has_method("update_faction_resources"):
 		game_ui.update_faction_resources(faction_state[side])
 
 
@@ -2112,6 +2249,9 @@ func ai_process(comb: Dictionary):
 		# Shaken targets are easier to finish off
 		if target.shaken:
 			score += 7.0
+		# Nightfang: heavily corrupted targets are near-conversion — prioritize them
+		if side_faction[comb.side] == CombatantDefinition.Faction.NIGHTFANG:
+			score += target.corruption_tokens * 2.0
 		# In range bonus (can actually attack this turn)
 		if dist <= 1 or (comb.rng > 1 and dist <= comb.rng):
 			score += 12.0
@@ -2255,6 +2395,15 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 		ritual_channel(comb, comb)
 		return true
 
+	# Anchor Pulse: DEF buff to nearby allies when enemies are approaching
+	if "anchor_pulse" in skill_list and dist <= 6:
+		anchor_pulse(comb, comb)
+		return true
+	# Fate Weave: give the AI commander itself a fate reroll for its next attack
+	if "fate_weave" in skill_list and state.get("fate_threads", 0) >= 1 and not comb.get("fate_reroll", false) and dist <= 1:
+		fate_weave(comb, comb)
+		return true
+
 	# ── AoE attacks when multiple enemies are clustered ──
 	var enemies_within_4 := 0
 	for idx in groups[Group.PLAYERS]:
@@ -2268,6 +2417,10 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 	# Terror Shriek: AoE morale check (2+ enemies within 4)
 	if "terror_shriek" in skill_list and enemies_within_4 >= 2:
 		terror_shriek(comb, comb)
+		return true
+	# Gossamer Trap: web zone when enemies are clustered
+	if "gossamer_trap" in skill_list and enemies_within_4 >= 2:
+		gossamer_trap(comb, target)
 		return true
 	# Fragment Overload: AoE damage (need charges and enemies close)
 	if "fragment_overload" in skill_list and enemies_within_4 >= 2:

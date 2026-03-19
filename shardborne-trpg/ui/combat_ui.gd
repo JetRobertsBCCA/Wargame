@@ -58,6 +58,7 @@ var _skill_buttons: Array = []  # Array[Button]
 var _end_turn_btn: Button
 var _log_text: RichTextLabel
 var _select_target_panel: PanelContainer
+var _undo_hint_label: Label  # Shows "[Esc] Undo" when a move can be undone
 
 var _inspect_panel: PanelContainer
 var _inspect_name: RichTextLabel
@@ -70,6 +71,7 @@ var _inspected_comb: Dictionary = {}
 var _card_hand_container: HBoxContainer
 var _card_hand_panel: PanelContainer
 var _current_comb: Dictionary = {}  # Currently active combatant
+var _targeting_active := false  # True while waiting for a skill target
 var _tutorial_panel: PanelContainer  # Campaign tutorial tips overlay
 
 # ── Pause menu ──
@@ -80,13 +82,14 @@ var _paused := false
 # ── Speed controls ──
 var _speed_multiplier := 1.0
 var _speed_label: Label
+var _speed_buttons: Array = []  # Array[Button] for active-state highlighting
 
 # ── Minimap ──
 var _minimap_rect: ColorRect
 var _minimap_container: Control
-const MINIMAP_WIDTH := 144  # 36 tiles * 4px
-const MINIMAP_HEIGHT := 84  # 21 tiles * 4px
 const MINIMAP_TILE := 4     # px per tile
+var _minimap_cols := 36     # Set from BattleConfig at build time
+var _minimap_rows := 21
 
 # ══════════════════════════════════════════════════════════════
 # INITIALIZATION
@@ -105,15 +108,20 @@ func _ready():
 
 
 func _unhandled_input(event: InputEvent):
-	# Escape key → toggle pause menu (only when undo not available in controller)
+	# Escape key — priority order: close inspect → undo move → pause menu
 	if event is InputEventKey and event.is_released() and event.keycode == KEY_ESCAPE:
 		if _paused:
 			_toggle_pause()
 			get_viewport().set_input_as_handled()
 			return
-		# Only open pause if controller doesn't have undo available
+		# Close inspect panel first if open
+		if _inspect_panel and _inspect_panel.visible:
+			_hide_inspect()
+			get_viewport().set_input_as_handled()
+			return
+		# Let CController handle undo if available
 		if controller and controller._undo_available:
-			pass  # Let CController handle the undo
+			pass
 		else:
 			_toggle_pause()
 			get_viewport().set_input_as_handled()
@@ -121,6 +129,31 @@ func _unhandled_input(event: InputEvent):
 	# Block all other input while paused
 	if _paused:
 		return
+
+	if event is InputEventKey and event.is_released():
+		# Enter or Space = End Turn (when it's the player's turn)
+		if event.keycode in [KEY_ENTER, KEY_KP_ENTER, KEY_SPACE]:
+			if _end_turn_btn and not _end_turn_btn.disabled:
+				_on_end_turn_button_pressed()
+				get_viewport().set_input_as_handled()
+				return
+		# Number keys 1-6 = activate corresponding skill button
+		var skill_key_map := {
+			KEY_1: 0, KEY_2: 1, KEY_3: 2,
+			KEY_4: 3, KEY_5: 4, KEY_6: 5
+		}
+		if event.keycode in skill_key_map:
+			var idx = skill_key_map[event.keycode]
+			if idx < _skill_buttons.size():
+				var btn = _skill_buttons[idx]
+				if not btn.disabled and btn.pressed.get_connections().size() > 0:
+					# Brief yellow flash to confirm hotkey activation
+					btn.add_theme_color_override("font_color", Color.YELLOW)
+					get_tree().create_timer(0.15).timeout.connect(func():
+						btn.remove_theme_color_override("font_color"))
+					btn.emit_signal("pressed")
+					get_viewport().set_input_as_handled()
+					return
 	# Right-click to inspect any unit on the map, or show terrain info
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.is_released():
 		if controller and controller.tile_map:
@@ -236,6 +269,8 @@ func _build_top_bar():
 	_cp_label.add_theme_color_override("font_color", Color(0.5, 0.85, 1.0))
 	_cp_label.custom_minimum_size = Vector2(50, 0)
 	_cp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_cp_label.tooltip_text = "Command Points — spent to play cards and use special abilities.\nGenerated each round by your commander's CMD stat.\nCarry over between rounds (no maximum)."
+	_cp_label.mouse_filter = MOUSE_FILTER_PASS
 	hbox.add_child(_cp_label)
 
 	# VP display
@@ -245,6 +280,8 @@ func _build_top_bar():
 	_vp_label.add_theme_color_override("font_color", Color(0.8, 0.7, 0.3))
 	_vp_label.custom_minimum_size = Vector2(90, 0)
 	_vp_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+	_vp_label.tooltip_text = "Victory Points: Your score — Enemy score.\nScore VP by controlling objectives or killing units.\nThe side with most VP when rounds end wins."
+	_vp_label.mouse_filter = MOUSE_FILTER_PASS
 	hbox.add_child(_vp_label)
 
 
@@ -338,6 +375,8 @@ func _build_bottom_bar():
 	_movement_label.text = "MOV — RNG — MOR —"
 	_movement_label.add_theme_font_size_override("font_size", 10)
 	_movement_label.add_theme_color_override("font_color", Color(0.6, 0.6, 0.5))
+	_movement_label.tooltip_text = "MOV: tiles remaining / max movement this turn.\nRNG: attack range in tiles. MOR: morale — affects routing checks and some skills."
+	_movement_label.mouse_filter = MOUSE_FILTER_PASS
 	unit_vbox.add_child(_movement_label)
 
 	# Status effects (BBCode needed for colors)
@@ -398,7 +437,7 @@ func _build_bottom_bar():
 	var st_style = _make_panel_style(Color(0.15, 0.1, 0.0, 0.8), 1, Color(0.9, 0.7, 0.2, 0.5))
 	_select_target_panel.add_theme_stylebox_override("panel", st_style)
 	var st_label = Label.new()
-	st_label.text = "  Select Target  "
+	st_label.text = "  Select Target  [RMB to cancel]  "
 	st_label.add_theme_font_size_override("font_size", 11)
 	st_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
 	_select_target_panel.add_child(st_label)
@@ -408,9 +447,17 @@ func _build_bottom_bar():
 	spacer.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	bottom_row.add_child(spacer)
 
+	_undo_hint_label = Label.new()
+	_undo_hint_label.text = "↩ Undo  [Esc]"
+	_undo_hint_label.add_theme_font_size_override("font_size", 10)
+	_undo_hint_label.add_theme_color_override("font_color", Color(0.7, 0.8, 0.5))
+	_undo_hint_label.visible = false
+	bottom_row.add_child(_undo_hint_label)
+
 	_end_turn_btn = Button.new()
-	_end_turn_btn.text = "End Turn"
-	_end_turn_btn.custom_minimum_size = Vector2(80, 26)
+	_end_turn_btn.text = "End Turn  [Enter]"
+	_end_turn_btn.custom_minimum_size = Vector2(110, 26)
+	_end_turn_btn.tooltip_text = "End this unit's turn. Shortcut: Enter or Space"
 	_end_turn_btn.focus_mode = Control.FOCUS_NONE
 	_end_turn_btn.add_theme_font_size_override("font_size", 11)
 	var etn = _make_btn_style(Color(0.22, 0.22, 0.28, 0.8))
@@ -450,11 +497,27 @@ func _build_bottom_bar():
 	log_vbox.add_theme_constant_override("separation", 1)
 	log_panel.add_child(log_vbox)
 
+	var log_header = HBoxContainer.new()
+	log_header.add_theme_constant_override("separation", 4)
+	log_vbox.add_child(log_header)
+
 	var log_title = Label.new()
 	log_title.text = "COMBAT LOG"
 	log_title.add_theme_font_size_override("font_size", 9)
 	log_title.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))
-	log_vbox.add_child(log_title)
+	log_title.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	log_header.add_child(log_title)
+
+	var clear_log_btn = Button.new()
+	clear_log_btn.text = "✕"
+	clear_log_btn.flat = true
+	clear_log_btn.focus_mode = Control.FOCUS_NONE
+	clear_log_btn.custom_minimum_size = Vector2(18, 18)
+	clear_log_btn.add_theme_font_size_override("font_size", 9)
+	clear_log_btn.add_theme_color_override("font_color", Color(0.4, 0.4, 0.5))
+	clear_log_btn.tooltip_text = "Clear the combat log"
+	clear_log_btn.pressed.connect(func(): if _log_text: _log_text.clear())
+	log_header.add_child(clear_log_btn)
 
 	_log_text = RichTextLabel.new()
 	_log_text.bbcode_enabled = true
@@ -545,7 +608,7 @@ func _build_inspect_panel():
 
 	# Close hint
 	var close_hint = Label.new()
-	close_hint.text = "Click to close"
+	close_hint.text = "Click or press Escape to close"
 	close_hint.add_theme_font_size_override("font_size", 9)
 	close_hint.add_theme_color_override("font_color", Color(0.4, 0.4, 0.45))
 	close_hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -703,6 +766,16 @@ func show_combatant_status_main(comb: Dictionary):
 	if _active_icon == null:
 		return
 	_current_comb = comb
+	# Hide undo hint at turn start — will show again once they move
+	if _undo_hint_label:
+		_undo_hint_label.visible = false
+	# Highlight active unit in turn queue — clear previous, set new
+	for child in _turn_queue_container.get_children():
+		if child.has_method("set_active"):
+			child.set_active(false)
+	var active_icon = _turn_queue_container.find_child(comb.name, false, false)
+	if active_icon and active_icon.has_method("set_active"):
+		active_icon.set_active(true)
 	# Icon
 	_active_icon.texture = comb.get("icon", null)
 
@@ -732,9 +805,13 @@ func show_combatant_status_main(comb: Dictionary):
 	# Skills
 	set_skill_list(comb.skill_list)
 
-	# Round display
+	# Round display — show limit if available
 	if combat:
-		_round_label.text = "Round %d" % combat.round_number
+		var limit := combat.get("round_limit", 0)
+		if limit > 0:
+			_round_label.text = "Round %d / %d" % [combat.round_number, limit]
+		else:
+			_round_label.text = "Round %d" % combat.round_number
 
 	# Phase indicator — faction-themed turn announcement
 	var turn_label := "YOUR TURN"
@@ -839,6 +916,19 @@ func _show_inspect(comb: Dictionary):
 	# Status effects
 	_update_status_text(_inspect_status, comb)
 
+	# Tactical warnings (HP / routing risk)
+	var warnings: Array = []
+	if comb.max_hp > 0:
+		var hp_frac := float(comb.hp) / float(comb.max_hp)
+		if hp_frac <= 0.25:
+			warnings.append("[color=#FF4444]⚠ CRITICAL HP — one hit may kill[/color]")
+		elif hp_frac <= 0.5:
+			warnings.append("[color=#FF8844]⚠ Bloodied — below half HP[/color]")
+	if comb.get("shaken", false):
+		warnings.append("[color=#FFAA22]⚠ SHAKEN — will fall back at turn start[/color]")
+	if warnings.size() > 0:
+		_inspect_status.append_text("\n" + "\n".join(warnings))
+
 	# Specials & skills — with keyword glossary tooltips
 	_inspect_specials.clear()
 	if comb.has("definition"):
@@ -919,13 +1009,14 @@ func set_skill_list(skill_list: Array):
 		btn.disabled = false
 		if skill_list.size() > i:
 			var skill_key = skill_list[i]
+			var hotkey_hint = (" [%d]" % (i + 1)) if i < 6 else ""
 			if SkillDatabase.skills.has(skill_key):
 				var skill = SkillDatabase.skills[skill_key]
 				btn.icon = skill.icon
-				btn.tooltip_text = "%s\n%s" % [skill.name, skill.description]
+				btn.tooltip_text = "%s%s\n%s" % [skill.name, hotkey_hint, skill.description]
 			else:
 				btn.icon = SpriteGenerator.get_skill_icon(skill_key)
-				btn.tooltip_text = skill_key.capitalize().replace("_", " ")
+				btn.tooltip_text = "%s%s" % [skill_key.capitalize().replace("_", " "), hotkey_hint]
 			var captured_key = skill_key
 			btn.pressed.connect(func():
 				controller.set_selected_skill(captured_key)
@@ -937,6 +1028,11 @@ func set_skill_list(skill_list: Array):
 			btn.disabled = true
 
 	_end_turn_btn.disabled = not is_player_turn
+	if _end_turn_btn:
+		if is_player_turn:
+			_end_turn_btn.tooltip_text = "End this unit's turn. Shortcut: Enter or Space"
+		else:
+			_end_turn_btn.tooltip_text = "Waiting for the enemy to finish their turn..."
 
 func _clear_btn_connections(btn: Button):
 	for conn in btn.pressed.get_connections():
@@ -975,15 +1071,35 @@ func set_movement(movement):
 	var mor_total = 0
 	if not _current_comb.is_empty():
 		mor_total = _current_comb.get("mor", 0) + _current_comb.get("mor_modifier", 0)
-		_movement_label.text = "MOV %d left  |  RNG %d  |  MOR %d" % [movement, _current_comb.get("rng", 0), mor_total]
+		var mov_max = _current_comb.get("mov", movement) + _current_comb.get("mov_modifier", 0)
+		_movement_label.text = "MOV %d/%d  |  RNG %d  |  MOR %d" % [movement, mov_max, _current_comb.get("rng", 0), mor_total]
 	else:
-		_movement_label.text = "MOV %d left" % movement
+		_movement_label.text = "MOV %d" % movement
+	# Show/hide undo hint based on controller state
+	if _undo_hint_label and controller:
+		_undo_hint_label.visible = controller._undo_available
 
 func _target_selection_finished():
+	_targeting_active = false
 	_select_target_panel.visible = false
+	hide_damage_preview_tooltip()
+	# Restore phase label color
+	if _phase_label:
+		_phase_label.add_theme_color_override("font_color",
+			Color(1.0, 0.4, 0.3) if (_current_comb.get("side", 0) == 1) else Color(0.3, 0.85, 0.4))
+	# Re-enable skill buttons
+	set_skill_list(_current_comb.get("skill_list", []))
 
 func _target_selection_started():
+	_targeting_active = true
 	_select_target_panel.visible = true
+	# Flash phase label red to signal targeting mode is active
+	if _phase_label:
+		_phase_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.1))
+	# Disable all skill buttons while a target is being selected
+	for btn in _skill_buttons:
+		if not btn.disabled:
+			btn.tooltip_text = "Targeting active — right-click to cancel"
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1085,9 +1201,12 @@ func update_card_hand(cards: Array):
 		btn.add_theme_stylebox_override("hover", style_h)
 
 		# Dim cards the player can't afford
-		if combat and combat.command_points[0] < cp_cost:
+		var available_cp = combat.command_points[0] if combat else 0
+		if available_cp < cp_cost:
 			btn.modulate = Color(0.5, 0.5, 0.5, 0.7)
-			btn.tooltip_text += "\n[Not enough CP]"
+			btn.tooltip_text += "\n[color=red]Need %d more CP to play[/color]" % (cp_cost - available_cp)
+		else:
+			btn.tooltip_text += "\n[Ready to play]"
 		btn.pressed.connect(func(): _on_card_played(card))
 		_card_hand_container.add_child(btn)
 
@@ -1338,7 +1457,11 @@ func _build_pause_menu():
 		speed_btn.custom_minimum_size = Vector2(40, 28)
 		speed_btn.add_theme_font_size_override("font_size", 11)
 		speed_btn.pressed.connect(_set_game_speed.bind(spd))
+		# Highlight current active speed
+		if spd == _speed_multiplier:
+			speed_btn.add_theme_color_override("font_color", Color.GOLD)
 		speed_hbox.add_child(speed_btn)
+		_speed_buttons.append(speed_btn)
 
 	_speed_label = Label.new()
 	_speed_label.text = "Current: 1x"
@@ -1407,6 +1530,14 @@ func _set_game_speed(spd: float):
 	Engine.time_scale = spd
 	if _speed_label:
 		_speed_label.text = "Current: %gx" % spd
+	# Highlight the active speed button, dim others
+	var speeds := [0.5, 1.0, 1.5, 2.0, 3.0]
+	for i in range(_speed_buttons.size()):
+		if i < speeds.size():
+			if speeds[i] == spd:
+				_speed_buttons[i].add_theme_color_override("font_color", Color.GOLD)
+			else:
+				_speed_buttons[i].add_theme_color_override("font_color", Color(0.65, 0.65, 0.7))
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1418,25 +1549,30 @@ func get_damage_preview(attacker: Dictionary, target: Dictionary, skill_key: Str
 	if attacker.is_empty() or target.is_empty():
 		return ""
 	var atk_dice: int = attacker.atk + attacker.get("atk_modifier", 0)
-	var target_def: int = target.def + target.get("def_modifier", 0)
+	var target_def: int = target.get("defense", target.get("def", 3)) + target.get("def_modifier", 0)
 
 	# Faction modifiers
 	if combat and combat._faction_mgr:
 		atk_dice += combat._faction_mgr.get_faction_attack_bonus(attacker, target, combat)
 		target_def += combat._faction_mgr.get_faction_defense_bonus(target, attacker, combat)
 
-	# Terrain cover for ranged
+	# Terrain cover for ranged — track cover separately for display
+	var cover_bonus := 0
 	if skill_key in ["attack_ranged", "basic_magic"] and combat and combat.controller:
-		var cover = combat._get_terrain_cover(target.position)
-		target_def += cover
+		cover_bonus = combat._get_terrain_cover(target.position)
+		target_def += cover_bonus
 
 	# Charging
+	var charge_bonus := 0
 	if attacker.get("charged", false) and skill_key == "attack_melee":
 		atk_dice += 1
+		charge_bonus = 1
 
 	# Shaken penalty
+	var shaken_pen := 0
 	if attacker.get("shaken", false):
 		atk_dice -= 1
+		shaken_pen = -1
 
 	atk_dice = maxi(1, atk_dice)
 	target_def = clampi(target_def, 2, 6)
@@ -1447,8 +1583,20 @@ func get_damage_preview(attacker: Dictionary, target: Dictionary, skill_key: Str
 	var expected_crits: float = atk_dice * crit_chance
 	var expected_dmg: float = expected_hits + expected_crits  # Crits add 1 extra
 
-	return "[color=silver]%dd6 vs DEF %d[/color] — [color=yellow]~%.1f dmg[/color] (%.0f%% per die)" % [
-		atk_dice, target_def, expected_dmg, hit_chance * 100.0]
+	# Build modifier notes
+	var notes: Array = []
+	if cover_bonus > 0:
+		notes.append("+%d cover" % cover_bonus)
+	if charge_bonus > 0:
+		notes.append("+1 charge")
+	if shaken_pen < 0:
+		notes.append("-1 shaken")
+	var note_str = ""
+	if notes.size() > 0:
+		note_str = " [color=#888866](%s)[/color]" % ", ".join(notes)
+
+	return "[color=silver]%dd6 vs DEF %d[/color]%s — [color=yellow]~%.1f dmg[/color] [color=#888888](%.0f%% hit/die)[/color]" % [
+		atk_dice, target_def, note_str, expected_dmg, hit_chance * 100.0]
 
 var _dmg_preview_label: RichTextLabel
 
@@ -1483,13 +1631,15 @@ func hide_damage_preview_tooltip():
 # ══════════════════════════════════════════════════════════════
 
 func show_round_summary(round_num: int, vp: Array, player_alive: int, enemy_alive: int):
-	"""Flash a brief round summary banner."""
+	"""Flash a prominent round summary banner that slides in then fades out."""
 	var banner = PanelContainer.new()
 	banner.set_anchors_preset(PRESET_CENTER_TOP)
-	banner.position = Vector2(-180, 50)
-	banner.custom_minimum_size = Vector2(360, 0)
+	banner.custom_minimum_size = Vector2(420, 0)
+	# Start offscreen above, slide down
+	banner.position = Vector2(-210, -80)
+	banner.modulate.a = 0.0
 	banner.add_theme_stylebox_override("panel", _make_panel_style(
-		Color(0.06, 0.06, 0.12, 0.9), 1, Color(0.7, 0.6, 0.2, 0.8)))
+		Color(0.06, 0.05, 0.14, 0.95), 2, Color(0.85, 0.7, 0.15, 1.0)))
 	banner.mouse_filter = MOUSE_FILTER_IGNORE
 	add_child(banner)
 
@@ -1498,15 +1648,20 @@ func show_round_summary(round_num: int, vp: Array, player_alive: int, enemy_aliv
 	label.fit_content = true
 	label.scroll_active = false
 	label.mouse_filter = MOUSE_FILTER_IGNORE
-	label.text = "[center][color=gold]═ Round %d Complete ═[/color]\n" % round_num
-	label.text += "[color=cyan]VP: %d[/color] — [color=orange]%d[/color]  |  " % [vp[0], vp[1]]
-	label.text += "[color=cyan]%d alive[/color] vs [color=orange]%d alive[/color][/center]" % [player_alive, enemy_alive]
+	label.add_theme_font_size_override("normal_font_size", 13)
+	label.text = "[center][color=gold][b]══ ROUND %d COMPLETE ══[/b][/color]\n" % round_num
+	label.text += "[color=cyan]VP: %d[/color]  —  [color=orange]%d[/color]     " % [vp[0], vp[1]]
+	label.text += "[color=cyan]%d alive[/color]  vs  [color=orange]%d alive[/color][/center]" % [player_alive, enemy_alive]
 	banner.add_child(label)
 
-	# Fade out after 2.5 seconds
+	# Slide in + fade in, hold, then fade out
 	var tween = create_tween()
-	tween.tween_interval(2.5)
-	tween.tween_property(banner, "modulate:a", 0.0, 1.0)
+	tween.set_parallel(true)
+	tween.tween_property(banner, "position:y", 55.0, 0.3).set_ease(Tween.EASE_OUT)
+	tween.tween_property(banner, "modulate:a", 1.0, 0.3)
+	tween.set_parallel(false)
+	tween.tween_interval(2.2)
+	tween.tween_property(banner, "modulate:a", 0.0, 0.8)
 	tween.tween_callback(banner.queue_free)
 
 # ══════════════════════════════════════════════════════════════
@@ -1515,18 +1670,25 @@ func show_round_summary(round_num: int, vp: Array, player_alive: int, enemy_aliv
 
 func _build_minimap():
 	"""Build a small minimap in the bottom-right corner showing unit positions."""
+	# Scale minimap to actual map size from BattleConfig
+	var map_size := BattleConfig.get_map_size()
+	_minimap_cols = map_size.x
+	_minimap_rows = map_size.y
+	var mm_w := _minimap_cols * MINIMAP_TILE
+	var mm_h := _minimap_rows * MINIMAP_TILE
+
 	_minimap_container = Control.new()
 	_minimap_container.mouse_filter = MOUSE_FILTER_IGNORE
 	_minimap_container.set_anchors_preset(PRESET_BOTTOM_RIGHT)
-	_minimap_container.position = Vector2(-MINIMAP_WIDTH - 12, -MINIMAP_HEIGHT - 60)
-	_minimap_container.custom_minimum_size = Vector2(MINIMAP_WIDTH + 4, MINIMAP_HEIGHT + 4)
-	_minimap_container.size = Vector2(MINIMAP_WIDTH + 4, MINIMAP_HEIGHT + 4)
+	_minimap_container.position = Vector2(-mm_w - 12, -mm_h - 60)
+	_minimap_container.custom_minimum_size = Vector2(mm_w + 4, mm_h + 4)
+	_minimap_container.size = Vector2(mm_w + 4, mm_h + 4)
 	add_child(_minimap_container)
 
 	# Background with border
 	var bg = ColorRect.new()
 	bg.color = Color(0.02, 0.02, 0.05, 0.8)
-	bg.size = Vector2(MINIMAP_WIDTH + 4, MINIMAP_HEIGHT + 4)
+	bg.size = Vector2(mm_w + 4, mm_h + 4)
 	bg.mouse_filter = MOUSE_FILTER_IGNORE
 	_minimap_container.add_child(bg)
 
@@ -1542,7 +1704,7 @@ func _build_minimap():
 	_minimap_rect = ColorRect.new()
 	_minimap_rect.color = Color(0.0, 0.0, 0.0, 0.0)  # Transparent — just a parent for dots
 	_minimap_rect.position = Vector2(2, 2)
-	_minimap_rect.size = Vector2(MINIMAP_WIDTH, MINIMAP_HEIGHT)
+	_minimap_rect.size = Vector2(mm_w, mm_h)
 	_minimap_rect.mouse_filter = MOUSE_FILTER_IGNORE
 	_minimap_container.add_child(_minimap_rect)
 

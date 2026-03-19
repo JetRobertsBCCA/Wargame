@@ -24,21 +24,26 @@ static func get_units() -> Array:
 	return units
 
 # ── Commanders (13) ────────────────────────────────────
+# Identities: Vex = fast fire striker; Kora = healer/resurrector; Ryx = fragment sniper;
+# Tzarak = legendary wyrm rider; Lyss = aerial harasser; Torvan = forge support/WM buffer;
+# Drenna = berserker melee; Orin = scout/intel; Vayne = drake swarm general;
+# Brok = siege demolisher; Syrax = morale/prophecy support; Threx = melee duelist;
+# Tidescar = volatile glass cannon with corrupted fragment risk/reward
 static func _commanders() -> Array:
 	return [
-		_u("Scorchcaller Vex", CMD, 18, 5, 33, 10, 2, 9, 24, ["Fire mastery", "Speed", "Breath Weapon"], 9),
-		_u("Flamewarden Kora", CMD, 12, 3, 24, 6, 8, 10, 20, ["Phoenix fire", "Healing", "Resurrection"], 7),
-		_u("Ashborn Ryx", CMD, 15, 4, 27, 5, 10, 7, 18, ["Fragment specialist", "Ranged fire"], 6),
-		_u("Wyrmlord Tzarak", CMD, 27, 7, 45, 8, 3, 10, 35, ["Obsidian Wyrm bond", "Melee powerhouse"], 8),
-		_u("Skydancer Lyss", CMD, 15, 3, 21, 14, 4, 8, 19, ["Fly", "Evasion", "Speed"], 7),
-		_u("Embersmith Torvan", CMD, 12, 5, 30, 4, 6, 9, 22, ["Equipment crafting", "War machine buffs"], 8),
-		_u("Pyroclaw Drenna", CMD, 24, 4, 36, 7, 1, 10, 21, ["Melee fury", "Berserker", "Fire claws"], 5),
-		_u("Skywatcher Orin", CMD, 12, 3, 24, 10, 8, 8, 17, ["Reconnaissance", "Intel", "Ranged support"], 8),
-		_u("Clutchmaster Vayne", CMD, 15, 5, 30, 6, 4, 9, 20, ["Drake spawning", "Swarm tactics"], 7),
-		_u("Cinderfist Brok", CMD, 21, 6, 39, 5, 2, 9, 23, ["Anti-armor", "Siege", "Demolition"], 6),
-		_u("Flameheart Syrax", CMD, 9, 4, 27, 5, 12, 10, 22, ["Prophecy", "Morale", "Divine channel"], 8),
-		_u("Skullcrusher Threx", CMD, 24, 5, 36, 8, 1, 10, 24, ["Melee duelist", "Drake melee", "Challenge"], 7),
-		_u("Tidescar the Exiled", CMD, 15, 3, 27, 8, 10, 7, 21, ["Corrupted fragments", "High-risk power"], 6),
+		_u("Scorchcaller Vex",     CMD, 18, 5, 33, 10, 2,  9, 24, ["Inferno Rush", "Breath Weapon", "Blazing Trail"], 9),
+		_u("Flamewarden Kora",     CMD, 12, 3, 24,  6, 8, 10, 20, ["Phoenix Mend", "Ember Resurrection", "Flame Blessing"], 7),
+		_u("Ashborn Ryx",          CMD, 15, 4, 27,  5, 10, 7, 18, ["Fragment Overload", "Shard Volley", "Volatile Detonation"], 6),
+		_u("Wyrmlord Tzarak",      CMD, 27, 7, 45,  8, 3, 10, 35, ["Wyrm Bond", "Obsidian Rampage", "Ancient Dominance"], 8),
+		_u("Skydancer Lyss",       CMD, 15, 3, 21, 14, 4,  8, 19, ["Fly", "Dive Strafe", "Smoke Dive"], 7),
+		_u("Embersmith Torvan",    CMD, 12, 5, 30,  4, 6,  9, 22, ["Forge Enhance", "War Machine Aura", "Emergency Repair"], 8),
+		_u("Pyroclaw Drenna",      CMD, 24, 4, 36,  7, 1, 10, 21, ["Berserker Fury", "Claw Rend", "Drakeblood Rage"], 5),
+		_u("Skywatcher Orin",      CMD, 12, 3, 24, 10, 8,  8, 17, ["Aerial Spotter", "Intel Network", "Target Mark"], 8),
+		_u("Clutchmaster Vayne",   CMD, 15, 5, 30,  6, 4,  9, 20, ["Drake Clutch", "Fledgling Swarm", "Beast Commander"], 7),
+		_u("Cinderfist Brok",      CMD, 21, 6, 39,  5, 2,  9, 23, ["Siege Breaker", "Armor Crush", "Demolition Fist"], 6),
+		_u("Flameheart Syrax",     CMD, 9,  4, 27,  5, 12, 10, 22, ["Ember Sight", "War Chant of Ash", "Phoenix Call"], 8),
+		_u("Skullcrusher Threx",   CMD, 24, 5, 36,  8, 1, 10, 24, ["Challenge Roar", "Drake Duel", "Killing Blow"], 7),
+		_u("Tidescar the Exiled",  CMD, 15, 3, 27,  8, 10, 7, 21, ["Fragment Overload", "Volatile Power", "Exile's Gambit"], 6),
 	]
 
 # ── Infantry (15) ──────────────────────────────────────

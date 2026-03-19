@@ -63,7 +63,7 @@ func process_round_start(side: int, faction: int, state: Dictionary,
 		CombatantDefinition.Faction.NIGHTFANG:
 			_nightfang_round_start(combatants)
 		CombatantDefinition.Faction.THORNWEFT:
-			_thornweft_round_start(side, state)
+			_thornweft_round_start(side, state, combatants, groups)
 		CombatantDefinition.Faction.VEILBOUND:
 			_veilbound_round_start(side, state, combatants, groups)
 
@@ -178,16 +178,43 @@ func on_drake_bond_death(dead: Dictionary, combatants: Array) -> void:
 func _iron_dominion_round_start(side: int, state: Dictionary,
 		combatants: Array, groups: Array) -> void:
 	recalculate_grid_cohesion(side, state, combatants, groups)
+	# Field Repair Aura: units with this keyword repair adjacent allies 1 HP each round
+	for idx in groups[side]:
+		var comb = combatants[idx]
+		if comb.alive and comb.definition.has_special("Field Repair Aura"):
+			for idx2 in groups[side]:
+				var ally = combatants[idx2]
+				if ally.alive and ally != comb and _distance(comb, ally) <= 2 and ally.hp < ally.max_hp:
+					ally.hp = mini(ally.hp + 1, ally.max_hp)
+					_log("[color=lime]%s repairs %s (+1 HP from Field Repair Aura).[/color]\n" % [
+						comb.name, ally.name])
 
 
 func _nightfang_round_start(combatants: Array) -> void:
 	process_corruption_effects(combatants)
+	# Plague Cloud: aura units passively spread 1 corruption to all living enemies within 2 tiles
+	for comb in combatants:
+		if comb.alive and comb.definition.faction == CombatantDefinition.Faction.NIGHTFANG:
+			if comb.definition.has_special("Plague Cloud"):
+				for enemy in combatants:
+					if enemy.alive and enemy.side != comb.side and _distance(comb, enemy) <= 2:
+						enemy.corruption_tokens = mini(enemy.corruption_tokens + 1, GameRules.MAX_CORRUPTION_TOKENS)
+						_log("[color=purple]%s's Plague Cloud infects %s (1 corruption).[/color]\n" % [
+							comb.name, enemy.name])
 	# Hunger decay reduced: only lose 1 per round instead of implicit drain (#11)
 	# (Decay is handled here — hunger gains are increased in on_attack_hit and blood_tithe)
 
 
-func _thornweft_round_start(side: int, state: Dictionary) -> void:
-	var threads = mini(GameRules.MAX_FATE_THREADS_PER_TURN, count_web_anchors(state))
+func _thornweft_round_start(side: int, state: Dictionary,
+		combatants: Array = [], groups: Array = []) -> void:
+	var threads = mini(GameRules.MAX_FATE_THREADS_PER_TURN, count_web_anchors(state, combatants, groups, side))
+	# Thread Reroll: any alive Thornweft commander with this keyword generates +1 extra fate thread
+	if groups.size() > side:
+		for idx in groups[side]:
+			var comb = combatants[idx]
+			if comb.alive and comb.definition.has_special("Thread Reroll"):
+				threads += 1
+				break
 	state.fate_threads += threads
 	state.teleports_used = 0
 	if threads > 0:
@@ -212,6 +239,20 @@ func _veilbound_round_start(side: int, state: Dictionary,
 	if flow_gain > 0:
 		_log("[color=cyan]Veilbound gains %d Flow (total: %d — %s)[/color]\n" % [
 			flow_gain, state.flow, state.flow_tier])
+	# Ancestral Resonance: if any alive Veilbound has this keyword, all gain +1 MOR this round
+	var has_ancestral := false
+	for idx in groups[side]:
+		var comb = combatants[idx]
+		if comb.alive and comb.definition.has_special("Ancestral Resonance"):
+			has_ancestral = true
+			break
+	if has_ancestral:
+		for idx in groups[side]:
+			var comb = combatants[idx]
+			if comb.alive:
+				comb.mor_modifier += 1
+		_log("[color=cyan]Ancestral Resonance: all Veilbound gain +1 MOR this round.[/color]\n")
+
 	# Burst at max: when hitting max flow, all Veilbound gain +1 ATK this round (#12)
 	if state.flow >= state.flow_max:
 		for idx in groups[side]:
@@ -272,6 +313,9 @@ func get_faction_attack_bonus(attacker: Dictionary, _target: Dictionary,
 	var state = faction_state[attacker.side]
 
 	# ── Universal Keyword Bonuses ──
+	# Anti-Air: +2 ATK vs Flying units
+	if def.has_special("Anti-Air") and _target.definition.has_special("Fly"):
+		bonus += 2
 	# Assassin: +2 ATK vs Commanders
 	if def.has_special("Assassin") and _target.definition.is_commander():
 		bonus += 2
@@ -317,6 +361,16 @@ func get_faction_attack_bonus(attacker: Dictionary, _target: Dictionary,
 		CombatantDefinition.Faction.EMBERCLAW:
 			if state.get("heat", 0) >= 8:
 				bonus += 1
+			# Berserker Fury / Drakeblood Fury / Drakeblood Rage: +1 ATK when below half HP
+			if (def.has_special("Berserker Fury") or def.has_special("Drakeblood Fury") or def.has_special("Drakeblood Rage")) and attacker.hp <= attacker.max_hp / 2:
+				bonus += 1
+			# War Machine Aura: War Machines get +1 ATK when ally with this keyword is within 4 tiles
+			if def.is_war_machine():
+				for idx in groups[attacker.side]:
+					var ally = combatants[idx]
+					if ally.alive and ally.definition.has_special("War Machine Aura") and _distance(attacker, ally) <= 4:
+						bonus += 1
+						break
 
 		CombatantDefinition.Faction.IRON_DOMINION:
 			var grid_tier = get_grid_tier(attacker, combatants, groups)
@@ -329,12 +383,18 @@ func get_faction_attack_bonus(attacker: Dictionary, _target: Dictionary,
 					bonus += 1
 			if def.has_special("Blood-Drunk") and attacker.hp <= attacker.max_hp / 2:
 				bonus += 1
+			# Blood Frenzy: +1 ATK when bloodied (berserker variant of Blood-Drunk)
+			if def.has_special("Blood Frenzy") and attacker.hp <= attacker.max_hp / 2:
+				bonus += 1
 
 		CombatantDefinition.Faction.VEILBOUND:
 			if attacker.stance == "revelation":
 				bonus += 1
 			elif attacker.stance == "honor":
 				bonus -= 1
+			# Cavalry Thunder: +1 ATK on charge for units with this keyword
+			if def.has_special("Cavalry Thunder") and attacker.get("has_charged", false):
+				bonus += 1
 
 	return bonus
 
@@ -345,6 +405,15 @@ func get_faction_defense_bonus(target: Dictionary, faction_state: Array,
 	var def: CombatantDefinition = target.definition
 
 	# ── Universal Keyword Bonuses ──
+	# Fortress Stance / Iron Carapace: +1 DEF when unit hasn't yet acted this turn
+	if (def.has_special("Fortress Stance") or def.has_special("Iron Carapace")) and not target.get("turn_taken", false):
+		bonus += 1
+	# Unyielding Carapace: passive +1 DEF (heavy personal armor)
+	if def.has_special("Unyielding Carapace"):
+		bonus += 1
+	# Silk-Anchored: +1 DEF (rooted to the web — harder to wound)
+	if def.has_special("Silk-Anchored"):
+		bonus += 1
 	# Shield Wall: +1 DEF if adjacent ally also has Shield Wall
 	if def.has_special("Shield Wall"):
 		var nearby_sw = count_nearby_with_special(target, "Shield Wall", 2, combatants, groups)
@@ -405,7 +474,7 @@ func get_faction_defense_bonus(target: Dictionary, faction_state: Array,
 ## Called after a successful hit lands.
 func on_attack_hit(attacker: Dictionary, target: Dictionary,
 		_result: Dictionary, attack_key: String,
-		faction_state_dict: Array) -> void:
+		faction_state_dict: Array, combatants_arr: Array = []) -> void:
 	var a_def: CombatantDefinition = attacker.definition
 
 	# Emberclaw: Generate Heat on fire attacks
@@ -419,18 +488,44 @@ func on_attack_hit(attacker: Dictionary, target: Dictionary,
 				target.status_effects.append("burning")
 				_log("[color=orange]%s is set ABLAZE![/color]\n" % target.name)
 
-	# Nightfang: Apply corruption tokens
-	if a_def.faction == CombatantDefinition.Faction.NIGHTFANG:
-		if attack_key == "attack_melee" and a_def.corruption_spread > 0:
-			var tokens = a_def.corruption_spread
+	# Nightfang: Apply corruption tokens (all variants)
+	if a_def.faction == CombatantDefinition.Faction.NIGHTFANG and target.alive:
+		var tokens := 0
+		var is_melee := attack_key == "attack_melee"
+		var is_ranged := attack_key == "attack_ranged"
+		if is_melee and attacker.get("_corrupt_bite_active", false):
+			tokens = 2  # Corrupt Bite always applies 2 corruption
+		elif is_melee and a_def.corruption_spread > 0:
+			tokens = a_def.corruption_spread
+		elif is_melee and a_def.has_special("Blood Contamination"):
+			tokens = 1
+		elif is_ranged and (a_def.has_special("Plague Shot") or a_def.has_special("Plague Spit")):
+			tokens = 1
+		if tokens > 0:
 			target.corruption_tokens = mini(target.corruption_tokens + tokens, GameRules.MAX_CORRUPTION_TOKENS)
-			_log("[color=purple]%s applies %d corruption to %s (total: %d)[/color]\n" % [
-				attacker.name, tokens, target.name, target.corruption_tokens])
+			_log("[color=purple]%s infects %s (%d corruption, total: %d)[/color]\n" % [
+				attacker.name, target.name, tokens, target.corruption_tokens])
 
-	# Nightfang: Blood Drain
-	if a_def.has_special("Blood Drain") and not target.alive:
-		attacker.hp = mini(attacker.hp + 1, attacker.max_hp)
-		_log("[color=crimson]%s drains blood — heals 1 HP![/color]\n" % attacker.name)
+	# Nightfang: Blood Drain / Blood Siphon — heal on kill
+	if not target.alive and attacker.alive:
+		if a_def.has_special("Blood Drain") or a_def.has_special("Blood Siphon"):
+			attacker.hp = mini(attacker.hp + 1, attacker.max_hp)
+			_log("[color=crimson]%s drains the fallen — heals 1 HP![/color]\n" % attacker.name)
+
+	# Nightfang: Death Curse — on kill, spread 1 corruption to nearest living enemy within 3 tiles
+	if not target.alive and a_def.has_special("Death Curse") and combatants_arr.size() > 0:
+		var nearest: Dictionary = {}
+		var nearest_dist := 999
+		for comb in combatants_arr:
+			if comb.alive and comb.side != attacker.side:
+				var d = _distance(attacker, comb)
+				if d <= 3 and d < nearest_dist:
+					nearest_dist = d
+					nearest = comb
+		if not nearest.is_empty():
+			nearest.corruption_tokens = mini(nearest.corruption_tokens + 1, GameRules.MAX_CORRUPTION_TOKENS)
+			_log("[color=purple]Death Curse! %s's death curses %s (1 corruption).[/color]\n" % [
+				target.name, nearest.name])
 
 	# Nightfang: Feed Hunger Pool on kill (+2 per kill, up from +1) (#11)
 	if a_def.faction == CombatantDefinition.Faction.NIGHTFANG and not target.alive:
@@ -438,7 +533,7 @@ func on_attack_hit(attacker: Dictionary, target: Dictionary,
 		state.hunger += 2
 		update_hunger_tier(state)
 		# Frenzy heal: at Gorged tier, heal 1 HP on melee kills (#11)
-		if state.hunger_tier == "gorged" and _attack_key == "attack_melee" and attacker.alive:
+		if state.hunger_tier == "gorged" and attack_key == "attack_melee" and attacker.alive:
 			attacker.hp = mini(attacker.hp + 1, attacker.max_hp)
 			_log("[color=crimson]%s is in a FRENZY! Heals 1 HP from the kill![/color]\n" % attacker.name)
 
@@ -478,9 +573,16 @@ func on_attack_complete(attacker: Dictionary, _target: Dictionary,
 func get_grid_tier(comb: Dictionary, combatants: Array, groups: Array) -> Dictionary:
 	var allies_in_range := 0
 	var has_support := false
+	# Network Synchronization: if any alive ally has this keyword, extend grid range by 1
+	var grid_range := GameRules.GRID_RANGE
 	for idx in groups[comb.side]:
 		var ally = combatants[idx]
-		if ally != comb and ally.alive and _distance(comb, ally) <= GameRules.GRID_RANGE:
+		if ally != comb and ally.alive and ally.definition.has_special("Network Synchronization"):
+			grid_range += 1
+			break
+	for idx in groups[comb.side]:
+		var ally = combatants[idx]
+		if ally != comb and ally.alive and _distance(comb, ally) <= grid_range:
 			# Grid Anchor counts as 2 units for Grid Cohesion
 			var count := 1
 			if ally.definition.has_special("Grid Anchor"):
@@ -589,8 +691,16 @@ static func update_hunger_tier(state: Dictionary) -> void:
 
 
 ## Thornweft: Count active web anchors (including starting anchors).
-static func count_web_anchors(state: Dictionary) -> int:
-	return state.get("web_anchors", []).size() + GameRules.STARTING_ANCHORS
+## Web Expansion: if any unit in the passed group has this keyword, +1 anchor is counted.
+static func count_web_anchors(state: Dictionary, combatants: Array = [], groups: Array = [], side: int = 0) -> int:
+	var base = state.get("web_anchors", []).size() + GameRules.STARTING_ANCHORS
+	if combatants.size() > 0 and groups.size() > side:
+		for idx in groups[side]:
+			var comb = combatants[idx]
+			if comb.alive and comb.definition.has_special("Web Expansion"):
+				base += 1
+				break
+	return base
 
 
 ## Thornweft: Determine web tier for a combatant based on PROXIMITY to Web-Anchors.

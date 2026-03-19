@@ -21,21 +21,29 @@ static func get_units() -> Array:
 	return units
 
 # ── Commanders (13) ────────────────────────────────────
+# Each commander has a distinct stat profile reflecting their role:
+# Calculon = network anchor (high DEF, RNG, CMD); Cogsworth = cavalry speed (high MOV);
+# Ironweld = frontline brawler; Brassveil = infiltrator (low DEF, high MOV);
+# Vortan = war machine support (low ATK, high DEF); Steamjaw = melee juggernaut;
+# Aetheris = ranged artillery director (low ATK, very high RNG); Piston = fortress tank;
+# Ironclad = bodyguard anchor; Brassforge = repair engineer (minimal ATK);
+# Mechana = construct animatrix (low personal stats, buffs constructs);
+# Gearheart = combined arms (balanced, mixed RNG)
 static func _commanders() -> Array:
 	return [
-		_u("Lord Calculon", CMD, 15, 4, 30, 5, 6, 9, 21, ["Grid mastery", "Analytical warfare"], 8),
-		_u("Lady Cogsworth", CMD, 15, 4, 27, 9, 3, 10, 21, ["Clockwork cavalry", "Mobility"], 7),
-		_u("Archmagister Gearbane", CMD, 12, 3, 27, 6, 6, 9, 17, ["Aether magic", "Fragment specialist"], 5),
-		_u("Commander Ironweld", CMD, 18, 5, 33, 4, 3, 10, 24, ["Infantry buffing", "Defensive doctrine"], 9),
-		_u("Lady Brassveil", CMD, 15, 3, 24, 8, 6, 9, 19, ["Espionage", "Sabotage", "Stealth"], 6),
-		_u("High Engineer Vortan", CMD, 15, 4, 30, 5, 6, 9, 21, ["War machine specialist", "Repairs"], 7),
-		_u("General Steamjaw", CMD, 18, 5, 36, 6, 1, 10, 25, ["Melee powerhouse", "Morale", "Leadership"], 9),
-		_u("Lady Aetheris", CMD, 15, 3, 27, 7, 6, 9, 19, ["Aether technology", "Ranged support"], 6),
-		_u("Lord Piston", CMD, 15, 4, 30, 4, 3, 10, 20, ["Defensive engineering", "Fortification"], 8),
-		_u("Captain Ironclad", CMD, 15, 5, 39, 5, 3, 10, 25, ["Heavy armor", "Bodyguard", "Tank"], 8),
-		_u("Engineer Brassforge", CMD, 15, 4, 27, 7, 6, 9, 21, ["Field engineering", "Improvisation"], 6),
-		_u("Lady Mechana", CMD, 15, 4, 30, 6, 3, 10, 21, ["Construct commander", "Automation"], 7),
-		_u("Lord Gearheart", CMD, 15, 4, 30, 7, 3, 9, 21, ["Combined arms", "Versatile"], 7),
+		_u("Lord Calculon",       CMD, 16, 5, 33, 5,  6, 10, 23, ["Grid Anchor", "Network Synchronization", "Analytical Strike"], 9),
+		_u("Lady Cogsworth",      CMD, 15, 3, 24, 12, 1, 10, 21, ["Cavalry Commander", "Piston Charge", "Ride Down"], 7),
+		_u("Archmagister Gearbane", CMD, 12, 3, 27, 6, 8, 9, 17, ["Aether Disruption", "Fragment Attunement", "Anti-Magic Field"], 5),
+		_u("Commander Ironweld",  CMD, 18, 5, 33, 4,  3, 10, 24, ["Infantry Bulwark", "Hold the Line", "Inspiring Presence"], 9),
+		_u("Lady Brassveil",      CMD, 15, 3, 24, 9,  6,  9, 19, ["Infiltration Network", "Sabotage Directive", "Ghost Protocol"], 6),
+		_u("High Engineer Vortan",CMD, 10, 5, 27, 5,  6,  9, 21, ["Field Repair Aura", "War Machine Directive", "Emergency Rebuild"], 8),
+		_u("General Steamjaw",    CMD, 18, 5, 36, 6,  1, 10, 25, ["Iron Fist", "Fear Me", "Breakthrough Charge"], 9),
+		_u("Lady Aetheris",       CMD, 9,  3, 24, 6, 14,  9, 19, ["Targeting Network", "Long-Range Barrage", "Aether Overcharge"], 7),
+		_u("Lord Piston",         CMD, 13, 6, 33, 4,  3, 10, 22, ["Fortress Stance", "Immovable Formation", "Siege Resilience"], 8),
+		_u("Captain Ironclad",    CMD, 15, 6, 42, 5,  3, 10, 25, ["Bodyguard Protocol", "Armour Cascade", "Last Stand"], 8),
+		_u("Engineer Brassforge", CMD, 9,  4, 27, 6,  6,  9, 20, ["Rapid Assembly", "Improvised Fortification", "Salvage Expert"], 7),
+		_u("Lady Mechana",        CMD, 12, 3, 24, 6,  3,  9, 20, ["Construct Animator", "Automation Aura", "Prototype Deployment"], 7),
+		_u("Lord Gearheart",      CMD, 15, 4, 30, 7,  8,  9, 21, ["Combined Doctrine", "Flanking Coordinator", "Adaptive Tactics"], 7),
 	]
 
 # ── Infantry (20) ──────────────────────────────────────
@@ -126,7 +134,7 @@ static func _war_machines() -> Array:
 		_u("Mechanized Siege Engine", WM, 18, 5, 27, 3, 18, 10, 80, ["Grid Anchor", "Siege", "Terrain Collapse", "Immobile", "Fearless"]),
 		_u("Arcane Steam Golem", WM, 18, 5, 27, 4, 1, 10, 85, ["Grid Anchor", "Fragment Aura", "Unstable", "Fearless"]),
 		_u("Chrono Walker", WM, 15, 5, 30, 5, 12, 10, 100, ["Grid Anchor", "Time Warp", "Temporal Shield", "Fearless", "Unstable"]),
-		_u("Titan Engine Imperius", WM, 30, 8, 60, 4, 24, 10, 180, ["Grid Anchor", "Twin Cannons", "Reactor Core", "Supreme Grid", "Massive", "Fearless"], 0, true),
+		_u("Titan Engine Imperius", WM, 30, 8, 60, 4, 24, 10, 180, ["Grid Anchor", "Twin Cannons", "Reactor Core", "Supreme Grid", "Massive", "Fearless"], 0, true, "Lord Calculon"),
 	]
 
 # ── Helper ─────────────────────────────────────────────

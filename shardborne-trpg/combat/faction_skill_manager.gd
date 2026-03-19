@@ -212,10 +212,10 @@ func grid_relay(combat: Node, attacker: Dictionary, _target: Dictionary) -> void
 ## Nightfang: Corrupt Bite — enhanced corruption on melee hit
 func corrupt_bite(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 	_log("[color=purple]%s delivers a Corrupt Bite![/color]\n" % attacker.name)
-	var old_corruption = attacker.definition.corruption_spread
-	attacker.definition.corruption_spread = maxi(old_corruption, 2)
+	# Use a transient flag on the combatant dict — never mutate the shared definition
+	attacker["_corrupt_bite_active"] = true
 	combat.attack(attacker, target, "attack_melee")
-	attacker.definition.corruption_spread = old_corruption
+	attacker.erase("_corrupt_bite_active")
 
 ## Nightfang: Blood Tithe — sacrifice HP to buff nearby allies
 func blood_tithe(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
@@ -255,7 +255,10 @@ func shadow_step(combat: Node, attacker: Dictionary, target: Dictionary) -> void
 				combat.controller._occupied_spaces.erase(old_pos)
 				combat.controller._occupied_spaces.append(dest)
 			attacker.position = dest
-			attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
+			if combat.controller and combat.controller.tile_map:
+				attacker.sprite.position = combat.controller.tile_map.map_to_local(dest)
+			else:
+				attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
 			_log("[color=purple]%s shadow steps from (%d,%d) to (%d,%d)![/color]\n" % [
 				attacker.name, old_pos.x, old_pos.y, dest.x, dest.y])
 			teleported = true
@@ -431,7 +434,10 @@ func phase_strike(combat: Node, attacker: Dictionary, target: Dictionary) -> voi
 				combat.controller._occupied_spaces.erase(old_pos)
 				combat.controller._occupied_spaces.append(dest)
 			attacker.position = dest
-			attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
+			if combat.controller and combat.controller.tile_map:
+				attacker.sprite.position = combat.controller.tile_map.map_to_local(dest)
+			else:
+				attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
 			teleported = true
 			break
 	_log("[color=cyan]%s phases through the Veil to strike![/color]\n" % attacker.name)
@@ -461,7 +467,10 @@ func veil_walk(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 				combat.controller._occupied_spaces.erase(old_pos)
 				combat.controller._occupied_spaces.append(dest)
 			attacker.position = dest
-			attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
+			if combat.controller and combat.controller.tile_map:
+				attacker.sprite.position = combat.controller.tile_map.map_to_local(dest)
+			else:
+				attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
 			_log("[color=cyan]%s walks through the Veil from (%d,%d) to (%d,%d)![/color]\n" % [
 				attacker.name, old_pos.x, old_pos.y, dest.x, dest.y])
 			moved = true

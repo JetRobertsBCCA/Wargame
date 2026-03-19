@@ -62,6 +62,10 @@ func _ready():
 		BattleConfig.campaign_manager = _campaign_manager
 
 	_campaign_data = CampaignData.get_campaign(campaign_id)
+	if _campaign_data == null:
+		push_error("CampaignOverview: Unknown campaign '%s'" % campaign_id)
+		get_tree().change_scene_to_file("res://scenes/campaign_select.tscn")
+		return
 	_build_ui()
 
 	# Create fade overlay (on top of everything)

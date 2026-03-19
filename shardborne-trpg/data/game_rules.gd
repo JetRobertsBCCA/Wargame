@@ -10,7 +10,7 @@ const BATTLE_SIZES = {
 	"skirmish": {
 		"points_min": 50, "points_max": 100, "points_default": 75,
 		"min_units": 5, "max_units": 20, "max_war_machines": 1,
-		"table_size": "30x30", "recommended_turns": 5,
+		"map_size": Vector2i(24, 18), "recommended_turns": 5,
 		"max_fragments": 2, "max_anchors": 4, "max_gossamer_traps": 3,
 		"artillery_range_cap": 10,
 		"scout_forward_deploy": 4,
@@ -19,7 +19,7 @@ const BATTLE_SIZES = {
 	"standard": {
 		"points_min": 200, "points_max": 300, "points_default": 250,
 		"min_units": 15, "max_units": 30, "max_war_machines": 3,
-		"table_size": "48x48", "recommended_turns": 6,
+		"map_size": Vector2i(36, 21), "recommended_turns": 6,
 		"max_fragments": 3, "max_anchors": 6, "max_gossamer_traps": 5,
 		"artillery_range_cap": -1,
 		"scout_forward_deploy": 8,
@@ -28,13 +28,18 @@ const BATTLE_SIZES = {
 	"epic": {
 		"points_min": 500, "points_max": 9999, "points_default": 500,
 		"min_units": 30, "max_units": 60, "max_war_machines": 6,
-		"table_size": "60x72", "recommended_turns": 7,
+		"map_size": Vector2i(48, 28), "recommended_turns": 7,
 		"max_fragments": 5, "max_anchors": 10, "max_gossamer_traps": 8,
 		"artillery_range_cap": -1,
 		"scout_forward_deploy": 8,
 		"hunger_thresholds": {"peckish": 8, "ravenous": 15, "gorged": 25},
 	},
 }
+
+## Return the map dimensions for a given battle size key
+static func get_map_size(battle_size: String) -> Vector2i:
+	var config = BATTLE_SIZES.get(battle_size, BATTLE_SIZES["standard"])
+	return config.get("map_size", Vector2i(36, 21))
 
 # ══════════════════════════════════════════════════════════════
 # TURN STRUCTURE
