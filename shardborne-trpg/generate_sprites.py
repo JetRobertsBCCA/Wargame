@@ -8,6 +8,11 @@ This script:
   2. Tints it with the faction accent color
   3. Creates a 64x32 combined sprite (alive | dead frames)
 
+Tile source: Dungeon Crawl Stone Soup 32x32 tiles (CC0)
+  https://opengameart.org/content/dungeon-crawl-32x32-tiles
+  https://opengameart.org/content/dungeon-crawl-32x32-tiles-supplemental
+Download and extract into: imagese/dcss/Dungeon Crawl Stone Soup Full/
+
 Run from the shardborne-trpg/ directory:
     python generate_sprites.py
 """
@@ -29,52 +34,113 @@ OUT  = ROOT / "imagese" / "sprites"
 # ── Faction × UnitType → DCSS sprite path (relative to DCSS root) ──
 # UnitType enum: COMMANDER(0), INFANTRY(1), CAVALRY(2), SUPPORT(3),
 #                SCOUT(4), ARTILLERY(5), SPECIALIST(6), WAR_MACHINE(7)
+#
+# Tile fallbacks: each entry is a list tried in order; first existing file wins.
+# This handles both the main pack and the supplemental pack having slightly
+# different naming conventions (_new suffix, etc.).
 
 SPRITE_MAP = {
+    # ── Emberclaw Warpack ── fire / dragon / tribal warriors ──────────────────
     "emberclaw": {
-        "INFANTRY":    "monster/demons/efreet.png",
-        "CAVALRY":     "monster/animals/hell_hound_new.png",
-        "SUPPORT":     "monster/nonliving/fire_elemental_new.png",
-        "SCOUT":       "monster/animals/fire_bat.png",
-        "ARTILLERY":   "monster/nonliving/fire_vortex.png",
-        "SPECIALIST":  "monster/demons/balrug_new.png",
-        "WAR_MACHINE": "monster/dragons/dragon.png",
+        "INFANTRY":    ["monster/demons/efreet.png",
+                        "monster/demons/efreet_new.png"],
+        "CAVALRY":     ["monster/dragons/wyvern.png",          # dragon-mount riders
+                        "monster/dragons/wyvern_new.png",
+                        "monster/animals/hell_hound_new.png"],
+        "SUPPORT":     ["monster/nonliving/fire_elemental_new.png",
+                        "monster/nonliving/fire_elemental.png"],
+        "SCOUT":       ["monster/animals/fire_bat.png",
+                        "monster/animals/fire_bat_new.png"],
+        "ARTILLERY":   ["monster/nonliving/fire_vortex.png",
+                        "monster/nonliving/fire_vortex_new.png",
+                        "monster/animals/fire_crab.png"],
+        "SPECIALIST":  ["monster/demons/balrug_new.png",
+                        "monster/demons/balrug.png"],
+        "WAR_MACHINE": ["monster/dragons/dragon.png",
+                        "monster/dragons/fire_dragon.png",
+                        "monster/dragons/dragon_new.png"],
     },
+
+    # ── Iron Dominion ── steampunk / clockwork / aether-powered ───────────────
     "iron_dominion": {
-        "INFANTRY":    "monster/nonliving/iron_golem.png",
-        "CAVALRY":     "monster/nonliving/gargoyle.png",
-        "SUPPORT":     "monster/nonliving/clay_golem.png",
-        "SCOUT":       "monster/nonliving/metal_gargoyle.png",
-        "ARTILLERY":   "monster/nonliving/crystal_guardian.png",
-        "SPECIALIST":  "monster/nonliving/iron_elemental.png",
-        "WAR_MACHINE": "monster/nonliving/stone_golem.png",
+        "INFANTRY":    ["monster/nonliving/iron_golem.png",
+                        "monster/nonliving/iron_golem_new.png"],
+        "CAVALRY":     ["monster/nonliving/clockwork_bee.png",      # mechanical insect
+                        "monster/nonliving/clockwork_bee_inert.png",
+                        "monster/nonliving/metal_gargoyle.png"],
+        "SUPPORT":     ["monster/nonliving/walking_alembic.png",    # steampunk apparatus
+                        "monster/nonliving/clay_golem.png"],
+        "SCOUT":       ["monster/nonliving/metal_gargoyle.png",
+                        "monster/nonliving/gargoyle.png"],
+        "ARTILLERY":   ["monster/nonliving/crystal_guardian.png",
+                        "monster/nonliving/battlesphere.png"],
+        "SPECIALIST":  ["monster/nonliving/iron_elemental.png",
+                        "monster/nonliving/electric_golem.png"],
+        "WAR_MACHINE": ["monster/humanoids/ironbound_thunderhulk.png",  # massive mech
+                        "monster/nonliving/stone_golem.png"],
     },
+
+    # ── Nightfang Dominion ── vampiric / undead / plague / gothic ─────────────
     "nightfang": {
-        "INFANTRY":    "monster/undead/ghoul.png",
-        "CAVALRY":     "monster/undead/vampire_knight_new.png",
-        "SUPPORT":     "monster/undead/lich.png",
-        "SCOUT":       "monster/undead/shadow_new.png",
-        "ARTILLERY":   "monster/undead/curse_skull.png",
-        "SPECIALIST":  "monster/undead/vampire_new.png",
-        "WAR_MACHINE": "monster/undead/bone_dragon_new.png",
+        "INFANTRY":    ["monster/undead/ghoul.png",
+                        "monster/undead/necrophage.png"],
+        "CAVALRY":     ["monster/undead/vampire_knight_new.png",
+                        "monster/undead/vampire_knight.png"],
+        "SUPPORT":     ["monster/undead/lich.png",
+                        "monster/undead/ancient_lich.png"],
+        "SCOUT":       ["monster/undead/shadow_new.png",
+                        "monster/undead/shadow.png",
+                        "monster/undead/wraith.png"],
+        "ARTILLERY":   ["monster/undead/curse_skull.png",
+                        "monster/undead/revenant.png"],
+        "SPECIALIST":  ["monster/undead/vampire_new.png",
+                        "monster/undead/vampire.png",
+                        "monster/undead/vampire_mage.png"],
+        "WAR_MACHINE": ["monster/undead/bone_dragon_new.png",
+                        "monster/undead/bone_dragon.png"],
     },
+
+    # ── Thornweft Matriarchy ── spider / silk / organic / nature ──────────────
     "thornweft": {
-        "INFANTRY":    "monster/animals/spider.png",
-        "CAVALRY":     "monster/animals/wolf_spider_new.png",
-        "SUPPORT":     "monster/animals/orb_spider.png",
-        "SCOUT":       "monster/animals/jumping_spider_new.png",
-        "ARTILLERY":   "monster/animals/redback_new.png",
-        "SPECIALIST":  "monster/fungi_plants/thorn_hunter.png",
-        "WAR_MACHINE": "monster/animals/emperor_scorpion.png",
+        "INFANTRY":    ["monster/animals/spider.png"],
+        "CAVALRY":     ["monster/animals/wolf_spider_new.png",
+                        "monster/animals/wolf_spider.png"],
+        "SUPPORT":     ["monster/animals/orb_spider.png",
+                        "monster/animals/orb_spider_new.png"],
+        "SCOUT":       ["monster/animals/jumping_spider_new.png",
+                        "monster/animals/jumping_spider.png"],
+        "ARTILLERY":   ["monster/animals/tarantella.png",          # silk spinner
+                        "monster/animals/tarantella_new.png",
+                        "monster/animals/redback_new.png"],
+        "SPECIALIST":  ["monster/fungi_plants/thorn_hunter.png",
+                        "monster/aberrations/ugly_thing.png"],     # organic construct
+        "WAR_MACHINE": ["monster/animals/emperor_scorpion.png",
+                        "monster/animals/emperor_scorpion_new.png"],
     },
+
+    # ── Veilbound Shogunate ── East Asian / samurai / ninja / mystical ─────────
+    # Note: previously used holy/angel tiles — replaced with Japanese-themed tiles
     "veilbound": {
-        "INFANTRY":    "monster/holy/paladin.png",
-        "CAVALRY":     "monster/holy/centaur_paladin.png",
-        "SUPPORT":     "monster/holy/angel_new.png",
-        "SCOUT":       "monster/holy/cherub.png",
-        "ARTILLERY":   "monster/holy/ophan.png",
-        "SPECIALIST":  "monster/holy/apis.png",
-        "WAR_MACHINE": "monster/holy/eastern_dragon.png",
+        "INFANTRY":    ["monster/humanoids/oni.png",               # Japanese demon warrior
+                        "monster/humanoids/oni_new.png",
+                        "monster/holy/paladin.png"],               # fallback
+        "CAVALRY":     ["monster/dragons/swamp_dragon.png",        # serpentine Eastern dragon mount
+                        "monster/dragons/swamp_dragon_new.png",
+                        "monster/holy/centaur_paladin.png"],
+        "SUPPORT":     ["monster/demons/rakshasa.png",             # Hindu/Buddhist demon, mystical
+                        "monster/demons/rakshasa_new.png",
+                        "monster/holy/angel_new.png"],
+        "SCOUT":       ["monster/demons/nekomata.png",             # Japanese cat-spirit, ninja-like
+                        "monster/demons/nekomata_new.png",
+                        "monster/holy/cherub.png"],
+        "ARTILLERY":   ["monster/nonliving/lightning_spire.png",   # mystical ranged
+                        "monster/nonliving/lightning_spire_new.png",
+                        "monster/holy/ophan.png"],
+        "SPECIALIST":  ["monster/humanoids/oni_incarcerator.png",  # armored oni variant
+                        "monster/demons/rakshasa.png",
+                        "monster/holy/apis.png"],
+        "WAR_MACHINE": ["monster/holy/eastern_dragon.png",         # Eastern dragon — perfect fit
+                        "monster/dragons/swamp_dragon.png"],
     },
 }
 
@@ -142,7 +208,26 @@ def create_map_sprite(src_path: Path, faction: str) -> Image.Image:
     return result
 
 
+def resolve_path(candidates) -> Path | None:
+    """Return the first existing path from a list of candidates (or single string)."""
+    if isinstance(candidates, str):
+        candidates = [candidates]
+    for rel in candidates:
+        p = DCSS / rel
+        if p.exists():
+            return p
+    return None
+
+
 def main():
+    if not DCSS.exists():
+        print(f"ERROR: DCSS tile pack not found at {DCSS}")
+        print("Download from:")
+        print("  https://opengameart.org/content/dungeon-crawl-32x32-tiles")
+        print("  https://opengameart.org/content/dungeon-crawl-32x32-tiles-supplemental")
+        print("Extract both zips into: imagese/dcss/Dungeon Crawl Stone Soup Full/")
+        exit(1)
+
     os.makedirs(OUT, exist_ok=True)
     total = 0
     missing = 0
@@ -151,10 +236,11 @@ def main():
         faction_dir = OUT / faction
         os.makedirs(faction_dir, exist_ok=True)
 
-        for unit_type, rel_path in type_map.items():
-            src_path = DCSS / rel_path
-            if not src_path.exists():
-                print(f"  WARNING: Missing {src_path}")
+        for unit_type, candidates in type_map.items():
+            src_path = resolve_path(candidates)
+            if src_path is None:
+                tried = candidates if isinstance(candidates, list) else [candidates]
+                print(f"  WARNING: No tile found for {faction}/{unit_type}  (tried: {tried})")
                 missing += 1
                 continue
 
@@ -163,6 +249,7 @@ def main():
             out_path = faction_dir / out_name
             sprite = create_map_sprite(src_path, faction)
             sprite.save(out_path, "PNG")
+            print(f"  {faction}/{unit_type} → {src_path.name}")
 
             # Also save just the 32x32 icon version
             icon_dir = faction_dir / "icons"
