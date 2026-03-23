@@ -29,6 +29,7 @@ BattleConfig="*res://data/battle_config.gd"
 SaveManager="*res://data/save_manager.gd"
 AudioManager="*res://data/audio_manager.gd"
 GameStateMachine="*res://combat/game_state_machine.gd"
+SceneTransition="*res://data/scene_transition.gd"
 
 [display]
 

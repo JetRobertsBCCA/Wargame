@@ -8,7 +8,7 @@ extends Node
 func _ready():
 	_register_core_skills()
 	_register_faction_skills()
-	print("[SkillDatabase] Registered %d skills." % skills.size())
+	if OS.is_debug_build(): print("[SkillDatabase] Registered %d skills." % skills.size())
 
 # ══════════════════════════════════════════════════════════════
 # CORE COMBAT SKILLS (available to all relevant units)

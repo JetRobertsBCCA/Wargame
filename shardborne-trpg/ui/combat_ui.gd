@@ -151,7 +151,7 @@ func _unhandled_input(event: InputEvent):
 					btn.add_theme_color_override("font_color", Color.YELLOW)
 					get_tree().create_timer(0.15).timeout.connect(func():
 						btn.remove_theme_color_override("font_color"))
-					btn.emit_signal("pressed")
+					btn.pressed.emit()
 					get_viewport().set_input_as_handled()
 					return
 	# Right-click to inspect any unit on the map, or show terrain info
@@ -749,7 +749,7 @@ func update_turn_queue(combatants: Array, turn_queue: Array):
 		var comb = combatants[c]
 		add_turn_queue_icon(comb)
 
-func combatant_died(combatant):
+func combatant_died(combatant: Dictionary) -> void:
 	var turn_queue_icon = _turn_queue_container.find_child(combatant.name, false, false)
 	if turn_queue_icon != null:
 		turn_queue_icon.queue_free()
@@ -1065,7 +1065,7 @@ func update_combatants(combatants: Array):
 	if _inspect_panel.visible and not _inspected_comb.is_empty():
 		_show_inspect(_inspected_comb)
 
-func set_movement(movement):
+func set_movement(movement: int):
 	if _movement_label == null:
 		return
 	var mor_total = 0
@@ -1383,11 +1383,11 @@ func show_results_screen(results: Dictionary):
 				vbox.add_child(HSeparator.new())
 			btn.text = "Retry Mission"
 		btn.custom_minimum_size = Vector2(200, 40)
-		btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/campaign_overview.tscn"))
+		btn.pressed.connect(func(): SceneTransition.go("res://scenes/campaign_overview.tscn"))
 	else:
 		btn.text = "Return to Menu"
 		btn.custom_minimum_size = Vector2(180, 40)
-		btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/main_menu.tscn"))
+		btn.pressed.connect(func(): SceneTransition.go("res://scenes/main_menu.tscn"))
 	btn_c.add_child(btn)
 
 	# Retry button — immediately replays the same battle
@@ -1401,7 +1401,7 @@ func show_results_screen(results: Dictionary):
 	retry_btn.pressed.connect(func():
 		get_tree().paused = false
 		Engine.time_scale = 1.0
-		get_tree().change_scene_to_file("res://scenes/game.tscn"))
+		SceneTransition.go("res://scenes/game.tscn"))
 	retry_btn_c.add_child(retry_btn)
 
 
@@ -1476,16 +1476,16 @@ func _build_pause_menu():
 	_add_pause_button(vbox, "Resume", Color(0.3, 0.7, 0.3), func(): _toggle_pause())
 	_add_pause_button(vbox, "Restart Battle", Color(0.7, 0.5, 0.2), func():
 		get_tree().paused = false
-		get_tree().change_scene_to_file("res://scenes/game.tscn"))
+		SceneTransition.go("res://scenes/game.tscn"))
 	if BattleConfig.is_campaign:
 		_add_pause_button(vbox, "Abandon Campaign", Color(0.7, 0.25, 0.25), func():
 			get_tree().paused = false
 			BattleConfig.clear_campaign()
-			get_tree().change_scene_to_file("res://scenes/campaign_select.tscn"))
+			SceneTransition.go("res://scenes/campaign_select.tscn"))
 	_add_pause_button(vbox, "Quit to Menu", Color(0.6, 0.3, 0.3), func():
 		get_tree().paused = false
 		BattleConfig.clear_campaign()
-		get_tree().change_scene_to_file("res://scenes/main_menu.tscn"))
+		SceneTransition.go("res://scenes/main_menu.tscn"))
 
 	var hint = Label.new()
 	hint.text = "Press ESC to resume"

@@ -76,6 +76,8 @@ func clear():
 func clear_campaign():
 	"""Full reset including campaign state."""
 	clear()
+	is_campaign = false
 	campaign_manager = null
 	campaign_id = ""
+	tutorial_tips = []
 	is_loaded_save = false

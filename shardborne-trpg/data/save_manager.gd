@@ -62,7 +62,7 @@ func save_campaign(slot: int, campaign_manager) -> bool:
 
 	file.store_string(json_string)
 	file.close()
-	print("[SaveManager] Saved campaign '%s' to slot %d" % [save_data.campaign_title, slot])
+	if OS.is_debug_build(): print("[SaveManager] Saved campaign '%s' to slot %d" % [save_data.campaign_title, slot])
 	return true
 
 # ══════════════════════════════════════════════════════════════
@@ -114,7 +114,7 @@ func delete_save(slot: int) -> bool:
 		push_error("SaveManager: Failed to delete slot %d" % slot)
 		return false
 
-	print("[SaveManager] Deleted save in slot %d" % slot)
+	if OS.is_debug_build(): print("[SaveManager] Deleted save in slot %d" % slot)
 	return true
 
 # ══════════════════════════════════════════════════════════════
@@ -159,7 +159,7 @@ func restore_campaign(campaign_manager, save_data: Dictionary) -> bool:
 	campaign_manager.casualties = Array(save_data.get("casualties", []))
 	campaign_manager.campaign_active = true
 
-	print("[SaveManager] Restored campaign '%s' at mission %d" % [
+	if OS.is_debug_build(): print("[SaveManager] Restored campaign '%s' at mission %d" % [
 		save_data.get("campaign_title", "?"), campaign_manager.current_mission])
 	return true
 
@@ -274,7 +274,7 @@ func mark_campaign_complete(campaign_id: String):
 	if campaign_id not in _completed_campaigns:
 		_completed_campaigns.append(campaign_id)
 		_save_completed_campaigns()
-		print("[SaveManager] Campaign '%s' marked complete (%d total)" % [campaign_id, _completed_campaigns.size()])
+		if OS.is_debug_build(): print("[SaveManager] Campaign '%s' marked complete (%d total)" % [campaign_id, _completed_campaigns.size()])
 
 
 func is_campaign_completed(campaign_id: String) -> bool:

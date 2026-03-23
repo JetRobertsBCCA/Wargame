@@ -39,7 +39,7 @@ func _ready():
 	var campaign_id = BattleConfig.campaign_id
 	if campaign_id.is_empty():
 		push_error("CampaignOverview: No campaign_id set in BattleConfig")
-		get_tree().change_scene_to_file("res://scenes/campaign_select.tscn")
+		SceneTransition.go("res://scenes/campaign_select.tscn")
 		return
 
 	# Check if we have an existing campaign manager (returning from battle or loaded save)
@@ -57,14 +57,14 @@ func _ready():
 		_campaign_manager = preload("res://combat/campaign_manager_v2.gd").new()
 		if not _campaign_manager.start_campaign(campaign_id):
 			push_error("CampaignOverview: Failed to start campaign '%s'" % campaign_id)
-			get_tree().change_scene_to_file("res://scenes/campaign_select.tscn")
+			SceneTransition.go("res://scenes/campaign_select.tscn")
 			return
 		BattleConfig.campaign_manager = _campaign_manager
 
 	_campaign_data = CampaignData.get_campaign(campaign_id)
 	if _campaign_data == null:
 		push_error("CampaignOverview: Unknown campaign '%s'" % campaign_id)
-		get_tree().change_scene_to_file("res://scenes/campaign_select.tscn")
+		SceneTransition.go("res://scenes/campaign_select.tscn")
 		return
 	_build_ui()
 
@@ -556,19 +556,38 @@ func _on_start_mission():
 		_play_story(pre_story, _launch_battle)
 
 func _launch_battle():
-	"""Configure BattleConfig and transition to battle scene with fade-out."""
+	"""Configure BattleConfig, pre-load portraits, then transition to battle scene."""
 	if not _campaign_manager.setup_battle():
 		push_error("CampaignOverview: Failed to setup battle")
 		return
+
+	# Pre-load portraits for all units in this battle to avoid in-battle stalls
+	var mission = _campaign_manager.get_current_mission()
+	var all_unit_names: Array = []
+	all_unit_names.append_array(mission.get("player_army", []))
+	all_unit_names.append_array(mission.get("enemy_army", []))
+	var defs: Array = []
+	for unit_name in all_unit_names:
+		var def = FactionDatabase.get_unit(unit_name)
+		if def != null:
+			defs.append(def)
 
 	# Fade out to black before loading battle
 	_fade_overlay.mouse_filter = MOUSE_FILTER_STOP  # block input during fade
 	var fade_out = create_tween()
 	fade_out.tween_property(_fade_overlay, "modulate:a", 1.0, 0.5)
 	fade_out.tween_callback(func():
-		GameStateMachine.reset()
-		GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
-		get_tree().change_scene_to_file("res://scenes/game.tscn")
+		# Kick off async portrait load then change scene when done
+		if defs.size() > 0:
+			SpriteGenerator.preload_portraits_for_defs(defs, func():
+				GameStateMachine.reset()
+				GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
+				get_tree().change_scene_to_file("res://scenes/game.tscn")
+			)
+		else:
+			GameStateMachine.reset()
+			GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
+			get_tree().change_scene_to_file("res://scenes/game.tscn")
 	)
 
 # ══════════════════════════════════════════════════════════════
@@ -1146,7 +1165,7 @@ func _build_campaign_complete_ui():
 	menu_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.9, 0.6))
 	menu_btn.pressed.connect(func():
 		BattleConfig.clear_campaign()
-		get_tree().change_scene_to_file("res://scenes/campaign_select.tscn"))
+		SceneTransition.go("res://scenes/campaign_select.tscn"))
 	vbox.add_child(menu_btn)
 
 func _calculate_campaign_rating(summary: Dictionary) -> Dictionary:
@@ -1372,7 +1391,7 @@ func _on_abandon():
 		"All campaign progress will be lost. Are you sure?",
 		func():
 			BattleConfig.clear_campaign()
-			get_tree().change_scene_to_file("res://scenes/campaign_select.tscn")
+			SceneTransition.go("res://scenes/campaign_select.tscn")
 	)
 
 

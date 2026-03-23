@@ -166,18 +166,18 @@ func _is_valid_transition(from: GameState, to: GameState) -> bool:
 # ══════════════════════════════════════════════════════════════
 
 func _enter_army_select() -> void:
-	print("[GameStateMachine] → ARMY_SELECT")
+	if OS.is_debug_build(): print("[GameStateMachine] → ARMY_SELECT")
 
 func _enter_deployment() -> void:
-	print("[GameStateMachine] → DEPLOYMENT")
+	if OS.is_debug_build(): print("[GameStateMachine] → DEPLOYMENT")
 
 func _enter_battle() -> void:
-	print("[GameStateMachine] → BATTLE (Round 1)")
+	if OS.is_debug_build(): print("[GameStateMachine] → BATTLE (Round 1)")
 	round_started.emit(round_number)
 	advance_phase()
 
 func _enter_game_over() -> void:
-	print("[GameStateMachine] → GAME_OVER (after %d rounds)" % round_number)
+	if OS.is_debug_build(): print("[GameStateMachine] → GAME_OVER (after %d rounds)" % round_number)
 
 ## Reset everything for a new game
 func reset() -> void:

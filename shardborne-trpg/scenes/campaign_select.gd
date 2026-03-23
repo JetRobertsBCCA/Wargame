@@ -520,7 +520,7 @@ func _on_load_save(slot: int):
 	BattleConfig.is_campaign = true
 	BattleConfig.is_loaded_save = true
 
-	get_tree().change_scene_to_file("res://scenes/campaign_overview.tscn")
+	SceneTransition.go("res://scenes/campaign_overview.tscn")
 
 
 func _on_delete_save(slot: int):
@@ -630,8 +630,8 @@ func _show_delete_confirm(slot: int):
 
 func _on_campaign_selected(campaign_id: String):
 	BattleConfig.campaign_id = campaign_id
-	get_tree().change_scene_to_file("res://scenes/campaign_overview.tscn")
+	SceneTransition.go("res://scenes/campaign_overview.tscn")
 
 func _on_back():
 	BattleConfig.clear_campaign()
-	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+	SceneTransition.go("res://scenes/main_menu.tscn")

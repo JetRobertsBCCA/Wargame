@@ -33,7 +33,7 @@ func _ready():
 	z_index = 10
 	queue_redraw()
 
-func _process(delta):
+func _process(delta: float):
 	if combatant.is_empty():
 		return
 	# Tick down floating damage timer

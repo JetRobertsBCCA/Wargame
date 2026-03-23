@@ -214,7 +214,7 @@ func is_card_phase() -> bool:
 # ══════════════════════════════════════════════════════════════
 
 func _ready():
-	emit_signal("register_combat", self)
+	register_combat.emit(self)
 	randomize()
 
 	# Compute map-relative deployment zones from battle size
@@ -277,7 +277,7 @@ func _ready():
 	# Play faction battle music for the player's faction
 	AudioManager.play_faction_music(side_faction[0])
 
-	emit_signal("update_turn_queue", combatants, turn_queue)
+	update_turn_queue.emit(combatants, turn_queue)
 
 	# Enter deployment phase — player can reposition units before combat begins
 	AudioManager.play_sfx("deploy")
@@ -475,6 +475,9 @@ func end_deployment():
 	GameStateMachine.force_state(GameStateMachine.GameState.BATTLE)
 	controller.exit_deployment_mode()
 	update_information.emit("[color=gold]═══ DEPLOYMENT COMPLETE — BATTLE BEGINS ═══[/color]\n")
+	if turn_queue.is_empty():
+		push_error("Combat: turn_queue is empty after deployment — no units placed?")
+		return
 	# Now start the first unit's turn
 	controller.set_controlled_combatant(combatants[turn_queue[0]])
 	if game_ui and game_ui.has_method("set_skill_list"):
@@ -650,7 +653,7 @@ func _assign_faction_skills(def: CombatantDefinition, skills: Array) -> void:
 # TURN MANAGEMENT
 # ══════════════════════════════════════════════════════════════
 
-func sort_turn_queue(a, b):
+func sort_turn_queue(a: int, b: int) -> bool:
 	return combatants[b].initiative < combatants[a].initiative
 
 ## Build alternating activation queue: interleave sides by initiative
@@ -715,9 +718,9 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 
 	turn_queue.append(combatants.size() - 1)
 	turn_queue.sort_custom(sort_turn_queue)
-	emit_signal("combatant_added", combatant)
+	combatant_added.emit(combatant)
 
-func get_current_combatant():
+func get_current_combatant() -> Dictionary:
 	return combatants[current_combatant]
 
 ## Update the active-unit highlight ring on the map
@@ -728,7 +731,7 @@ func _update_active_highlight(active_comb: Dictionary) -> void:
 			label.is_active = (comb == active_comb)
 
 ## Set hover state on a combatant's label (called by CController on mouse move)
-func set_hovered_combatant(hovered_comb) -> void:
+func set_hovered_combatant(hovered_comb: Variant) -> void:
 	for comb in combatants:
 		var label = comb.get("label_node")
 		if label != null:
@@ -761,6 +764,9 @@ func set_next_combatant():
 		# Alternating activation: interleave sides
 		_build_alternating_queue()
 		turn = 0
+	if turn_queue.is_empty():
+		combat_finish()
+		return
 	current_combatant = turn_queue[turn]
 
 func advance_turn():
@@ -789,8 +795,8 @@ func advance_turn():
 	# Start this unit's activation in COMMAND phase (cards only)
 	_set_phase(GameStateMachine.BattlePhase.COMMAND)
 
-	emit_signal("turn_advanced", comb)
-	emit_signal("update_combatants", combatants)
+	turn_advanced.emit(comb)
+	update_combatants.emit(combatants)
 
 	# Play turn start SFX for player units
 	if comb.side == 0:
@@ -2010,7 +2016,7 @@ func combat_finish():
 	update_information.emit("\n[color=gold]══ %s ══[/color]\n" % victory_text[0])
 	if scenario_manager:
 		update_information.emit("[color=silver]Final %s[/color]\n" % scenario_manager.get_vp_text())
-	emit_signal("combat_finished")
+	combat_finished.emit()
 
 func _on_scenario_ended(winner_side: int, player_vp: int, enemy_vp: int):
 	if _combat_over:
@@ -2020,7 +2026,7 @@ func _on_scenario_ended(winner_side: int, player_vp: int, enemy_vp: int):
 	update_information.emit("[color=silver]Final VP: Player %d — Enemy %d[/color]\n" % [player_vp, enemy_vp])
 	_combat_over = true
 	GameStateMachine.transition_to(GameStateMachine.GameState.GAME_OVER)
-	emit_signal("combat_finished")
+	combat_finished.emit()
 
 func _on_combat_finished():
 	# Disable further input
@@ -2077,9 +2083,9 @@ func _on_combat_finished():
 		# Fallback: wait and return appropriately
 		await get_tree().create_timer(4.0).timeout
 		if BattleConfig.is_campaign:
-			get_tree().change_scene_to_file("res://scenes/campaign_overview.tscn")
+			SceneTransition.go("res://scenes/campaign_overview.tscn")
 		else:
-			get_tree().change_scene_to_file("res://scenes/main_menu.tscn")
+			SceneTransition.go("res://scenes/main_menu.tscn")
 
 
 # ══════════════════════════════════════════════════════════════

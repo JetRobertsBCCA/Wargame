@@ -687,7 +687,7 @@ static func update_hunger_tier(state: Dictionary) -> void:
 		state.hunger_tier = "peckish"
 	# Log tier change
 	if state.hunger_tier != old_tier:
-		print("[Nightfang] Hunger tier changed: %s -> %s (battle size: %s)" % [old_tier, state.hunger_tier, size_key])
+		if OS.is_debug_build(): print("[Nightfang] Hunger tier changed: %s -> %s (battle size: %s)" % [old_tier, state.hunger_tier, size_key])
 
 
 ## Thornweft: Count active web anchors (including starting anchors).

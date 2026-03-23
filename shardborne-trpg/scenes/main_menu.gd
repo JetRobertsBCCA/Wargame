@@ -801,19 +801,19 @@ func _launch_quick_battle(player_faction_enum: int, overlay: Control):
 	var enemy_factions = all_factions.filter(func(f): return f != player_faction_enum)
 	var enemy_enum = enemy_factions[randi() % enemy_factions.size()]
 
-	BattleConfig.clear()
+	BattleConfig.clear_campaign()
 	BattleConfig.player_faction = player_faction_enum
 	BattleConfig.enemy_faction = enemy_enum
 	BattleConfig.has_custom_armies = false  # Let Combat build default armies
 	GameStateMachine.reset()
 	GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
-	get_tree().change_scene_to_file("res://scenes/game.tscn")
+	SceneTransition.go("res://scenes/game.tscn")
 
 func _on_army_builder():
 	GameStateMachine.reset()
 	GameStateMachine.transition_to(GameStateMachine.GameState.ARMY_SELECT)
-	get_tree().change_scene_to_file("res://ui/army_builder.tscn")
+	SceneTransition.go("res://ui/army_builder.tscn")
 
 func _on_campaign():
 	GameStateMachine.reset()
-	get_tree().change_scene_to_file("res://scenes/campaign_select.tscn")
+	SceneTransition.go("res://scenes/campaign_select.tscn")

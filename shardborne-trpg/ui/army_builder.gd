@@ -191,7 +191,7 @@ func _build_ui():
 
 	var back_btn = Button.new()
 	back_btn.text = "Back"
-	back_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/main_menu.tscn"))
+	back_btn.pressed.connect(func(): SceneTransition.go("res://scenes/main_menu.tscn"))
 	btn_row.add_child(back_btn)
 
 func _make_panel(header_text: String) -> PanelContainer:
@@ -514,6 +514,7 @@ func _check_confirm():
 
 func _on_confirm():
 	# Store selections in BattleConfig autoload and launch combat
+	BattleConfig.clear_campaign()
 	BattleConfig.set_armies(player_army, enemy_army, player_faction_id, enemy_faction_id)
 	# Set scenario from dropdown
 	var selected_idx = scenario_option.selected
@@ -524,7 +525,7 @@ func _on_confirm():
 	if size_idx >= 0:
 		BattleConfig.battle_size = battle_size_option.get_item_metadata(size_idx)
 	GameStateMachine.transition_to(GameStateMachine.GameState.BATTLE)
-	get_tree().change_scene_to_file("res://scenes/game.tscn")
+	SceneTransition.go("res://scenes/game.tscn")
 
 func _on_switch_side():
 	if selecting_for == "player":

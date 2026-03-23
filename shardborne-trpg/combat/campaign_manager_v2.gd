@@ -45,7 +45,7 @@ func start_campaign(id: String) -> bool:
 	veterancy.clear()
 	casualties.clear()
 
-	print("[CampaignManager] Started campaign: %s (%s)" % [data.title, data.commander])
+	if OS.is_debug_build(): print("[CampaignManager] Started campaign: %s (%s)" % [data.title, data.commander])
 	return true
 
 func get_campaign_title() -> String:
@@ -154,7 +154,7 @@ func setup_battle() -> bool:
 	BattleConfig.campaign_manager = self
 
 	mission_started.emit(current_mission, mission)
-	print("[CampaignManager] Battle configured: Mission %d — %s" % [current_mission + 1, mission.title])
+	if OS.is_debug_build(): print("[CampaignManager] Battle configured: Mission %d — %s" % [current_mission + 1, mission.title])
 	return true
 
 # ══════════════════════════════════════════════════════════════
@@ -211,7 +211,7 @@ func complete_mission(victory: bool, player_casualties_list: Array = []) -> Dict
 				var lost = mini(3, veterancy[unit_name].xp)
 				veterancy[unit_name].xp -= lost
 				xp_lost_units.append(unit_name)
-				print("[CampaignManager] %s lost %d XP from defeat" % [unit_name, lost])
+				if OS.is_debug_build(): print("[CampaignManager] %s lost %d XP from defeat" % [unit_name, lost])
 		result["xp_lost_units"] = xp_lost_units
 		mission_results.append(result)
 
@@ -234,7 +234,7 @@ func _grant_xp(unit_name: String, amount: int) -> void:
 		var bonus = _get_level_bonus(vet.level)
 		vet.bonuses.append(bonus)
 		AudioManager.play_sfx("level_up")
-		print("[CampaignManager] %s leveled up to %d! Gained %s" % [unit_name, vet.level, bonus])
+		if OS.is_debug_build(): print("[CampaignManager] %s leveled up to %d! Gained %s" % [unit_name, vet.level, bonus])
 
 func _xp_for_level(level: int) -> int:
 	return level * 15

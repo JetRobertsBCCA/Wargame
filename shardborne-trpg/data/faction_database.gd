@@ -49,7 +49,7 @@ const FACTIONS = {
 
 func _ready() -> void:
 	_load_all_factions()
-	print("[FactionDatabase] Loaded %d total units across %d factions." % [all_units.size(), faction_units.size()])
+	if OS.is_debug_build(): print("[FactionDatabase] Loaded %d total units across %d factions." % [all_units.size(), faction_units.size()])
 
 func _load_all_factions() -> void:
 	# Initialize faction containers

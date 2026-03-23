@@ -59,6 +59,35 @@ var _icon_cache: Dictionary = {}       # "unit_name" → ImageTexture (32x32)
 var _map_sprite_cache: Dictionary = {} # "unit_name" → ImageTexture (64x32, 2 frames)
 var _portrait_cache: Dictionary = {}   # "unit_name" → Image or null
 
+# ── Async portrait pre-loading ──────────────────────────
+## Pre-load all portraits for a list of CombatantDefinitions on a background thread.
+## on_complete is called on the main thread when all portraits are ready.
+## Call this before entering the battle scene to avoid stalls.
+signal portraits_preloaded()
+var _preload_thread: Thread = null
+
+func preload_portraits_for_defs(defs: Array, on_complete: Callable = Callable()) -> void:
+	"""Asynchronously loads portraits for all given CombatantDefinitions.
+	on_complete is called when all portraits are cached. Safe to call multiple times."""
+	if _preload_thread != null and _preload_thread.is_alive():
+		return  # Already loading
+	_preload_thread = Thread.new()
+	_preload_thread.start(func():
+		for def in defs:
+			if def == null:
+				continue
+			_try_load_portrait(def)  # Result cached, accessed on main thread
+		call_deferred("_on_portraits_preloaded", on_complete)
+	)
+
+func _on_portraits_preloaded(on_complete: Callable) -> void:
+	if _preload_thread != null:
+		_preload_thread.wait_to_finish()
+		_preload_thread = null
+	portraits_preloaded.emit()
+	if on_complete.is_valid():
+		on_complete.call()
+
 const SPRITE_DIR = "res://imagese/sprites"
 
 ## Map UnitType enum → sprite filename stem
@@ -150,11 +179,13 @@ func _try_load_portrait(def: CombatantDefinition) -> Image:
 	var path: String = "%s/%s/%s.webp" % [PORTRAIT_DIR, faction_dir, img_name]
 
 	if not FileAccess.file_exists(path):
+		if OS.is_debug_build(): push_warning("SpriteGenerator: Portrait not found: %s" % path)
 		_portrait_cache[key] = null
 		return null
 
 	var img: Image = Image.load_from_file(path)
 	if img == null:
+		push_warning("SpriteGenerator: Failed to load portrait: %s" % path)
 		_portrait_cache[key] = null
 		return null
 
@@ -238,6 +269,7 @@ func _try_load_dcss_icon(def: CombatantDefinition) -> ImageTexture:
 		return null
 	var img: Image = Image.load_from_file(path)
 	if img == null:
+		push_warning("SpriteGenerator: Failed to load DCSS icon: %s" % path)
 		return null
 	return ImageTexture.create_from_image(img)
 
@@ -254,6 +286,7 @@ func _try_load_dcss_map_sprite(def: CombatantDefinition) -> ImageTexture:
 		return null
 	var img: Image = Image.load_from_file(path)
 	if img == null:
+		push_warning("SpriteGenerator: Failed to load DCSS map sprite: %s" % path)
 		return null
 	return ImageTexture.create_from_image(img)
 

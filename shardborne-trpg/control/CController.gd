@@ -37,7 +37,7 @@ var _deploy_zone_start := Vector2i.ZERO
 var _deploy_zone_end := Vector2i.ZERO
 var _deploy_selected_unit: Dictionary = {}
 
-func _unhandled_input(event):
+func _unhandled_input(event: InputEvent):
 	# Camera zoom with mouse wheel
 	if event is InputEventMouseButton and _camera:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
@@ -47,6 +47,8 @@ func _unhandled_input(event):
 
 	# Always update hover highlight (even during enemy turns)
 	if event is InputEventMouseMotion:
+		if tile_map == null or combat == null:
+			return
 		var mouse_position = get_global_mouse_position()
 		var mouse_position_i = tile_map.local_to_map(mouse_position)
 		var hover_comb = get_combatant_at_position(mouse_position_i)
@@ -83,7 +85,7 @@ func _unhandled_input(event):
 			if combat and combat.game_ui:
 				var skill_label = cancelled_skill.capitalize().replace("_", " ")
 				combat.game_ui.update_information("[color=#888877]— %s targeting cancelled.[/color]\n" % skill_label)
-				combat.game_ui.emit_signal("target_selection_finished")
+				combat.game_ui.target_selection_finished.emit()
 			return
 		elif _undo_available:
 			_perform_undo_move()
@@ -138,6 +140,8 @@ func _unhandled_input(event):
 
 
 func get_combatant_at_position(target_position: Vector2i, include_dead: bool = false):
+	if combat == null:
+		return null
 	for comb in combat.combatants:
 		if comb.position == target_position:
 			if comb.alive or include_dead:
@@ -153,7 +157,10 @@ var _blocking_spaces = [
 ]
 
 func _ready():
-	tile_map = get_node("../Terrain/TileMap")
+	tile_map = get_node_or_null("../Terrain/TileMap")
+	if tile_map == null:
+		push_error("CController: TileMap node not found at ../Terrain/TileMap")
+		return
 	_camera = get_node_or_null("../Terrain/Camera2D")
 	# Read map dimensions from BattleConfig (scales with battle size)
 	var map_size := BattleConfig.get_map_size()
@@ -173,15 +180,17 @@ func _ready():
 	#build blocking spaces arrays
 	for tile in tile_map.get_used_cells(0):
 		var tile_blocking = tile_map.get_cell_tile_data(0, tile)
+		if tile_blocking == null:
+			continue
 		for block in tile_blocking.get_custom_data("Blocks"):
 			_blocking_spaces[block].append(tile)
 
 
-func combatant_added(combatant):
+func combatant_added(combatant: Dictionary) -> void:
 	_occupied_spaces.append(combatant.position)
 
 
-func combatant_died(combatant):
+func combatant_died(combatant: Dictionary) -> void:
 	_astargrid.set_point_weight_scale(combatant.position, 1)
 	_occupied_spaces.erase(combatant.position)
 
@@ -454,7 +463,7 @@ func _apply_auto_engagement(combatant: Dictionary) -> void:
 			if "engaged" not in enemy.get("status_effects", []):
 				enemy.status_effects.append("engaged")
 
-func _process(delta):
+func _process(delta: float):
 	# Camera panning with WASD/arrow keys
 	if _camera:
 		var cam_dir := Vector2.ZERO
@@ -608,12 +617,12 @@ func _handle_deployment_input(event: InputEvent) -> void:
 			queue_redraw()
 
 
-func set_movement(value):
+func set_movement(value: int) -> void:
 	movement = value
 	movement_changed.emit(value)
 
 
-func get_movement():
+func get_movement() -> int:
 	return movement
 
 
@@ -678,7 +687,7 @@ func move_player():
 		move_on_path(current_position)
 
 
-func move_on_path(current_position):
+func move_on_path(current_position: Vector2i):
 	if _path.size() < 2:
 		finished_move.emit()
 		return
@@ -768,7 +777,7 @@ func target_selected(target: Dictionary):
 
 const grid_tex = preload("res://imagese/grid_marker.png")
 
-func get_tile_cost(tile):
+func get_tile_cost(tile: Vector2i) -> int:
 	var tile_data = tile_map.get_cell_tile_data(0, tile)
 	if tile_data == null:
 		return 99
@@ -777,7 +786,7 @@ func get_tile_cost(tile):
 	else:
 		return 1
 
-func get_tile_cost_at_point(point):
+func get_tile_cost_at_point(point: Vector2) -> int:
 	var tile = tile_map.local_to_map(point)
 	var tile_data = tile_map.get_cell_tile_data(0, tile)
 	if tile_data == null:

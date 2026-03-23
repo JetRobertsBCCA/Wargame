@@ -61,7 +61,7 @@ func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS  # keep playing during pause
 	_create_players()
 	_scan_audio_files()
-	print("[AudioManager] Ready — %d music tracks, %d SFX loaded" % [_music_streams.size(), _sfx_streams.size()])
+	if OS.is_debug_build(): print("[AudioManager] Ready — %d music tracks, %d SFX loaded" % [_music_streams.size(), _sfx_streams.size()])
 
 
 func _create_players():
@@ -110,7 +110,7 @@ func _scan_dir_recursive(path: String, target: Dictionary):
 				if stream:
 					var key = file_name.get_basename().replace(".mp3", "")
 					target[key] = stream
-					print("[AudioManager]   Loaded: %s → %s" % [key, resource_path])
+					if OS.is_debug_build(): print("[AudioManager]   Loaded: %s → %s" % [key, resource_path])
 		file_name = dir.get_next()
 	dir.list_dir_end()
 
