@@ -23,6 +23,8 @@ var _scroll_container: ScrollContainer
 var _content_vbox: VBoxContainer
 var _saves_container: VBoxContainer
 
+const CampaignManagerScript = preload("res://combat/campaign_manager_v2.gd")
+
 func _ready():
 	set_anchors_and_offsets_preset(PRESET_FULL_RECT)
 	mouse_filter = MOUSE_FILTER_IGNORE
@@ -507,7 +509,7 @@ func _on_load_save(slot: int):
 		return
 
 	# Create campaign manager and restore state
-	var campaign_manager = preload("res://combat/campaign_manager_v2.gd").new()
+	var campaign_manager = CampaignManagerScript.new()
 	if not campaign_manager.start_campaign(campaign_id):
 		push_error("CampaignSelect: Failed to start campaign '%s' from save" % campaign_id)
 		return

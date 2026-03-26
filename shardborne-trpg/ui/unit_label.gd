@@ -12,6 +12,13 @@ var is_active: bool = false
 ## Whether the mouse is hovering over this unit's tile
 var is_hovered: bool = false
 
+const STATUS_DOT_COLORS := {
+	"engaged":    Color(0.9, 0.1, 0.1),
+	"stealthed":  Color(0.45, 0.0, 0.75),
+	"burning":    Color(1.0, 0.4, 0.0),
+	"poisoned":   Color(0.2, 0.85, 0.2),
+}
+
 ## Cached values to avoid redundant redraws
 var _last_hp: int = -1
 var _last_shaken: bool = false
@@ -137,18 +144,12 @@ func _draw():
 
 	# ── Status effect dots — colored pips above the HP bar ──
 	var status_effects: Array = combatant.get("status_effects", [])
-	const STATUS_DOT_COLORS := {
-		"engaged":    Color(0.9, 0.1, 0.1),
-		"stealthed":  Color(0.45, 0.0, 0.75),
-		"burning":    Color(1.0, 0.4, 0.0),
-		"poisoned":   Color(0.2, 0.85, 0.2),
-	}
 	var dot_offset := 0.0
 	var dot_y := bar_y - 6.0
 	for effect in status_effects:
 		if dot_offset >= bar_w:
 			break
-		var dc: Color = STATUS_DOT_COLORS.get(effect, Color(0.65, 0.65, 0.65))
+		var dc: Color = STATUS_DOT_COLORS.get(effect, Color(0.65, 0.65, 0.65))  # grey for unknown
 		draw_circle(Vector2(bar_x + dot_offset + 2.0, dot_y), 2.0, dc)
 		dot_offset += 6.0
 	# Overwatch pip (yellow) at fixed right-side position

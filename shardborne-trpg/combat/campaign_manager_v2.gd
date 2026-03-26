@@ -7,7 +7,6 @@ extends Node
 ## This is NOT an autoload — it is instantiated by campaign scenes as needed.
 ## Campaign state is stored here and passed to BattleConfig for each battle.
 
-signal story_requested(dialogue: Array, callback: Callable)
 signal mission_started(mission_index: int, mission: Dictionary)
 signal mission_completed(mission_index: int, result: Dictionary)
 signal campaign_completed(campaign_id: String)

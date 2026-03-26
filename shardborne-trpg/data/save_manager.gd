@@ -30,7 +30,7 @@ func _slot_path(slot: int) -> String:
 # SAVE
 # ══════════════════════════════════════════════════════════════
 
-func save_campaign(slot: int, campaign_manager) -> bool:
+func save_campaign(slot: int, campaign_manager: Node) -> bool:
 	"""Save the current campaign state to a slot (1-5). Returns true on success."""
 	if slot < 1 or slot > MAX_SLOTS:
 		push_error("SaveManager: Invalid slot %d (must be 1-%d)" % [slot, MAX_SLOTS])
@@ -145,7 +145,7 @@ func has_any_saves() -> bool:
 # RESTORE — Applies loaded data to a CampaignManager
 # ══════════════════════════════════════════════════════════════
 
-func restore_campaign(campaign_manager, save_data: Dictionary) -> bool:
+func restore_campaign(campaign_manager: Node, save_data: Dictionary) -> bool:
 	"""Restore a campaign manager from save data. Call after start_campaign()."""
 	if save_data.is_empty():
 		push_error("SaveManager: Empty save data")

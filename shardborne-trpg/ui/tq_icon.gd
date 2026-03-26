@@ -6,6 +6,8 @@ var side: int = 0  # Track side so set_active(false) restores the correct border
 
 @onready var shader_material: ShaderMaterial = material as ShaderMaterial
 
+var _fill_style := StyleBoxFlat.new()
+
 func set_max_hp(max_hp: int):
 	$Deadness.max_value = max_hp
 	self.max_hp = max_hp
@@ -20,16 +22,13 @@ func update_deadness():
 	$Deadness.value = deadness_value
 	# Color the fill bar: green when healthy, yellow at half, red at critical
 	var ratio := float(hp) / float(maxi(max_hp, 1))
-	var fill_color: Color
 	if ratio > 0.5:
-		fill_color = Color(0.15, 0.80, 0.15)
+		_fill_style.bg_color = Color(0.15, 0.80, 0.15)
 	elif ratio > 0.25:
-		fill_color = Color(0.92, 0.72, 0.08)
+		_fill_style.bg_color = Color(0.92, 0.72, 0.08)
 	else:
-		fill_color = Color(0.90, 0.15, 0.10)
-	var style := StyleBoxFlat.new()
-	style.bg_color = fill_color
-	$Deadness.add_theme_stylebox_override("fill", style)
+		_fill_style.bg_color = Color(0.90, 0.15, 0.10)
+	$Deadness.add_theme_stylebox_override("fill", _fill_style)
 
 func set_side(s: int):
 	side = s

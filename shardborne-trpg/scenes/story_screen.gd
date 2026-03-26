@@ -13,6 +13,9 @@ signal sequence_completed
 # ── Typewriter settings ──
 const CHARS_PER_SECOND := 40.0
 const PAUSE_AFTER_LINE := 0.15  # Brief pause after typewriter finishes
+## Special narrator speaker keys (colour/style handled separately from faction speakers)
+const SPEAKER_NARRATOR := SPEAKER_NARRATOR
+const SPEAKER_FHAH_ZOLG := SPEAKER_FHAH_ZOLG
 
 # ── State ──
 var _dialogue: Array = []
@@ -103,7 +106,7 @@ func _advance():
 
 func _show_entry(index: int):
 	var entry = _dialogue[index]
-	var speaker: String = entry.get("speaker", "NARRATOR")
+	var speaker: String = entry.get("speaker", SPEAKER_NARRATOR)
 	var text: String = entry.get("text", "")
 	var mood: String = entry.get("mood", "neutral")
 
@@ -113,10 +116,10 @@ func _show_entry(index: int):
 	# Speaker styling
 	var speaker_color: Color = CampaignData.get_speaker_color(speaker)
 
-	if speaker == "NARRATOR":
+	if speaker == SPEAKER_NARRATOR:
 		_speaker_label.text = ""
 		_portrait_rect.color = Color(0.3, 0.3, 0.35, 0.3)
-	elif speaker == "FHAH-ZOLG":
+	elif speaker == SPEAKER_FHAH_ZOLG:
 		_speaker_label.text = "[color=#CC33FF][font_size=16]%s[/font_size][/color]" % speaker
 		_portrait_rect.color = Color(0.6, 0.1, 0.8, 0.6)
 	else:
@@ -139,7 +142,7 @@ func _show_entry(index: int):
 func _update_typewriter(delta: float):
 	_typewriter_timer += delta
 	var full_text: String = _text_label.get_meta("full_text", "")
-	var speaker: String = _text_label.get_meta("speaker", "NARRATOR")
+	var speaker: String = _text_label.get_meta("speaker", SPEAKER_NARRATOR)
 	var target_pos = int(_typewriter_timer * CHARS_PER_SECOND)
 
 	if target_pos >= full_text.length():
@@ -153,13 +156,13 @@ func _update_typewriter(delta: float):
 
 func _show_full_text():
 	var full_text: String = _text_label.get_meta("full_text", "")
-	var speaker: String = _text_label.get_meta("speaker", "NARRATOR")
+	var speaker: String = _text_label.get_meta("speaker", SPEAKER_NARRATOR)
 	_format_text(full_text, speaker)
 
 func _format_text(text: String, speaker: String):
-	if speaker == "NARRATOR":
+	if speaker == SPEAKER_NARRATOR:
 		_text_label.text = "[color=#B8B8CC][font_size=15][i]%s[/i][/font_size][/color]" % text
-	elif speaker == "FHAH-ZOLG":
+	elif speaker == SPEAKER_FHAH_ZOLG:
 		_text_label.text = "[color=#DD88FF][font_size=15]%s[/font_size][/color]" % text
 	else:
 		_text_label.text = "[color=#E0E0E0][font_size=15]%s[/font_size][/color]" % text

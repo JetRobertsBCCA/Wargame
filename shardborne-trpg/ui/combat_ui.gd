@@ -146,7 +146,7 @@ func _unhandled_input(event: InputEvent):
 			var idx = skill_key_map[event.keycode]
 			if idx < _skill_buttons.size():
 				var btn = _skill_buttons[idx]
-				if not btn.disabled and btn.pressed.get_connections().size() > 0:
+				if not btn.disabled and btn.pressed.has_connections():
 					# Brief yellow flash to confirm hotkey activation
 					btn.add_theme_color_override("font_color", Color.YELLOW)
 					get_tree().create_timer(0.15).timeout.connect(func():

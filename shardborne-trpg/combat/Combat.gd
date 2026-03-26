@@ -6,6 +6,10 @@ class_name Combat
 ## Core combat loop, turn management, cards, AI, and morale remain here.
 
 const UnitLabel = preload("res://ui/unit_label.gd")
+const ScenarioManagerScript = preload("res://combat/scenario_manager.gd")
+
+## Tile size in pixels — used for sprite position calculations
+const TILE_SIZE := 32
 
 signal register_combat(combat_node: Node)
 signal turn_advanced(combatant: Dictionary)
@@ -80,6 +84,17 @@ var _commander_dead_cp_penalty := [0, 0]
 # ══════════════════════════════════════════════════════════════
 # DEPLOYMENT PHASE
 # ══════════════════════════════════════════════════════════════
+
+## Fraction of the map width reserved for each side's deployment zone (1/6 ≈ 17%)
+const DEPLOY_ZONE_MAP_DIVISOR := 6
+## Minimum deploy zone X width in tiles (prevents too-narrow zones on small maps)
+const DEPLOY_ZONE_MIN_WIDTH := 4
+## Top/bottom tile margin kept clear of deployment zones
+const DEPLOY_ZONE_Y_MARGIN := 2
+## Delay (seconds) before the AI takes its turn — gives the player time to see what happened
+const AI_TURN_DELAY := 0.6
+## Sentinel distance meaning "no target found yet" in AI distance searches
+const NO_TARGET_DIST := 999
 
 ## Whether we are in the pre-battle deployment phase
 var deploying := false
@@ -221,7 +236,7 @@ func _ready():
 	var map_size := BattleConfig.get_map_size()
 	# Player deploys in left ~17% of map, with 1-tile margin
 	deploy_zone_start = Vector2i(1, 1)
-	deploy_zone_end = Vector2i(maxi(4, map_size.x / 6), map_size.y - 2)
+	deploy_zone_end = Vector2i(maxi(DEPLOY_ZONE_MIN_WIDTH, map_size.x / DEPLOY_ZONE_MAP_DIVISOR), map_size.y - DEPLOY_ZONE_Y_MARGIN)
 
 	# Notify state machine that battle is active
 	if GameStateMachine.current_state != GameStateMachine.GameState.BATTLE:
@@ -258,7 +273,7 @@ func _ready():
 	update_information.emit("[color=gold]═══ SHARDBORNE: %s vs %s ═══[/color]\n" % [p_faction, e_faction])
 
 	# Setup scenario
-	scenario_manager = preload("res://combat/scenario_manager.gd").new()
+	scenario_manager = ScenarioManagerScript.new()
 	add_child(scenario_manager)
 	var scenario_type = BattleConfig.scenario_type if BattleConfig.has_custom_armies else "total_war"
 	var round_limit = BattleConfig.round_limit if BattleConfig.has_custom_armies else 6
@@ -266,6 +281,12 @@ func _ready():
 	scenario_manager.scenario_ended.connect(_on_scenario_ended)
 	update_information.emit("[color=silver]Scenario: %s[/color]\n" % scenario_manager.get_scenario_name())
 	update_information.emit("[color=silver]%s[/color]\n" % scenario_manager.get_scenario_description())
+
+	# Print procedural terrain description from MapGenerator
+	if controller != null:
+		var tdesc: String = controller.get_terrain_description()
+		if not tdesc.is_empty():
+			update_information.emit("[color=#8faabb]%s[/color]\n" % tdesc)
 
 	# Setup Drake Bonds for Emberclaw sides
 	for side in [0, 1]:
@@ -299,6 +320,8 @@ func _exit_tree():
 		_skill_manager.skill_log.disconnect(_skill_log_cb)
 	if _faction_mgr and _faction_mgr.faction_log.is_connected(_faction_log_cb):
 		_faction_mgr.faction_log.disconnect(_faction_log_cb)
+	if scenario_manager and scenario_manager.scenario_ended.is_connected(_on_scenario_ended):
+		scenario_manager.scenario_ended.disconnect(_on_scenario_ended)
 
 ## Setup from Army Builder selections
 func _setup_from_battle_config():
@@ -568,7 +591,7 @@ func create_combatant(definition: CombatantDefinition, override_name: String = "
 	}
 	return comb
 
-func _assign_faction_skills(def: CombatantDefinition, skills: Array) -> void:
+func _assign_faction_skills(def: CombatantDefinition, skills: Array[String]) -> void:
 	match def.faction:
 		CombatantDefinition.Faction.EMBERCLAW:
 			if def.has_special("Breath Weapon"):
@@ -657,7 +680,7 @@ func sort_turn_queue(a: int, b: int) -> bool:
 	return combatants[b].initiative < combatants[a].initiative
 
 ## Build alternating activation queue: interleave sides by initiative
-func _build_alternating_queue():
+func _build_alternating_queue() -> void:
 	var side_units := [[], []]
 	for i in range(combatants.size()):
 		if combatants[i].alive:
@@ -695,7 +718,7 @@ func add_combatant(combatant: Dictionary, side: int, position: Vector2i):
 	var new_combatant_sprite = Sprite2D.new()
 	new_combatant_sprite.texture = combatant.map_sprite
 	$"../Terrain/TileMap".add_child(new_combatant_sprite)
-	new_combatant_sprite.position = Vector2(position * 32.0) + Vector2(16, 16)
+	new_combatant_sprite.position = Vector2(position * TILE_SIZE) + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	new_combatant_sprite.z_index = 1
 	new_combatant_sprite.hframes = 2
 	if side == 0:
@@ -742,7 +765,11 @@ func get_distance(attacker: Dictionary, target: Dictionary) -> int:
 	var p2 = target.position
 	return absi(p1.x - p2.x) + absi(p1.y - p2.y)
 
-func set_next_combatant():
+## Returns HP as a 0.0–1.0 ratio. Safe against max_hp == 0.
+static func hp_ratio(comb: Dictionary) -> float:
+	return float(comb.get("hp", 0)) / float(maxi(comb.get("max_hp", 1), 1))
+
+func set_next_combatant() -> void:
 	turn += 1
 	if turn >= turn_queue.size():
 		# ── New Round ──
@@ -769,7 +796,7 @@ func set_next_combatant():
 		return
 	current_combatant = turn_queue[turn]
 
-func advance_turn():
+func advance_turn() -> void:
 	if _combat_over:
 		return
 	# End current unit's activation
@@ -811,7 +838,7 @@ func advance_turn():
 		game_ui.update_faction_resources(faction_state[comb.side])
 
 	if comb.side == 1:
-		await get_tree().create_timer(0.6).timeout
+		await get_tree().create_timer(AI_TURN_DELAY).timeout
 		ai_process(comb)
 
 
@@ -819,7 +846,7 @@ func advance_turn():
 # ROUND EVENTS
 # ══════════════════════════════════════════════════════════════
 
-func _on_round_start():
+func _on_round_start() -> void:
 	# Faction-themed round herald
 	var herald_lines := []
 	for side in [0, 1]:
@@ -875,7 +902,7 @@ func _on_round_start():
 	# Update phase indicator — starts in COMMAND when first unit activates
 	_set_phase(GameStateMachine.BattlePhase.COMMAND)
 
-func _generate_command_points(side: int):
+func _generate_command_points(side: int) -> void:
 	# Diminishing returns: each successive commander generates less CP
 	var commanders := []
 	for idx in groups[side]:
@@ -904,7 +931,7 @@ func _generate_command_points(side: int):
 			penalty_text = " (-%d commander loss)" % _commander_dead_cp_penalty[side]
 		update_information.emit("[color=silver]%s's %s %d CP%s (total: %d)[/color]\n" % [faction_name, verb, cp, penalty_text, command_points[side]])
 
-func _faction_round_start(side: int):
+func _faction_round_start(side: int) -> void:
 	var faction = side_faction[side]
 	var state = faction_state[side]
 	_faction_mgr.process_round_start(side, faction, state, combatants, groups, self)
@@ -932,7 +959,7 @@ func _ai_veilbound_stance_switch(side: int) -> void:
 			continue
 		# Per-unit stance decision based on context
 		var target_stance := "honor"  # Default to defensive
-		var hp_ratio = float(comb.hp) / float(comb.max_hp)
+		var hp_ratio = hp_ratio(comb)
 		# Wounded units (< 60% HP) prefer honor (defensive) for survival
 		if hp_ratio < 0.6:
 			target_stance = "honor"
@@ -941,7 +968,7 @@ func _ai_veilbound_stance_switch(side: int) -> void:
 			target_stance = "honor"
 		else:
 			# Check if enemies are nearby — close combat favors revelation
-			var nearest_enemy_dist := 999
+			var nearest_enemy_dist := NO_TARGET_DIST
 			for eidx in groups[1 - side]:
 				var enemy = combatants[eidx]
 				if enemy.alive:
@@ -1077,7 +1104,7 @@ func _on_unit_turn_start(comb: Dictionary) -> bool:
 # ══════════════════════════════════════════════════════════════
 
 ## auto_advance: if true (default), calls advance_turn() at end. Set false for overwatch.
-func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_advance: bool = true):
+func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_advance: bool = true) -> void:
 	if _combat_over:
 		return
 
@@ -1216,12 +1243,13 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 		atk_mod += drake_bond_bonus
 		update_information.emit("[color=orange]  (Drake Bond: +%d ATK)[/color]\n" % drake_bond_bonus)
 
-	# ── Elevated terrain: +1 ATK for ranged attacks from elevated position ──
+	# ── Elevated terrain: +1 ATK for ranged/magic from ruins or forest cover ──
 	if attack_key != "attack_melee":
 		var attacker_terrain = _get_terrain_type_at(attacker.position)
-		if attacker_terrain == "difficult":  # Elevated/forest = cost 2
+		if attacker_terrain in ["forest", "rubble"]:
 			atk_mod += GameRules.COMBAT_MODIFIERS.get("elevated", {}).get("atk_mod", 1)
-			update_information.emit("[color=silver]  (Elevated: +1 ATK)[/color]\n")
+			var pos_label := "forest cover" if attacker_terrain == "forest" else "ruined fortification"
+			update_information.emit("[color=silver]  (Firing from %s: +1 ATK)[/color]\n" % pos_label)
 
 	# ── Roll dice ──
 	var dice_count: int = maxi(1, attacker.atk + atk_mod)
@@ -1454,10 +1482,10 @@ func apply_damage(target: Dictionary, damage: int) -> void:
 		check_morale(target)
 
 # Named attack shortcuts for UI skill buttons
-func attack_melee(attacker: Dictionary, target: Dictionary):
+func attack_melee(attacker: Dictionary, target: Dictionary) -> void:
 	attack(attacker, target, "attack_melee")
 
-func attack_ranged(attacker: Dictionary, target: Dictionary):
+func attack_ranged(attacker: Dictionary, target: Dictionary) -> void:
 	attack(attacker, target, "attack_ranged")
 
 func basic_magic(attacker: Dictionary, target: Dictionary):
@@ -1520,23 +1548,21 @@ func _check_flanking(attacker: Dictionary, target: Dictionary) -> bool:
 	return _check_attack_arc(attacker, target) >= 1
 
 ## Get terrain cover bonus for the target's position (for ranged attacks).
-## Reads tile terrain type and returns DEF bonus from GameRules.
+## Uses named terrain type from metadata (or tile cost fallback).
 func _get_terrain_cover(target: Dictionary) -> int:
 	if controller == null or controller.tile_map == null:
 		return 0
-	var tile_data = controller.tile_map.get_cell_tile_data(0, target.position)
-	if tile_data == null:
-		return 0
-	var cost = int(tile_data.get_custom_data("Cost"))
-	# Cover heuristic: forest/ruins (cost 2) = light cover, walls/buildings (cost 3+) = heavy cover
-	if cost >= 3:
-		return GameRules.COMBAT_MODIFIERS.get("cover_heavy", {}).get("def_mod", 2)
-	elif cost >= 2:
-		return GameRules.COMBAT_MODIFIERS.get("cover_light", {}).get("def_mod", 1)
+	match _get_terrain_type_at(target.position):
+		"rubble":
+			return GameRules.COMBAT_MODIFIERS.get("cover_heavy", {}).get("def_mod", 2)
+		"forest":
+			return GameRules.COMBAT_MODIFIERS.get("cover_light", {}).get("def_mod", 1)
 	return 0
 
 ## Check Line of Sight between two combatants using Bresenham line.
 ## Returns: 0 = clear, -1/-2 = cover penalty, LOS_BLOCKED_PENALTY = blocked.
+## Mountains and impassable terrain fully block LoS.
+## Rubble/ruins along the path impose heavy cover penalty; forest = light.
 func _check_line_of_sight(attacker: Dictionary, target: Dictionary) -> int:
 	if controller == null or controller.tile_map == null:
 		return 0
@@ -1547,18 +1573,14 @@ func _check_line_of_sight(attacker: Dictionary, target: Dictionary) -> int:
 	for tile in tiles_along_path:
 		if tile == from or tile == to:
 			continue
-		var tile_data = controller.tile_map.get_cell_tile_data(0, tile)
-		if tile_data == null:
-			continue
-		var cost = int(tile_data.get_custom_data("Cost"))
-		# Impassable terrain blocks LoS entirely
-		if cost < 0 or cost >= 99:
-			return GameRules.LOS_BLOCKED_PENALTY
-		# Heavy terrain along path = cover penalty
-		if cost >= 3:
-			worst_cover = mini(worst_cover, GameRules.LOS_HEAVY_COVER_ATK_PENALTY)
-		elif cost >= 2:
-			worst_cover = mini(worst_cover, GameRules.LOS_LIGHT_COVER_ATK_PENALTY)
+		var terrain := _get_terrain_type_at(tile)
+		match terrain:
+			"mountain":
+				return GameRules.LOS_BLOCKED_PENALTY
+			"rubble":
+				worst_cover = mini(worst_cover, GameRules.LOS_HEAVY_COVER_ATK_PENALTY)
+			"forest":
+				worst_cover = mini(worst_cover, GameRules.LOS_LIGHT_COVER_ATK_PENALTY)
 	return worst_cover
 
 ## Bresenham line algorithm: returns all tiles between two points
@@ -1595,18 +1617,30 @@ func is_adjacent_to_enemy(comb: Dictionary) -> bool:
 				return true
 	return false
 
-## Apply terrain effects to a combatant based on their current tile
+## Apply terrain effects to a combatant based on their current tile.
+## Uses named terrain type from MapGenerator metadata where available.
 func _apply_terrain_effects(comb: Dictionary) -> void:
 	if controller == null or controller.tile_map == null:
 		return
+
+	var terrain_type := _get_terrain_type_at(comb.position)
+
+	# Track whether unit is in cover (used by Nocturnal Predators and stealth checks)
+	comb["_in_cover"] = terrain_type in ["forest", "rubble"]
+
+	# Terrain-flavour messages (once per activation, side 0 only to avoid spam)
+	if comb.side == 0 and not comb.get("_terrain_announced", false):
+		match terrain_type:
+			"forest":
+				update_information.emit("[color=#6aaa44]%s takes cover in the tangled undergrowth.[/color]\n" % comb.name)
+				comb["_terrain_announced"] = true
+			"rubble":
+				update_information.emit("[color=#aa8844]%s shelters behind shattered war gear and broken stone.[/color]\n" % comb.name)
+				comb["_terrain_announced"] = true
+
 	var tile_data = controller.tile_map.get_cell_tile_data(0, comb.position)
 	if tile_data == null:
-		comb["_in_cover"] = false
 		return
-	var cost = int(tile_data.get_custom_data("Cost"))
-
-	# Track whether unit is in cover (used by Nocturnal Predators, etc.)
-	comb["_in_cover"] = cost >= 2 and cost < 99  # Difficult or heavy cover
 
 	# Burning terrain: deal 1 damage (Fire Resistant takes 0, Fire Immune ignores)
 	var blocks_data = tile_data.get_custom_data("Blocks") if tile_data.get_custom_data("Blocks") != null else ""
@@ -1614,28 +1648,34 @@ func _apply_terrain_effects(comb: Dictionary) -> void:
 		if comb.definition.has_special("Fire Immune"):
 			pass  # Immune to fire
 		elif comb.definition.has_special("Fire Resistant"):
-			# Half damage, min 0 — so 1 damage halved = 0
-			pass
+			pass  # Resistant — 1 fire halved = 0
 		else:
 			comb.hp -= 1
 			update_information.emit("[color=orange]%s takes 1 fire damage from burning terrain![/color]\n" % comb.name)
 			if comb.hp <= 0:
 				combatant_die(comb)
 
-## Get terrain type string for a tile position
+## Get terrain type string for a tile position.
+## Checks MapGenerator metadata first, then falls back to tile cost.
+## Named types: "open", "forest", "rubble", "mountain"
 func _get_terrain_type_at(pos: Vector2i) -> String:
 	if controller == null or controller.tile_map == null:
 		return "open"
+	# MapGenerator metadata takes priority (most specific)
+	var meta_type: String = controller.terrain_metadata.get(pos, "")
+	if not meta_type.is_empty():
+		return meta_type
+	# Fallback: derive from tile cost
 	var tile_data = controller.tile_map.get_cell_tile_data(0, pos)
 	if tile_data == null:
 		return "open"
-	var cost = int(tile_data.get_custom_data("Cost"))
-	if cost < 0 or cost >= 99:
-		return "impassable"
+	var cost := int(tile_data.get_custom_data("Cost"))
+	if cost >= 99:
+		return "mountain"
 	elif cost >= 3:
-		return "heavy_cover"
+		return "rubble"
 	elif cost >= 2:
-		return "difficult"
+		return "forest"
 	return "open"
 
 ## Check if a tile is water terrain
@@ -1852,14 +1892,14 @@ func check_morale(comb: Dictionary) -> void:
 func _apply_routed_flee(comb: Dictionary) -> void:
 	if not comb.alive:
 		return
-	var edge_x: int = 0 if comb.side == 0 else 35  # Player flees left, enemy flees right
+	var edge_x: int = 0 if comb.side == 0 else BattleConfig.get_map_size().x - 1
 	var pos: Vector2i = comb.position
 	var flee_dist: int = comb.mov + comb.mov_modifier
 	var direction := -1 if comb.side == 0 else 1
 	# Step tile-by-tile, stopping at impassable terrain or occupied tiles
 	var new_pos := pos
 	for step in range(1, flee_dist + 1):
-		var candidate := Vector2i(clampi(pos.x + direction * step, 0, 35), pos.y)
+		var candidate := Vector2i(clampi(pos.x + direction * step, 0, BattleConfig.get_map_size().x - 1), pos.y)
 		# Check for impassable terrain
 		if controller and controller.tile_map:
 			var tile_data = controller.tile_map.get_cell_tile_data(0, candidate)
@@ -1880,10 +1920,10 @@ func _apply_routed_flee(comb: Dictionary) -> void:
 		new_pos = candidate
 	comb.position = new_pos
 	if comb.get("sprite"):
-		comb.sprite.position = Vector2(comb.position * 32) + Vector2(16, 16)
+		comb.sprite.position = Vector2(comb.position * TILE_SIZE) + Vector2(TILE_SIZE / 2, TILE_SIZE / 2)
 	update_information.emit("[color=orange]%s flees toward the board edge! (now at %s)[/color]\n" % [comb.name, str(comb.position)])
 	# Check if reached board edge — removed from play
-	if (comb.side == 0 and new_pos.x <= 0) or (comb.side == 1 and new_pos.x >= 35):
+	if (comb.side == 0 and new_pos.x <= 0) or (comb.side == 1 and new_pos.x >= BattleConfig.get_map_size().x - 1):
 		update_information.emit("[color=red]%s has fled the battlefield![/color]\n" % comb.name)
 		combatant_die(comb)
 
@@ -1892,7 +1932,7 @@ func _apply_routed_flee(comb: Dictionary) -> void:
 # DEATH & COMPLETION
 # ══════════════════════════════════════════════════════════════
 
-func combatant_die(combatant: Dictionary):
+func combatant_die(combatant: Dictionary) -> void:
 	# Phoenix Rebirth: unit revives at half HP once per battle (intercept before death)
 	if combatant.alive and combatant.definition.has_special("Phoenix Rebirth") and not combatant.get("phoenix_used", false):
 		combatant["phoenix_used"] = true
@@ -2224,7 +2264,7 @@ func play_card(card: Dictionary):
 # AI
 # ══════════════════════════════════════════════════════════════
 
-func ai_process(comb: Dictionary):
+func ai_process(comb: Dictionary) -> void:
 	if _combat_over:
 		return
 
@@ -2232,7 +2272,7 @@ func ai_process(comb: Dictionary):
 	_ai_try_play_card()
 
 	# AI target selection: weighted scoring instead of nearest-only
-	var best_target: Dictionary
+	var best_target: Dictionary = {}
 	var best_score := -INF
 
 	for target_idx in groups[Group.PLAYERS]:
@@ -2244,8 +2284,7 @@ func ai_process(comb: Dictionary):
 		# Distance factor (closer = better, but not the only factor)
 		score -= dist * 2.0
 		# Wounded targets are higher priority
-		var hp_ratio = float(target.hp) / float(target.max_hp)
-		score += (1.0 - hp_ratio) * 15.0
+		score += (1.0 - hp_ratio(target)) * 15.0
 		# Commanders are high-value targets
 		if target.definition.is_commander():
 			score += 10.0
@@ -2280,8 +2319,8 @@ func ai_process(comb: Dictionary):
 
 	# AI Rally: try to rally a nearby shaken ally
 	if "rally" in comb.get("skill_list", []) and comb.definition.is_commander():
-		var shaken_ally: Dictionary
-		var closest_shaken_dist := 999
+		var shaken_ally: Dictionary = {}
+		var closest_shaken_dist := NO_TARGET_DIST
 		for idx in groups[comb.side]:
 			var ally = combatants[idx]
 			if ally.alive and ally.shaken and ally != comb:
@@ -2295,12 +2334,12 @@ func ai_process(comb: Dictionary):
 
 	# Support units: move toward wounded allies instead of enemies
 	if comb.definition.unit_type == CombatantDefinition.UnitType.SUPPORT:
-		var wounded_ally: Dictionary
+		var wounded_ally: Dictionary = {}
 		var worst_ratio := 0.8
 		for idx in groups[comb.side]:
 			var ally = combatants[idx]
 			if ally.alive and ally != comb:
-				var ratio = float(ally.hp) / float(ally.max_hp)
+				var ratio = hp_ratio(ally)
 				if ratio < worst_ratio:
 					worst_ratio = ratio
 					wounded_ally = ally
@@ -2377,7 +2416,7 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 		grid_fire_order(comb, comb)
 		return true
 	# Grid Command: shield protocol when wounded
-	if "grid_shield_protocol" in skill_list and state.get("grid_cohesion", 0) >= 2 and float(comb.hp) / float(comb.max_hp) < 0.7:
+	if "grid_shield_protocol" in skill_list and state.get("grid_cohesion", 0) >= 2 and hp_ratio(comb) < 0.7:
 		grid_shield_protocol(comb, comb)
 		return true
 	# Grid Relay: restore CP when cohesion is high
@@ -2481,12 +2520,12 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 
 	# ── Support skills (target wounded ally) ──
 	if "repair" in skill_list or "fate_weave" in skill_list or "honor_guard" in skill_list:
-		var wounded_ally: Dictionary
+		var wounded_ally: Dictionary = {}
 		var worst_ratio := 1.0
 		for idx in groups[side]:
 			var ally = combatants[idx]
 			if ally.alive and ally != comb:
-				var ratio = float(ally.hp) / float(ally.max_hp)
+				var ratio = hp_ratio(ally)
 				if ratio < worst_ratio:
 					worst_ratio = ratio
 					wounded_ally = ally
@@ -2502,7 +2541,7 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 				return true
 
 	# ── Feast: consume dead enemy corpse for HP when wounded ──
-	if "feast" in skill_list and float(comb.hp) / float(comb.max_hp) < 0.7:
+	if "feast" in skill_list and hp_ratio(comb) < 0.7:
 		for idx in groups[Group.PLAYERS]:
 			var dead_enemy = combatants[idx]
 			if not dead_enemy.alive and get_distance(comb, dead_enemy) <= 1:
@@ -2518,7 +2557,7 @@ func _ai_try_use_skill(comb: Dictionary, target: Dictionary, dist: float) -> boo
 
 ## Check if any enemies with overwatch can fire at a unit that just moved.
 ## Uses auto_advance=false so it does NOT consume a turn.
-func _check_overwatch(mover: Dictionary):
+func _check_overwatch(mover: Dictionary) -> void:
 	if _combat_over:
 		return
 	# Flying units cannot be targeted by overwatch — they're flying above the battlefield
@@ -2540,7 +2579,7 @@ func _check_overwatch(mover: Dictionary):
 
 ## AI card play — plays one useful card per round if it has CP.
 ## Now considers faction-specific cards in addition to generic ones.
-func _ai_try_play_card():
+func _ai_try_play_card() -> void:
 	var side := 1
 	if card_hands[side].is_empty() or command_points[side] <= 0:
 		return
@@ -2622,7 +2661,7 @@ func _apply_card_effects(side: int, effects: Dictionary) -> void:
 		for idx in groups[side]:
 			var c = combatants[idx]
 			if c.alive and c.hp < c.max_hp:
-				var ratio = float(c.hp) / float(c.max_hp)
+				var ratio = hp_ratio(c)
 				if ratio < lowest_ratio:
 					lowest_ratio = ratio
 					lowest_hp_comb = c
@@ -2715,9 +2754,10 @@ func _apply_card_effects(side: int, effects: Dictionary) -> void:
 					alive_units.append(combatants[idx])
 			if alive_units.size() > 0:
 				var ref_unit = alive_units[randi() % alive_units.size()]
+				var _msz := BattleConfig.get_map_size()
 				var anchor_pos = Vector2i(
-					clampi(ref_unit.position.x + randi_range(-3, 3), 0, 35),
-					clampi(ref_unit.position.y + randi_range(-3, 3), 0, 20))
+					clampi(ref_unit.position.x + randi_range(-3, 3), 0, _msz.x - 1),
+					clampi(ref_unit.position.y + randi_range(-3, 3), 0, _msz.y - 1))
 				state.web_anchors.append(anchor_pos)
 				update_information.emit("[color=green]Web-Anchor placed at %s[/color]\n" % str(anchor_pos))
 	# Counter Strike

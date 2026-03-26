@@ -6,6 +6,11 @@ class_name FactionStateManager
 
 signal faction_log(message: String)
 
+## Nightfang hunger tier string constants
+const HUNGER_PECKISH  := "peckish"
+const HUNGER_RAVENOUS := "ravenous"
+const HUNGER_GORGED   := "gorged"
+
 
 # ══════════════════════════════════════════════════════════════
 # STATE INITIALIZATION
@@ -29,7 +34,7 @@ static func create_faction_state(faction: int) -> Dictionary:
 		CombatantDefinition.Faction.NIGHTFANG:
 			return {
 				"hunger": 0,
-				"hunger_tier": "peckish",
+				"hunger_tier": HUNGER_PECKISH,
 			}
 		CombatantDefinition.Faction.THORNWEFT:
 			return {
@@ -121,6 +126,7 @@ func _emberclaw_round_start(side: int, state: Dictionary,
 	else:
 		# Clamp heat to max only if no overheat (prevents slow creep above max)
 		state.heat = mini(state.heat, state.heat_max)
+	_combat_ref = null  # Release transient reference — don't hold freed nodes
 
 
 ## Emberclaw: Auto-detect Drake Bond pairs from units with "Drake Bond" special.
@@ -533,7 +539,7 @@ func on_attack_hit(attacker: Dictionary, target: Dictionary,
 		state.hunger += 2
 		update_hunger_tier(state)
 		# Frenzy heal: at Gorged tier, heal 1 HP on melee kills (#11)
-		if state.hunger_tier == "gorged" and attack_key == "attack_melee" and attacker.alive:
+		if state.hunger_tier == HUNGER_GORGED and attack_key == "attack_melee" and attacker.alive:
 			attacker.hp = mini(attacker.hp + 1, attacker.max_hp)
 			_log("[color=crimson]%s is in a FRENZY! Heals 1 HP from the kill![/color]\n" % attacker.name)
 
@@ -678,13 +684,13 @@ func process_corruption_effects(combatants: Array) -> void:
 static func update_hunger_tier(state: Dictionary) -> void:
 	var size_key = BattleConfig.battle_size if BattleConfig else "standard"
 	var config = GameRules.BATTLE_SIZES.get(size_key, GameRules.BATTLE_SIZES["standard"])["hunger_thresholds"]
-	var old_tier = state.get("hunger_tier", "peckish")
-	if state.hunger >= config.get("gorged", 15):
-		state.hunger_tier = "gorged"
-	elif state.hunger >= config.get("ravenous", 10):
-		state.hunger_tier = "ravenous"
+	var old_tier = state.get("hunger_tier", HUNGER_PECKISH)
+	if state.hunger >= config.get(HUNGER_GORGED, 15):
+		state.hunger_tier = HUNGER_GORGED
+	elif state.hunger >= config.get(HUNGER_RAVENOUS, 10):
+		state.hunger_tier = HUNGER_RAVENOUS
 	else:
-		state.hunger_tier = "peckish"
+		state.hunger_tier = HUNGER_PECKISH
 	# Log tier change
 	if state.hunger_tier != old_tier:
 		if OS.is_debug_build(): print("[Nightfang] Hunger tier changed: %s -> %s (battle size: %s)" % [old_tier, state.hunger_tier, size_key])

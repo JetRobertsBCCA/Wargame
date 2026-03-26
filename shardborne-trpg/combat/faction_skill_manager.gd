@@ -8,6 +8,8 @@ class_name FactionSkillManager
 
 signal skill_log(message: String)
 
+const TILE_SIZE := 32
+
 
 # ══════════════════════════════════════════════════════════════
 # SKILL DISPATCH
@@ -258,7 +260,7 @@ func shadow_step(combat: Node, attacker: Dictionary, target: Dictionary) -> void
 			if combat.controller and combat.controller.tile_map:
 				attacker.sprite.position = combat.controller.tile_map.map_to_local(dest)
 			else:
-				attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
+				attacker.sprite.position = Vector2(dest.x * TILE_SIZE + TILE_SIZE / 2, dest.y * TILE_SIZE + TILE_SIZE / 2)
 			_log("[color=purple]%s shadow steps from (%d,%d) to (%d,%d)![/color]\n" % [
 				attacker.name, old_pos.x, old_pos.y, dest.x, dest.y])
 			teleported = true
@@ -437,7 +439,7 @@ func phase_strike(combat: Node, attacker: Dictionary, target: Dictionary) -> voi
 			if combat.controller and combat.controller.tile_map:
 				attacker.sprite.position = combat.controller.tile_map.map_to_local(dest)
 			else:
-				attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
+				attacker.sprite.position = Vector2(dest.x * TILE_SIZE + TILE_SIZE / 2, dest.y * TILE_SIZE + TILE_SIZE / 2)
 			teleported = true
 			break
 	_log("[color=cyan]%s phases through the Veil to strike![/color]\n" % attacker.name)
@@ -470,7 +472,7 @@ func veil_walk(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 			if combat.controller and combat.controller.tile_map:
 				attacker.sprite.position = combat.controller.tile_map.map_to_local(dest)
 			else:
-				attacker.sprite.position = Vector2(dest.x * 32 + 16, dest.y * 32 + 16)
+				attacker.sprite.position = Vector2(dest.x * TILE_SIZE + TILE_SIZE / 2, dest.y * TILE_SIZE + TILE_SIZE / 2)
 			_log("[color=cyan]%s walks through the Veil from (%d,%d) to (%d,%d)![/color]\n" % [
 				attacker.name, old_pos.x, old_pos.y, dest.x, dest.y])
 			moved = true

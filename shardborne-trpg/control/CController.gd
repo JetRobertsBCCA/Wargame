@@ -10,6 +10,10 @@ signal target_selection_finished()
 @export var controlled_node : Node2D
 @export var combat: Combat
 
+## TileMap custom-data layer names (must match the TileSet layer definitions)
+const TILE_DATA_COST   := "Cost"
+const TILE_DATA_BLOCKS := "Blocks"
+
 var grid_width: int = 36
 var grid_height: int = 21
 
@@ -156,6 +160,16 @@ var _blocking_spaces = [
 	[]#Mounted
 ]
 
+## Tiles that are impassable for ALL movement classes (mountains, cliffs).
+## Set to INF weight in A* — never path through these.
+var _impassable_spaces: Array = []
+
+## Per-tile terrain type names populated by MapGenerator ("forest", "rubble", "mountain", …)
+var terrain_metadata: Dictionary = {}
+
+## Flavor description of generated terrain, forwarded to the battle log.
+var _terrain_description: String = ""
+
 func _ready():
 	tile_map = get_node_or_null("../Terrain/TileMap")
 	if tile_map == null:
@@ -177,13 +191,27 @@ func _ready():
 	if _camera:
 		_camera.position = Vector2(grid_width * 32, grid_height * 32) / 2.0
 
-	#build blocking spaces arrays
+	# Generate procedural battlefield terrain (clears old baked tile data)
+	var deploy_end_x := maxi(4, grid_width / 6)
+	_terrain_description = MapGenerator.generate(
+		tile_map, Vector2i(grid_width, grid_height),
+		deploy_end_x, terrain_metadata, _impassable_spaces
+	)
+
+	# Scan generated tiles for movement-class blocking (e.g., future water tiles)
 	for tile in tile_map.get_used_cells(0):
-		var tile_blocking = tile_map.get_cell_tile_data(0, tile)
-		if tile_blocking == null:
+		var tile_data_b = tile_map.get_cell_tile_data(0, tile)
+		if tile_data_b == null:
 			continue
-		for block in tile_blocking.get_custom_data("Blocks"):
-			_blocking_spaces[block].append(tile)
+		var blocks = tile_data_b.get_custom_data(TILE_DATA_BLOCKS)
+		if typeof(blocks) == TYPE_ARRAY:
+			for block in blocks:
+				if block >= 0 and block < _blocking_spaces.size():
+					_blocking_spaces[block].append(tile)
+
+	# Mark impassable terrain in A* (mountains block all movement classes)
+	for pos in _impassable_spaces:
+		_astargrid.set_point_weight_scale(pos, INF)
 
 
 func combatant_added(combatant: Dictionary) -> void:
@@ -292,7 +320,7 @@ func _apply_fall_back(combatant: Dictionary, mov: int) -> void:
 		if tile_map:
 			var tile_data = tile_map.get_cell_tile_data(0, candidate)
 			if tile_data != null:
-				var cost = int(tile_data.get_custom_data("Cost"))
+				var cost = int(tile_data.get_custom_data(TILE_DATA_COST))
 				if cost < 0 or cost >= 99:
 					break
 			else:
@@ -342,7 +370,7 @@ func apply_consolidate(combatant: Dictionary) -> void:
 		if tile_map:
 			var tile_data = tile_map.get_cell_tile_data(0, candidate)
 			if tile_data != null:
-				var cost = int(tile_data.get_custom_data("Cost"))
+				var cost = int(tile_data.get_custom_data(TILE_DATA_COST))
 				if cost < 0 or cost >= 99:
 					break
 			else:
@@ -379,6 +407,14 @@ func update_points_weight():
 				_astargrid.set_point_weight_scale(space, INF)
 			else:
 				_astargrid.set_point_weight_scale(space, 1)
+	# Impassable terrain (mountains) blocks every movement class — apply last
+	# so the class-specific loop above cannot override these weights.
+	for space in _impassable_spaces:
+		_astargrid.set_point_weight_scale(space, INF)
+
+## Return the flavor description of generated terrain for the battle log.
+func get_terrain_description() -> String:
+	return _terrain_description
 
 func get_distance(point1: Vector2i, point2: Vector2i):
 	return absi(point1.x - point2.x) + absi(point1.y - point2.y)
@@ -776,13 +812,15 @@ func target_selected(target: Dictionary):
 
 
 const grid_tex = preload("res://imagese/grid_marker.png")
+## Cost returned for tiles with no tile data — treated as impassable by AStarGrid2D
+const IMPASSABLE_TILE_COST := 99
 
 func get_tile_cost(tile: Vector2i) -> int:
 	var tile_data = tile_map.get_cell_tile_data(0, tile)
 	if tile_data == null:
-		return 99
+		return IMPASSABLE_TILE_COST
 	if combat.get_current_combatant().movement_class == 0:
-		return int(tile_data.get_custom_data("Cost"))
+		return int(tile_data.get_custom_data(TILE_DATA_COST))
 	else:
 		return 1
 
@@ -790,9 +828,9 @@ func get_tile_cost_at_point(point: Vector2) -> int:
 	var tile = tile_map.local_to_map(point)
 	var tile_data = tile_map.get_cell_tile_data(0, tile)
 	if tile_data == null:
-		return 99
+		return IMPASSABLE_TILE_COST
 	if combat.get_current_combatant().movement_class == 0:
-		return int(tile_data.get_custom_data("Cost"))
+		return int(tile_data.get_custom_data(TILE_DATA_COST))
 	else:
 		return 1
 
@@ -924,7 +962,7 @@ func _compute_movement_range(comb: Dictionary, start: Vector2i, mov: int) -> Dic
 				continue
 			var step_cost: int
 			if comb.movement_class == 0:
-				step_cost = int(tile_data.get_custom_data("Cost"))
+				step_cost = int(tile_data.get_custom_data(TILE_DATA_COST))
 			else:
 				step_cost = 1
 			var total = cost_so_far + step_cost

@@ -14,6 +14,8 @@ var _returning_from_battle: bool = false  # True when coming back from a battle
 var _last_battle_won: bool = false
 var _story_screen_scene := preload("res://scenes/story_screen.tscn")
 
+const CampaignManagerScript = preload("res://combat/campaign_manager_v2.gd")
+
 # ── UI references ──
 var _main_container: VBoxContainer
 var _missions_vbox: VBoxContainer
@@ -54,7 +56,7 @@ func _ready():
 			_last_battle_won = BattleConfig.get_meta("last_battle_won", false) if BattleConfig.has_meta("last_battle_won") else true
 	else:
 		# Fresh campaign start
-		_campaign_manager = preload("res://combat/campaign_manager_v2.gd").new()
+		_campaign_manager = CampaignManagerScript.new()
 		if not _campaign_manager.start_campaign(campaign_id):
 			push_error("CampaignOverview: Failed to start campaign '%s'" % campaign_id)
 			SceneTransition.go("res://scenes/campaign_select.tscn")

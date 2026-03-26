@@ -343,7 +343,6 @@ const KEYWORDS = {
 	"Web-Walk": "Can move through Web and Gossamer Trap terrain as open ground.",
 	"Silk Camouflage": "Stealth while within 8\" of Web-Anchor.",
 	"Venom Strike": "Applies venom tokens on hit (acts like corruption for Thornweft thematic).",
-	"Wall-Climber": "Can traverse vertical surfaces as normal movement.",
 	"Stance": "Can switch between Honor and Revelation stance (Veilbound).",
 	"Momentum Strike": "+1 ATK on charge attack.",
 	"Spirit Glide": "Flying movement. Ignores terrain.",

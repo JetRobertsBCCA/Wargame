@@ -15,6 +15,12 @@ var _next_shard_pos: Vector2i = Vector2i(-1, -1)  # Shardstorm forecast: next sp
 var _map_width: int = 36   # Grid width — set from BattleConfig in setup()
 var _map_height: int = 21  # Grid height — set from BattleConfig in setup()
 
+const ObjectiveMarkerScript = preload("res://combat/objective_marker.gd")
+
+## Colors indicating which side has captured an objective
+const OBJECTIVE_COLOR_PLAYER := Color(0.3, 0.7, 1.0, 0.9)   # Blue
+const OBJECTIVE_COLOR_ENEMY  := Color(1.0, 0.35, 0.25, 0.9)  # Red
+
 # Objective marker colors by type
 const OBJECTIVE_COLORS := {
 	"center": Color(1.0, 0.85, 0.0, 0.9),   # Gold
@@ -122,11 +128,8 @@ func _visualize_objectives() -> void:
 
 ## Create a single objective marker sprite on the tilemap
 func _create_objective_marker(obj: Dictionary, tilemap: Node) -> void:
-	var marker_script = load("res://combat/objective_marker.gd")
-	if marker_script == null:
-		return
 	var marker := Node2D.new()
-	marker.set_script(marker_script)
+	marker.set_script(ObjectiveMarkerScript)
 	marker.position = Vector2(obj.position * 32) + Vector2(16, 16)
 	marker.z_index = 0  # Below units but visible on tiles
 	marker.set_meta("obj_type", obj.type)
@@ -141,9 +144,9 @@ func _update_objective_markers() -> void:
 		if marker == null or not is_instance_valid(marker):
 			continue
 		if obj.owner == 0:
-			marker.set_meta("obj_color", Color(0.3, 0.7, 1.0, 0.9))  # Player blue
+			marker.set_meta("obj_color", OBJECTIVE_COLOR_PLAYER)
 		elif obj.owner == 1:
-			marker.set_meta("obj_color", Color(1.0, 0.35, 0.25, 0.9))  # Enemy red
+			marker.set_meta("obj_color", OBJECTIVE_COLOR_ENEMY)
 		else:
 			marker.set_meta("obj_color", OBJECTIVE_COLORS.get(obj.type, Color.WHITE))
 		marker.queue_redraw()

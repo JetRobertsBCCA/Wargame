@@ -5,6 +5,9 @@ extends Node
 
 @export var skills: Dictionary = {}
 
+## Sentinel value for atk_modifier that signals "use half ATK dice" (handled in combat)
+const HALF_ATK_SENTINEL := -99
+
 func _ready():
 	_register_core_skills()
 	_register_faction_skills()
@@ -68,7 +71,7 @@ func _register_core_skills():
 	overwatch.description = "Set overwatch: shoot at the next enemy that moves into range (half ATK dice)."
 	overwatch.min_range = 2
 	overwatch.max_range = 12
-	overwatch.atk_modifier = -99  # Signals: use half ATK dice (handled in combat)
+	overwatch.atk_modifier = HALF_ATK_SENTINEL
 	overwatch.icon = SpriteGenerator.get_skill_icon("overwatch")
 	skills["overwatch"] = overwatch
 
@@ -283,7 +286,7 @@ func _register_faction_skills():
 # SKILL REGISTRATION HELPER
 # ══════════════════════════════════════════════════════════════
 
-func _add_skill(key: String, data: Dictionary):
+func _add_skill(key: String, data: Dictionary) -> void:
 	var skill = SkillDefinition.new()
 	skill.skill_name = data.get("name", key)
 	skill.skill_type = data.get("type", SkillDefinition.SkillType.MELEE)
