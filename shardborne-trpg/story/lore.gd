@@ -85,6 +85,13 @@ const FACTION_ORIGINS := {
 		"their_motivation": "Restore the Veil and find a path back to Reishima. The Veilbound believe the shards may be fragments of the Veil itself. They collect them with reverence, treating battle as a sacred duty rather than mere warfare. But honor demands they protect the innocent — even the 'innocent' of enemy factions.",
 		"tone": "Honorable, spiritual, conflicted. They fight because they must, but every battle without purpose wounds their collective soul.",
 	},
+	"rootwalker_grove": {
+		"home_realm": "The Shardlands Themselves — The Old Growth",
+		"what_they_lost": "Nothing. They were already here. The Rootwalkers predate every faction by thousands of years — they predate the concept of faction. The old-growth forest existed before any civilization in the Shardlands had a name. What they lost was the quiet. The clean water. The undisturbed soil. The sky that did not carry the Shardstorm's memory.",
+		"how_they_arrived": "They did not arrive. They woke. The Shardstorm shattered the sky and poisoned the earth, and the oldest trees — the ones whose roots had been drinking from aquifers older than recorded history — did not die. They woke. Their roots, starved for clean soil, learned to reach further. Their branches, seeking clean air, learned to grasp. What walks on two legs now is older than any faction's written history. They are not visitors to the Shardlands. They are the Shardlands, become aware of an injury.",
+		"their_motivation": "Cleanse the Shardstorm's damage. Reclaim the poisoned earth. Return the water to what it was before the sky broke. The Rootwalkers have no interest in the other factions' wars, their claims, their politics, or their gods. They have one interest: the land. The land was here before all of them. The land will be here after all of them. The Rootwalkers intend to be part of the 'after.'",
+		"tone": "Ancient, unhurried, quietly terrible. They are not angry. They have simply decided. Patience measured in centuries. Memory measured in growth rings. Goals measured in geological time.",
+	},
 }
 
 # ══════════════════════════════════════════════════════════════
@@ -120,7 +127,30 @@ const CROSSOVER_COMMANDERS := {
 	"Lord Sanguinar": ["antagonist", "dark_ally"],
 	"Loom-Mother Vethiss": ["mysterious_guide", "rival"],
 	"The Shrouded Shogun": ["honor_bound_ally", "antagonist"],
+	"Sylvara the Thornweaver": ["ancient_arbiter", "territorial_force"],
+	"The Green Hunger": ["environmental_hazard", "dark_ally"],
+	"Sapwood the Seer": ["oracle", "information_broker"],
 }
+
+# ══════════════════════════════════════════════════════════════
+# ROOTWALKER FACTION LORE
+# ══════════════════════════════════════════════════════════════
+
+## Rootwalker faction description
+const ROOTWALKER_DESCRIPTION := """The Rootwalkers are not a civilization — they are the land's memory made manifest. When the Shardstorm shattered the sky and poisoned the earth, the oldest trees did not die. They woke. Their roots, starved for clean soil, learned to reach further. Their branches, seeking clean air, learned to grasp. What walks on two legs now is older than any faction's written history. They do not hate their enemies. They simply remember a time before them — and intend to remember a time after."""
+
+## Rootwalker faction motto
+const ROOTWALKER_MOTTO := "We do not march. We grow."
+
+## Key Rootwalker lore beats
+const ROOTWALKER_LORE_BEATS := [
+	"The Shardstorm is what woke the Rootwalkers. Before the storm, they slept — some for centuries, some for ten thousand years. The poison in the earth was the alarm. They did not wake to fight. They woke because the land was screaming.",
+	"The Rootwalkers have no allegiance to any other faction. They predate the concept of faction. They do not recognize borders drawn by creatures who arrived decades ago. They recognize the land, and what was done to it, and what must be done to undo that.",
+	"The land belongs to no one. The Rootwalkers would agree with this, and then add: but it remembers who treated it well. The land holds grudges in its growth rings. The Rootwalkers can read them.",
+	"The Shardstorm's poison is the Rootwalkers' primary enemy — more than any faction, more than any army. Every battle they fight is ultimately a battle to cleanse the contamination from the soil and water and air. The other factions are obstacles. The poison is the problem.",
+	"Not all Rootwalkers agree on method. Sylvara the Thornweaver is patient and absolute. Bramblethorn is aggressive and fast. Rootmaw the Devourer has crossed lines the others will not discuss. The grove contains multitudes — the way any ancient forest contains multitudes, from the canopy to the things that live in the dark below the roots.",
+	"Fhah-Zolg did not bring the Rootwalkers to the Shardlands. He found them here. This is a significant distinction. Every other faction was taken from somewhere. The Rootwalkers were already home — and now that home has been disrupted, and the Rootwalkers are its immune response. Fhah-Zolg finds them fascinating for exactly this reason. He also finds them slightly alarming, which is something he does not find most things.",
+]
 
 # ══════════════════════════════════════════════════════════════
 # DIALOGUE HELPERS

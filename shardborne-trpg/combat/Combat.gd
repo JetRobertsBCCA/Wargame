@@ -206,6 +206,7 @@ const VICTORY_FLAVOR := {
 	CombatantDefinition.Faction.NIGHTFANG: ["THE NIGHT FEEDS ETERNAL!", "Dawn breaks… the Nightfang recede into shadow."],
 	CombatantDefinition.Faction.THORNWEFT: ["THE WEB IS COMPLETE — ALL ENSNARED!", "The threads fray… the Matriarchy withdraws."],
 	CombatantDefinition.Faction.VEILBOUND: ["THE VEIL SPEAKS — HONOR IS SATISFIED!", "The ancestors weep… the Shogunate retreats."],
+	CombatantDefinition.Faction.ROOTWALKER: ["The land remembers.", "The roots retreat... for now."],
 }
 
 ## Helper: get faction name from side index
@@ -671,6 +672,45 @@ func _assign_faction_skills(def: CombatantDefinition, skills: Array[String]) -> 
 			if def.has_special("Cavalry Thunder") or def.has_special("Formation Breach"):
 				if "stance_strike" not in skills:
 					skills.append("stance_strike")
+
+		CombatantDefinition.Faction.ROOTWALKER:
+			# Commanders get ancient_growth and root_pulse baseline
+			if def.is_commander():
+				if "ancient_growth" not in skills:
+					skills.append("ancient_growth")
+				if "root_pulse" not in skills:
+					skills.append("root_pulse")
+				if "deep_root_stance" not in skills:
+					skills.append("deep_root_stance")
+				if "reclaim" not in skills:
+					skills.append("reclaim")
+				# ancient_call: legendary commanders only (Deepwood Eldest line)
+				if def.is_legendary or def.legendary_commander != "":
+					if "ancient_call" not in skills:
+						skills.append("ancient_call")
+			# Infantry with Bark Surge special or bark_surge in definition skills
+			if def.unit_type == CombatantDefinition.UnitType.INFANTRY \
+					and (def.has_special("Bark Surge") or "bark_surge" in def.skills):
+				if "bark_surge" not in skills:
+					skills.append("bark_surge")
+			# Any unit with entangle in their definition skills
+			if "entangle" in def.skills:
+				if "entangle" not in skills:
+					skills.append("entangle")
+			# Artillery and Specialists with thorn_volley
+			if (def.unit_type == CombatantDefinition.UnitType.ARTILLERY \
+					or def.unit_type == CombatantDefinition.UnitType.SPECIALIST) \
+					and "thorn_volley" in def.skills:
+				if "thorn_volley" not in skills:
+					skills.append("thorn_volley")
+			# Support units get ancient_growth
+			if def.unit_type == CombatantDefinition.UnitType.SUPPORT:
+				if "ancient_growth" not in skills:
+					skills.append("ancient_growth")
+			# All units with deep_root_stance in their definition skills
+			if "deep_root_stance" in def.skills:
+				if "deep_root_stance" not in skills:
+					skills.append("deep_root_stance")
 
 
 # ══════════════════════════════════════════════════════════════
@@ -1219,7 +1259,7 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 	if attack_key != "attack_melee":
 		# Breath Weapon and Sniper ignore cover
 		if not attacker.definition.has_special("Breath Weapon") and not attacker.definition.has_special("Sniper"):
-			var cover_bonus := _get_terrain_cover(target)
+			var cover_bonus := _get_terrain_cover(target, target.definition.faction)
 			if cover_bonus > 0:
 				def_mod += cover_bonus
 				var cover_terrain := _get_terrain_type_at(target.position)
@@ -1227,6 +1267,10 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 					update_information.emit("[color=green]  Forest cover: +1 DEF[/color]\n")
 				elif cover_terrain == "rubble":
 					update_information.emit("[color=#c8a040]  Rubble cover: +2 DEF[/color]\n")
+				elif cover_terrain == "root":
+					update_information.emit("[color=#3a8040]  Root cover: +%d DEF (Rootwalker)[/color]\n" % cover_bonus)
+				elif cover_terrain == "deep_root":
+					update_information.emit("[color=#1a5020]  Deep Root cover: +%d DEF (Rootwalker)[/color]\n" % cover_bonus)
 				else:
 					update_information.emit("[color=green]  Cover: +%d DEF[/color]\n" % cover_bonus)
 		else:
@@ -1331,6 +1375,11 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 				# Clear guard after use
 				guardian.guarding = ""
 				target.guarded_by = ""
+		# Entangled: +1 bonus damage to entangled targets (Rootwalker entangle skill)
+		if actual_target.get("entangled_dmg_bonus", 0) > 0:
+			result.total_damage += actual_target["entangled_dmg_bonus"]
+			actual_target.erase("entangled_dmg_bonus")
+			update_information.emit("[color=#3a8040]  (Entangled: +1 damage!)[/color]\n")
 		# Melee lunge animation: attacker punches toward target and snaps back
 		if attack_key == "attack_melee":
 			var _att_spr := attacker.get("sprite") as Sprite2D
@@ -1556,7 +1605,8 @@ func _check_flanking(attacker: Dictionary, target: Dictionary) -> bool:
 
 ## Get terrain cover bonus for the target's position (for ranged attacks).
 ## Uses named terrain type from metadata (or tile cost fallback).
-func _get_terrain_cover(target: Dictionary) -> int:
+## Optional defender_faction: used to grant faction-specific cover (e.g. root tiles for Rootwalkers).
+func _get_terrain_cover(target: Dictionary, defender_faction: int = -1) -> int:
 	if controller == null or controller.tile_map == null:
 		return 0
 	match _get_terrain_type_at(target.position):
@@ -1564,6 +1614,16 @@ func _get_terrain_cover(target: Dictionary) -> int:
 			return GameRules.COMBAT_MODIFIERS.get("cover_heavy", {}).get("def_mod", 2)
 		"forest":
 			return GameRules.COMBAT_MODIFIERS.get("cover_light", {}).get("def_mod", 1)
+		"root":
+			# Rootwalker units get +ROOT_DEF_BONUS DEF on root tiles; enemies get no cover
+			if defender_faction == CombatantDefinition.Faction.ROOTWALKER:
+				return GameRules.ROOT_DEF_BONUS
+			return 0
+		"deep_root":
+			# Rootwalker units get +ROOT_DEF_BONUS + DEEP_ROOT_DEF_BONUS DEF; enemies get no cover
+			if defender_faction == CombatantDefinition.Faction.ROOTWALKER:
+				return GameRules.ROOT_DEF_BONUS + GameRules.DEEP_ROOT_DEF_BONUS
+			return 0
 	return 0
 
 ## Check Line of Sight between two combatants using Bresenham line.

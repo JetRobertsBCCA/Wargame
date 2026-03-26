@@ -228,6 +228,18 @@ const FATE_THREAD_COSTS = {
 }
 
 # ══════════════════════════════════════════════════════════════
+# FACTION MECHANICS — ROOTWALKER ROOT TERRAIN
+# ══════════════════════════════════════════════════════════════
+
+const ROOT_MOVEMENT_PENALTY = 2      # Extra MOV cost for enemies on Root tiles
+const ROOT_DEF_BONUS = 1             # DEF bonus for Rootwalker units standing on Root tiles
+const ROOT_MORALE_TEST_PENALTY = -1  # MOR penalty applied to enemies testing morale on Root tiles
+const DEEP_ROOT_DEF_BONUS = 2        # DEF bonus at a Deep Root tile (replaces ROOT_DEF_BONUS)
+const DEEP_ROOT_HP_REGEN = 1         # HP regenerated per turn by unit standing on their Deep Root tile
+const ROOT_SPREAD_PER_ROUND = 1      # Number of Root tiles that naturally spread each End Phase
+const MAX_ROOT_TILES = 80            # Maximum Root tiles allowed on the battlefield at once
+
+# ══════════════════════════════════════════════════════════════
 # TERRAIN TYPES
 # ══════════════════════════════════════════════════════════════
 

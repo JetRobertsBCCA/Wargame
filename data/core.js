@@ -515,6 +515,105 @@ const gameData = {
             "If a Web-Anchor holding a fragment is removed by an enemy, the fragment is lost for the rest of the game."
           ]
         }
+      },
+      rootwalkers: {
+        name: "Root Spread",
+        resource: "Root Tiles",
+        description:
+          "Rootwalker units passively plant Root tiles as they move. Every tile a Rootwalker unit moves through during the Movement Phase becomes a Root tile at the end of that movement. Root tiles persist for the entire battle — they never decay. The board becomes increasingly hostile to enemies and favorable to Rootwalkers as the game progresses, rewarding slow deliberate play and punishing aggressive enemies who advance into the growing forest.",
+        root_tile_rules: [
+          "Root tiles are placed on every tile a Rootwalker unit moves through during Movement Phase. The starting tile also becomes Root if it wasn't already.",
+          "Root tiles are permanent — they do not decay and cannot be removed except by the Reclaim skill.",
+          "Rootwalker allies on Root tiles: +1 DEF, no movement cost penalty.",
+          "Enemies on Root tiles: +2 movement cost per tile. On first entry per turn, must pass a MOR check (2d6 ≤ MOR) or become Entangled (cannot move on their next activation).",
+          "Units with the Root-Walk keyword treat Root tiles as Open Ground (no cost, no check)."
+        ],
+        deep_root: {
+          description:
+            "A unit that sacrifices its movement action plants a permanent Deep Root at its current tile, gaining significant defensive bonuses and passive regeneration while it remains there.",
+          rules: [
+            "Declare Deep Root Stance during the Movement Phase instead of moving. The unit does not move this turn.",
+            "Place a Deep Root marker on the unit's tile. This tile becomes a Root tile if it was not already.",
+            "While on a Deep Root tile: +2 DEF (instead of the normal +1 for Root tiles), 1 HP regen per End Phase.",
+            "Deep Root is permanent — the tile retains Deep Root status even if the unit moves away.",
+            "Deep Root Stance is a free action that replaces movement; the unit may still attack normally."
+          ]
+        },
+        ancient_growth: {
+          description:
+            "At the start of each round (before either player's Command Phase), 1 Root tile spreads naturally to an adjacent empty tile — chosen by the Rootwalker player. In rounds 4+, if 20+ Root tiles are on the board, Ancient Growth spreads 2 tiles per round instead of 1.",
+          rules: [
+            "At round start, the Rootwalker player chooses any 1 existing Root tile on the board.",
+            "That tile's growth spreads to 1 adjacent tile (orthogonally or diagonally). The target tile must be unoccupied and not already a Root tile.",
+            "This is free, automatic, and not optional.",
+            "When 20+ Root tiles are on the board and it is round 4 or later, Ancient Growth spreads 2 tiles per round start instead of 1."
+          ]
+        },
+        tiers: [
+          { name: "Dormant", threshold: 0, effect: "Fewer than 3 Root tiles. Rootwalkers fight without terrain advantage." },
+          { name: "Taking Hold", threshold: 3, effect: "3–9 Root tiles. Rootwalker units on Root tiles gain +1 DEF." },
+          { name: "Spreading", threshold: 10, effect: "10–19 Root tiles. Ancient Growth spreads 1 tile per round start. Root Pulse gains +2\" radius." },
+          { name: "Deep-Rooted", threshold: 20, effect: "20–29 Root tiles. Ancient Growth spreads 2 tiles per round start. Enemies entering Root terrain must make MOR checks." },
+          { name: "Ancient Dominion", threshold: 30, effect: "30+ Root tiles. All Rootwalker units gain +1 ATK die while on Root tiles." }
+        ],
+        skills: {
+          ancient_growth: {
+            id: "ancient_growth",
+            name: "Ancient Growth",
+            type: "Support",
+            available_to: "Commanders and Support units",
+            description: "Place 3 Root tiles in a cross pattern around the caster. Commanders and Support only. Cost: free action."
+          },
+          entangle: {
+            id: "entangle",
+            name: "Entangle",
+            type: "Ranged",
+            available_to: "Ranged-capable units",
+            description: "Ranged attack (range 5\"). Target becomes Entangled: immobile for 1 turn and takes +1 damage from all sources."
+          },
+          bark_surge: {
+            id: "bark_surge",
+            name: "Bark Surge",
+            type: "Melee",
+            available_to: "Melee units",
+            description: "Melee attack. If standing on a Root tile: +2 ATK dice and +1 DEF until next turn."
+          },
+          root_pulse: {
+            id: "root_pulse",
+            name: "Root Pulse",
+            type: "Special (AoE)",
+            available_to: "Commanders and heavy units",
+            description: "Once per round. All Root tiles within 6\" of this unit deal 1 damage to every enemy adjacent to them."
+          },
+          deep_root_stance: {
+            id: "deep_root_stance",
+            name: "Deep Root Stance",
+            type: "Special",
+            available_to: "Most units",
+            description: "Skip movement this turn. Plant a Deep Root at this tile (+2 DEF, 1 HP regen per turn). Persists while the unit remains on that tile."
+          },
+          thorn_volley: {
+            id: "thorn_volley",
+            name: "Thorn Volley",
+            type: "Ranged (AoE)",
+            available_to: "Artillery and ranged units",
+            description: "Ranged blast (range 8\", Blast 2). Deals ATK dice damage. All tiles hit are converted to Root terrain."
+          },
+          ancient_call: {
+            id: "ancient_call",
+            name: "Ancient Call",
+            type: "Special (Once per battle)",
+            available_to: "Legendary commanders only (Deepwood Eldest)",
+            description: "Once per battle. Summon a Sapling unit on any Root tile within 8\". Legendary commander only."
+          },
+          reclaim: {
+            id: "reclaim",
+            name: "Reclaim",
+            type: "Special (Commander only)",
+            available_to: "Commanders",
+            description: "Commander only. Consume 5 Root tiles within a 4\" radius. Convert the area to Dense Root: enemies suffer +4 MOV cost, Rootwalker allies gain +2 DEF while inside."
+          }
+        }
       }
     },
 

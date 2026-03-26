@@ -7,7 +7,8 @@ const UNIT_IMAGE_FOLDERS = {
   'iron-dominion': 'IronDominion',
   'nightfang-dominion': 'NightFang',
   'veilbound-shogunate': 'veilboundShogunate',
-  'thornweft-matriarchy': 'Thornweft'
+  'thornweft-matriarchy': 'Thornweft',
+  'rootwalkers': 'Rootwalkers'
 };
 
 function getUnitImagePath(unit) {

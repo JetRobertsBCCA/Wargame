@@ -25,6 +25,7 @@ const TURN_FLAVOR := {
 	CombatantDefinition.Faction.NIGHTFANG: ["THE NIGHTFANG HUNGER", "THE NIGHTFANG ACT"],
 	CombatantDefinition.Faction.THORNWEFT: ["THE MATRIARCHY WEAVES", "THE MATRIARCHY ACTS"],
 	CombatantDefinition.Faction.VEILBOUND: ["THE SHOGUNATE RESPONDS", "THE SHOGUNATE ACTS"],
+	CombatantDefinition.Faction.ROOTWALKER: ["THE FOREST RECLAIMS", "THE ROOTS SPREAD"],
 }
 
 # ── Faction resource tier qualifiers ──
@@ -902,6 +903,8 @@ func _update_status_text(label: RichTextLabel, comb: Dictionary):
 		parts.append("[color=#CC88CC]%s[/color]" % effect.capitalize())
 	if comb.get("corruption_tokens", 0) > 0:
 		parts.append("[color=#AA33AA]Corruption x%d[/color]" % comb.corruption_tokens)
+	if comb.get("entangled", false):
+		parts.append("[color=#4A7C3F]⬡ Entangled[/color]")
 	if parts.is_empty():
 		label.append_text("[color=#555555]No status effects[/color]")
 	else:
@@ -958,6 +961,8 @@ func _show_inspect(comb: Dictionary):
 			warnings.append("[color=#FF8844]⚠ Bloodied — below half HP[/color]")
 	if comb.get("shaken", false):
 		warnings.append("[color=#FFAA22]⚠ SHAKEN — will fall back at turn start[/color]")
+	if comb.get("entangled", false):
+		warnings.append("[color=#4A7C3F]⬡ ENTANGLED — cannot move next activation. Takes +1 damage from next hit.[/color]")
 	if warnings.size() > 0:
 		_inspect_status.append_text("\n" + "\n".join(warnings))
 
@@ -1173,6 +1178,23 @@ func update_faction_resources(faction_state: Dictionary):
 		var tier = _get_resource_tier("fate_threads", faction_state.fate_threads)
 		_resource_label.append_text("[color=#33BB55]Fate: %d[/color] [color=#229944](%s)[/color]\n" % [faction_state.fate_threads, tier])
 		tooltip_parts.append("FATE THREADS: Woven near Web-Anchors. Spent to reroll dice (Fate Weave) or negate enemy cards (Fate Sever).")
+	if faction_state.has("root_tiles") or faction_state.has("deep_root_tiles"):
+		var root_count = faction_state.get("root_tiles", []).size()
+		var deep_count = faction_state.get("deep_root_tiles", []).size()
+		var tier_label = ""
+		if root_count + deep_count >= 30:
+			tier_label = "Ancient Dominion!"
+		elif root_count + deep_count >= 20:
+			tier_label = "Deep-Rooted"
+		elif root_count + deep_count >= 10:
+			tier_label = "Spreading"
+		elif root_count + deep_count >= 3:
+			tier_label = "Taking Hold"
+		else:
+			tier_label = "Dormant"
+		var resource_text = "[color=#2D8B27]Root Spread: %d tiles (%d deep) — %s[/color]" % [root_count, deep_count, tier_label]
+		_resource_label.append_text(resource_text + "\n")
+		tooltip_parts.append("ROOT SPREAD: Rootwalker units plant Roots as they move. Allies move freely through roots and gain +1 DEF. Enemies pay +2 movement cost and test Morale when entering. Deep Roots grant +3 DEF and regenerate 1 HP/turn.")
 	if tooltip_parts.size() > 0:
 		_resource_label.tooltip_text = "\n".join(tooltip_parts)
 

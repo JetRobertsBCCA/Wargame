@@ -135,6 +135,31 @@ static func get_all_campaigns() -> Array:
 	campaigns.append({"id": "thornweft_kaelyx", "commander": "Fang-Rider Kaelyx", "faction_id": "thornweft_matriarchy", "faction_enum": CombatantDefinition.Faction.THORNWEFT, "title": "The Spider's Charge", "description": "Fang-Rider Kaelyx leads from the saddle of her war-spider. Speed kills — and Kaelyx is the fastest thing on eight legs.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Cavalry charges, spider-mount combat, flanking, speed play"})
 	campaigns.append({"id": "thornweft_quileth", "commander": "Loom-Shaper Quileth", "faction_id": "thornweft_matriarchy", "faction_enum": CombatantDefinition.Faction.THORNWEFT, "title": "The Architect's Web", "description": "Loom-Shaper Quileth builds the battlefield itself. Web walls, silk barriers, terrain that serves the Matriarchy — she creates victory through architecture.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Terrain creation, web architecture, defensive engineering"})
 
+	# ── Rootwalker Campaigns ──
+	campaigns.append({
+		"id": "rootwalker_sylvara",
+		"commander": "Sylvara the Thornweaver",
+		"faction_id": "rootwalker_grove",
+		"faction_enum": CombatantDefinition.Faction.ROOTWALKER,
+		"title": "The Reclaiming",
+		"description": "The forest is burning. Sylvara the Thornweaver has watched empires rise and rot for ten thousand years. She has outlasted gods. The Shardstorm has poisoned her roots, and the armies that followed it carry axes. She has decided.",
+		"mission_count": 6,
+		"difficulty": "Intermediate",
+		"teaches": "Terrain conversion, patience-based offense, Rootwalker synergies, root-network mechanics",
+	})
+	campaigns.append({"id": "rootwalker_deepwood_eldest", "commander": "The Deepwood Eldest", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "Roots of the World", "description": "The Deepwood Eldest has slept for ten thousand years. The world it remembers no longer exists. It must relearn what the land has become — while things with blades keep interrupting the process.", "mission_count": 4, "difficulty": "Beginner", "teaches": "Basic Rootwalker defense, terrain anchoring, endurance play"})
+	campaigns.append({"id": "rootwalker_greyroot", "commander": "Greyroot the Impassable", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "Still Waters", "description": "Greyroot does not attack. Greyroot does not pursue. Greyroot stands. Nothing has ever gotten through. Nothing ever will.", "mission_count": 4, "difficulty": "Beginner", "teaches": "Fortress defense, chokepoint control, attrition patience"})
+	campaigns.append({"id": "rootwalker_bramblethorn", "commander": "Bramblethorn the Unrooted", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "Crown of Thorns", "description": "Rootwalkers are patient. Bramblethorn is not. He rips his roots free and charges — an explosion of thorns and fury that horrifies both his enemies and his allies. It works. That is the part no one likes to admit.", "mission_count": 4, "difficulty": "Beginner", "teaches": "Aggressive Rootwalker play, shock tactics, forward pressure"})
+	campaigns.append({"id": "rootwalker_mossborn", "commander": "Mossborn the Remembering", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "The Long Memory", "description": "Mossborn remembers every creature that has lived and died in the forest. In the Shardlands, new memories are being made at terrible speed. She will remember all of them. She is determined to save as many as possible first.", "mission_count": 4, "difficulty": "Beginner", "teaches": "Support healing, zone auras, keeping allies alive"})
+	campaigns.append({"id": "rootwalker_fernwhisper", "commander": "Fernwhisper", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "Whispers in the Deep", "description": "They have not seen Fernwhisper. They have felt her — the rustle before the strike, the silence before the ambush. When she stops choosing not to be seen, it will be too late.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Stealth, ambush positioning, information denial, concealment mechanics"})
+	campaigns.append({"id": "rootwalker_ashenbark", "commander": "Ashenbark the Scarred", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "Burned and Reborn", "description": "The Emberclaw burned her grove and scarred her bark from root to crown. Ashenbark is not pursuing revenge. She is preventing a recurrence. The distinction matters to her.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Fire resistance, counter-fire tactics, resilience through damage"})
+	campaigns.append({"id": "rootwalker_verdant_patriarch", "commander": "The Verdant Patriarch", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "The Living Wall", "description": "The Verdant Patriarch does not build walls. He becomes one. Where he stands, the grove thickens. Armies have broken against him for three centuries. He has never needed to attack.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Living terrain fortification, corridor control, impassable defense"})
+	campaigns.append({"id": "rootwalker_thornvast", "commander": "Thornvast the Advancing", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "March of the Forest", "description": "Thornvast moves at three meters per day and has been moving for forty years. He will reach the enemy position the way a tide reaches the shore — slowly, absolutely, with complete indifference to what the shore thinks about it.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Slow advance, terrain conversion, attrition momentum"})
+	campaigns.append({"id": "rootwalker_ivywarden", "commander": "Ivywarden the Creeping", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "Creeping Conquest", "description": "Ivywarden does not take territory. She claims it. Every tile her ivy covers belongs to the grove permanently. By the time you notice, she is already doing it somewhere you have not looked yet.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Zone control, incremental capture, territorial permanence"})
+	campaigns.append({"id": "rootwalker_green_hunger", "commander": "The Green Hunger", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "Feed the Roots", "description": "The other Rootwalkers speak of patience. The Green Hunger speaks of teeth. The forest has always had teeth. It has decided now is the time to show them — and it is not going to stop.", "mission_count": 4, "difficulty": "Advanced", "teaches": "Consumption mechanics, aggressive feeding, escalating power"})
+	campaigns.append({"id": "rootwalker_sapwood_seer", "commander": "Sapwood the Seer", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "What the Roots See", "description": "The roots feel every footstep, every vibration, every intention. Sapwood reads them so clearly that the future becomes obvious. She does not predict. She simply pays attention.", "mission_count": 4, "difficulty": "Advanced", "teaches": "Foresight mechanics, counter-positioning, information advantage"})
+	campaigns.append({"id": "rootwalker_rootmaw", "commander": "Rootmaw the Devourer", "faction_id": "rootwalker_grove", "faction_enum": CombatantDefinition.Faction.ROOTWALKER, "title": "Devour", "description": "The other Rootwalkers say there are lines. Rootmaw crossed them centuries ago. It does not consume to feed the grove. The grove feeds to fuel the consumption. There is a difference. The grove is not comfortable with this.", "mission_count": 4, "difficulty": "Advanced", "teaches": "Consumption stacking, escalating power, permanent removal"})
+
 	# ── Veilbound Secondary Commanders ──
 	campaigns.append({"id": "veilbound_kurohane", "commander": "Masked Lord Kurohane", "faction_id": "veilbound_shogunate", "faction_enum": CombatantDefinition.Faction.VEILBOUND, "title": "The Shadow Blade", "description": "Masked Lord Kurohane is the Shogunate's deadliest bodyguard. ATK 18, DEF 5 — he fights as the Shogun's shadow, eliminating threats before they materialize.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Elite melee, bodyguard play, honor combat"})
 	campaigns.append({"id": "veilbound_asagiri", "commander": "Elite Cmdr Asagiri", "faction_id": "veilbound_shogunate", "faction_enum": CombatantDefinition.Faction.VEILBOUND, "title": "The Morning Mist", "description": "Elite Commander Asagiri moves like morning mist. MOV 10, scouting and mobility — she appears, strikes, and vanishes before the enemy can respond.", "mission_count": 4, "difficulty": "Intermediate", "teaches": "Mobility, scouting, reconnaissance, hit-and-run"})
@@ -288,6 +313,32 @@ static func get_campaign(campaign_id: String) -> Dictionary:
 			data = VeilboundHoshikamiCampaign.get_campaign()
 		"veilbound_shogun":
 			data = VeilboundShogunCampaign.get_campaign()
+		"rootwalker_sylvara":
+			data = RootwalkerSylvaraCampaign.get_campaign()
+		"rootwalker_deepwood_eldest":
+			data = RootwalkerDeepwoodEldestCampaign.get_campaign()
+		"rootwalker_greyroot":
+			data = RootwalkerGreyrootCampaign.get_campaign()
+		"rootwalker_bramblethorn":
+			data = RootwalkerBramblethornCampaign.get_campaign()
+		"rootwalker_mossborn":
+			data = RootwalkerMossbornCampaign.get_campaign()
+		"rootwalker_fernwhisper":
+			data = RootwalkerFernwhisperCampaign.get_campaign()
+		"rootwalker_ashenbark":
+			data = RootwalkerAshenBarkCampaign.get_campaign()
+		"rootwalker_verdant_patriarch":
+			data = RootwalkerVerdantPatriarchCampaign.get_campaign()
+		"rootwalker_thornvast":
+			data = RootwalkerThornvastCampaign.get_campaign()
+		"rootwalker_ivywarden":
+			data = RootwalkerIvywardenCampaign.get_campaign()
+		"rootwalker_green_hunger":
+			data = RootwalkerGreenHungerCampaign.get_campaign()
+		"rootwalker_sapwood_seer":
+			data = RootwalkerSapwoodSeerCampaign.get_campaign()
+		"rootwalker_rootmaw":
+			data = RootwalkerRootmawCampaign.get_campaign()
 		_:
 			push_error("CampaignData: Unknown campaign '%s'" % campaign_id)
 			return {}

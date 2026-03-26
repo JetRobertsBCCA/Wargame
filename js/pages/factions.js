@@ -8,7 +8,8 @@ function getFactionLogoPath(factionId) {
     'iron-dominion': 'IronDominion',
     'nightfang-dominion': 'NightFang',
     'veilbound-shogunate': 'veilboundShogunate',
-    'thornweft-matriarchy': 'Thornweft'
+    'thornweft-matriarchy': 'Thornweft',
+    'rootwalkers': 'Rootwalkers'
   };
   const folder = folders[factionId];
   if (!folder) return null;

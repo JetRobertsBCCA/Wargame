@@ -312,6 +312,80 @@ func _register_faction_skills():
 		"icon_key": "honor_guard",
 	})
 
+	# ════════════════════ THE ROOTWALKERS ════════════════════
+
+	# ancient_growth: free support, places 3 Root tiles in a cross pattern around the caster.
+	# Commanders and Support units only. Core terrain-seeding skill for the faction.
+	_add_skill("ancient_growth", {
+		"name": "Ancient Growth", "type": SkillDefinition.SkillType.SUPPORT,
+		"target": SkillDefinition.TargetType.SELF,
+		"desc": "Place 3 Root tiles in a cross pattern around the caster. Commanders and Support only.",
+		"is_aoe": true, "aoe_radius": 1, "cp_cost": 0,
+		"icon_key": "ancient_growth",
+	})
+
+	# entangle: ranged harass/control tool. Target becomes Entangled (immobile 1 turn, +1 damage taken).
+	_add_skill("entangle", {
+		"name": "Entangle", "type": SkillDefinition.SkillType.RANGED,
+		"desc": "Ranged shot (range 5). Target becomes Entangled: immobile for 1 turn and takes +1 damage from all sources.",
+		"min_range": 1, "max_range": 5, "cp_cost": 0, "status_effect": "entangled",
+		"icon_key": "entangle",
+	})
+
+	# bark_surge: melee strike with a Root-tile conditional bonus — incentivises holding Root ground.
+	_add_skill("bark_surge", {
+		"name": "Bark Surge", "type": SkillDefinition.SkillType.MELEE,
+		"desc": "Melee attack. If the unit is standing on a Root tile: +2 ATK dice and gain +1 DEF until next turn.",
+		"atk_mod": 2, "def_mod": 1, "cp_cost": 0,
+		"icon_key": "bark_surge",
+	})
+
+	# root_pulse: once-per-round AOE damage through all nearby Root tiles. Snowballs with terrain spread.
+	_add_skill("root_pulse", {
+		"name": "Root Pulse", "type": SkillDefinition.SkillType.SPECIAL,
+		"target": SkillDefinition.TargetType.AREA,
+		"desc": "Once per round. All Root tiles within 6 tiles of this unit deal 1 damage to every enemy adjacent to them.",
+		"is_aoe": true, "aoe_radius": 6, "cp_cost": 0, "cooldown": 1,
+		"icon_key": "root_pulse",
+	})
+
+	# deep_root_stance: unit sacrifices its movement to plant a permanent Deep Root at its tile.
+	# Deep Root grants +2 DEF and 1 HP regen/turn as long as the unit stays on that tile.
+	_add_skill("deep_root_stance", {
+		"name": "Deep Root Stance", "type": SkillDefinition.SkillType.SPECIAL,
+		"target": SkillDefinition.TargetType.SELF,
+		"desc": "Skip movement this turn. Plant a Deep Root at this tile (+2 DEF, 1 HP regen per turn). Effect persists while the unit remains on that tile.",
+		"def_mod": 2, "heals": 1, "cp_cost": 0,
+		"icon_key": "deep_root_stance",
+	})
+
+	# thorn_volley: ranged blast attack that also converts hit tiles to Root terrain.
+	_add_skill("thorn_volley", {
+		"name": "Thorn Volley", "type": SkillDefinition.SkillType.RANGED,
+		"desc": "Ranged blast (range 8, Blast 2). Deals ATK dice damage. All tiles hit are converted to Root terrain.",
+		"min_range": 1, "max_range": 8, "is_aoe": true, "aoe_radius": 2, "cp_cost": 0,
+		"icon_key": "thorn_volley",
+	})
+
+	# ancient_call: once-per-battle summon. Legendary Deepwood Eldest commanders only.
+	_add_skill("ancient_call", {
+		"name": "Ancient Call", "type": SkillDefinition.SkillType.SPECIAL,
+		"target": SkillDefinition.TargetType.AREA,
+		"desc": "Once per battle. Summon a Sapling unit on any Root tile within 8 tiles. Legendary commander only.",
+		"min_range": 1, "max_range": 8, "uses_per_game": 1, "cp_cost": 0,
+		"icon_key": "ancient_call",
+	})
+
+	# reclaim: powerful commander ability — consumes 5 Root tiles to create an area of Dense Root.
+	# Dense Root inflicts heavy movement costs on enemies and fortifies allies.
+	_add_skill("reclaim", {
+		"name": "Reclaim", "type": SkillDefinition.SkillType.SPECIAL,
+		"target": SkillDefinition.TargetType.AREA,
+		"desc": "Commander only. Consume 5 Root tiles within a 4-tile radius. Convert the area to Dense Root: enemies suffer +4 MOV cost, Rootwalker allies gain +2 DEF while inside.",
+		"is_aoe": true, "aoe_radius": 4, "def_mod": 2, "cp_cost": 0,
+		"icon_key": "reclaim",
+	})
+
 # ══════════════════════════════════════════════════════════════
 # SKILL REGISTRATION HELPER
 # ══════════════════════════════════════════════════════════════

@@ -9,6 +9,7 @@ const FACTION_COLORS = {
 	CombatantDefinition.Faction.NIGHTFANG:      Color(0.50, 0.12, 0.60),  # Dark violet
 	CombatantDefinition.Faction.THORNWEFT:      Color(0.18, 0.62, 0.18),  # Forest green
 	CombatantDefinition.Faction.VEILBOUND:      Color(0.15, 0.45, 0.80),  # Deep blue
+	CombatantDefinition.Faction.ROOTWALKER:     Color(0.176, 0.545, 0.153),  # Deep forest green (#2D8B27)
 }
 
 const FACTION_ACCENT = {
@@ -17,6 +18,7 @@ const FACTION_ACCENT = {
 	CombatantDefinition.Faction.NIGHTFANG:      Color(0.85, 0.15, 0.3),   # Blood red
 	CombatantDefinition.Faction.THORNWEFT:      Color(0.6, 0.85, 0.3),    # Bright lime
 	CombatantDefinition.Faction.VEILBOUND:      Color(0.6, 0.85, 1.0),    # Light cyan
+	CombatantDefinition.Faction.ROOTWALKER:     Color(0.784, 0.627, 0.251),  # Amber gold (#C8A040)
 }
 
 # ── Portrait System ────────────────────────────────────
@@ -28,6 +30,7 @@ const FACTION_DIRS = {
 	CombatantDefinition.Faction.NIGHTFANG:      "nightfang",
 	CombatantDefinition.Faction.THORNWEFT:      "thornweft",
 	CombatantDefinition.Faction.VEILBOUND:      "veilbound",
+	CombatantDefinition.Faction.ROOTWALKER:     "rootwalkers",
 }
 
 ## Name overrides: GDScript unit_name → image filename (without .webp extension).

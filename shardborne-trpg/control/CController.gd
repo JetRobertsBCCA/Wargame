@@ -249,6 +249,14 @@ func set_controlled_combatant(combatant: Dictionary):
 		if combatant.side == 0:
 			combat.update_information.emit("[color=yellow]⚠ %s is TRAPPED — movement halved to %d this turn.[/color]\n" % [combatant.name, mov])
 
+	# Entangled: unit cannot move this activation. Clear flag after enforcing.
+	if combatant.get("entangled_no_move", false):
+		combatant.erase("entangled_no_move")
+		combatant.status_effects.erase("entangled")
+		mov = 0
+		if combatant.side == 0:
+			combat.update_information.emit("[color=#3a8040]⚠ %s is ENTANGLED — cannot move this activation![/color]\n" % combatant.name)
+
 	# Shaken Fall Back: Shaken units must move directly away from nearest enemy
 	if combatant.shaken and not combatant.get("status_effects", []).has("engaged"):
 		if combatant.side == 0:
@@ -568,6 +576,15 @@ func _process(delta: float):
 			combat.get_current_combatant().position = new_position
 			_previous_position = new_position
 			_occupied_spaces.append(new_position)
+			# Root terrain morale trigger: non-Rootwalker units moving into root tiles check morale
+			var _stepped_comb = combat.get_current_combatant()
+			var _stepped_terrain: String = terrain_metadata.get(new_position, "")
+			if (_stepped_terrain == "root" or _stepped_terrain == "deep_root") \
+					and _stepped_comb.definition.faction != CombatantDefinition.Faction.ROOTWALKER:
+				if not _stepped_comb.get("root_morale_checked_this_move", false):
+					_stepped_comb["root_morale_checked_this_move"] = true
+					combat.update_information.emit("[color=#3a8040]The roots writhe underfoot — %s is unnerved![/color]\n" % _stepped_comb.name)
+					combat.check_morale(_stepped_comb)
 			update_points_weight()
 			var next_tile_cost = get_tile_cost(new_position)
 			movement -= tile_cost
@@ -580,6 +597,17 @@ func _process(delta: float):
 				_apply_auto_engagement(combat.get_current_combatant())
 				# Update facing to direction of movement
 				_update_facing_after_move(combat.get_current_combatant(), _move_start_position)
+				# Rootwalker post-move hook: plant root tiles along the path traveled
+				var _moved_comb = combat.get_current_combatant()
+				if _moved_comb.definition.faction == CombatantDefinition.Faction.ROOTWALKER:
+					var _path_positions: Array = []
+					for _pi in range(_path.size()):
+						_path_positions.append(tile_map.local_to_map(_path[_pi]))
+					combat._faction_mgr.plant_roots_from_movement(
+						_moved_comb.side,
+						combat.faction_state[_moved_comb.side],
+						_path_positions
+					)
 				# Enable undo if player moved (and isn't engaged)
 				if player_turn and _undo_position != Vector2i(-1, -1):
 					var comb = combat.get_current_combatant()
@@ -781,6 +809,9 @@ func move_on_path(current_position: Vector2i):
 	_position_id = 1
 	_next_position = _path[_position_id]
 	_arrived = false
+	# Reset per-move root morale check flag so it fires at most once per move action
+	var _mop_comb = combat.get_current_combatant()
+	_mop_comb.erase("root_morale_checked_this_move")
 	queue_redraw()
 
 
@@ -872,20 +903,41 @@ func get_tile_cost(tile: Vector2i) -> int:
 	var tile_data = tile_map.get_cell_tile_data(0, tile)
 	if tile_data == null:
 		return IMPASSABLE_TILE_COST
-	if combat.get_current_combatant().movement_class == 0:
-		return int(tile_data.get_custom_data(TILE_DATA_COST))
+	var comb = combat.get_current_combatant()
+	var base_cost: int
+	if comb.movement_class == 0:
+		base_cost = int(tile_data.get_custom_data(TILE_DATA_COST))
 	else:
-		return 1
+		base_cost = 1
+	# Root terrain: Rootwalkers move freely (cost 1), enemies pay +ROOT_MOVEMENT_PENALTY
+	var terrain_type: String = terrain_metadata.get(tile, "")
+	if terrain_type == "root" or terrain_type == "deep_root":
+		if comb.definition.faction == CombatantDefinition.Faction.ROOTWALKER:
+			return 1
+		else:
+			return base_cost + GameRules.ROOT_MOVEMENT_PENALTY
+	return base_cost
 
 func get_tile_cost_at_point(point: Vector2) -> int:
 	var tile = tile_map.local_to_map(point)
 	var tile_data = tile_map.get_cell_tile_data(0, tile)
 	if tile_data == null:
 		return IMPASSABLE_TILE_COST
-	if combat.get_current_combatant().movement_class == 0:
-		return int(tile_data.get_custom_data(TILE_DATA_COST))
+	var comb = combat.get_current_combatant()
+	var base_cost: int
+	if comb.movement_class == 0:
+		base_cost = int(tile_data.get_custom_data(TILE_DATA_COST))
 	else:
-		return 1
+		base_cost = 1
+	# Root terrain: Rootwalkers move freely (cost 1), enemies pay +ROOT_MOVEMENT_PENALTY
+	var tile_pos = tile_map.local_to_map(point)
+	var terrain_type: String = terrain_metadata.get(tile_pos, "")
+	if terrain_type == "root" or terrain_type == "deep_root":
+		if comb.definition.faction == CombatantDefinition.Faction.ROOTWALKER:
+			return 1
+		else:
+			return base_cost + GameRules.ROOT_MOVEMENT_PENALTY
+	return base_cost
 
 func _draw():
 	# Draw deployment zone during deployment phase
@@ -970,7 +1022,8 @@ func _draw_attack_range():
 				draw_rect(Rect2(world_pos.x - 16, world_pos.y - 16, 32, 32), Color(1.0, 0.4, 0.1, 0.35), false, 1.5)
 
 
-## Draw a semi-transparent blue overlay on all tiles the active unit can reach
+## Draw a semi-transparent blue overlay on all tiles the active unit can reach.
+## Root tiles receive an additional green tint and a "ROOT" label.
 func _draw_movement_range():
 	if combat == null or combat.combatants.is_empty():
 		return
@@ -990,6 +1043,29 @@ func _draw_movement_range():
 			continue
 		var world_pos = tile_map.map_to_local(tile_pos)
 		draw_rect(Rect2(world_pos.x - 15, world_pos.y - 15, 30, 30), Color(0.3, 0.6, 1.0, 0.12))
+		# Root tile color overlay and label
+		var terrain_type: String = terrain_metadata.get(tile_pos, "")
+		if terrain_type == "root":
+			draw_rect(Rect2(world_pos.x - 15, world_pos.y - 15, 30, 30), Color(0.2, 0.6, 0.2, 0.4))
+			draw_string(ThemeDB.fallback_font, Vector2(world_pos.x - 10, world_pos.y + 4), "ROOT",
+				HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(0.1, 0.5, 0.1, 0.9))
+		elif terrain_type == "deep_root":
+			draw_rect(Rect2(world_pos.x - 15, world_pos.y - 15, 30, 30), Color(0.1, 0.4, 0.1, 0.6))
+			draw_string(ThemeDB.fallback_font, Vector2(world_pos.x - 10, world_pos.y + 4), "ROOT",
+				HORIZONTAL_ALIGNMENT_LEFT, -1, 8, Color(0.0, 0.3, 0.0, 0.9))
+	# Also draw root/deep_root overlays on tiles outside movement range (always visible)
+	for x in range(grid_width):
+		for y in range(grid_height):
+			var tile_pos := Vector2i(x, y)
+			var terrain_type: String = terrain_metadata.get(tile_pos, "")
+			if terrain_type == "root" or terrain_type == "deep_root":
+				if tile_pos in _cached_move_tiles:
+					continue  # Already drawn above
+				var world_pos = tile_map.map_to_local(tile_pos)
+				if terrain_type == "root":
+					draw_rect(Rect2(world_pos.x - 15, world_pos.y - 15, 30, 30), Color(0.2, 0.6, 0.2, 0.4))
+				else:
+					draw_rect(Rect2(world_pos.x - 15, world_pos.y - 15, 30, 30), Color(0.1, 0.4, 0.1, 0.6))
 
 ## BFS flood fill to find all reachable tiles from a position with given movement points
 func _compute_movement_range(comb: Dictionary, start: Vector2i, mov: int) -> Dictionary:
@@ -1018,6 +1094,13 @@ func _compute_movement_range(comb: Dictionary, start: Vector2i, mov: int) -> Dic
 				step_cost = int(tile_data.get_custom_data(TILE_DATA_COST))
 			else:
 				step_cost = 1
+			# Root terrain: Rootwalkers step freely, enemies pay +ROOT_MOVEMENT_PENALTY
+			var next_terrain: String = terrain_metadata.get(next, "")
+			if next_terrain == "root" or next_terrain == "deep_root":
+				if comb.definition.faction == CombatantDefinition.Faction.ROOTWALKER:
+					step_cost = 1
+				else:
+					step_cost += GameRules.ROOT_MOVEMENT_PENALTY
 			var total = cost_so_far + step_cost
 			if leaving_zoc:
 				total += GameRules.ZOC_EXTRA_COST

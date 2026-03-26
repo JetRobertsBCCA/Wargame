@@ -4,7 +4,7 @@ class_name CombatantDefinition
 ## Shardborne unit definition — holds all stats for commanders, units, and war machines.
 
 # ── Enums ──────────────────────────────────────────────
-enum Faction { EMBERCLAW, IRON_DOMINION, NIGHTFANG, THORNWEFT, VEILBOUND }
+enum Faction { EMBERCLAW, IRON_DOMINION, NIGHTFANG, THORNWEFT, VEILBOUND, ROOTWALKER }
 enum UnitType { COMMANDER, INFANTRY, CAVALRY, SUPPORT, SCOUT, ARTILLERY, SPECIALIST, WAR_MACHINE }
 enum MovementClass { GROUND, FLYING, MOUNTED }
 
@@ -103,6 +103,7 @@ func get_faction_name() -> String:
 		Faction.NIGHTFANG: return "Nightfang Dominion"
 		Faction.THORNWEFT: return "Thornweft Matriarchy"
 		Faction.VEILBOUND: return "Veilbound Shogunate"
+		Faction.ROOTWALKER: return "The Rootwalkers"
 	return "Unknown"
 
 func get_type_name() -> String:

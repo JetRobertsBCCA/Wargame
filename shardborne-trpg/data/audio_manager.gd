@@ -51,6 +51,7 @@ const FACTION_MUSIC_KEYS := {
 	2: "nightfang",
 	3: "thornweft",
 	4: "veilbound",
+	5: "rootwalker_theme",  # CombatantDefinition.Faction.ROOTWALKER
 }
 
 ## Expected SFX keys — each requires a matching .mp3 file under res://audio/sfx/
@@ -65,6 +66,13 @@ const FACTION_MUSIC_KEYS := {
 ##   morale_break     → res://audio/sfx/morale_break.mp3  (unit becomes Shaken)
 ##   unit_destroyed   → res://audio/sfx/unit_destroyed.mp3 (unit Routed or destroyed)
 ##   vp_scored        → res://audio/sfx/vp_scored.mp3     (VP total changes)
+## Rootwalker faction SFX:
+##   roots_spread     → res://audio/sfx/roots_spread.ogg  (ancient_growth or root tile placed)
+##   entangle         → res://audio/sfx/entangle.ogg      (entangle skill fires)
+##   deep_root        → res://audio/sfx/deep_root.ogg     (deep_root_stance used)
+## Rootwalker faction music:
+##   rootwalker_theme   → res://audio/music/rootwalker_theme.ogg
+##   rootwalker_victory → res://audio/music/rootwalker_victory.ogg
 const EXPECTED_SFX_KEYS: Array = [
 	"card_play",
 	"pause",
@@ -74,6 +82,9 @@ const EXPECTED_SFX_KEYS: Array = [
 	"morale_break",
 	"unit_destroyed",
 	"vp_scored",
+	"roots_spread",
+	"entangle",
+	"deep_root",
 ]
 
 # ══════════════════════════════════════════════════════════════
@@ -132,6 +143,15 @@ func _scan_dir_recursive(path: String, target: Dictionary):
 				var stream = ResourceLoader.load(resource_path)
 				if stream:
 					var key = file_name.get_basename().replace(".mp3", "")
+					target[key] = stream
+					if OS.is_debug_build(): print("[AudioManager]   Loaded: %s → %s" % [key, resource_path])
+		elif file_name.ends_with(".ogg") or file_name.ends_with(".ogg.import"):
+			# OGG Vorbis support — used by Rootwalker faction audio and future assets
+			var resource_path = full_path.replace(".import", "")
+			if ResourceLoader.exists(resource_path):
+				var stream = ResourceLoader.load(resource_path)
+				if stream:
+					var key = file_name.get_basename().replace(".ogg", "")
 					target[key] = stream
 					if OS.is_debug_build(): print("[AudioManager]   Loaded: %s → %s" % [key, resource_path])
 		file_name = dir.get_next()

@@ -135,6 +135,9 @@ static func generate(
 	# Nightfang Dominion (faction index 2) — corruption zones
 	if player_faction == 2 or enemy_faction == 2:
 		_place_nightfang_corruption(tile_map, rng, terrain_meta, w, h)
+	# Rootwalkers (faction index 5) — root clusters
+	if player_faction == 5 or enemy_faction == 5:
+		_place_rootwalker_roots(tile_map, rng, terrain_meta, w, h)
 
 	return "\n".join(log_parts)
 
@@ -370,3 +373,30 @@ static func _place_nightfang_corruption(
 			var tile := RUIN_TILES[rng.randi_range(0, RUIN_TILES.size() - 1)]
 			tile_map.set_cell(0, pos, SOURCE_ID, tile, RUIN_ALT)
 			meta[pos] = "corruption_zone"
+
+
+## Rootwalkers: place 3–5 small root clusters in the neutral zone (cols w/3..2w/3).
+## Tiles use forest tile visuals (dense vegetation) and are marked "root" in terrain_meta.
+static func _place_rootwalker_roots(
+	tile_map: TileMap, rng: RandomNumberGenerator,
+	meta: Dictionary, w: int, h: int
+) -> void:
+	var neutral_start := w / 3
+	var neutral_end := (w * 2) / 3
+	var cluster_count := rng.randi_range(3, 5)
+	for i in range(cluster_count):
+		var cx: int = rng.randi_range(neutral_start, neutral_end)
+		var cy: int = rng.randi_range(2, h - 3)
+		var size: int = rng.randi_range(2, 4)
+		for dx in range(-size / 2, size / 2 + 1):
+			for dy in range(-size / 2, size / 2 + 1):
+				var pos := Vector2i(cx + dx, cy + dy)
+				if pos.x < 1 or pos.x >= w - 1 or pos.y < 1 or pos.y >= h - 1:
+					continue
+				# Never overwrite mountains
+				if meta.get(pos, "") == "mountain":
+					continue
+				# Use a forest tile for visual representation (dense root vegetation)
+				var tile := FOREST_TILES[rng.randi_range(0, FOREST_TILES.size() - 1)]
+				tile_map.set_cell(0, pos, SOURCE_ID, tile, RUIN_ALT)
+				meta[pos] = "root"

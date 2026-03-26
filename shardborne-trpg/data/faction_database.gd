@@ -8,6 +8,7 @@ const _IronDominion = preload("res://data/factions/iron_dominion.gd")
 const _Nightfang = preload("res://data/factions/nightfang_dominion.gd")
 const _Thornweft = preload("res://data/factions/thornweft_matriarchy.gd")
 const _Veilbound = preload("res://data/factions/veilbound_shogunate.gd")
+const _Rootwalkers = preload("res://data/factions/rootwalkers.gd")
 
 # ── Data Storage ───────────────────────────────────────
 ## All CombatantDefinition resources, keyed by unit name (lowercase)
@@ -41,6 +42,10 @@ const FACTIONS = {
 		"id": "veilbound_shogunate", "name": "Veilbound Shogunate",
 		"mechanic": "Ritual Flow / Stances", "resource": "Flow",
 	},
+	CombatantDefinition.Faction.ROOTWALKER: {
+		"id": "rootwalkers", "name": "The Rootwalkers",
+		"mechanic": "Root Terrain / Deep Root", "resource": "Root Tiles",
+	},
 }
 
 # ══════════════════════════════════════════════════════════════
@@ -65,6 +70,7 @@ func _load_all_factions() -> void:
 	_load_faction_data(_Nightfang, CombatantDefinition.Faction.NIGHTFANG)
 	_load_faction_data(_Thornweft, CombatantDefinition.Faction.THORNWEFT)
 	_load_faction_data(_Veilbound, CombatantDefinition.Faction.VEILBOUND)
+	_load_faction_data(_Rootwalkers, CombatantDefinition.Faction.ROOTWALKER)
 
 func _load_faction_data(data_script, faction_enum: int) -> void:
 	var raw_units: Array = data_script.get_units()
@@ -90,6 +96,7 @@ func _dict_to_combatant(data: Dictionary) -> CombatantDefinition:
 	def.cmd = data.get("cmd", 0)
 	def.pts = data.get("pts", 2)
 	def.specials = PackedStringArray(data.get("specials", []))
+	def.skills = Array(data.get("skills", []), TYPE_STRING, "", null)
 	def.corruption_spread = data.get("corruption", 0)
 	def.flow_value = data.get("flow", 0)
 	def.is_legendary = data.get("legendary", false)

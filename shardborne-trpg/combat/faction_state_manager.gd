@@ -51,6 +51,13 @@ static func create_faction_state(faction: int) -> Dictionary:
 				"flow_tier": "none",
 				"active_stance": "balanced",
 			}
+		CombatantDefinition.Faction.ROOTWALKER:
+			return {
+				"root_tiles": [],              # Array[Vector2i] — rooted tile positions
+				"deep_root_tiles": [],         # Array[Vector2i] — deep-rooted (permanent, stronger)
+				"deep_root_units": [],         # Array of unit names currently deep-rooted
+				"roots_this_battle": 0,        # Total roots planted (tracking/narrative)
+			}
 		_:
 			return {}
 
@@ -73,6 +80,8 @@ func process_round_start(side: int, faction: int, state: Dictionary,
 			_thornweft_round_start(side, state, combatants, groups)
 		CombatantDefinition.Faction.VEILBOUND:
 			_veilbound_round_start(side, state, combatants, groups)
+		CombatantDefinition.Faction.ROOTWALKER:
+			_rootwalker_round_start(side, state, combatants, groups)
 
 
 var _combat_ref: Node = null  # Set transiently during round-start processing
@@ -274,6 +283,63 @@ func _veilbound_round_start(side: int, state: Dictionary,
 				comb.atk_modifier += 1
 		_log("[color=gold]FLOW BURST! All Veilbound units gain +1 ATK![/color]\n")
 		state.flow = state.flow_max / 2  # Burst consumes half the flow
+
+
+func _rootwalker_round_start(side: int, state: Dictionary, combatants: Array, groups: Array) -> void:
+	# Reset once-per-round flags
+	state["root_pulse_used_this_round"] = false
+
+	# Ancient Growth: 1 random existing root tile spreads to an adjacent non-rooted tile
+	var max_roots: int = GameRules.MAX_ROOT_TILES
+	if state.root_tiles.size() > 0 and state.root_tiles.size() < max_roots:
+		var source = state.root_tiles[randi() % state.root_tiles.size()]
+		var offsets = [Vector2i(1, 0), Vector2i(-1, 0), Vector2i(0, 1), Vector2i(0, -1)]
+		offsets.shuffle()
+		for offset in offsets:
+			var candidate = source + offset
+			if candidate not in state.root_tiles and candidate not in state.deep_root_tiles:
+				state.root_tiles.append(candidate)
+				state.roots_this_battle += 1
+				_log("[color=green]Ancient Growth: root spreads to (%d, %d).[/color]\n" % [
+					candidate.x, candidate.y])
+				break
+
+	# Deep Root regen: units with deep roots heal 1 HP
+	var regen: int = GameRules.DEEP_ROOT_HP_REGEN
+	for comb in combatants:
+		if not comb.alive or comb.side != side:
+			continue
+		if comb.name in state.deep_root_units:
+			comb.hp = mini(comb.hp + regen, comb.definition.hp)
+			_log("[color=green]%s heals %d HP from Deep Root regen.[/color]\n" % [comb.name, regen])
+
+
+## Rootwalker: Plant root tiles along the path a unit moved through.
+## Called after a unit's movement resolves.
+## positions = Array[Vector2i] of tiles the unit moved through.
+func plant_roots_from_movement(side: int, state: Dictionary, positions: Array) -> void:
+	var max_roots: int = GameRules.MAX_ROOT_TILES
+	for pos in positions:
+		if pos not in state.root_tiles and pos not in state.deep_root_tiles:
+			if state.root_tiles.size() < max_roots:
+				state.root_tiles.append(pos)
+				state.roots_this_battle += 1
+
+
+## Rootwalker: Return true if pos is a root tile (regular or deep).
+func is_root_tile(state: Dictionary, pos: Vector2i) -> bool:
+	return pos in state.root_tiles or pos in state.deep_root_tiles
+
+
+## Rootwalker: Return the DEF bonus granted to a unit standing on a root tile.
+func get_root_def_bonus(state: Dictionary, pos: Vector2i) -> int:
+	var base_bonus: int = GameRules.ROOT_DEF_BONUS
+	var deep_bonus: int = GameRules.DEEP_ROOT_DEF_BONUS
+	if pos in state.deep_root_tiles:
+		return base_bonus + deep_bonus
+	elif pos in state.root_tiles:
+		return base_bonus
+	return 0
 
 
 ## Veilbound: Switch a unit's stance between honor and revelation.
