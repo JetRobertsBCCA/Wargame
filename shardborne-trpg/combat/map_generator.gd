@@ -54,18 +54,22 @@ const _RUIN_FLAVOR: Array = [
 
 ## Generate a fresh procedural battlefield map.
 ##
-## @param tile_map      TileMap node to populate
-## @param map_size      Vector2i(width, height) in tiles
-## @param deploy_end_x  Right edge of player deployment zone (cols 0..deploy_end_x are safe)
-## @param terrain_meta  Dictionary to fill: Vector2i → terrain type String
-## @param impassable    Array to fill with positions of impassable (mountain) tiles
-## @return              Flavor description string for the battle log
+## @param tile_map        TileMap node to populate
+## @param map_size        Vector2i(width, height) in tiles
+## @param deploy_end_x    Right edge of player deployment zone (cols 0..deploy_end_x are safe)
+## @param terrain_meta    Dictionary to fill: Vector2i → terrain type String
+## @param impassable      Array to fill with positions of impassable (mountain) tiles
+## @param player_faction  Optional faction enum value for the player side (-1 = none)
+## @param enemy_faction   Optional faction enum value for the enemy side (-1 = none)
+## @return                Flavor description string for the battle log
 static func generate(
 	tile_map: TileMap,
 	map_size: Vector2i,
 	deploy_end_x: int,
 	terrain_meta: Dictionary,
 	impassable: Array,
+	player_faction: int = -1,
+	enemy_faction: int = -1,
 ) -> String:
 
 	var rng := RandomNumberGenerator.new()
@@ -82,12 +86,19 @@ static func generate(
 	# Fill every cell with solid grass
 	_fill_grass(tile_map, w, h)
 
-	# Safe margins: keep deployment zones free of obstacles
-	# Player deploys cols 0..deploy_end_x; enemy mirrors on right
-	var safe_l := deploy_end_x + 2
-	var safe_r := w - deploy_end_x - 2
+	# Safe margins: keep deployment zones free of obstacles.
+	# Player deploys cols 0..deploy_end_x; enemy mirrors on right.
+	# Use a fixed 2-tile buffer from the deployment edge rather than adding
+	# deploy_end_x again — otherwise Skirmish maps (24×18, deploy_end_x=4)
+	# would set safe_l=6, leaving only 12 neutral columns, and larger maps
+	# would waste too much space.
+	var deploy_margin := mini(4, w / 8)
+	var safe_l := deploy_margin
+	var safe_r := w - deploy_margin
+	# Fallback: if the neutral zone is still too narrow, force minimum playable zone
 	if safe_l >= safe_r:
-		return ""  # Map too small for terrain features
+		safe_l = 2
+		safe_r = w - 2
 
 	# Scale feature count with map area (1.0 = standard 36×21)
 	var t: float = clampf(float(w * h) / (36.0 * 21.0), 0.6, 2.0)
@@ -113,6 +124,17 @@ static func generate(
 
 	# ── 4. Guarantee at least one passable path across the map ───
 	_ensure_connectivity(tile_map, w, h, terrain_meta, impassable)
+
+	# ── 5. Faction-specific terrain overlays ──────────────────────
+	# Thornweft Matriarchy (faction index 3) — gossamer web clusters
+	if player_faction == 3 or enemy_faction == 3:
+		_place_thornweft_webs(tile_map, rng, terrain_meta, w, h)
+	# Emberclaw Warpack (faction index 0) — burning ground patches
+	if player_faction == 0 or enemy_faction == 0:
+		_place_emberclaw_burning(tile_map, rng, terrain_meta, w, h)
+	# Nightfang Dominion (faction index 2) — corruption zones
+	if player_faction == 2 or enemy_faction == 2:
+		_place_nightfang_corruption(tile_map, rng, terrain_meta, w, h)
 
 	return "\n".join(log_parts)
 
@@ -253,3 +275,98 @@ static func _ensure_connectivity(
 					impassable.erase(pos)
 					meta.erase(pos)
 					imp_set.erase(pos)
+
+
+# ── Faction-specific terrain helpers ─────────────────────────────────────────
+
+## Thornweft Matriarchy: place 2–3 gossamer web clusters in the neutral zone
+## (cols w/3 .. 2*w/3). Tiles are marked "web" in terrain_meta.
+static func _place_thornweft_webs(
+	tile_map: TileMap, rng: RandomNumberGenerator,
+	meta: Dictionary, w: int, h: int
+) -> void:
+	var zone_l := w / 3
+	var zone_r := (w * 2) / 3
+	var count := rng.randi_range(2, 3)
+	var zone_w := zone_r - zone_l
+	for i in range(count):
+		var cx: int = zone_l + zone_w * (i + 1) / (count + 1)
+		cx = clampi(cx + rng.randi_range(-2, 2), zone_l, zone_r - 1)
+		var cy: int = rng.randi_range(2, h - 3)
+		var size := rng.randi_range(3, 6)
+		for _s in range(size):
+			var dx := rng.randi_range(-2, 2)
+			var dy := rng.randi_range(-1, 1)
+			var pos := Vector2i(
+				clampi(cx + dx, 0, w - 1),
+				clampi(cy + dy, 0, h - 1)
+			)
+			# Never overwrite mountains
+			if meta.get(pos, "") == "mountain":
+				continue
+			# Use a forest tile variant for visual representation (light cover)
+			var tile := FOREST_TILES[rng.randi_range(0, FOREST_TILES.size() - 1)]
+			tile_map.set_cell(0, pos, SOURCE_ID, tile, RUIN_ALT)
+			meta[pos] = "web"
+
+
+## Emberclaw Warpack: place 1–2 burning ground patches (2–4 tiles each) in the
+## neutral zone. Tiles are marked "burning" in terrain_meta.
+static func _place_emberclaw_burning(
+	tile_map: TileMap, rng: RandomNumberGenerator,
+	meta: Dictionary, w: int, h: int
+) -> void:
+	var zone_l := w / 3
+	var zone_r := (w * 2) / 3
+	var count := rng.randi_range(1, 2)
+	var zone_w := zone_r - zone_l
+	for i in range(count):
+		var cx: int = zone_l + zone_w * (i + 1) / (count + 1)
+		cx = clampi(cx + rng.randi_range(-2, 2), zone_l, zone_r - 1)
+		var cy: int = rng.randi_range(2, h - 3)
+		var size := rng.randi_range(2, 4)
+		for _s in range(size):
+			var dx := rng.randi_range(-1, 1)
+			var dy := rng.randi_range(-1, 1)
+			var pos := Vector2i(
+				clampi(cx + dx, 0, w - 1),
+				clampi(cy + dy, 0, h - 1)
+			)
+			# Never overwrite mountains
+			if meta.get(pos, "") == "mountain":
+				continue
+			# Use a ruin tile variant for visual representation (hazard terrain)
+			var tile := RUIN_TILES[rng.randi_range(0, RUIN_TILES.size() - 1)]
+			tile_map.set_cell(0, pos, SOURCE_ID, tile, RUIN_ALT)
+			meta[pos] = "burning"
+
+
+## Nightfang Dominion: place 1–2 corruption zone clusters in the neutral zone.
+## Tiles are marked "corruption_zone" in terrain_meta.
+static func _place_nightfang_corruption(
+	tile_map: TileMap, rng: RandomNumberGenerator,
+	meta: Dictionary, w: int, h: int
+) -> void:
+	var zone_l := w / 3
+	var zone_r := (w * 2) / 3
+	var count := rng.randi_range(1, 2)
+	var zone_w := zone_r - zone_l
+	for i in range(count):
+		var cx: int = zone_l + zone_w * (i + 1) / (count + 1)
+		cx = clampi(cx + rng.randi_range(-2, 2), zone_l, zone_r - 1)
+		var cy: int = rng.randi_range(2, h - 3)
+		var size := rng.randi_range(3, 6)
+		for _s in range(size):
+			var dx := rng.randi_range(-2, 2)
+			var dy := rng.randi_range(-2, 2)
+			var pos := Vector2i(
+				clampi(cx + dx, 0, w - 1),
+				clampi(cy + dy, 0, h - 1)
+			)
+			# Never overwrite mountains
+			if meta.get(pos, "") == "mountain":
+				continue
+			# Use a ruin tile (passable rubble) for visual representation
+			var tile := RUIN_TILES[rng.randi_range(0, RUIN_TILES.size() - 1)]
+			tile_map.set_cell(0, pos, SOURCE_ID, tile, RUIN_ALT)
+			meta[pos] = "corruption_zone"

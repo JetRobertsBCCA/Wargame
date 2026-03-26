@@ -15,10 +15,29 @@ const TILE_SIZE := 32
 # SKILL DISPATCH
 # ══════════════════════════════════════════════════════════════
 
+## War machine-exclusive abilities that are blocked on round 1.
+const WAR_MACHINE_BLOCKED_TURN_1 := [
+	"heat_vent",
+	"pyroclasm",
+	"artillery_barrage",
+	"fragment_overload",
+]
+
 ## Execute a faction skill by key. Returns true if handled, false if not found.
 func execute_skill(skill_key: String, combat: Node, attacker: Dictionary, target: Dictionary) -> bool:
 	if not has_method(skill_key):
 		return false
+
+	# Task 1: Block war machine heavy abilities on Turn 1
+	if combat.round_number <= 1 \
+			and attacker.definition.is_war_machine() \
+			and skill_key in WAR_MACHINE_BLOCKED_TURN_1:
+		_log("[color=gray]%s cannot use %s on Turn 1 (war machine ability lockout).[/color]\n" % [
+			attacker.name, skill_key])
+		if attacker.side == 1:
+			combat.advance_turn()
+		return true
+
 	call(skill_key, combat, attacker, target)
 	return true
 
@@ -61,13 +80,13 @@ func inferno_charge(combat: Node, attacker: Dictionary, target: Dictionary) -> v
 ## Emberclaw: Heat Vent — AoE damage spending heat
 func heat_vent(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
 	var state = combat.faction_state[attacker.side]
-	if state.heat < 5:
-		_log("Not enough Heat (need 5, have %d).\n" % state.heat)
+	if state.heat < 3:
+		_log("Not enough Heat (need 3, have %d).\n" % state.heat)
 		if attacker.side == 1:
 			combat.advance_turn()
 		return
-	state.heat -= 5
-	_log("[color=red]%s vents Heat (-5 → %d)! AoE damage![/color]\n" % [attacker.name, state.heat])
+	state.heat -= 3
+	_log("[color=red]%s vents Heat (-3 → %d)! AoE damage![/color]\n" % [attacker.name, state.heat])
 	var enemy_side = 1 if attacker.side == 0 else 0
 	for idx in combat.groups[enemy_side].duplicate():
 		var enemy = combat.combatants[idx]
@@ -167,6 +186,7 @@ func grid_fire_order(combat: Node, attacker: Dictionary, _target: Dictionary) ->
 			combat.advance_turn()
 		return
 	state.grid_cohesion -= 2
+	state.grid_cohesion_spent = state.get("grid_cohesion_spent", 0) + 2
 	for idx in combat.groups[attacker.side]:
 		var ally = combat.combatants[idx]
 		if ally.alive:
@@ -184,6 +204,7 @@ func grid_shield_protocol(combat: Node, attacker: Dictionary, _target: Dictionar
 			combat.advance_turn()
 		return
 	state.grid_cohesion -= 2
+	state.grid_cohesion_spent = state.get("grid_cohesion_spent", 0) + 2
 	for idx in combat.groups[attacker.side]:
 		var ally = combat.combatants[idx]
 		if ally.alive:
@@ -201,6 +222,7 @@ func grid_relay(combat: Node, attacker: Dictionary, _target: Dictionary) -> void
 			combat.advance_turn()
 		return
 	state.grid_cohesion -= 3
+	state.grid_cohesion_spent = state.get("grid_cohesion_spent", 0) + 3
 	combat.command_points[attacker.side] += 1
 	_log("[color=steel_blue]%s relays through the Grid! +1 CP (-3 Cohesion → %d)[/color]\n" % [
 		attacker.name, state.grid_cohesion])
@@ -366,6 +388,26 @@ func anchor_pulse(combat: Node, attacker: Dictionary, _target: Dictionary) -> vo
 			ally.def_modifier += 1
 	combat.advance_turn()
 
+## Thornweft: Plant Web Anchor — place a web anchor at the attacker's current position.
+## The number of placed anchors is capped by the battle-size "max_anchors" config value.
+func plant_web_anchor(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
+	var state = combat.faction_state[attacker.side]
+	var size_key = BattleConfig.battle_size if BattleConfig else "standard"
+	var config = GameRules.BATTLE_SIZES.get(size_key, GameRules.BATTLE_SIZES["standard"])
+	var max_anchors: int = config.get("max_anchors", 6)
+	if state.web_anchors.size() >= max_anchors:
+		_log("[color=green]Cannot plant Web Anchor — maximum reached (%d / %d).[/color]\n" % [
+			state.web_anchors.size(), max_anchors])
+		if attacker.side == 1:
+			combat.advance_turn()
+		return
+	state.web_anchors.append(attacker.position)
+	_log("[color=green]%s plants a Web Anchor at (%d, %d)! (%d / %d anchors placed)[/color]\n" % [
+		attacker.name, attacker.position.x, attacker.position.y,
+		state.web_anchors.size(), max_anchors])
+	combat.advance_turn()
+
+
 ## Thornweft: Nature's Wrath — spend fate threads for powerful attack
 func natures_wrath(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 	var state = combat.faction_state[attacker.side]
@@ -386,17 +428,49 @@ func natures_wrath(combat: Node, attacker: Dictionary, target: Dictionary) -> vo
 # ══════════════════════════════════════════════════════════════
 
 ## Veilbound: Stance Strike — flow-powered melee attack
+## Cost and bonus vary by the faction's active_stance:
+##   revelation → 2 Flow, +2 ATK (Aggressive)
+##   honor      → 1 Flow, +1 DEF (Defensive)
+##   balanced   → 1 Flow, +1 ATK +1 DEF (Balanced)
 func stance_strike(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 	var state = combat.faction_state[attacker.side]
-	if state.flow < 1:
-		_log("Not enough Flow.\n")
+	var current_stance: String = state.get("active_stance", "balanced")
+
+	# Determine cost and modifiers based on current stance
+	var flow_cost: int
+	var atk_bonus: int
+	var def_bonus: int
+	var variant_label: String
+	if current_stance == "revelation":
+		flow_cost = 2
+		atk_bonus = 2
+		def_bonus = 0
+		variant_label = "Aggressive"
+	elif current_stance == "honor":
+		flow_cost = 1
+		atk_bonus = 0
+		def_bonus = 1
+		variant_label = "Defensive"
+	else:
+		flow_cost = 1
+		atk_bonus = 1
+		def_bonus = 1
+		variant_label = "Balanced"
+
+	if state.flow < flow_cost:
+		_log("Not enough Flow (need %d, have %d).\n" % [flow_cost, state.flow])
 		if attacker.side == 1:
 			combat.advance_turn()
 		return
-	state.flow -= 1
-	_log("[color=cyan]%s performs Stance Strike (%s stance)![/color]\n" % [
-		attacker.name, attacker.stance])
+
+	state.flow -= flow_cost
+	attacker.atk_modifier += atk_bonus
+	attacker.def_modifier += def_bonus
+	_log("[color=cyan][Stance Strike — %s] %s strikes! (+%d ATK, +%d DEF, %d Flow spent → %d)[/color]\n" % [
+		variant_label, attacker.name, atk_bonus, def_bonus, flow_cost, state.flow])
 	combat.attack(attacker, target, "attack_melee")
+	attacker.atk_modifier -= atk_bonus
+	attacker.def_modifier -= def_bonus
 
 ## Veilbound: Ritual Channel — generate flow and boost morale
 func ritual_channel(combat: Node, attacker: Dictionary, _target: Dictionary) -> void:
@@ -412,10 +486,13 @@ func ritual_channel(combat: Node, attacker: Dictionary, _target: Dictionary) -> 
 	combat.advance_turn()
 
 ## Veilbound: Phase Strike — teleport-attack
+## Requires flow_tier "surging" (flow >= 6).
 func phase_strike(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 	var state = combat.faction_state[attacker.side]
-	if state.flow < 2:
-		_log("Not enough Flow (need 2).\n")
+	var _surging_threshold: int = GameRules.FLOW_THRESHOLDS["surging"]["flow"]
+	if state.flow < _surging_threshold:
+		_log("[color=cyan]%s cannot use Phase Strike — requires Surging flow (>= %d, have %d).[/color]\n" % [
+			attacker.name, _surging_threshold, state.flow])
 		if attacker.side == 1:
 			combat.advance_turn()
 		return
@@ -446,10 +523,13 @@ func phase_strike(combat: Node, attacker: Dictionary, target: Dictionary) -> voi
 	combat.attack(attacker, target, "attack_melee")
 
 ## Veilbound: Veil Walk — teleport adjacent to ally
+## Requires flow_tier "overflowing" (flow >= 10).
 func veil_walk(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 	var state = combat.faction_state[attacker.side]
-	if state.flow < 3:
-		_log("Not enough Flow (need 3).\n")
+	var _overflowing_threshold: int = GameRules.FLOW_THRESHOLDS["overflowing"]["flow"]
+	if state.flow < _overflowing_threshold:
+		_log("[color=cyan]%s cannot use Veil Walk — requires Overflowing flow (>= %d, have %d).[/color]\n" % [
+			attacker.name, _overflowing_threshold, state.flow])
 		if attacker.side == 1:
 			combat.advance_turn()
 		return
@@ -484,10 +564,13 @@ func veil_walk(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 	combat.advance_turn()
 
 ## Veilbound: Honor Guard — redirect next attack to guard
+## Requires flow_tier "stirring" (flow >= 3).
 func honor_guard(combat: Node, attacker: Dictionary, target: Dictionary) -> void:
 	var state = combat.faction_state[attacker.side]
-	if state.flow < 1:
-		_log("Not enough Flow.\n")
+	var _stirring_threshold: int = GameRules.FLOW_THRESHOLDS["stirring"]["flow"]
+	if state.flow < _stirring_threshold:
+		_log("[color=cyan]%s cannot use Honor Guard — requires Stirring flow (>= %d, have %d).[/color]\n" % [
+			attacker.name, _stirring_threshold, state.flow])
 		if attacker.side == 1:
 			combat.advance_turn()
 		return

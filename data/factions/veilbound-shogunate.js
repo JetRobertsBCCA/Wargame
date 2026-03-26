@@ -20,6 +20,54 @@
         "Elite warriors cause minor reality distortion — adjacent enemies have 10% miss chance",
         "Commanders cannot be broken by fear or morale effects",
       ],
+
+      faction_skills: [
+        {
+          id: "stance_strike_aggressive",
+          name: "Stance Strike (Aggressive)",
+          flow_cost: 2,
+          type: "Melee",
+          description: "Melee attack in Aggressive Stance. +2 ATK dice. Costs 2 Flow."
+        },
+        {
+          id: "stance_strike_defensive",
+          name: "Stance Strike (Defensive)",
+          flow_cost: 1,
+          type: "Melee",
+          description: "Melee attack in Defensive Stance. +1 DEF until next turn. Costs 1 Flow."
+        },
+        {
+          id: "stance_strike_balanced",
+          name: "Stance Strike (Balanced)",
+          flow_cost: 1,
+          type: "Melee",
+          description: "Melee attack in Balanced Stance. +1 ATK die, +1 DEF until next turn. Costs 1 Flow."
+        },
+        {
+          id: "phase_strike",
+          name: "Phase Strike",
+          flow_cost: 2,
+          type: "Melee",
+          flow_tier_required: "Surging (6+)",
+          description: "Strike through the Veil. Ignore cover and terrain penalties. Costs 2 Flow. Requires Surging flow (6+)."
+        },
+        {
+          id: "veil_walk",
+          name: "Veil Walk",
+          flow_cost: 3,
+          type: "Special",
+          flow_tier_required: "Overflowing (10+)",
+          description: "Step through the Veil. Teleport up to 8 tiles. Costs 3 Flow. Requires Overflowing flow (10+)."
+        },
+        {
+          id: "honor_guard",
+          name: "Honor Guard",
+          flow_cost: 1,
+          type: "Support",
+          flow_tier_required: "Stirring (3+)",
+          description: "Designate an ally as protected. Redirect 1 hit per attack to this unit instead. Costs 1 Flow. Requires Stirring flow (3+)."
+        }
+      ],
       playstyle_notes:
         "The Veilbound Shogunate fields armies that appear calm, sparse, and restrained — until combat begins. They emphasize precision over numbers, psychological collapse over brute destruction, and decisive engagements that feel preordained. Observers report battles that feel scripted, as though the Veilbound knew the outcome long before blades were drawn.",
       worldview: [

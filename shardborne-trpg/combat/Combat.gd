@@ -649,6 +649,7 @@ func _assign_faction_skills(def: CombatantDefinition, skills: Array[String]) -> 
 				skills.append("gossamer_trap")
 			if def.is_commander():
 				skills.append("anchor_pulse")
+				skills.append("plant_web_anchor")
 			# Fate/reroll commanders grant extra fate_weave uses (already have it; anchor_pulse doubles)
 			if def.has_special("Spawn Spiderlings") or def.has_special("Brood Commander"):
 				if "anchor_pulse" not in skills:
@@ -1221,7 +1222,13 @@ func attack(attacker: Dictionary, target: Dictionary, attack_key: String, auto_a
 			var cover_bonus := _get_terrain_cover(target)
 			if cover_bonus > 0:
 				def_mod += cover_bonus
-				update_information.emit("[color=silver]  (Cover +%d DEF)[/color]\n" % cover_bonus)
+				var cover_terrain := _get_terrain_type_at(target.position)
+				if cover_terrain == "forest":
+					update_information.emit("[color=green]  Forest cover: +1 DEF[/color]\n")
+				elif cover_terrain == "rubble":
+					update_information.emit("[color=#c8a040]  Rubble cover: +2 DEF[/color]\n")
+				else:
+					update_information.emit("[color=green]  Cover: +%d DEF[/color]\n" % cover_bonus)
 		else:
 			if attacker.definition.has_special("Breath Weapon"):
 				update_information.emit("[color=silver]  (Breath Weapon ignores cover)[/color]\n")
@@ -1736,6 +1743,7 @@ func fate_weave(attacker: Dictionary, target: Dictionary): _skill_manager.fate_w
 func gossamer_trap(attacker: Dictionary, target: Dictionary): _skill_manager.gossamer_trap(self, attacker, target)
 func anchor_pulse(attacker: Dictionary, target: Dictionary): _skill_manager.anchor_pulse(self, attacker, target)
 func natures_wrath(attacker: Dictionary, target: Dictionary): _skill_manager.natures_wrath(self, attacker, target)
+func plant_web_anchor(attacker: Dictionary, target: Dictionary): _skill_manager.plant_web_anchor(self, attacker, target)
 func stance_strike(attacker: Dictionary, target: Dictionary): _skill_manager.stance_strike(self, attacker, target)
 func ritual_channel(attacker: Dictionary, target: Dictionary): _skill_manager.ritual_channel(self, attacker, target)
 func phase_strike(attacker: Dictionary, target: Dictionary): _skill_manager.phase_strike(self, attacker, target)

@@ -104,15 +104,24 @@ func _show_opening_story():
 func _handle_return_from_battle():
 	"""Handle returning from a battle — show appropriate story."""
 	if _last_battle_won:
-		# Show post-victory story for the PREVIOUS mission (current_mission was already advanced)
-		var prev_index = _campaign_manager.get_current_mission_index() - 1
-		if prev_index >= 0:
-			var prev_mission = _campaign_manager.get_mission(prev_index)
+		# Show post-victory story for the mission that was JUST completed.
+		# Use mission_results to find the actual completed mission index, not
+		# (current_mission - 1), because branching may have changed current_mission.
+		var results: Array = _campaign_manager.mission_results
+		var just_completed_index: int = -1
+		if not results.is_empty():
+			just_completed_index = results[-1].get("mission_index", -1)
+
+		if just_completed_index >= 0:
+			var prev_mission = _campaign_manager.get_mission(just_completed_index)
 			# Show victory banner first, then story
-			_show_mission_complete_banner(prev_index, prev_mission.get("title", ""), func():
+			_show_mission_complete_banner(just_completed_index, prev_mission.get("title", ""), func():
 				var post_story = prev_mission.get("post_story", [])
-				if not post_story.is_empty():
-					_play_story(post_story, _check_campaign_complete)
+				# Append casualty-responsive commander lines
+				var extended_story = post_story.duplicate()
+				extended_story.append_array(_build_casualty_dialogue())
+				if not extended_story.is_empty():
+					_play_story(extended_story, _check_campaign_complete)
 				else:
 					_check_campaign_complete()
 			)
@@ -125,6 +134,59 @@ func _handle_return_from_battle():
 			_play_story(defeat_story, _show_hub)
 		else:
 			_show_hub()
+
+func _build_casualty_dialogue() -> Array:
+	"""Build extra commander dialogue lines based on last battle results (casualties, level-ups, clean win)."""
+	# Find the most recent victory result
+	var last_result: Dictionary = {}
+	for i in range(_campaign_manager.mission_results.size() - 1, -1, -1):
+		var r = _campaign_manager.mission_results[i]
+		if r.get("victory", false):
+			last_result = r
+			break
+	if last_result.is_empty():
+		return []
+
+	var commander: String = _campaign_manager.get_commander_name()
+	var casualties: Array = last_result.get("player_casualties", [])
+	var level_ups: Array = last_result.get("level_ups", [])
+	var lines: Array = []
+
+	if casualties.size() > 4:
+		# Heavy losses — sorrowful acknowledgment
+		lines.append({
+			"speaker": commander,
+			"text": "So many fallen... I will remember each name. Every one of them chose to stand when they could have run. That is not a small thing.",
+			"mood": "sorrowful",
+		})
+	elif casualties.size() > 0:
+		# Some losses — quiet acknowledgment
+		lines.append({
+			"speaker": commander,
+			"text": "We paid a price today. Those we lost will not be forgotten. That is the weight of command — and I carry it willingly.",
+			"mood": "solemn",
+		})
+
+	if level_ups.size() > 0:
+		# Promotion recognition — use the first promoted unit
+		var promoted_unit: String = level_ups[0].get("unit", "a warrior")
+		var new_level: int = level_ups[0].get("level", 1)
+		lines.append({
+			"speaker": commander,
+			"text": "%s has earned their rank through fire and blood. Level %d — well deserved. Stand tall." % [promoted_unit, new_level],
+			"mood": "proud",
+		})
+
+	if casualties.is_empty() and level_ups.is_empty():
+		# Clean victory — triumphant
+		lines.append({
+			"speaker": commander,
+			"text": "Not one of ours lost. That is how you fight a war — win completely, pay nothing. Remember this feeling. Carry it into the next battle.",
+			"mood": "triumphant",
+		})
+
+	return lines
+
 
 func _check_campaign_complete():
 	"""After post-victory story, check if campaign is done."""
@@ -447,12 +509,12 @@ func _apply_event_effect(effect: String):
 		"xp_melee":
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type in [CombatantDefinition.UnitType.MELEE, CombatantDefinition.UnitType.ELITE]:
+				if def and def.unit_type in [CombatantDefinition.UnitType.INFANTRY, CombatantDefinition.UnitType.SPECIALIST]:
 					cm._grant_xp(unit_name, 5)
 		"xp_infantry":
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type in [CombatantDefinition.UnitType.LINE, CombatantDefinition.UnitType.MELEE]:
+				if def and def.unit_type in [CombatantDefinition.UnitType.INFANTRY, CombatantDefinition.UnitType.SCOUT]:
 					cm._grant_xp(unit_name, 5)
 		"heal_all":
 			cm.casualties.clear()
@@ -484,7 +546,7 @@ func _apply_event_effect(effect: String):
 		"xp_melee_8":
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type in [CombatantDefinition.UnitType.MELEE, CombatantDefinition.UnitType.ELITE]:
+				if def and def.unit_type in [CombatantDefinition.UnitType.INFANTRY, CombatantDefinition.UnitType.SPECIALIST]:
 					cm._grant_xp(unit_name, 8)
 		"full_restore":
 			cm.casualties.clear()
@@ -496,7 +558,7 @@ func _apply_event_effect(effect: String):
 		"xp_ranged":
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type == CombatantDefinition.UnitType.RANGED:
+				if def and def.unit_type == CombatantDefinition.UnitType.ARTILLERY:
 					cm._grant_xp(unit_name, 5)
 		"xp_commander_8":
 			cm._grant_xp(cm.get_commander_name(), 8)
@@ -508,18 +570,18 @@ func _apply_event_effect(effect: String):
 		"xp_elite":
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type == CombatantDefinition.UnitType.ELITE:
+				if def and def.unit_type == CombatantDefinition.UnitType.SPECIALIST:
 					cm._grant_xp(unit_name, 5)
 		"corruption_feast":
 			cm._grant_xp(cm.get_commander_name(), 10)
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type == CombatantDefinition.UnitType.ELITE:
+				if def and def.unit_type == CombatantDefinition.UnitType.SPECIALIST:
 					cm._grant_xp(unit_name, 5)
 		"xp_line_8":
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type == CombatantDefinition.UnitType.LINE:
+				if def and def.unit_type == CombatantDefinition.UnitType.INFANTRY:
 					cm._grant_xp(unit_name, 8)
 		"xp_specialist_8":
 			for unit_name in cm.veterancy:
@@ -529,14 +591,14 @@ func _apply_event_effect(effect: String):
 		"xp_ranged_support_8":
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type in [CombatantDefinition.UnitType.RANGED, CombatantDefinition.UnitType.SUPPORT]:
+				if def and def.unit_type in [CombatantDefinition.UnitType.ARTILLERY, CombatantDefinition.UnitType.SUPPORT]:
 					cm._grant_xp(unit_name, 8)
 		"xp_commander_10":
 			cm._grant_xp(cm.get_commander_name(), 10)
 		"xp_melee_elite_8":
 			for unit_name in cm.veterancy:
 				var def = FactionDatabase.get_unit(unit_name)
-				if def and def.unit_type in [CombatantDefinition.UnitType.MELEE, CombatantDefinition.UnitType.ELITE]:
+				if def and def.unit_type in [CombatantDefinition.UnitType.INFANTRY, CombatantDefinition.UnitType.SPECIALIST]:
 					cm._grant_xp(unit_name, 8)
 
 func _play_story(dialogue: Array, on_complete: Callable):
@@ -848,11 +910,54 @@ func _refresh_missions():
 	var faction_enum = _campaign_manager.get_faction_enum()
 	var accent: Color = FACTION_COLORS.get(faction_enum, Color(0.8, 0.65, 0.15))
 
+	# If the player is on a branch mission, show it at the top as the active mission
+	var current_mission_def = _campaign_manager.get_mission(current)
+	if current_mission_def.get("is_branch", false):
+		var branch_row = PanelContainer.new()
+		var branch_style = StyleBoxFlat.new()
+		branch_style.bg_color = Color(0.25, 0.18, 0.05, 0.20)
+		branch_style.border_width_left = 3
+		branch_style.border_color = Color(0.8, 0.65, 0.15, 0.8)
+		branch_style.corner_radius_top_left = 4
+		branch_style.corner_radius_top_right = 4
+		branch_style.corner_radius_bottom_left = 4
+		branch_style.corner_radius_bottom_right = 4
+		branch_style.content_margin_left = 12
+		branch_style.content_margin_right = 12
+		branch_style.content_margin_top = 8
+		branch_style.content_margin_bottom = 8
+		branch_row.add_theme_stylebox_override("panel", branch_style)
+		_missions_vbox.add_child(branch_row)
+		var bhbox = HBoxContainer.new()
+		bhbox.add_theme_constant_override("separation", 10)
+		bhbox.mouse_filter = MOUSE_FILTER_IGNORE
+		branch_row.add_child(bhbox)
+		var b_icon = Label.new()
+		b_icon.text = "★"
+		b_icon.add_theme_color_override("font_color", Color(0.9, 0.75, 0.2))
+		b_icon.add_theme_font_size_override("font_size", 14)
+		bhbox.add_child(b_icon)
+		var b_title = Label.new()
+		b_title.text = "Branch: %s" % current_mission_def.get("title", "Recovery Mission")
+		b_title.add_theme_font_size_override("font_size", 14)
+		b_title.add_theme_color_override("font_color", Color(0.9, 0.80, 0.45))
+		bhbox.add_child(b_title)
+
+	# Build a set of completed primary mission indices from results
+	var completed_indices: Dictionary = {}
+	for r in _campaign_manager.mission_results:
+		if r.get("victory", false):
+			completed_indices[r.get("mission_index", -1)] = true
+
+	var display_index := 0
 	for i in range(total):
 		var mission = _campaign_manager.get_mission(i)
+		if mission.get("is_branch", false):
+			continue
 		var is_current = (i == current)
-		var is_complete = (i < current)
-		_build_mission_row(i, mission, is_current, is_complete, accent)
+		var is_complete = completed_indices.has(i)
+		_build_mission_row(display_index, mission, is_current, is_complete, accent)
+		display_index += 1
 
 func _build_mission_row(index: int, mission: Dictionary, is_current: bool, is_complete: bool, accent: Color):
 	var row = PanelContainer.new()

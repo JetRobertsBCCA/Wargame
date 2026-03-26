@@ -105,11 +105,14 @@ func _register_faction_skills():
 		"icon_key": "inferno_charge",
 	})
 
+	# Heat Vent ROI fix: reduced base cost from 5 to 3 Heat. At 5 Heat the original deal
+	# (2 dmg) was poor value; 3 Heat for 2 dmg base is competitive with other faction AOEs
+	# and keeps the skill usable at low Heat levels without a variable-spend rewrite.
 	_add_skill("heat_vent", {
 		"name": "Heat Vent", "type": SkillDefinition.SkillType.SPECIAL,
 		"target": SkillDefinition.TargetType.AREA,
-		"desc": "Vent excess Heat: spend 5 Heat to deal 2 damage to all enemies within 3 tiles.",
-		"is_aoe": true, "aoe_radius": 3, "heat_cost": 5,
+		"desc": "Vent excess Heat: spend 3 Heat to deal 2 damage to all enemies within 3 tiles.",
+		"is_aoe": true, "aoe_radius": 3, "heat_cost": 3,
 		"icon_key": "heat_vent",
 	})
 
@@ -126,7 +129,7 @@ func _register_faction_skills():
 	_add_skill("shield_wall", {
 		"name": "Shield Wall", "type": SkillDefinition.SkillType.SUPPORT,
 		"target": SkillDefinition.TargetType.SELF,
-		"desc": "Form Shield Wall. Adjacent allies gain +1 DEF. Requires Grid Cohesion.",
+		"desc": "Form Shield Wall. Adjacent allies gain +1 DEF. Requires Grid Cohesion (unit must be adjacent to 2+ other Grid Node allies).",
 		"def_mod": 1, "charge_cost": 0,
 		"icon_key": "shield_wall",
 	})
@@ -141,7 +144,7 @@ func _register_faction_skills():
 
 	_add_skill("coordinated_fire", {
 		"name": "Coordinated Fire", "type": SkillDefinition.SkillType.RANGED,
-		"desc": "Coordinated volley with Grid Cohesion bonus. +2 ATK dice if 2+ allies adjacent.",
+		"desc": "Coordinated volley with Grid Cohesion bonus. +2 ATK dice if 2+ allies adjacent. Grid Cohesion: unit must be adjacent to 2+ other Grid Node allies.",
 		"min_range": 2, "max_range": 10, "atk_mod": 2,
 		"icon_key": "coordinated_fire",
 	})
@@ -202,6 +205,16 @@ func _register_faction_skills():
 		"icon_key": "terror_shriek",
 	})
 
+	# blood_drain_melee: free replacement for basic attack on Nightfang units.
+	# Restores HP equal to half the number of ATK dice that hit (min 1 HP), and generates
+	# +1 Hunger per use — incentivising aggression within the Hunger Pool loop.
+	_add_skill("blood_drain_melee", {
+		"name": "Blood Drain", "type": SkillDefinition.SkillType.MELEE,
+		"desc": "Melee attack. On hit, restore 1 HP per 2 ATK dice rolled (minimum 1 HP). Generates +1 Hunger per attack.",
+		"cp_cost": 0, "generates_heat": 0,
+		"icon_key": "blood_drain_melee",
+	})
+
 	# ════════════════════ THORNWEFT MATRIARCHY ════════════════════
 
 	_add_skill("web_snare", {
@@ -244,10 +257,27 @@ func _register_faction_skills():
 
 	# ════════════════════ VEILBOUND SHOGUNATE ════════════════════
 
-	_add_skill("stance_strike", {
-		"name": "Stance Strike", "type": SkillDefinition.SkillType.MELEE,
-		"desc": "Melee attack modified by current Stance. Aggressive: +2 ATK. Defensive: +1 DEF. Balanced: +1/+1.",
-		"flow_cost": 1,
+	# Stance Strike is split into three keyed variants so each stance has its own Flow cost.
+	# Aggressive costs more (2 Flow) because +2 ATK is a stronger swing bonus than the
+	# defensive/balanced options. Defensive and Balanced both cost 1 Flow.
+	_add_skill("stance_strike_aggressive", {
+		"name": "Stance Strike (Aggressive)", "type": SkillDefinition.SkillType.MELEE,
+		"desc": "Melee attack in Aggressive Stance. +2 ATK dice. Costs 2 Flow.",
+		"atk_mod": 2, "flow_cost": 2,
+		"icon_key": "stance_strike",
+	})
+
+	_add_skill("stance_strike_defensive", {
+		"name": "Stance Strike (Defensive)", "type": SkillDefinition.SkillType.MELEE,
+		"desc": "Melee attack in Defensive Stance. +1 DEF until next turn. Costs 1 Flow.",
+		"def_mod": 1, "flow_cost": 1,
+		"icon_key": "stance_strike",
+	})
+
+	_add_skill("stance_strike_balanced", {
+		"name": "Stance Strike (Balanced)", "type": SkillDefinition.SkillType.MELEE,
+		"desc": "Melee attack in Balanced Stance. +1 ATK dice, +1 DEF until next turn. Costs 1 Flow.",
+		"atk_mod": 1, "def_mod": 1, "flow_cost": 1,
 		"icon_key": "stance_strike",
 	})
 

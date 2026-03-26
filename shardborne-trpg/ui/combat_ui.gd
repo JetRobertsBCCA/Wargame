@@ -41,10 +41,14 @@ var _top_bar: PanelContainer
 var _turn_queue_container: HBoxContainer
 var _phase_label: Label
 var _round_label: Label
+var _phase_step_label: Label
 var _resource_label: RichTextLabel
 var _enemy_resource_label: RichTextLabel
+var _player_resource_header: Label
+var _enemy_resource_header: Label
 var _cp_label: Label
 var _vp_label: Label
+var _last_vp: Array = [0, 0]  # Track VP for SFX trigger
 
 var _bottom_bar: PanelContainer
 var _active_name_label: Label
@@ -214,6 +218,12 @@ func _build_top_bar():
 	_round_label.add_theme_color_override("font_color", Color(0.55, 0.55, 0.65))
 	phase_vbox.add_child(_round_label)
 
+	_phase_step_label = Label.new()
+	_phase_step_label.text = ""
+	_phase_step_label.add_theme_font_size_override("font_size", 9)
+	_phase_step_label.add_theme_color_override("font_color", Color(0.85, 0.75, 0.3))
+	phase_vbox.add_child(_phase_step_label)
+
 	# Separator
 	var sep = VSeparator.new()
 	sep.mouse_filter = MOUSE_FILTER_IGNORE
@@ -242,7 +252,18 @@ func _build_top_bar():
 	spacer.mouse_filter = MOUSE_FILTER_IGNORE
 	hbox.add_child(spacer)
 
-	# Faction resources (player side)
+	# Faction resources (player side) — wrapped in a VBox with an ownership header
+	var player_res_vbox = VBoxContainer.new()
+	player_res_vbox.add_theme_constant_override("separation", 0)
+	player_res_vbox.mouse_filter = MOUSE_FILTER_IGNORE
+	hbox.add_child(player_res_vbox)
+
+	_player_resource_header = Label.new()
+	_player_resource_header.text = "[PLAYER]"
+	_player_resource_header.add_theme_font_size_override("font_size", 8)
+	_player_resource_header.add_theme_color_override("font_color", SIDE_COLORS[0])
+	player_res_vbox.add_child(_player_resource_header)
+
 	_resource_label = RichTextLabel.new()
 	_resource_label.bbcode_enabled = true
 	_resource_label.fit_content = true
@@ -250,9 +271,20 @@ func _build_top_bar():
 	_resource_label.mouse_filter = MOUSE_FILTER_PASS
 	_resource_label.tooltip_text = ""
 	_resource_label.custom_minimum_size = Vector2(130, 0)
-	hbox.add_child(_resource_label)
+	player_res_vbox.add_child(_resource_label)
 
-	# Enemy faction resources
+	# Enemy faction resources — wrapped in a VBox with an ownership header
+	var enemy_res_vbox = VBoxContainer.new()
+	enemy_res_vbox.add_theme_constant_override("separation", 0)
+	enemy_res_vbox.mouse_filter = MOUSE_FILTER_IGNORE
+	hbox.add_child(enemy_res_vbox)
+
+	_enemy_resource_header = Label.new()
+	_enemy_resource_header.text = "[ENEMY]"
+	_enemy_resource_header.add_theme_font_size_override("font_size", 8)
+	_enemy_resource_header.add_theme_color_override("font_color", SIDE_COLORS[1])
+	enemy_res_vbox.add_child(_enemy_resource_header)
+
 	_enemy_resource_label = RichTextLabel.new()
 	_enemy_resource_label.bbcode_enabled = true
 	_enemy_resource_label.fit_content = true
@@ -260,7 +292,7 @@ func _build_top_bar():
 	_enemy_resource_label.mouse_filter = MOUSE_FILTER_PASS
 	_enemy_resource_label.tooltip_text = ""
 	_enemy_resource_label.custom_minimum_size = Vector2(130, 0)
-	hbox.add_child(_enemy_resource_label)
+	enemy_res_vbox.add_child(_enemy_resource_label)
 
 	# Command Points display
 	_cp_label = Label.new()
@@ -1050,6 +1082,16 @@ func update_information(info: String):
 	if _log_text == null:
 		return
 	_log_text.append_text(info)
+	# ── Combat SFX hooks based on log message content ──
+	var info_lower = info.to_lower()
+	if "critical" in info_lower or "crit" in info_lower:
+		AudioManager.play_sfx("attack_crit")
+	elif "misses" in info_lower or "no hits" in info_lower:
+		AudioManager.play_sfx("attack_miss")
+	if "shaken" in info_lower:
+		AudioManager.play_sfx("morale_break")
+	if "routed" in info_lower or "destroyed" in info_lower:
+		AudioManager.play_sfx("unit_destroyed")
 
 func update_combatants(combatants: Array):
 	if _turn_queue_container == null:
@@ -1138,10 +1180,13 @@ func update_faction_resources(faction_state: Dictionary):
 	if combat and _cp_label:
 		_cp_label.text = "CP: %d" % combat.command_points[0]
 
-	# Update VP display
+	# Update VP display — play SFX when either side scores
 	if combat and combat.scenario_manager:
 		var vp = combat.scenario_manager.vp
 		_vp_label.text = "VP: %d — %d" % [vp[0], vp[1]]
+		if vp[0] != _last_vp[0] or vp[1] != _last_vp[1]:
+			AudioManager.play_sfx("vp_scored")
+			_last_vp = [vp[0], vp[1]]
 
 
 ## Get a thematic tier label for a faction resource value
@@ -1224,6 +1269,26 @@ func update_phase(phase_name: String):
 	if _phase_label == null:
 		return
 	_phase_label.text = phase_name
+	update_phase_step(phase_name)
+
+
+## Updates the phase step indicator label with a color-coded phase name.
+## Call with one of: "COMMAND PHASE", "MOVEMENT PHASE", "COMBAT PHASE", "END PHASE"
+func update_phase_step(phase_name: String):
+	if _phase_step_label == null:
+		return
+	_phase_step_label.text = phase_name
+	var phase_upper = phase_name.to_upper()
+	if "COMMAND" in phase_upper:
+		_phase_step_label.add_theme_color_override("font_color", Color(0.9, 0.75, 0.2))   # gold
+	elif "MOVEMENT" in phase_upper or "MOVE" in phase_upper:
+		_phase_step_label.add_theme_color_override("font_color", Color(0.3, 0.85, 0.95))  # cyan
+	elif "COMBAT" in phase_upper or "ATTACK" in phase_upper:
+		_phase_step_label.add_theme_color_override("font_color", Color(1.0, 0.3, 0.25))   # red
+	elif "END" in phase_upper:
+		_phase_step_label.add_theme_color_override("font_color", Color(0.55, 0.55, 0.6))  # grey
+	else:
+		_phase_step_label.add_theme_color_override("font_color", Color(0.7, 0.7, 0.75))
 
 ## Called when combat advances to a new unit's turn (connected via scene signal)
 func _on_combat_turn_advanced(combatant: Dictionary):
@@ -1232,6 +1297,7 @@ func _on_combat_turn_advanced(combatant: Dictionary):
 	var phase_text := GameStateMachine.get_phase_name()
 	if _phase_label:
 		_phase_label.text = "Round %d — %s — %s" % [GameStateMachine.round_number, phase_text, combatant.get("name", side_label)]
+	update_phase_step(phase_text)
 
 
 # ══════════════════════════════════════════════════════════════

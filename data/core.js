@@ -241,7 +241,7 @@ const gameData = {
       iron_dominion: {
         grid_cohesion: {
           description:
-            "Iron Dominion units fight as nodes in a tactical Grid. When units maintain formation, they share bonuses. When isolated, they lose effectiveness. During the Command Phase, calculate Grid status for each unit by counting friendly units within 4\" (War Machines with Grid Anchor count as 2 units for this purpose). Grid status is LOCKED for the rest of the turn once calculated — it does not change if units move apart during the Movement Phase. This rewards careful pre-movement positioning. In Epic games, Grid status may be calculated per squad rather than per individual unit (see Epic special rules) to reduce bookkeeping.",
+            "Iron Dominion units fight as nodes in a tactical Grid. When units maintain formation, they share bonuses. When isolated, they lose effectiveness. Grid Cohesion: a unit must be adjacent to 2+ other Grid Node allies to be Grid Active. During the Command Phase, calculate Grid status for each unit by counting friendly units within 4\" (War Machines with Grid Anchor count as 2 units for this purpose). The Grid Cohesion pool is set at round start and persists for the round — spending it is a real tactical choice, as pool levels do not reset until the next Command Phase. Grid status is LOCKED for the rest of the turn once calculated — it does not change if units move apart during the Movement Phase. This rewards careful pre-movement positioning. In Epic games, Grid status may be calculated per squad rather than per individual unit (see Epic special rules) to reduce bookkeeping.",
           tiers: [
             { name: "Isolated", units_within_3_inches: 0, bonus: "−1 ATK die. Unit operates alone without Grid support." },
             { name: "Connected", units_within_3_inches: 1, bonus: "No bonus or penalty. Stable but unremarkable." },
@@ -290,6 +290,23 @@ const gameData = {
             {
               name: "Revelation Stance ⚔️",
               effect: "+1 ATK die, −1 DEF. Generate +1 Ritual Flow this turn. Aggressive posture channeling spiritual energy into devastating attacks."
+            }
+          ],
+          stance_strikes: [
+            {
+              name: "Stance Strike (Aggressive)",
+              id: "stance_strike_aggressive",
+              effect: "Melee attack in Aggressive Stance. +2 ATK dice. Costs 2 Flow."
+            },
+            {
+              name: "Stance Strike (Defensive)",
+              id: "stance_strike_defensive",
+              effect: "Melee attack in Defensive Stance. +1 DEF until next turn. Costs 1 Flow."
+            },
+            {
+              name: "Stance Strike (Balanced)",
+              id: "stance_strike_balanced",
+              effect: "Melee attack in Balanced Stance. +1 ATK die, +1 DEF until next turn. Costs 1 Flow."
             }
           ]
         }
@@ -356,6 +373,10 @@ const gameData = {
         nocturnal_predators: {
           description: "All Nightfang units gain +1 DEF when in cover or shadow terrain, representing their natural affinity for darkness and ambush. This bonus stacks with normal cover bonuses.",
           rule: "Passive faction ability — always active. No cost or activation required."
+        },
+        blood_drain_melee: {
+          description: "A melee skill available to Nightfang units, representing the vampiric drain that defines the Dominion's predatory nature. On a successful hit, the attacker restores HP equal to half the ATK dice rolled (minimum 1 HP restored), and the attack generates +1 Hunger for the faction Hunger Pool.",
+          rule: "Blood Drain: Melee attack. On hit, restore 1 HP per 2 ATK dice rolled (minimum 1 HP). Generates +1 Hunger per attack. Complements Blood Tithe and the Hunger Pool — aggressive Nightfang play that drains enemies also sustains the army."
         }
       },
       emberclaw_warpack: {
@@ -372,6 +393,7 @@ const gameData = {
           spending: [
             "Spend 2 Heat: One friendly unit's attacks gain +1 damage per hit this turn (Superheated Strikes).",
             "Spend 3 Heat: One friendly unit with Breath Weapon may use it a second time this turn.",
+            "Spend 3 Heat: Heat Vent — vent excess draconic energy in a 3\" radius burst, dealing 2 damage to all enemies within range. Commanders only. (Reduced from 5 Heat.)",
             "Spend 4 Heat: All friendly flying units gain +2\" MOV and +1 ATK die this turn (Thermal Updraft).",
             "Spend 5 Heat: Activate Firestorm — choose a 4\" radius area within 15\" of your Commander. All units in the area suffer a 3-dice fire attack. Creates Burning Terrain.",
             "Spend Heat on Fragment activations: Heat replaces Fragment Charges for Emberclaw. Fragment activation costs are paid in Heat at a 1:1 ratio."

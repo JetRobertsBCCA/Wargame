@@ -29,6 +29,8 @@ static func create_faction_state(faction: int) -> Dictionary:
 		CombatantDefinition.Faction.IRON_DOMINION:
 			return {
 				"grid_cohesion": 0,
+				"grid_cohesion_max": 0,
+				"grid_cohesion_spent": 0,
 				"fragments_placed": 0,
 			}
 		CombatantDefinition.Faction.NIGHTFANG:
@@ -183,7 +185,12 @@ func on_drake_bond_death(dead: Dictionary, combatants: Array) -> void:
 
 func _iron_dominion_round_start(side: int, state: Dictionary,
 		combatants: Array, groups: Array) -> void:
+	# Recalculate max cohesion from current formation, then set cohesion to that max.
+	# Grid cohesion is a persistent within-round resource — it does NOT regenerate mid-round.
 	recalculate_grid_cohesion(side, state, combatants, groups)
+	state.grid_cohesion_max = state.grid_cohesion
+	state.grid_cohesion_spent = 0
+	_log("[color=steel_blue]Iron Dominion Grid Cohesion reset to %d for the new round.[/color]\n" % state.grid_cohesion_max)
 	# Field Repair Aura: units with this keyword repair adjacent allies 1 HP each round
 	for idx in groups[side]:
 		var comb = combatants[idx]
@@ -607,6 +614,8 @@ func get_grid_tier(comb: Dictionary, combatants: Array, groups: Array) -> Dictio
 
 
 ## Iron Dominion: Recalculate grid cohesion count for a side.
+## Sets both grid_cohesion and grid_cohesion_max to the formation-based value.
+## Note: after calling this at round start, grid_cohesion_spent should be reset separately.
 func recalculate_grid_cohesion(side: int, state: Dictionary,
 		combatants: Array, groups: Array) -> void:
 	var total_connected := 0
@@ -617,6 +626,7 @@ func recalculate_grid_cohesion(side: int, state: Dictionary,
 			if tier.get("atk_mod", 0) > 0:
 				total_connected += 1
 	state.grid_cohesion = total_connected
+	state.grid_cohesion_max = total_connected
 
 
 ## Nightfang: Get DEF penalty from corruption tokens.
@@ -795,12 +805,14 @@ func modify_heat(state: Dictionary, amount: int) -> void:
 
 
 ## Iron Dominion: Spend grid cohesion for an active command (#13).
+## Grid cohesion is a persistent within-round resource — it does NOT regenerate mid-round
+## and is NOT recalculated here (recalculation only happens at round start).
 ## Returns true if successfully spent.
-func spend_grid_cohesion(side: int, state: Dictionary, cost: int,
-		combatants: Array, groups: Array) -> bool:
-	recalculate_grid_cohesion(side, state, combatants, groups)
+func spend_grid_cohesion(_side: int, state: Dictionary, cost: int,
+		_combatants: Array = [], _groups: Array = []) -> bool:
 	if state.grid_cohesion >= cost:
 		state.grid_cohesion -= cost
+		state.grid_cohesion_spent = state.get("grid_cohesion_spent", 0) + cost
 		return true
 	return false
 

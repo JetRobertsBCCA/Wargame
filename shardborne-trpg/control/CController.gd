@@ -193,9 +193,14 @@ func _ready():
 
 	# Generate procedural battlefield terrain (clears old baked tile data)
 	var deploy_end_x := maxi(4, grid_width / 6)
+	# Pass faction IDs from BattleConfig so MapGenerator can place faction terrain.
+	# Faction enum values: EMBERCLAW=0, IRON_DOMINION=1, NIGHTFANG=2, THORNWEFT=3, VEILBOUND=4
+	var p_faction: int = BattleConfig.player_faction if BattleConfig.has_custom_armies else -1
+	var e_faction: int = BattleConfig.enemy_faction if BattleConfig.has_custom_armies else -1
 	_terrain_description = MapGenerator.generate(
 		tile_map, Vector2i(grid_width, grid_height),
-		deploy_end_x, terrain_metadata, _impassable_spaces
+		deploy_end_x, terrain_metadata, _impassable_spaces,
+		p_faction, e_faction
 	)
 
 	# Scan generated tiles for movement-class blocking (e.g., future water tiles)
@@ -415,6 +420,41 @@ func update_points_weight():
 ## Return the flavor description of generated terrain for the battle log.
 func get_terrain_description() -> String:
 	return _terrain_description
+
+## Check whether the line of sight between two tile positions is clear of mountains.
+## Uses a step-based Bresenham line. Returns false if any intermediate tile is in
+## _impassable_spaces (mountain tiles); returns true otherwise.
+func is_los_clear(from: Vector2i, to: Vector2i) -> bool:
+	# Build a fast lookup from the impassable set
+	var imp_set: Dictionary = {}
+	for pos in _impassable_spaces:
+		imp_set[pos] = true
+
+	# Bresenham line iteration
+	var dx := absi(to.x - from.x)
+	var dy := absi(to.y - from.y)
+	var sx := 1 if from.x < to.x else -1
+	var sy := 1 if from.y < to.y else -1
+	var err := dx - dy
+	var x := from.x
+	var y := from.y
+
+	while true:
+		var cur := Vector2i(x, y)
+		# Skip the endpoints themselves — they are the shooter and target
+		if cur != from and cur != to:
+			if cur in imp_set:
+				return false
+		if x == to.x and y == to.y:
+			break
+		var e2 := 2 * err
+		if e2 > -dy:
+			err -= dy
+			x += sx
+		if e2 < dx:
+			err += dx
+			y += sy
+	return true
 
 func get_distance(point1: Vector2i, point2: Vector2i):
 	return absi(point1.x - point2.x) + absi(point1.y - point2.y)
@@ -787,6 +827,19 @@ func target_selected(target: Dictionary):
 	var attacker = combat.get_current_combatant()
 	var skill_def = SkillDatabase.skills.get(_selected_skill) if SkillDatabase else null
 	var target_type = skill_def.target_type if skill_def else SkillDefinition.TargetType.ENEMY
+
+	# ── Line-of-Sight check for ranged skills: block targets behind mountains ──
+	var is_ranged_skill := _selected_skill in ["attack_ranged", "basic_magic", "overwatch", "coordinated_fire", "artillery_barrage"]
+	if not is_ranged_skill and skill_def != null:
+		is_ranged_skill = (skill_def.max_range > 1)
+	if is_ranged_skill and not attacker.definition.has_special("Indirect Fire"):
+		if not is_los_clear(attacker.position, target.position):
+			if combat and combat.game_ui:
+				combat.update_information.emit("[color=red]Mountain blocks line of sight to %s![/color]\n" % target.name)
+			_skill_selected = false
+			target_selection_finished.emit()
+			return
+
 	match target_type:
 		SkillDefinition.TargetType.ENEMY:
 			if target.side == attacker.side:

@@ -41,7 +41,9 @@ static func _commanders() -> Array:
 		_u("Skywatcher Orin",      CMD, 12, 3, 24, 10, 8,  8, 17, ["Aerial Spotter", "Intel Network", "Target Mark"], 8),
 		_u("Clutchmaster Vayne",   CMD, 15, 5, 30,  6, 4,  9, 20, ["Drake Clutch", "Fledgling Swarm", "Beast Commander"], 7),
 		_u("Cinderfist Brok",      CMD, 21, 6, 39,  5, 2,  9, 23, ["Siege Breaker", "Armor Crush", "Demolition Fist"], 6),
-		_u("Flameheart Syrax",     CMD, 9,  4, 27,  5, 12, 10, 22, ["Ember Sight", "War Chant of Ash", "Phoenix Call"], 8),
+		# Syrax: value comes from War Chant of Ash (army-wide MOR buff) and Phoenix Call
+		# (resurrection utility). Combat stats are low — cost reduced to 20 to reflect that.
+		_u("Flameheart Syrax",     CMD, 9,  4, 27,  5, 12, 10, 20, ["Ember Sight", "War Chant of Ash (army MOR buff)", "Phoenix Call (resurrection utility)"], 8),
 		_u("Skullcrusher Threx",   CMD, 24, 5, 36,  8, 1, 10, 24, ["Challenge Roar", "Drake Duel", "Killing Blow"], 7),
 		_u("Tidescar the Exiled",  CMD, 15, 3, 27,  8, 10, 7, 21, ["Fragment Overload", "Volatile Power", "Exile's Gambit"], 6),
 	]

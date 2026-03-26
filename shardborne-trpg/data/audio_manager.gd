@@ -53,6 +53,29 @@ const FACTION_MUSIC_KEYS := {
 	4: "veilbound",
 }
 
+## Expected SFX keys — each requires a matching .mp3 file under res://audio/sfx/
+## Missing files are silently skipped by play_sfx(); add files to enable them.
+## Existing:
+##   card_play        → res://audio/sfx/card_play.mp3
+##   pause            → res://audio/sfx/pause.mp3
+##   attack_hit       → res://audio/sfx/attack_hit.mp3
+## Combat UI additions (Task 3):
+##   attack_crit      → res://audio/sfx/attack_crit.mp3   (critical hit landed)
+##   attack_miss      → res://audio/sfx/attack_miss.mp3   (attack whiffs / no hits)
+##   morale_break     → res://audio/sfx/morale_break.mp3  (unit becomes Shaken)
+##   unit_destroyed   → res://audio/sfx/unit_destroyed.mp3 (unit Routed or destroyed)
+##   vp_scored        → res://audio/sfx/vp_scored.mp3     (VP total changes)
+const EXPECTED_SFX_KEYS: Array = [
+	"card_play",
+	"pause",
+	"attack_hit",
+	"attack_crit",
+	"attack_miss",
+	"morale_break",
+	"unit_destroyed",
+	"vp_scored",
+]
+
 # ══════════════════════════════════════════════════════════════
 # LIFECYCLE
 # ══════════════════════════════════════════════════════════════

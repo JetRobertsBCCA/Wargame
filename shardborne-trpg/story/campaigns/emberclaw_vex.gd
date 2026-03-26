@@ -49,6 +49,7 @@ static func _missions() -> Array:
 		_mission_4_the_grid_breaks(),
 		_mission_5_hunger_in_the_dark(),
 		_mission_6_trial_by_fire(),
+		_mission_branch_scorched_retreat(),  # index 6 — loss path from mission 2
 	]
 
 # ────────────────────────────────────────────────────────
@@ -155,7 +156,13 @@ static func _mission_2_foreign_ground() -> Dictionary:
 			"description": "The enemy feeds on death. Enemy units have +1 ATK from bloodlust. Your units gain +1 ATK from righteous fury — they've never been prey before.",
 			"enemy_atk_bonus": 1,
 			"player_atk_bonus": 1,
-		},	}
+		},
+		"victory_branches": {
+			"next_on_win": 2,
+			"next_on_loss": 6,
+			"loss_casualty_threshold": 3,
+		},
+	}
 
 # ────────────────────────────────────────────────────────
 # MISSION 3: Shard Hunt
@@ -431,6 +438,64 @@ static func _mission_6_trial_by_fire() -> Dictionary:
 			"player_hp_bonus": 1,
 			"enemy_hp_bonus": 1,
 		},	}
+
+# ────────────────────────────────────────────────────────
+# BRANCH MISSION (index 6): Scorched Retreat
+# Loss path from mission 2 — reached when casualties are high
+# A defensive recovery mission: hold the ridge while the warband regroups
+# ────────────────────────────────────────────────────────
+
+static func _mission_branch_scorched_retreat() -> Dictionary:
+	return {
+		"title": "Scorched Retreat",
+		"is_branch": true,
+		"objectives_text": "Hold the ridge for 5 rounds. The warband is battered — survive long enough to regroup.",
+		"pre_story": [
+			ShardLore.narration("The Nightfang had taken too many. The warband limped north to a narrow ridge of fused volcanic glass — defensible, barely, if the survivors could hold together."),
+			ShardLore.dialogue("Scorchcaller Vex", "We are not broken. We are scattered. There is a difference. Hold this ridge — one hour, that's all I need. Then we regroup, re-arm, and we burn everything that did this to us.", "fierce"),
+			ShardLore.narration("Behind them, the Nightfang followed. Slower now — satisfied by their feeding — but patient. Hungry for the rest."),
+		],
+		"post_story": [
+			ShardLore.narration("The ridge held. Barely. The warband was exhausted, bloodied, and down to their last reserves of Heat. But they had held."),
+			ShardLore.dialogue("Scorchcaller Vex", "That's all we needed. One breath. One moment where they don't get everything. Now we move — and we do not stop moving until those shards are ours.", "steeling"),
+			ShardLore.narration("The battle with the Nightfang had cost them dearly. But Vex understood now: this world would demand blood. The question was whether she could take more than it took from her."),
+		],
+		"defeat_story": [
+			ShardLore.narration("The ridge fell. The last Emberclaw defenders retreated into the broken hills, scattered and burning."),
+			ShardLore.dialogue("Scorchcaller Vex", "Again. We try again. The fire always comes back.", "defiant"),
+		],
+		"player_army": [
+			"Scorchcaller Vex",
+			"Ashborn Infantry",
+			"Emberclaw Warriors",
+			"Flameborn Guard",
+		],
+		"enemy_faction": CombatantDefinition.Faction.NIGHTFANG,
+		"enemy_army": [
+			"Blood Reavers",
+			"Blood Reavers",
+			"Thrall Conscripts",
+			"Thrall Conscripts",
+			"Shadow Stalkers",
+		],
+		"battle_size": "skirmish",
+		"scenario": "the_last_stand",
+		"round_limit": 5,
+		"tutorial_tips": [
+			"This is a survival mission — you do not need to destroy all enemies, just last 5 rounds.",
+			"Concentrate your units on one defense point. Don't spread thin.",
+			"Vex's Command Points are limited — spend them on keeping your front line alive.",
+		],
+		"battle_modifiers": {
+			"label": "Battered Warband",
+			"description": "The retreat has cost you. All your units start with -1 HP and -1 ATK from exhaustion.",
+			"player_hp_bonus": -1,
+			"player_atk_bonus": -1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,  # Rejoin main track at mission 3 (index 2)
+		},
+	}
 
 # ══════════════════════════════════════════════════════════════
 # ENDING STORY — Shown after completing all missions

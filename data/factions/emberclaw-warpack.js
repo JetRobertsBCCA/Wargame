@@ -19,6 +19,17 @@
       "Drake Bond: Riders paired with drakes gain +1 ATK and share wounds",
       "Flame Aura: Units with Fire keyword deal +1 damage to adjacent enemies at the start of each turn"
     ],
+
+    faction_skills: [
+      {
+        id: "heat_vent",
+        name: "Heat Vent",
+        heat_cost: 3,
+        type: "Special (AoE)",
+        available_to: "Commanders",
+        description: "Vent excess Heat: spend 3 Heat to deal 2 damage to all enemies within 3 tiles. Commanders only. Blocked on round 1 for war machines."
+      }
+    ],
     
     playstyle_notes: "Emberclaw excels at aerial dominance and alpha strikes. Use flying units to bypass enemy lines, position breath weapons for devastating templates, and maintain Drake Bonds for resilient shock troops. Vulnerable to massed ranged fire before closing distance.",
     
@@ -1215,7 +1226,7 @@
       playstyle: "Prophecy mechanics, morale warfare, divine intervention",
       base_stats: { Command: 8, Knowledge: 10, Leadership: 10, Agility: 5, Health: 210 },
       battle_stats: { ATK: 9, DEF: 4, HP: 27, MOV: 7, RNG: 14, MOR: 10 },
-      points_cost: 22,
+      points_cost: 20,
       level_1_deck: {
         command: ["Divine Vision", "Tyrant's Wrath"],
         tech: ["Prophecy Weaving", "Morale Dominance"],

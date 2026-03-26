@@ -17,7 +17,18 @@
         "Corruption Spread: When a Nightfang unit deals melee damage, the target gains 1 Corruption token. Units with 3+ tokens suffer -1 ATK and -1 MOR.",
         "Blood Tithe: Nightfang units may sacrifice 1 HP to gain +1 ATK die for one attack. Commanders may sacrifice 2 HP to draw 1 card.",
         "Hunger Pool: Each enemy model destroyed adds 1 to the faction Hunger Pool. At 5 Hunger: all units +1 MOV. At 10: all units +1 ATK. At 15: Commander heals 3 HP.",
-        "Nocturnal Predators: Nightfang units gain +1 DEF when in terrain or areas with the 'shadow' or 'cover' keyword."
+        "Nocturnal Predators: Nightfang units gain +1 DEF when in terrain or areas with the 'shadow' or 'cover' keyword.",
+        "Blood Drain: On a successful melee hit, restore 1 HP per 2 ATK dice rolled (minimum 1 HP). Generates +1 Hunger per attack."
+      ],
+
+      faction_skills: [
+        {
+          id: "blood_drain_melee",
+          name: "Blood Drain",
+          type: "Melee",
+          cp_cost: 0,
+          description: "Melee attack. On hit, restore 1 HP per 2 ATK dice rolled (minimum 1 HP). Generates +1 Hunger per attack."
+        }
       ],
       playstyle_notes:
         "The Nightfang Dominion is an aggressive, attrition-based faction that grinds opponents down through corruption debuffs and blood-fueled surges. They field cheap thrall hordes backed by elite tiger warriors and massive corrupted war beasts. The Hunger Pool rewards aggressive play — the more you kill, the stronger you become. Blood Tithe lets you trade HP for burst power at critical moments. Their weakness is low baseline DEF on many units and reliance on momentum — if they stall, they lack the defensive tools of Iron Dominion or the Flow synergy of the Veilbound.",

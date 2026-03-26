@@ -66,6 +66,7 @@ static func _missions() -> Array:
 		_mission_4_threads_and_spirits(),
 		_mission_5_the_blood_siege(),
 		_mission_6_beyond_the_veil(),
+		_mission_branch_shrine_purification(),  # index 6 — loss path from mission 2
 	]
 
 # ────────────────────────────────────────────────────────
@@ -192,6 +193,11 @@ static func _mission_2_the_ancestors_warning() -> Dictionary:
 			"label": "Sacred Ground",
 			"description": "The ancient shrine strengthens spirit-sight. Your units gain +1 MOR near the shrine.",
 			"player_mor_bonus": 1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,
+			"next_on_loss": 6,
+			"loss_casualty_threshold": 3,
 		},
 	}
 
@@ -520,6 +526,66 @@ static func _mission_6_beyond_the_veil() -> Dictionary:
 			"description": "The Veil is threadbare. Your units gain +1 ATK from ancestral resonance. Enemy units gain +1 MOV from the convergence's pull.",
 			"player_atk_bonus": 1,
 			"enemy_mov_bonus": 1,
+		},
+	}
+
+# ────────────────────────────────────────────────────────
+# BRANCH MISSION (index 6): Shrine Purification
+# Loss path from mission 2 — reached when casualties are high
+# Recovery mission: the shrine is compromised; the Shogun must cleanse it
+# ────────────────────────────────────────────────────────
+
+static func _mission_branch_shrine_purification() -> Dictionary:
+	return {
+		"title": "Shrine Purification",
+		"is_branch": true,
+		"objectives_text": "Cleanse the shrine of Nightfang corruption. Hold the three ritual positions for 5 rounds to complete the purification rite.",
+		"pre_story": [
+			ShardLore.narration("The shrine's spiritual light had dimmed under the vampire assault. Sanguinar's corruption had seeped into the sacred stone — not destroying it, but tasting it, seeking the boundary between life and death that made it holy."),
+			ShardLore.dialogue("The Shrouded Shogun", "The shrine is wounded. Not lost. Corruption can be cleansed — the ancestors knew this better than anyone. We hold the ritual positions. We perform the purification rite. The blood-drinkers will come to stop us because they know what this shrine can do once it is whole.", "grave"),
+			ShardLore.dialogue("Spirit Healer Monks", "My lord — the rite requires five uninterrupted rounds of spiritual concentration. We cannot fight and purify at the same time.", "warning"),
+			ShardLore.dialogue("The Shrouded Shogun", "Then the warriors fight. The monks purify. We have done harder things with less. Take your positions.", "commanding"),
+		],
+		"post_story": [
+			ShardLore.narration("The purification rite completed. The shrine's light returned — stronger than before, as if the struggle had tested and proved its holiness. The corruption burned away in a cascade of ancestral fire."),
+			ShardLore.dialogue("The Shrouded Shogun", "The shrine is cleansed. And in the clarity of the rite, the ancestors spoke more clearly than they have since the Veil shattered. Not words — images. Five figures, standing at the five corners of a broken world, each one a thread in a pattern being woven by something vast and cold.", "shaken"),
+			ShardLore.narration("He stood in the shrine's restored light and let the ancestral presence wash over him. Whatever was weaving the Shardlands had not anticipated that the shrine would be purified. For just a moment, he felt something like surprise from the vast presence beyond the Veil."),
+			ShardLore.dialogue("The Shrouded Shogun", "You did not expect that, did you? You brought us here to perform, but you forgot that some performances have their own spirit. Honor cannot be calculated out of existence.", "quiet_defiance"),
+		],
+		"defeat_story": [
+			ShardLore.narration("The purification rite was disrupted. The shrine remained corrupted, its light flickering with borrowed darkness."),
+			ShardLore.dialogue("The Shrouded Shogun", "The shrine will not fall while warriors live to defend it. Regroup. The rite can be restarted. The ancestors are patient. We must be more so.", "steady"),
+		],
+		"player_army": [
+			"The Shrouded Shogun",
+			"Shrine Wardens",
+			"Temple Defenders",
+			"Starblade Samurai",
+			"Spirit Healer Monks",
+		],
+		"enemy_faction": CombatantDefinition.Faction.NIGHTFANG,
+		"enemy_army": [
+			"Blood Reavers",
+			"Blood Reavers",
+			"Thrall Conscripts",
+			"Thrall Conscripts",
+			"Blood Shamans",
+		],
+		"battle_size": "skirmish",
+		"scenario": "the_last_stand",
+		"round_limit": 5,
+		"tutorial_tips": [
+			"Hold all three ritual positions for 5 rounds to complete the purification rite.",
+			"Spirit Healer Monks must occupy ritual positions — they cannot fight, so protect them.",
+			"The Shrouded Shogun's Stance abilities are especially powerful on sacred ground.",
+		],
+		"battle_modifiers": {
+			"label": "Tainted Shrine",
+			"description": "Nightfang corruption weakens spiritual resonance. Your units suffer -1 MOR until the purification completes.",
+			"player_mor_bonus": -1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,  # Rejoin main track at mission 3 (index 2)
 		},
 	}
 

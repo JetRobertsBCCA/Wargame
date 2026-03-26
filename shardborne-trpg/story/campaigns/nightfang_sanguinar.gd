@@ -60,6 +60,7 @@ static func _missions() -> Array:
 		_mission_4_the_honourable_dead(),
 		_mission_5_silk_and_blood(),
 		_mission_6_the_eternal_hunger(),
+		_mission_branch_the_hungry_dark(),  # index 6 — loss path from mission 2
 	]
 
 # ────────────────────────────────────────────────────────
@@ -182,6 +183,11 @@ static func _mission_2_cold_iron() -> Dictionary:
 			"label": "Cold Iron",
 			"description": "Machine blood doesn't feed the Hunger — your Blood Drain provides no recovery this battle. Additionally, their clockwork bodies are harder to wound. Enemy units +1 DEF.",
 			"enemy_def_bonus": 1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,
+			"next_on_loss": 6,
+			"loss_casualty_threshold": 3,
 		},
 	}
 
@@ -499,6 +505,63 @@ static func _mission_6_the_eternal_hunger() -> Dictionary:
 			"description": "The convergence feeds the Hunger. Nightfang units gain +1 ATK from the dead god's blood.",
 			"player_atk_bonus": 1,
 			"enemy_hp_bonus": 1,
+		},
+	}
+
+# ────────────────────────────────────────────────────────
+# BRANCH MISSION (index 6): The Hungry Dark
+# Loss path from mission 2 — reached when casualties are high
+# A desperate feeding raid: the court is starving and must take blood to survive
+# ────────────────────────────────────────────────────────
+
+static func _mission_branch_the_hungry_dark() -> Dictionary:
+	return {
+		"title": "The Hungry Dark",
+		"is_branch": true,
+		"objectives_text": "Seize the abandoned settlement and feed your court. Survive 5 rounds while your thralls feed.",
+		"pre_story": [
+			ShardLore.narration("The losses against the Iron Dominion had sharpened the Hunger into something desperate. Sanguinar's court needed blood — not tomorrow, not soon. Now."),
+			ShardLore.dialogue("Lord Sanguinar", "Scouts report a small Emberclaw waycamp to the east. Undefended, mostly. Three guards. They will not expect us. They will not stop us.", "cold"),
+			ShardLore.dialogue("Countess Nyxara", "My lord — the thralls are barely coherent. Another night without feeding and we lose them entirely.", "urgent"),
+			ShardLore.dialogue("Lord Sanguinar", "Then we do not waste another night. Shadowstalkers forward. Feed the court. I will not let pride starve my people.", "iron_will"),
+		],
+		"post_story": [
+			ShardLore.narration("The waycamp fell quickly. The blood was warm, the feeding efficient. Sanguinar watched his court recover — the jerky movements of the half-starved smoothing into the predatory grace of the Nightfang Dominion in its full power."),
+			ShardLore.dialogue("Lord Sanguinar", "Better. A predator that cannot feed is not a predator — it is prey. We will not make that mistake again. The Iron Dominion fought well today. We will fight better next time.", "dangerous_calm"),
+			ShardLore.narration("He looked east, toward where the Iron Dominion's main camp must lie. The cold blood had barely touched the Hunger. But it was enough to think clearly. Enough to plan."),
+		],
+		"defeat_story": [
+			ShardLore.narration("The Emberclaw guards fought harder than expected. The court retreated, hungry and humiliated."),
+			ShardLore.dialogue("Lord Sanguinar", "We are weakened. Not broken. There is no shame in hunger — only in dying from it. We try again.", "implacable"),
+		],
+		"player_army": [
+			"Lord Sanguinar",
+			"Thrall Conscripts",
+			"Thrall Conscripts",
+			"Shadow Stalkers",
+			"Blood Shamans",
+		],
+		"enemy_faction": CombatantDefinition.Faction.EMBERCLAW,
+		"enemy_army": [
+			"Ashborn Infantry",
+			"Ashborn Infantry",
+			"Ashwalker Skirmishers",
+		],
+		"battle_size": "skirmish",
+		"scenario": "the_last_stand",
+		"round_limit": 5,
+		"tutorial_tips": [
+			"Hold the settlement for 5 rounds to let the thralls feed and recover.",
+			"Shadow Stalkers move fast — use them to pin enemies while Thralls hold the positions.",
+			"Blood Shamans can sustain your wounded. Keep them near Lord Sanguinar.",
+		],
+		"battle_modifiers": {
+			"label": "Starving Court",
+			"description": "Your forces are weakened by hunger. All units start with -1 HP. Survive the raid and the feeding will restore them.",
+			"player_hp_bonus": -1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,  # Rejoin main track at mission 3 (index 2)
 		},
 	}
 

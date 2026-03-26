@@ -57,14 +57,28 @@ func get_faction_enum() -> int:
 	return campaign_data.get("faction_enum", 0)
 
 func get_total_missions() -> int:
+	"""Returns count of primary (non-branch) missions only."""
 	var missions = campaign_data.get("missions", [])
-	return missions.size()
+	var count := 0
+	for m in missions:
+		if not m.get("is_branch", false):
+			count += 1
+	return count
 
 func get_current_mission_index() -> int:
 	return current_mission
 
 func is_campaign_complete() -> bool:
-	return current_mission >= get_total_missions()
+	"""Campaign is complete when current_mission has passed the last primary mission index."""
+	var missions = campaign_data.get("missions", [])
+	var total := missions.size()
+	if current_mission >= total:
+		return true
+	# If all remaining missions from current_mission onward are branch missions, campaign is done
+	for i in range(current_mission, total):
+		if not missions[i].get("is_branch", false):
+			return false
+	return true
 
 # ══════════════════════════════════════════════════════════════
 # OPENING STORY
@@ -194,9 +208,26 @@ func complete_mission(victory: bool, player_casualties_list: Array = []) -> Dict
 		result["level_ups"] = level_ups
 		result["xp_gained"] = 5
 
+		# Determine next mission — support victory_branches for non-linear progression
+		var next_index := current_mission + 1
+		var branches: Dictionary = mission.get("victory_branches", {})
+		if not branches.is_empty():
+			var casualty_count: int = player_casualties_list.size()
+			# Use next_on_loss branch if casualties exceed threshold, else win path
+			if branches.has("next_on_loss") and casualty_count >= branches.get("loss_casualty_threshold", 5):
+				next_index = branches["next_on_loss"]
+				result["branch_taken"] = "loss_path"
+			elif branches.has("next_on_win"):
+				next_index = branches["next_on_win"]
+				result["branch_taken"] = "win_path"
+			if OS.is_debug_build(): print("[CampaignManager] Branch taken: %s → Mission %d" % [result.get("branch_taken", "linear"), next_index])
+		else:
+			result["branch_taken"] = "linear"
+
 		mission_results.append(result)
-		current_mission += 1
-		mission_completed.emit(current_mission - 1, result)
+		var completed_index := current_mission
+		current_mission = next_index
+		mission_completed.emit(completed_index, result)
 
 		# Check if campaign is complete
 		if is_campaign_complete():

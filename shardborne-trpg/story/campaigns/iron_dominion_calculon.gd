@@ -53,6 +53,7 @@ static func _missions() -> Array:
 		_mission_4_fire_and_formula(),
 		_mission_5_the_weavers_equation(),
 		_mission_6_the_grid_remembers(),
+		_mission_branch_grid_lockdown(),  # index 6 — loss path from mission 2
 	]
 
 # ────────────────────────────────────────────────────────
@@ -166,6 +167,11 @@ static func _mission_2_the_corrosion() -> Dictionary:
 			"label": "Night Hunters",
 			"description": "The Nightfang are hunting. Enemy units gain +1 MOV from bloodlust.",
 			"enemy_mov_bonus": 1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,
+			"next_on_loss": 6,
+			"loss_casualty_threshold": 3,
 		},
 	}
 
@@ -461,6 +467,63 @@ static func _mission_6_the_grid_remembers() -> Dictionary:
 			"description": "Raw shard energy floods the field. All units gain +1 HP. The stakes have never been higher.",
 			"player_hp_bonus": 1,
 			"enemy_hp_bonus": 1,
+		},
+	}
+
+# ────────────────────────────────────────────────────────
+# BRANCH MISSION (index 6): Grid Lockdown
+# Loss path from mission 2 — reached when casualties are high
+# A defensive holding action while Calculon recalibrates formation tactics
+# ────────────────────────────────────────────────────────
+
+static func _mission_branch_grid_lockdown() -> Dictionary:
+	return {
+		"title": "Grid Lockdown",
+		"is_branch": true,
+		"objectives_text": "Hold your perimeter for 5 rounds. Reorganize the Grid while under pressure.",
+		"pre_story": [
+			ShardLore.narration("The Nightfang assault had fractured Calculon's formation beyond immediate repair. He pulled his forces into a tight defensive perimeter — a calculated withdrawal to a terrain feature the data had already mapped as defensible."),
+			ShardLore.dialogue("Lord Calculon", "This is not a defeat. This is a tactical recalibration under fire. There is a difference. We hold this line for five minutes, then we advance. Begin emergency Grid mesh re-synchronization.", "controlled"),
+			ShardLore.narration("The Nightfang followed. Patient. Hungry. The Grid's faint pulse was the only warmth in the dark."),
+		],
+		"post_story": [
+			ShardLore.narration("The perimeter held. Calculon stood amid his reformed ranks and ran the post-engagement analysis. The error was correctable. The formation gap had been identified. The fix was already calculated."),
+			ShardLore.dialogue("Lord Calculon", "Margin of survival: 12.7 percent above minimum threshold. Acceptable. Data gathered: the Nightfang prioritize isolated units. Counter-measure: eliminate all gaps in our formation before engagement. Recalibration complete. We advance.", "satisfied"),
+		],
+		"defeat_story": [
+			ShardLore.narration("The perimeter collapsed under sustained pressure. The Grid's emergency mesh flickered out entirely."),
+			ShardLore.dialogue("Lord Calculon", "Insufficient cohesion. The error is computable. Regroup at fallback point Theta. We will not fail the same way twice.", "sharp"),
+		],
+		"player_army": [
+			"Lord Calculon",
+			"Infantry Regiment",
+			"Infantry Regiment",
+			"Steam Sentinels",
+			"Steam Sentinels",
+		],
+		"enemy_faction": CombatantDefinition.Faction.NIGHTFANG,
+		"enemy_army": [
+			"Blood Reavers",
+			"Blood Reavers",
+			"Thrall Conscripts",
+			"Thrall Conscripts",
+			"Shadow Stalkers",
+		],
+		"battle_size": "skirmish",
+		"scenario": "the_last_stand",
+		"round_limit": 5,
+		"tutorial_tips": [
+			"Hold your three positions for 5 rounds — you do not need to destroy the enemy.",
+			"Iron Dominion Grid Cohesion is strongest when units are adjacent. Keep them close.",
+			"Calculon's Command Points can reinforce defense — save them for critical moments.",
+		],
+		"battle_modifiers": {
+			"label": "Fractured Formation",
+			"description": "The Grid is partially rebuilt but still fragile. Your units suffer -1 DEF until formation is restored.",
+			"player_def_bonus": -1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,  # Rejoin main track at mission 3 (index 2)
 		},
 	}
 

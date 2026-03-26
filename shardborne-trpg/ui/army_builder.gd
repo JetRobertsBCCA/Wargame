@@ -36,6 +36,7 @@ var faction_panel: PanelContainer
 var unit_panel: PanelContainer
 var army_panel: PanelContainer
 var _feedback_label: Label  # Shows validation messages
+var _composition_label: Label  # Shows unit type breakdown for current army
 
 func _ready():
 	_build_ui()
@@ -154,6 +155,15 @@ func _build_ui():
 	army_panel = _make_panel("Your Army")
 	hbox.add_child(army_panel)
 	army_list = army_panel.get_node("VBox/Scroll/List")
+
+	# Composition summary — appended to the army panel's VBox, below the scroll area
+	_composition_label = Label.new()
+	_composition_label.text = ""
+	_composition_label.add_theme_font_size_override("font_size", 10)
+	_composition_label.add_theme_color_override("font_color", Color(0.6, 0.65, 0.7))
+	_composition_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_composition_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	army_panel.get_node("VBox").add_child(_composition_label)
 
 	# Bottom buttons
 	var btn_row = HBoxContainer.new()
@@ -398,7 +408,58 @@ func _refresh_army_list():
 
 		army_list.add_child(row)
 
+	_update_composition_summary(army)
 	_check_confirm()
+
+
+func _update_composition_summary(army: Array):
+	if _composition_label == null:
+		return
+	if army.is_empty():
+		_composition_label.text = ""
+		return
+
+	# Count each unit type using CombatantDefinition.UnitType enum keys
+	var type_counts := {
+		"Commander": 0,
+		"Infantry": 0,
+		"Cavalry": 0,
+		"Support": 0,
+		"Specialist": 0,
+		"War Machine": 0,
+	}
+	# Map UnitType enum index to our display bucket
+	var type_map := {
+		0: "Commander",   # COMMANDER
+		1: "Infantry",    # INFANTRY
+		2: "Cavalry",     # CAVALRY
+		3: "Support",     # SUPPORT
+		4: "Infantry",    # SCOUT — grouped with infantry for summary
+		5: "War Machine", # ARTILLERY / WAR_MACHINE
+		6: "Specialist",  # SPECIALIST
+		7: "War Machine", # WAR_MACHINE (alt index)
+	}
+
+	for unit_name in army:
+		var unit_def = FactionDatabase.get_unit(unit_name)
+		if unit_def == null:
+			continue
+		var type_idx: int = unit_def.unit_type
+		var bucket: String = type_map.get(type_idx, "Infantry")
+		if bucket in type_counts:
+			type_counts[bucket] += 1
+
+	# Build compact summary string — only show non-zero types
+	var parts: Array = []
+	for type_name in ["Commander", "Infantry", "Cavalry", "Support", "Specialist", "War Machine"]:
+		var n = type_counts[type_name]
+		if n > 0:
+			parts.append("%s: %d" % [type_name, n])
+
+	if parts.is_empty():
+		_composition_label.text = ""
+	else:
+		_composition_label.text = "  " + "  |  ".join(parts)
 
 func _on_unit_removed(index: int):
 	var army = player_army if selecting_for == "player" else enemy_army

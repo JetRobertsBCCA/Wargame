@@ -22,6 +22,16 @@ const FACTION_NAMES := {
 var _scroll_container: ScrollContainer
 var _content_vbox: VBoxContainer
 var _saves_container: VBoxContainer
+var _show_recommended: bool = false  # Toggle between recommended view and full list
+
+# Difficulty ordering for recommended path sorting
+const DIFFICULTY_ORDER := {
+	"Beginner": 0,
+	"Intermediate": 1,
+	"Advanced": 2,
+	"Expert": 3,
+	"Master": 4,
+}
 
 const CampaignManagerScript = preload("res://combat/campaign_manager_v2.gd")
 
@@ -132,6 +142,7 @@ func _build_header(parent: Control):
 	parent.add_child(header_hbox)
 
 	var title_vbox = VBoxContainer.new()
+	title_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_vbox.add_theme_constant_override("separation", 4)
 	header_hbox.add_child(title_vbox)
 
@@ -151,6 +162,70 @@ func _build_header(parent: Control):
 	subtitle.text = "[color=#8888AA][font_size=13]Choose a commander and forge their legend in the Shardlands[/font_size][/color]"
 	title_vbox.add_child(subtitle)
 
+	# ── Recommended Path toggle button ──
+	var btn_vbox = VBoxContainer.new()
+	btn_vbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	header_hbox.add_child(btn_vbox)
+
+	var rec_btn = Button.new()
+	rec_btn.text = "★ RECOMMENDED PATH"
+	rec_btn.custom_minimum_size = Vector2(180, 36)
+	rec_btn.add_theme_font_size_override("font_size", 13)
+	rec_btn.focus_mode = Control.FOCUS_NONE
+	var rec_style = StyleBoxFlat.new()
+	rec_style.bg_color = Color(0.25, 0.20, 0.08, 0.55)
+	rec_style.corner_radius_top_left = 5
+	rec_style.corner_radius_top_right = 5
+	rec_style.corner_radius_bottom_left = 5
+	rec_style.corner_radius_bottom_right = 5
+	rec_style.border_width_left = 2
+	rec_style.border_width_right = 2
+	rec_style.border_width_top = 1
+	rec_style.border_width_bottom = 1
+	rec_style.border_color = Color(0.8, 0.65, 0.15, 0.5)
+	rec_style.content_margin_left = 12
+	rec_style.content_margin_right = 12
+	rec_style.content_margin_top = 6
+	rec_style.content_margin_bottom = 6
+	rec_btn.add_theme_stylebox_override("normal", rec_style)
+	var rec_hover = rec_style.duplicate()
+	rec_hover.bg_color = Color(0.35, 0.28, 0.10, 0.65)
+	rec_hover.border_color = Color(1.0, 0.85, 0.2, 0.7)
+	rec_btn.add_theme_stylebox_override("hover", rec_hover)
+	var rec_pressed = rec_style.duplicate()
+	rec_pressed.bg_color = Color(0.4, 0.32, 0.08, 0.75)
+	rec_btn.add_theme_stylebox_override("pressed", rec_pressed)
+	rec_btn.add_theme_color_override("font_color", Color(0.85, 0.72, 0.35))
+	rec_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.92, 0.5))
+	rec_btn.pressed.connect(_on_toggle_recommended)
+	btn_vbox.add_child(rec_btn)
+
+	var all_btn = Button.new()
+	all_btn.text = "ALL CAMPAIGNS"
+	all_btn.custom_minimum_size = Vector2(180, 30)
+	all_btn.add_theme_font_size_override("font_size", 11)
+	all_btn.focus_mode = Control.FOCUS_NONE
+	var all_style = StyleBoxFlat.new()
+	all_style.bg_color = Color(0.10, 0.10, 0.12, 0.40)
+	all_style.corner_radius_top_left = 4
+	all_style.corner_radius_top_right = 4
+	all_style.corner_radius_bottom_left = 4
+	all_style.corner_radius_bottom_right = 4
+	all_style.border_width_left = 1
+	all_style.border_color = Color(0.4, 0.4, 0.5, 0.3)
+	all_style.content_margin_left = 8
+	all_style.content_margin_right = 8
+	all_style.content_margin_top = 4
+	all_style.content_margin_bottom = 4
+	all_btn.add_theme_stylebox_override("normal", all_style)
+	var all_hover = all_style.duplicate()
+	all_hover.bg_color = Color(0.16, 0.16, 0.20, 0.5)
+	all_btn.add_theme_stylebox_override("hover", all_hover)
+	all_btn.add_theme_color_override("font_color", Color(0.55, 0.55, 0.65))
+	all_btn.add_theme_color_override("font_hover_color", Color(0.8, 0.8, 0.9))
+	all_btn.pressed.connect(_on_show_all_campaigns)
+	btn_vbox.add_child(all_btn)
+
 
 func _build_campaign_list():
 	var campaigns = CampaignData.get_all_campaigns()
@@ -161,6 +236,10 @@ func _build_campaign_list():
 		empty_label.add_theme_font_size_override("font_size", 16)
 		empty_label.add_theme_color_override("font_color", Color(0.5, 0.5, 0.5))
 		_content_vbox.add_child(empty_label)
+		return
+
+	if _show_recommended:
+		_build_recommended_section(campaigns)
 		return
 
 	# Group campaigns by faction
@@ -182,6 +261,81 @@ func _build_campaign_list():
 		if not by_faction.has(faction_enum):
 			continue
 		_build_faction_section(faction_enum, by_faction[faction_enum])
+
+
+func _build_recommended_section(campaigns: Array):
+	"""Build the recommended path view: sorted by difficulty with gating indicators."""
+	var any_completed := SaveManager.has_any_completions() if SaveManager.has_method("has_any_completions") else false
+
+	# Section header
+	var rec_header = HBoxContainer.new()
+	rec_header.add_theme_constant_override("separation", 8)
+	_content_vbox.add_child(rec_header)
+
+	var star_bar = ColorRect.new()
+	star_bar.custom_minimum_size = Vector2(4, 24)
+	star_bar.color = Color(0.8, 0.65, 0.15)
+	rec_header.add_child(star_bar)
+
+	var rec_label = Label.new()
+	rec_label.text = "RECOMMENDED ORDER — Beginner to Master"
+	rec_label.add_theme_font_size_override("font_size", 16)
+	rec_label.add_theme_color_override("font_color", Color(0.85, 0.72, 0.35, 0.95))
+	rec_header.add_child(rec_label)
+
+	# Sort all campaigns by difficulty then by title
+	var sorted = campaigns.duplicate()
+	sorted.sort_custom(func(a, b):
+		var da = DIFFICULTY_ORDER.get(a.get("difficulty", "Intermediate"), 1)
+		var db = DIFFICULTY_ORDER.get(b.get("difficulty", "Intermediate"), 1)
+		if da != db:
+			return da < db
+		return a.get("title", "") < b.get("title", "")
+	)
+
+	var first_beginner := true
+	for c in sorted:
+		var difficulty: String = c.get("difficulty", "Intermediate")
+		var diff_rank: int = DIFFICULTY_ORDER.get(difficulty, 1)
+		var is_gated: bool = not any_completed and diff_rank >= DIFFICULTY_ORDER["Advanced"]
+		var is_start_here: bool = first_beginner and difficulty == "Beginner"
+		if difficulty == "Beginner":
+			first_beginner = false
+		var faction_color: Color = FACTION_COLORS.get(c.get("faction_enum", 0), Color(0.8, 0.65, 0.15))
+		_build_campaign_card_recommended(c, faction_color, is_gated, is_start_here)
+
+
+func _on_toggle_recommended():
+	"""Switch to recommended path view."""
+	_show_recommended = true
+	_rebuild_campaign_list()
+
+
+func _on_show_all_campaigns():
+	"""Switch back to full faction-grouped view."""
+	_show_recommended = false
+	_rebuild_campaign_list()
+
+
+func _rebuild_campaign_list():
+	"""Clear and rebuild the campaign list while preserving the saves section if present."""
+	# Collect nodes to remove (everything that isn't the saves container or its separator)
+	var to_remove: Array = []
+	for child in _content_vbox.get_children():
+		if _saves_container != null and child == _saves_container:
+			continue  # Keep the saves block
+		# Keep the separator that immediately follows the saves block
+		if _saves_container != null and child is HSeparator and child.get_index() == _saves_container.get_index() + 1:
+			continue
+		to_remove.append(child)
+	for node in to_remove:
+		node.queue_free()
+	# Use call_deferred to wait for queue_free to process, then rebuild
+	call_deferred("_deferred_rebuild_campaign_list")
+
+
+func _deferred_rebuild_campaign_list():
+	_build_campaign_list()
 
 
 func _build_faction_section(faction_enum: int, campaigns: Array):
@@ -312,6 +466,143 @@ func _build_campaign_card(campaign: Dictionary, accent: Color):
 
 	var campaign_id = campaign.id
 	start_btn.pressed.connect(func(): _on_campaign_selected(campaign_id))
+	btn_container.add_child(start_btn)
+
+
+func _build_campaign_card_recommended(campaign: Dictionary, accent: Color, is_gated: bool, is_start_here: bool):
+	"""Build a campaign card styled for the recommended path view.
+	   Gated cards are dimmed and show a lock indicator.
+	   The first beginner campaign shows a 'Start Here' highlight."""
+	var card = PanelContainer.new()
+	card.custom_minimum_size = Vector2(0, 80)
+
+	var card_style = StyleBoxFlat.new()
+	if is_start_here:
+		# Highlighted golden border for the entry point
+		card_style.bg_color = Color(0.20, 0.16, 0.04, 0.18)
+		card_style.border_width_left = 4
+		card_style.border_color = Color(0.95, 0.80, 0.15, 0.85)
+	elif is_gated:
+		# Dimmed style for locked/advanced campaigns
+		card_style.bg_color = Color(0.06, 0.06, 0.08, 0.25)
+		card_style.border_width_left = 3
+		card_style.border_color = Color(0.3, 0.3, 0.35, 0.25)
+	else:
+		card_style.bg_color = Color(accent.r, accent.g, accent.b, 0.06)
+		card_style.border_width_left = 3
+		card_style.border_color = accent.darkened(0.3)
+
+	card_style.corner_radius_top_left = 6
+	card_style.corner_radius_top_right = 6
+	card_style.corner_radius_bottom_left = 6
+	card_style.corner_radius_bottom_right = 6
+	card_style.content_margin_left = 16
+	card_style.content_margin_right = 16
+	card_style.content_margin_top = 12
+	card_style.content_margin_bottom = 12
+	card.add_theme_stylebox_override("panel", card_style)
+	if is_gated:
+		card.modulate.a = 0.55  # Visually dim the whole card
+	_content_vbox.add_child(card)
+
+	var hbox = HBoxContainer.new()
+	hbox.add_theme_constant_override("separation", 16)
+	card.add_child(hbox)
+
+	# Left: Info
+	var info_vbox = VBoxContainer.new()
+	info_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	info_vbox.add_theme_constant_override("separation", 4)
+	hbox.add_child(info_vbox)
+
+	# Title row: lock/star prefix, title, commander
+	var title_text := ""
+	if is_start_here:
+		title_text = "[color=#FFD700]★ START HERE  [/color]"
+	elif is_gated:
+		title_text = "[color=#666688]🔒  [/color]"
+	var title_color := accent.lightened(0.4) if not is_gated else Color(0.45, 0.45, 0.55)
+	var title_hex = title_color.to_html(false)
+	var title_label = RichTextLabel.new()
+	title_label.bbcode_enabled = true
+	title_label.fit_content = true
+	title_label.scroll_active = false
+	title_label.mouse_filter = MOUSE_FILTER_IGNORE
+	title_label.text = "%s[color=#%s][font_size=18]%s[/font_size][/color]  [color=#AAA][font_size=13]— %s[/font_size][/color]" % [
+		title_text, title_hex, campaign.title, campaign.commander]
+	info_vbox.add_child(title_label)
+
+	var desc_label = Label.new()
+	desc_label.text = campaign.description
+	desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	desc_label.add_theme_font_size_override("font_size", 12)
+	var desc_color := Color(0.55, 0.55, 0.60) if not is_gated else Color(0.35, 0.35, 0.40)
+	desc_label.add_theme_color_override("font_color", desc_color)
+	info_vbox.add_child(desc_label)
+
+	var difficulty: String = campaign.get("difficulty", "Intermediate")
+	var diff_hint := ""
+	if is_gated:
+		diff_hint = "  [Complete a campaign first to unlock this difficulty]"
+	var meta_label = Label.new()
+	meta_label.text = "%d Missions  •  %s  •  %s%s" % [
+		campaign.mission_count, difficulty, campaign.teaches, diff_hint]
+	meta_label.add_theme_font_size_override("font_size", 11)
+	var meta_color := Color(0.45, 0.45, 0.5) if not is_gated else Color(0.32, 0.32, 0.38)
+	meta_label.add_theme_color_override("font_color", meta_color)
+	info_vbox.add_child(meta_label)
+
+	if SaveManager.is_campaign_completed(campaign.id):
+		var badge = Label.new()
+		badge.text = "✓ COMPLETED"
+		badge.add_theme_font_size_override("font_size", 11)
+		badge.add_theme_color_override("font_color", Color(0.3, 0.85, 0.3))
+		info_vbox.add_child(badge)
+		card_style.border_color = Color(0.3, 0.75, 0.3, 0.6)
+
+	# Right: Start button (disabled if gated)
+	var btn_container = VBoxContainer.new()
+	btn_container.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_child(btn_container)
+
+	var start_btn = Button.new()
+	start_btn.text = "BEGIN" if not is_gated else "LOCKED"
+	start_btn.custom_minimum_size = Vector2(100, 40)
+	start_btn.add_theme_font_size_override("font_size", 14)
+	start_btn.focus_mode = Control.FOCUS_NONE
+	start_btn.disabled = is_gated
+
+	var btn_style = StyleBoxFlat.new()
+	var btn_bg = accent if not is_gated else Color(0.25, 0.25, 0.3)
+	btn_style.bg_color = Color(btn_bg.r, btn_bg.g, btn_bg.b, 0.2 if not is_gated else 0.1)
+	btn_style.corner_radius_top_left = 4
+	btn_style.corner_radius_top_right = 4
+	btn_style.corner_radius_bottom_left = 4
+	btn_style.corner_radius_bottom_right = 4
+	btn_style.border_width_left = 2
+	btn_style.border_width_right = 2
+	btn_style.border_width_top = 1
+	btn_style.border_width_bottom = 1
+	btn_style.border_color = btn_bg.darkened(0.1) if not is_gated else Color(0.3, 0.3, 0.35, 0.3)
+	btn_style.content_margin_left = 12
+	btn_style.content_margin_right = 12
+	btn_style.content_margin_top = 6
+	btn_style.content_margin_bottom = 6
+	start_btn.add_theme_stylebox_override("normal", btn_style)
+
+	if not is_gated:
+		var hover_style = btn_style.duplicate()
+		hover_style.bg_color = Color(accent.r, accent.g, accent.b, 0.4)
+		hover_style.border_color = accent.lightened(0.2)
+		start_btn.add_theme_stylebox_override("hover", hover_style)
+		start_btn.add_theme_color_override("font_color", accent.lightened(0.3))
+		start_btn.add_theme_color_override("font_hover_color", Color(1.0, 0.95, 0.85))
+	else:
+		start_btn.add_theme_color_override("font_color", Color(0.35, 0.35, 0.45))
+
+	if not is_gated:
+		var cid = campaign.id
+		start_btn.pressed.connect(func(): _on_campaign_selected(cid))
 	btn_container.add_child(start_btn)
 
 # ══════════════════════════════════════════════════════════════

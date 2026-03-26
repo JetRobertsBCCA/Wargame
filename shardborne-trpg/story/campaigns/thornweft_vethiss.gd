@@ -61,6 +61,7 @@ static func _missions() -> Array:
 		_mission_4_the_blood_tithe(),
 		_mission_5_the_spirit_loom(),
 		_mission_6_the_pattern_unbroken(),
+		_mission_branch_scorched_anchor(),  # index 6 — loss path from mission 2
 	]
 
 # ────────────────────────────────────────────────────────
@@ -181,6 +182,11 @@ static func _mission_2_the_burning_tangle() -> Dictionary:
 			"label": "Fire Season",
 			"description": "The Emberclaw's Heat scorches the web. Enemy units gain +1 ATK from thermal fury.",
 			"enemy_atk_bonus": 1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,
+			"next_on_loss": 6,
+			"loss_casualty_threshold": 3,
 		},
 	}
 
@@ -496,6 +502,63 @@ static func _mission_6_the_pattern_unbroken() -> Dictionary:
 			"description": "The Loom amplifies all. Every unit gains +1 HP. The pattern determines the future.",
 			"player_hp_bonus": 1,
 			"enemy_hp_bonus": 1,
+		},
+	}
+
+# ────────────────────────────────────────────────────────
+# BRANCH MISSION (index 6): Scorched Anchor
+# Loss path from mission 2 — reached when casualties are high
+# Recovery mission: the Web is burning; Vethiss must rebuild one anchor under fire
+# ────────────────────────────────────────────────────────
+
+static func _mission_branch_scorched_anchor() -> Dictionary:
+	return {
+		"title": "Scorched Anchor",
+		"is_branch": true,
+		"objectives_text": "Protect the emergency anchor point for 5 rounds while it is rewoven. Do not let the Emberclaw destroy it.",
+		"pre_story": [
+			ShardLore.narration("The Emberclaw fire had done what fire always does — consumed without care. Three anchor points were ash. The survivors of Vethiss's weave-network clustered around the last viable thread."),
+			ShardLore.dialogue("Loom-Mother Vethiss", "The pattern is not broken. It is incomplete. There is a difference — one I intend to prove in the next five minutes. Begin the emergency reweave. I will hold the approach.", "quiet_intensity"),
+			ShardLore.dialogue("Thread-Seer Kythara", "Loom-Mother — they are still burning. The fire has not finished.", "frightened"),
+			ShardLore.dialogue("Loom-Mother Vethiss", "Then we will outlast it. We always outlast it. Fire burns itself out. Silk endures.", "certain"),
+		],
+		"post_story": [
+			ShardLore.narration("The anchor held. The fire burned past, and when the smoke cleared, one unbroken thread still connected the Thornweft survivors. Thin. Fragile. But unbroken."),
+			ShardLore.dialogue("Loom-Mother Vethiss", "One thread is enough to begin with. From one thread you can spin a web. From one web you can rebuild a world. The Emberclaw burned our pattern today. Tomorrow, we will weave a fireproof one.", "resolute"),
+			ShardLore.narration("She knelt and laid a single silk thread along the scorched ground. A beginning."),
+		],
+		"defeat_story": [
+			ShardLore.narration("The last anchor burned. The Web was gone. Vethiss stood in the ashes and counted what she had left: herself, a handful of weavers, and the knowledge of how to begin."),
+			ShardLore.dialogue("Loom-Mother Vethiss", "...Every great web was once empty air. We begin again.", "measured"),
+		],
+		"player_army": [
+			"Loom-Mother Vethiss",
+			"Thread-Warden Infantry",
+			"Silk-Warden Regulars",
+			"Gossamer Guard",
+		],
+		"enemy_faction": CombatantDefinition.Faction.EMBERCLAW,
+		"enemy_army": [
+			"Ashborn Infantry",
+			"Emberclaw Warriors",
+			"Pyromancer Adepts",
+			"Ashwalker Skirmishers",
+		],
+		"battle_size": "skirmish",
+		"scenario": "the_last_stand",
+		"round_limit": 5,
+		"tutorial_tips": [
+			"Protect the single anchor point for 5 rounds — do not let the enemy reach it.",
+			"Web terrain is your best defense. Lay silk across all approach paths.",
+			"Gossamer Guard have the highest DEF — keep them directly on the anchor.",
+		],
+		"battle_modifiers": {
+			"label": "Burned Web",
+			"description": "The Thornweft web is damaged. All your units start with -1 DEF from broken silk-armor.",
+			"player_def_bonus": -1,
+		},
+		"victory_branches": {
+			"next_on_win": 2,  # Rejoin main track at mission 3 (index 2)
 		},
 	}
 

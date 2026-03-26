@@ -17,7 +17,18 @@
       "Web-Network Teleport: Thornweft units can redeploy between any two friendly Web-Anchor points instead of moving normally",
       "Fate-Threads: Once per turn, the Thornweft player may force one enemy unit to reroll a successful die roll",
       "Gossamer Trap: Web terrain placed by Thornweft units counts as impassable for enemies and open ground for Thornweft",
-      "Silk Shroud: All Thornweft units gain Light Cover (+1 DEF) when within 6\" of web terrain"
+      "Silk Shroud: All Thornweft units gain Light Cover (+1 DEF) when within 6\" of web terrain",
+      "Plant Web Anchor: Support units, commanders, and Web-Anchor keyword units may place a web anchor at their current position. The anchor persists for the rest of the battle."
+    ],
+
+    faction_skills: [
+      {
+        id: "plant_web_anchor",
+        name: "Plant Web Anchor",
+        type: "Special",
+        available_to: "Support units, commanders, and Web-Anchor keyword units",
+        description: "Place a web anchor at current position. Persists for the rest of the battle. Available to support units, commanders, and Web-Anchor keyword units."
+      }
     ],
 
     playstyle_notes: "The Thornweft Matriarchy controls the battlefield through terrain manipulation and redeployment. Place Web-Anchors to create a teleportation network, then shift your army across the board to exploit weak points. Fate-Threads punish enemy dice rolls, and Gossamer Traps reshape movement lanes. The Matriarchy rewards patient, positional play — build your web in the early game, then strangle the enemy in the mid-to-late game. Weakness: slow to set up, fragile individual units, and vulnerable to armies that rush before the web is complete.",
